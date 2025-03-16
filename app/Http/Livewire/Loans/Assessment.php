@@ -27,6 +27,7 @@ use Carbon\Carbon;
 
 use App\Models\issured_shares;
 use App\Models\general_ledger;
+use App\Services\LoanScheduleService;
 
 class Assessment extends Component
 {
@@ -45,7 +46,7 @@ class Assessment extends Component
     public $loan_sub_product;
     public $tenure = '12';
     public $principle;
-    public $member;
+    public $member,$schedule2;
 
 
     public $guarantor;
@@ -180,6 +181,8 @@ class Assessment extends Component
     public function render(): Factory|\Illuminate\Contracts\View\View|\Illuminate\Contracts\Foundation\Application
     {
 
+        $this->schedule2=$this->generateSchedule();
+
 
          if($this->interest){
              $this->interest_value=$this->interest;
@@ -190,6 +193,8 @@ class Assessment extends Component
         }else{
             $this->tenure = '12';
         }
+
+        
         if($this->principle){
             LoansModel::where('id', Session::get('currentloanID'))->update([
                 'principle' => $this->principle,
@@ -647,6 +652,25 @@ class Assessment extends Component
             }
         }
 
+
+    }
+
+
+    public function generateSchedule(){
+
+
+        $scheduleCalculator=new LoanScheduleService();
+        $schedule = $scheduleCalculator->generateLoanRepaymentSchedule(
+            $this->principle,
+            $this->interest_value,
+            $this->tenure,
+            Carbon::today()->format('Y-m-d'),
+            $this->interest_method,
+            0,
+            'monthly'
+        );
+
+        return $schedule;
 
     }
 

@@ -33,7 +33,9 @@
             <livewire:settings.settings />
             @break
             @case('10')
-            <livewire:h-r.h-r />
+            
+             <livewire:product-management.product-dashboard />
+
             @break
             @case('14')
             <livewire:procurement.procurement />

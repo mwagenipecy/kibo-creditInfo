@@ -6,6 +6,7 @@ use App\Models\AccountsModel;
 use App\Models\ClientsModel;
 use App\Models\Employee;
 use App\Models\general_ledger;
+use App\Models\LoanProduct;
 use App\Models\loans_schedules;
 use App\Exports\LoanRepayment;
 use App\Mail\LoanProgress;
@@ -39,6 +40,7 @@ class FrontDesk extends Component
     public $amount2;
     public $email;
     public $accountSelected;
+    public $loanProduct=[];
 
     // Car Details
     public $make_and_model;
@@ -51,9 +53,10 @@ class FrontDesk extends Component
     public $purchase_price;
     public $down_payment;
     public $loan_amount;
-    public $loan_term;
+    public $loan_term,$referenceNumber;
 
     public $amount3;
+    public $loanProductId;
 
 
 
@@ -62,6 +65,12 @@ class FrontDesk extends Component
 
 
     public $imagePreviews = []; // Stores temporary image previews
+
+
+    public function boot(){
+
+        $this->loanProduct=LoanProduct::where('sub_product_status','active')->get();
+    }
 
     // Validate images when they are updated
     public function updatedImages()
@@ -79,10 +88,11 @@ class FrontDesk extends Component
             // Remove the 'public/' prefix from the path for easier access
             $path = str_replace('public/', '', $path);
 
+            $this->referenceNumber=time();
             // Insert the image path into the database
             DB::table('images')->insert([
                 'url' => $path, // Save the path to the database
-                'loan_id' => '1234',
+                'loan_id' => $this->referenceNumber,
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
@@ -240,8 +250,8 @@ class FrontDesk extends Component
             'bank_account_number'=>'',
             'LoanPhoneNo'=>$this->phonenumber,
             'status'=>'NEW LOAN',
-            'interest'=>DB::table('loan_sub_products')->where('sub_product_id',$this->loan_product)->value('interest_value'),
-            'tenure'=>DB::table('loan_sub_products')->where('sub_product_id',$this->loan_product)->value('interest_tenure'),
+            'interest'=>DB::table('loan_sub_products')->where('id',$this->loanProductId)->value('interest_value'),
+            'tenure'=>DB::table('loan_sub_products')->where('id',$this->loanProductId)->value('interest_tenure'),
             'supervisor_id'=> 1,
             'item_id'=>$itemId
         ])->id;
@@ -269,9 +279,17 @@ class FrontDesk extends Component
             'down_payment' => $this->down_payment,
             'loan_amount' => $this->loan_amount,
             'loan_id' => $loan_id,
+            "loanProductId"=>$this->loanProductId,
             'created_at' => now(),
             'updated_at' => now(),
         ]);
+
+
+
+        DB::table("images")->where("loan_id",$this->referenceNumber)
+         ->update([
+            "loan_id"=>   $loan_id
+         ]);
 
 
 
@@ -393,6 +411,7 @@ class FrontDesk extends Component
 
         $this->amount3=600;
         $this->amount3=$this->amount3 ?: null;
+
 
 
         return view('livewire.dashboard.front-desk');

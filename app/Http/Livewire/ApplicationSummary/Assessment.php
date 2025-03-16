@@ -2,11 +2,19 @@
 
 namespace App\Http\Livewire\ApplicationSummary;
 
+use App\Models\Application;
+use App\Models\LoanProduct;
 use Livewire\Component;
 use DateTime;
+use App\Services\LoanScheduleService;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
+
 
 class Assessment extends Component
 {
+    public $schedule2,$scheduleData ;
+
 
     public $photo, $futureInterest = false, $collateral_type, $collateral_description, $daily_sales, $loan, $collateral_value, $loan_sub_product;
     public $principle = 0, $member, $guarantor, $disbursement_account, $collection_account_loan_interest;
@@ -33,21 +41,42 @@ class Assessment extends Component
     public $daysBetweenx = 0;
 
 
+    public $principal = 0;
+    public $interestRate = 0;
+    public $tenure = 0;
+    public $interestMethod = 'reducing';
+    public $startDate;
+    public $gracePeriod = 0;
+    public $paymentFrequency = 'monthly';
+
+
+
     ///////////////
     public $non_permanent_income_non_taxable = 0;
     public $non_permanent_income_taxable = 0;
     public $take_home = 0;
     public $totalInstallment = 0;
-    public $tenure = 12;
     public $max_loan, $selectedContracts=[];
     public $x ;
     public $isPhysicalCollateral = false;
     public $account1,$insurance_list=[];
-    public $account2;
+    public $account2,$images=[];
 
     public $selectedLoan;
     public $ClosedLoanBalance;
 
+
+    protected $rules = [
+        'principal' => 'required|numeric|min:1',
+        'interestRate' => 'required|numeric|min:0',
+        'tenure' => 'required|integer|min:1',
+        'interestMethod' => 'required|in:reducing,flat',
+        'startDate' => 'required|date',
+        'gracePeriod' => 'integer|min:0',
+        'paymentFrequency' => 'required|in:monthly,daily,quarterly,semi_annual,annual',
+  
+  
+    ];
 
 
     /**
@@ -97,8 +126,182 @@ class Assessment extends Component
     }
 
 
+    public function loadData(){
+
+
+        $applicationId=session('applicationId');
+
+        $application= Application::find($applicationId);
+        if ($application === null) {
+            return;
+        }
+       
+        $loanId=$application->loan_id;
+        $loan=DB::table('loans')->where('id',$loanId)->first();
+        $loanProduct=LoanProduct::find($application->loanProductId);
+
+        $this->principal=$loan->principle??0;
+        $this->interestRate=$loan->interest ??0;
+        $this->tenure=$loan->tenure ?? 0;
+        $this->interestMethod=$loanProduct->interest_method ??'flat';
+        $this->gracePeriod=0;
+        $this->paymentFrequency=$loanProduct->repayment_strategy??'monthly';
+        $this->startDate = Carbon::today()->format('Y-m-d');
+
+
+
+
+        //load imahe 
+
+        $this->images=DB::table('images')->where('loan_id',$loanId)->get();
+    }
+
+
+    public function rejectApplication(){
+
+        $applicationId = session('applicationId');
+        $application = Application::find($applicationId);
+
+        $loanId = $application->loan_id;
+
+
+        $application->application_status = 'REJECTED';
+        $application->save();
+        
+        // Update loan status
+        DB::table('loans')->where('id', $loanId)->update(['status' => 'REJECTED']);
+        
+
+
+    }
+
+
+    public function acceptApplication()
+    {
+        $applicationId = session('applicationId');
+        $application = Application::find($applicationId);
+        
+        // Check if application exists
+        if (!$application) {
+          session()->flash('error' , 'Application not found' );
+        }
+        
+        // Don't do anything if loan is already ACTIVE or REJECTED
+        if (in_array($application->application_status, ['ACCEPTED', 'REJECTED'])) {
+            session()->flash('message' ,'No action needed. Application is ' . $application->application_status );
+        }
+        
+        $loanId = $application->loan_id;
+        
+        // Use transaction to handle errors and prevent partial operations
+        try {
+            DB::beginTransaction();
+            
+            // Insert loan schedule records
+            foreach ($this->scheduleData['schedule'] as $installment) {
+                DB::table('loans_schedules')->insert([
+                    'installment_date' => $installment['installment_date'],
+                    'opening_balance' => $installment['opening_balance'],
+                    'closing_balance' => $installment['closing_balance'],
+                    'installment' => $installment['payment'],
+                    'principle' => $installment['principal'],
+                    'interest' => $installment['interest'],
+                    'completion_status' => 'ACTIVE',
+                    'account_status' => 'ACTIVE',
+                    'created_at' => Carbon::now()->format('Y-m-d'),
+                    'updated_at' => Carbon::now()->format('Y-m-d'),
+                    'loan_id' => $loanId
+                ]);
+            }
+            
+            // Update application status
+            $application->application_status = 'ACCEPTED';
+            $application->save();
+            
+            // Update loan status
+            DB::table('loans')->where('id', $loanId)->update(['status' => 'ACTIVE']);
+            
+            // Commit transaction if everything succeeded
+            DB::commit();
+            
+            return session()->flash('message' , 'Application accepted successfully');
+        } catch (\Exception $e) {
+            // Rollback transaction if any operation fails
+            DB::rollBack();
+
+
+            dd($e->getMessage());
+            
+            // Log the error for debugging
+            \Log::error('Error accepting application: ' . $e->getMessage());
+            
+            session()->flash('error' , 'Failed to accept application' );
+        }
+    }
+
+
+
+    public function generateSchedule(){
+
+
+        $scheduleCalculator=new LoanScheduleService();
+        $schedule = $scheduleCalculator->generateLoanRepaymentSchedule(
+            $this->principle?? 1000000,
+            $this->interest_value??4,
+            $this->tenure,
+            Carbon::today()->format('Y-m-d'),
+            $this->interest_method ?? 'reducing',
+            0,
+            'monthly'
+        );
+
+
+
+        return $schedule;
+
+    }
+
+
+
+    public function calculateSchedule()
+    {
+
+
+        $this->loadData();
+        $this->validate();
+        
+        $service = new LoanScheduleService();
+        $this->scheduleData = $service->generateLoanRepaymentSchedule(
+            $this->principal,
+            $this->interestRate,
+            $this->tenure,
+            $this->startDate,
+            $this->interestMethod,
+            $this->gracePeriod,
+            $this->paymentFrequency
+        );
+    }
+
+
+    public function mount()
+    {
+        $this->reset();
+
+        // Set default start date to today
+        $this->startDate = Carbon::today()->format('Y-m-d');
+        
+        // Calculate schedule on initial load
+        $this->calculateSchedule();
+    }
+
+
+
+
     public function render()
     {
+
+    //  $this->scheduleData =$this->generateSchedule();
+
         return view('livewire.application-summary.assessment');
     }
 }

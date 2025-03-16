@@ -362,6 +362,31 @@
                         <input type="text" wire:model="down_payment" class="w-full border-gray-300  focus:border-green-500 focus:ring rounded-lg focus:ring-green-200 focus:ring-opacity-50 p-2.5 rounded-md shadow-sm text-sm">
                     </div>
 
+
+
+                    <p class="flex items-center text-l font-semibold spacing-sm text-green-800">
+                        Loan Details
+                    </p>
+
+                    <hr class="border-b-0 my-4"/>
+
+                    
+                    <div class="mb-2">
+                        <label class="block mb-2 text-sm font-medium text-slate-600 dark:text-gray-400">Loan product</label>
+                        <select wire:model="loanProductId" class="w-full border-gray-300  focus:border-green-500 focus:ring rounded-lg focus:ring-green-200 focus:ring-opacity-50 p-2.5 rounded-md shadow-sm text-sm">
+                            <option > select here </option>
+
+                            @foreach ($loanProduct as $product )
+                            
+                            <option value="{{ $product->id }}"> {{ $product-> sub_product_name}}( Range Amount {{$product->range($product->id)   }}) </option>
+
+                            @endforeach
+
+                        </select>
+
+                       
+
+
                     <div class="mb-2">
                         <label class="block mb-2 text-sm font-medium text-slate-600 dark:text-gray-400">Loan Amount</label>
                         <input type="text" wire:model="loan_amount" class="w-full border-gray-300  focus:border-green-500 focus:ring rounded-lg focus:ring-green-200 focus:ring-opacity-50 p-2.5 rounded-md shadow-sm text-sm">

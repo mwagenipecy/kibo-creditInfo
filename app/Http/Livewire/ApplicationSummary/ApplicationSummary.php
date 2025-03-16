@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Livewire\ApplicationSummary;
-
+use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 use App\Models\Application;
 
@@ -19,6 +19,8 @@ class ApplicationSummary extends Component
     public function selectApplication($id)
     {
         $this->selectedApplication = Application::find($id);
+
+        session()->put("applicationId", $id);
     }
 
     public function acceptApplication($id)
