@@ -182,15 +182,17 @@ class DoculemtView extends Component
     
     public function downloadDocument($id)
     {
+
         $document = Document::find($id);
-        
-        if ($document && $document->path_url && Storage::exists('public/documents/' . $document->path_url)) {
-            return Storage::download('public/documents/' . $document->path_url, $document->name);
+    
+        if ($document && $document->path_url && Storage::disk('public')->exists('documents/' . $document->path_url)) {
+            return Storage::disk('public')->download('documents/' . $document->path_url, $document->name);
         }
-        
+    
         session()->flash('error', 'Document file not found!');
         return redirect()->back();
     }
+    
 
 
 

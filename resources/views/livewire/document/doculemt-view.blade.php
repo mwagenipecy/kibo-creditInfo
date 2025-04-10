@@ -81,7 +81,7 @@
             </div>
         </div>
 
-        <div class="container mx-auto px-4">
+        <div class="container mx-auto ">
             <div class="bg-white rounded-lg shadow-md overflow-hidden mb-8">
                 <div class="px-6 py-4 border-b border-gray-200">
                     <div class="flex justify-between items-center">
@@ -175,11 +175,14 @@
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                             <div class="flex space-x-2">
-                                                <a href="{{ Storage::url('public/documents/' . $document->path_url) }}" target="_blank" class="text-blue-600 hover:text-blue-900">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                                <a wire:click="downloadDocument({{  $document->id }})" target="_blank" class="text-blue-600 hover:text-blue-900">
+                                                   
+
+                                                    <svg data-slot="icon" class="h-5 w-5" fill="none" stroke-width="1.5" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3"></path>
                                                     </svg>
+
+
                                                 </a>
                                                 <button wire:click="editDocument({{ $document->id }})" class="text-indigo-600 hover:text-indigo-900">
                                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">

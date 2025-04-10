@@ -92,7 +92,7 @@
         </div>
         <div>
 
-    <div class="container mx-auto px-4">
+    <div class="container mx-auto ">
         <div class="bg-white rounded-lg shadow-md overflow-hidden mb-8">
             <div class="px-6 py-4 border-b border-gray-200">
                 <div class="flex justify-between items-center">
