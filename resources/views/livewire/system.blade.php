@@ -32,6 +32,8 @@
           @case('9')
             <livewire:settings.settings />
             @break
+
+            
             @case('10')
             
              <livewire:product-management.product-dashboard />
