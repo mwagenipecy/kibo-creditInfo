@@ -37,6 +37,15 @@
              <livewire:product-management.product-dashboard />
 
             @break
+
+
+            @case('11')
+            
+            <livewire:document.doculemt-view />
+
+           @break
+
+
             @case('14')
             <livewire:procurement.procurement />
             @break
