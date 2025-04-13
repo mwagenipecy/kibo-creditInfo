@@ -5,22 +5,21 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Resource extends Model
+class Region extends Model
 {
     use HasFactory;
 
-
     protected $fillable = [
         'name',
-        'path_url',
-        'descriptions',
-        'lender_id',
-        'status'
+        'country_code'
     ];
 
-
-    public function lender(){
-
-        return $this->belongsTo(Lender::class, 'lender_id');
+    /**
+     * Get the cities for the region.
+     */
+    public function cities()
+    {
+        return $this->hasMany(City::class);
     }
+    
 }

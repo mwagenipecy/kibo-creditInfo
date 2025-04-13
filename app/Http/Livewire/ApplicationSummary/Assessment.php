@@ -3,7 +3,9 @@
 namespace App\Http\Livewire\ApplicationSummary;
 
 use App\Models\Application;
+use App\Models\CarDealer;
 use App\Models\LoanProduct;
+use App\Models\User;
 use Livewire\Component;
 use DateTime;
 use App\Services\LoanScheduleService;
@@ -13,7 +15,7 @@ use Illuminate\Support\Facades\DB;
 
 class Assessment extends Component
 {
-    public $schedule2,$scheduleData ;
+    public $schedule2,$scheduleData,$graceData,$monthlyInstallment,$firstInstallmentInterestAmount ;
 
 
     public $photo, $futureInterest = false, $collateral_type, $collateral_description, $daily_sales, $loan, $collateral_value, $loan_sub_product;
@@ -65,6 +67,8 @@ class Assessment extends Component
     public $selectedLoan;
     public $ClosedLoanBalance;
 
+    protected $listeners = ['refresh'=>'$refresh'];
+
 
     protected $rules = [
         'principal' => 'required|numeric|min:1',
@@ -77,6 +81,9 @@ class Assessment extends Component
   
   
     ];
+
+
+  
 
 
     /**
@@ -285,7 +292,7 @@ class Assessment extends Component
 
     public function mount()
     {
-        $this->reset();
+         $this->loadData();
 
         // Set default start date to today
         $this->startDate = Carbon::today()->format('Y-m-d');

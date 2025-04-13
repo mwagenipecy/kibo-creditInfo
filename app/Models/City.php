@@ -5,22 +5,20 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Resource extends Model
+class City extends Model
 {
     use HasFactory;
 
-
     protected $fillable = [
         'name',
-        'path_url',
-        'descriptions',
-        'lender_id',
-        'status'
+        'region_id'
     ];
 
-
-    public function lender(){
-
-        return $this->belongsTo(Lender::class, 'lender_id');
+    /**
+     * Get the region that owns the city.
+     */
+    public function region()
+    {
+        return $this->belongsTo(Region::class);
     }
 }

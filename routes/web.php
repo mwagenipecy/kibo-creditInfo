@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Session;
 use Laravel\Fortify\Http\Controllers\AuthenticatedSessionController;
 use App\Http\Traits\MailSender;
+use App\Http\Controllers\EmployerVerificationController;
 
 
 
@@ -51,3 +52,26 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         return view('pages/utility/404');
     });
 });
+
+
+
+
+
+
+
+// Employer verification routes
+Route::get('/employer/verification/{token}', [EmployerVerificationController::class, 'showForm'])
+    ->name('employer.verification');
+    
+Route::post('/employer/verification/{token}', [EmployerVerificationController::class, 'submitForm'])
+    ->name('employer.verification.submit');
+    
+Route::get('/employer/verification-thank-you', [EmployerVerificationController::class, 'thankYou'])
+    ->name('employer.verification.thank-you');
+    
+Route::get('/employer/verification-invalid', [EmployerVerificationController::class, 'invalid'])
+    ->name('employer.verification.invalid');
+    
+Route::get('/employer/verification-completed', [EmployerVerificationController::class, 'completed'])
+    ->name('employer.verification.completed');
+

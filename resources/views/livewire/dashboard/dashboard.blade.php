@@ -20,8 +20,20 @@
 
                     <div class="flex">
                         <div class="container mx-auto ">
-                            <livewire:dashboard.front-desk/>
-                            <livewire:dashboard.commerce/>
+
+                        @if(auth()->user()->department == 1)
+
+                         <livewire:dashboard.admin/>
+
+                        @elseif(auth()->user()->department == 2)
+                        <livewire:dashboard.commerce/>
+                        @elseif(auth()->user()->department == 3)
+
+                        <livewire:dashboard.front-desk/>
+
+                        @endif 
+                        
+                           
 
                         </div>
 

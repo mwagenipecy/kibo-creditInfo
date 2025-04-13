@@ -84,8 +84,6 @@
 
                         @foreach($this->menuItems as $item)
 
-
-
                             <li  class="px-3 py-2 rounded-lg mb-4 last:mb-0 @if($this->tab_id == $item) app-bg-color text-white  hover:text-white @else  @endif cursor-pointer " onmouseover="this.style.backgroundColor='#80ad83'; this.style.color='#ffffff';" onmouseout="this.style.backgroundColor=''; this.style.color='';" >
                                 <div wire:click="menuItemClicked({{$item}})" wire:loading.attr="disabled" class="flex items-center justify-between text-slate-200 hover:text-white truncate transition duration-150">
                                     <div class="flex items-center">

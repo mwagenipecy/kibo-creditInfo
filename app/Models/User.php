@@ -96,4 +96,8 @@ class User extends Authenticatable
         // send mail
     }
 
+
+
+    
+
 }

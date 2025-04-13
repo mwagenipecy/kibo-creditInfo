@@ -1,382 +1,192 @@
-<div>
+<div class="bg-white ">
     {{-- The Master doesn't talk, he acts. --}}
 
-    <div class="flex flex-col w-full" >
-        <div class="grid gap-4 grid-cols-1 sm:grid-cols-3 my-2 w-full">
-            <div  class="metric-card  dark:bg-gray-900 border @if($this->item == 1) bg-red-200 border-red-200 dark:border-red-800  @else bg-white  border-gray-200 dark:border-gray-800 @endif rounded-lg p-4 max-w-72 w-full" >
-
-                <div class="flex justify-between items-center w-full">
-                    <div class="flex items-center">
-                        <div wire:loading wire:target="visit(1)" >
-                            <div class="flex items-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="animate-spin  h-5 w-5 mr-2 stroke-gray-400" fill="white" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-
-                                </svg>
-
-
-                                <p>Please wait...</p>
-                            </div>
-
-                        </div>
-                        <div wire:loading.remove wire:target="visit(1)">
-
-
-                            <div class="flex items-center text-l font-semibold spacing-sm text-green-800">New Applications
-
-                            </div>
-
-                        </div>
-
-                    </div>
-                    <div class="flex items-center space-x-5" >
-
-                        <svg wire:click="visit(1)" xmlns="http://www.w3.org/2000/svg" class="cursor-pointer h-9 bg-slate-50 rounded-full bg-green p-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                        </svg>
-
-
-                    </div>
-                </div>
-
-
-
-                <table>
-
-                    <tr>
-                        <td class="mt-2 text-sm font-semibold   @if($this->item == 1) text-white @else text-slate-400 @endif dark:text-white capitalize  ">Total Number</td>
-                        <td class="pl-2 mt-2 text-sm font-semibold spacing-sm  @if($this->item == 1) text-white @else text-slate-400 @endif  dark:text-white  text-right">
-
-                           {{$this->newClients}}
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td class="mt-2 text-sm font-semibold   @if($this->item == 1) text-white @else text-slate-400 @endif dark:text-white capitalize  ">Total Amount</td>
-                        <td class="pl-2 mt-2 text-sm font-semibold spacing-sm  @if($this->item == 1) text-white @else text-slate-400 @endif  dark:text-white  text-right">
-                            {{$this->TotalNewClientsAmount}} TZS
-                        </td>
-                    </tr>
-
-
-                </table>
-
-
+    <div class="py-6  min-h-screen">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Dashboard Header -->
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-900"> Dashboard</h1>
+                <p class="mt-1 text-sm text-gray-600">
+                    Financial performance and loan statistics overview
+                </p>
             </div>
-
-
-            <div  class="metric-card  dark:bg-gray-900 border @if($this->item == 2) bg-red-200 border-red-200 dark:border-red-800  @else bg-white  border-gray-200 dark:border-gray-800 @endif rounded-lg p-4 max-w-72 w-full" >
-
-                <div class="flex justify-between items-center w-full">
-                    <div class="flex items-center">
-                        <div wire:loading wire:target="visit(2)" >
-                            <div class="flex items-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="animate-spin  h-5 w-5 mr-2 stroke-gray-400" fill="white" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-
-                                </svg>
-
-
-                                <p>Please wait...</p>
-                            </div>
-
-                        </div>
-                        <div wire:loading.remove wire:target="visit(2)">
-
-
-                            <div class="flex items-center text-l font-semibold spacing-sm text-green-800">OnProgress
-
-                            </div>
-
-                        </div>
-
-                    </div>
-                    <div class="flex items-center space-x-5" >
-
-                        <svg wire:click="visit(2)" xmlns="http://www.w3.org/2000/svg" class="cursor-pointer h-9 bg-slate-50 rounded-full bg-green p-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                        </svg>
-
-
-                    </div>
-                </div>
-
-
-
-                <table>
-
-                    <tr>
-                        <td class="mt-2 text-sm font-semibold   @if($this->item == 2) text-white @else text-slate-400 @endif dark:text-white capitalize  ">OnProgress Clients</td>
-                        <td class="pl-2 mt-2 text-sm font-semibold spacing-sm  @if($this->item == 2) text-white @else text-slate-400 @endif  dark:text-white  text-right">
-                         {{$this->onprogress}}
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td class="mt-2 text-sm font-semibold   @if($this->item == 2) text-white @else text-slate-400 @endif dark:text-white capitalize  ">Total Amount</td>
-                        <td class="pl-2 mt-2 text-sm font-semibold spacing-sm  @if($this->item == 2) text-white @else text-slate-400 @endif  dark:text-white  text-right">
-
-                           {{number_format($this->totalOnprogress)}} TZS
-                        </td>
-                    </tr>
-
-
-
-
-                </table>
-
+            <div class="mt-4 md:mt-0 flex space-x-3">
+               
+               
             </div>
-
-            <div  class="metric-card  dark:bg-gray-900 border @if($this->item == 3) bg-red-200 border-red-200 dark:border-red-800  @else bg-white  border-gray-200 dark:border-gray-800 @endif rounded-lg p-4 max-w-72 w-full" >
-                <div class="flex justify-between items-center w-full">
-                    <div class="flex items-center">
-                        <div wire:loading wire:target="visit(3)" >
-                            <div class="flex items-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="animate-spin  h-5 w-5 mr-2 stroke-gray-400" fill="white" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-                                </svg>
-                                <p>Please wait...</p>
-                            </div>
-
-                        </div>
-                        <div wire:loading.remove wire:target="visit(3)">
-
-
-                            <div class="flex items-center text-l font-semibold spacing-sm text-green-800">Awaiting For Approval
-
-                            </div>
-
-                        </div>
-
-                    </div>
-                    <div class="flex items-center space-x-5" >
-
-                        <svg wire:click="visit(3)" xmlns="http://www.w3.org/2000/svg" class="cursor-pointer h-9 bg-slate-50 rounded-full bg-green p-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                        </svg>
-
-
-                    </div>
-                </div>
-
-
-
-                <table>
-
-                    <tr>
-                        <td class="mt-2 text-sm font-semibold   @if($this->item == 3) text-white @else text-slate-400 @endif dark:text-white capitalize  ">Total Number Of Clients</td>
-                        <td class="pl-2 mt-2 text-sm font-semibold spacing-sm  @if($this->item == 3) text-white @else text-slate-400 @endif  dark:text-white text-right">
-
-                            {{$this->awaitingForApproval}}
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td class="mt-2 text-sm font-semibold   @if($this->item == 3) text-white @else text-slate-400 @endif dark:text-white capitalize  ">Total Amount</td>
-                        <td class="pl-2 mt-2 text-sm font-semibold spacing-sm  @if($this->item == 3) text-white @else text-slate-400 @endif  dark:text-white text-right">
-
-                            {{ number_format($this->totalAwaitingApproval)}} TZS
-                        </td>
-                    </tr>
-
-
-
-
-                </table>
-
-            </div>
-
-
         </div>
 
-
-        <div class="grid gap-4 grid-cols-1 sm:grid-cols-3 my-2 w-full">
-
-            <div class="metric-card  dark:bg-gray-900 border @if($this->item == 4) bg-red-200 border-red-200 dark:border-red-800  @else bg-white  border-gray-200 dark:border-gray-800 @endif rounded-lg p-4 max-w-72 w-full" >
-
-                <div class="flex justify-between items-center w-full">
+        <!-- Key Metrics Section -->
+        <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 mb-8">
+            <!-- Total Loan Value -->
+            <div class="bg-white overflow-hidden shadow rounded-lg">
+                <div class="px-4 py-5 sm:p-6">
                     <div class="flex items-center">
-                        <div wire:loading wire:target="visit(4)" >
-                            <div class="flex items-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="animate-spin  h-5 w-5 mr-2 stroke-gray-400" fill="white" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-
-                                </svg>
-
-
-                                <p>Please wait...</p>
-                            </div>
-
+                        <div class="flex-shrink-0 bg-green-100 rounded-md p-3">
+                            <svg class="h-6 w-6 text-green-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
                         </div>
-                        <div wire:loading.remove wire:target="visit(4)">
-
-
-                            <div class="flex items-center text-l font-semibold spacing-sm text-green-800">Awaiting Disbursement
-
-                            </div>
-
+                        <div class="ml-5 w-0 flex-1">
+                            <dl>
+                                <dt class="text-sm font-medium text-gray-500 truncate">Total Loan Value</dt>
+                                <dd>
+                                    <div class="text-lg font-medium text-gray-900">TZS {{ number_format($loanAmount,2) }}</div>
+                                    <div class="flex items-baseline">
+                                        <span class="text-sm text-green-600 font-semibold">+12.3%</span>
+                                        <span class="ml-1 text-xs text-gray-500">from last month</span>
+                                    </div>
+                                </dd>
+                            </dl>
                         </div>
-
-                    </div>
-                    <div class="flex items-center space-x-5" >
-
-                        <svg wire:click="visit(4)" xmlns="http://www.w3.org/2000/svg" class="cursor-pointer h-9 bg-slate-50 rounded-full bg-green p-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                        </svg>
-
-
                     </div>
                 </div>
-
-
-
-                <table>
-
-                    <tr>
-                        <td class="mt-2 text-sm font-semibold   @if($this->item == 4) text-white @else text-slate-400 @endif dark:text-white capitalize  ">Total Number Of Clients</td>
-                        <td class="pl-2 mt-2 text-sm font-semibold spacing-sm  @if($this->item == 4) text-white @else text-slate-400 @endif  dark:text-white text-right">
-
-                            {{$this->awaitingDis}}
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td class="mt-2 text-sm font-semibold   @if($this->item == 4) text-white @else text-slate-400 @endif dark:text-white capitalize  ">Total Amount</td>
-                        <td class="pl-2 mt-2 text-sm font-semibold spacing-sm  @if($this->item == 4) text-white @else text-slate-400 @endif  dark:text-white text-right">
-
-                            {{number_format($this->totalAwaitingDis)}} TZS
-                        </td>
-                    </tr>
-
-
-                </table>
-
             </div>
 
-
-
-
-            <div  class="metric-card  dark:bg-gray-900 border @if($this->item == 5) bg-red-200 border-red-200 dark:border-red-800  @else bg-white  border-gray-200 dark:border-gray-800 @endif rounded-lg p-4 max-w-72 w-full" >
-                <div class="flex justify-between items-center w-full">
+            <!-- Active Loans -->
+            <div class="bg-white overflow-hidden shadow rounded-lg">
+                <div class="px-4 py-5 sm:p-6">
                     <div class="flex items-center">
-                        <div wire:loading wire:target="visit(5)" >
-                            <div class="flex items-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="animate-spin  h-5 w-5 mr-2 stroke-gray-400" fill="white" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-
-                                </svg>
-
-
-                                <p>Please wait...</p>
-                            </div>
-
+                        <div class="flex-shrink-0 bg-blue-100 rounded-md p-3">
+                            <svg class="h-6 w-6 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                            </svg>
                         </div>
-                        <div wire:loading.remove wire:target="visit(5)">
-
-
-                            <div class="flex items-center text-l font-semibold spacing-sm text-green-800">Client Rejected
-
-                            </div>
-
+                        <div class="ml-5 w-0 flex-1">
+                            <dl>
+                                <dt class="text-sm font-medium text-gray-500 truncate">Active Loans</dt>
+                                <dd>
+                                    <div class="text-lg font-medium text-gray-900">{{ $activeLoan }}</div>
+                                    <div class="flex items-baseline">
+                                        <span class="text-sm text-green-600 font-semibold">+8.7%</span>
+                                        <span class="ml-1 text-xs text-gray-500">from last month</span>
+                                    </div>
+                                </dd>
+                            </dl>
                         </div>
-
-                    </div>
-                    <div class="flex items-center space-x-5" >
-
-                        <svg wire:click="visit(5)" xmlns="http://www.w3.org/2000/svg" class="cursor-pointer h-9 bg-slate-50 rounded-full bg-green p-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                        </svg>
-
-
                     </div>
                 </div>
-                <table>
-
-                    <tr>
-                        <td class="mt-2 text-sm font-semibold   @if($this->item == 5) text-white @else text-slate-400 @endif dark:text-white capitalize  ">Number Of Rejected Clients</td>
-                        <td class="pl-2 mt-2 text-sm font-semibold spacing-sm  @if($this->item == 5) text-white @else text-slate-400 @endif  dark:text-white text-right">
-
-                            6666
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td class="mt-2 text-sm font-semibold   @if($this->item == 5) text-white @else text-slate-400 @endif dark:text-white capitalize  ">Total Amount</td>
-                        <td class="pl-2 mt-2 text-sm font-semibold spacing-sm  @if($this->item == 5) text-white @else text-slate-400 @endif  dark:text-white text-right">
-
-                            900 TZS
-                        </td>
-                    </tr>
-
-
-
-                </table>
-
             </div>
 
-
-            <div  class="metric-card  dark:bg-gray-900 border @if($this->item == 6) bg-red-200 border-red-200 dark:border-red-800  @else bg-white  border-gray-200 dark:border-gray-800 @endif rounded-lg p-4 max-w-72 w-full" >
-                <div class="flex justify-between items-center w-full">
+            <!-- Average Loan Amount -->
+            <div class="bg-white overflow-hidden shadow rounded-lg">
+                <div class="px-4 py-5 sm:p-6">
                     <div class="flex items-center">
-                        <div wire:loading wire:target="visit(6)" >
-                            <div class="flex items-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="animate-spin  h-5 w-5 mr-2 stroke-gray-400" fill="white" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-
-                                </svg>
-
-
-                                <p>Please wait...</p>
-                            </div>
-
+                        <div class="flex-shrink-0 bg-indigo-100 rounded-md p-3">
+                            <svg class="h-6 w-6 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
+                            </svg>
                         </div>
-                        <div wire:loading.remove wire:target="visit(6)">
-
-
-                            <div class="flex items-center text-l font-semibold spacing-sm text-green-800">Active Loans
-
-                            </div>
-
+                        <div class="ml-5 w-0 flex-1">
+                            <dl>
+                                <dt class="text-sm font-medium text-gray-500 truncate">Average Loan Amount</dt>
+                                <dd>
+                                    <div class="text-lg font-medium text-gray-900">TZS  {{ $loanAmount/12 }}</div>
+                                    <div class="flex items-baseline">
+                                        <span class="text-sm text-green-600 font-semibold">+3.2%</span>
+                                        <span class="ml-1 text-xs text-gray-500">from last month</span>
+                                    </div>
+                                </dd>
+                            </dl>
                         </div>
-
-                    </div>
-                    <div class="flex items-center space-x-5" >
-
-                        <svg wire:click="visit(6)" xmlns="http://www.w3.org/2000/svg" class="cursor-pointer h-9 bg-slate-50 rounded-full bg-green p-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                        </svg>
-
-
                     </div>
                 </div>
-
-
-
-                <table>
-
-                    <tr>
-                        <td class="mt-2 text-sm font-semibold   @if($this->item == 6) text-white @else text-slate-400 @endif dark:text-white capitalize  ">Total Active Loan</td>
-                        <td class="pl-2 mt-2 text-sm font-semibold spacing-sm  @if($this->item == 6) text-white @else text-slate-400 @endif  dark:text-white text-right">
-
-                            {{$this->activeLoan}}
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td class="mt-2 text-sm font-semibold   @if($this->item == 6) text-white @else text-slate-400 @endif dark:text-white capitalize  ">Total Amount</td>
-                        <td class="pl-2 mt-2 text-sm font-semibold spacing-sm  @if($this->item == 6) text-white @else text-slate-400 @endif  dark:text-white text-right">
-
-                            {{number_format($this->totalActive)}} TZS
-                        </td>
-                    </tr>
-
-
-                </table>
             </div>
 
+            <!-- Repayment Rate -->
+            <div class="bg-white overflow-hidden shadow rounded-lg">
+                <div class="px-4 py-5 sm:p-6">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0 bg-yellow-100 rounded-md p-3">
+                            <svg class="h-6 w-6 text-yellow-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                        <div class="ml-5 w-0 flex-1">
+                            <dl>
+                                <dt class="text-sm font-medium text-gray-500 truncate">Repayment Rate</dt>
+                                <dd>
+                                    <div class="text-lg font-medium text-gray-900">94.7%</div>
+                                    <div class="flex items-baseline">
+                                        <span class="text-sm text-green-600 font-semibold">+1.2%</span>
+                                        <span class="ml-1 text-xs text-gray-500">from last month</span>
+                                    </div>
+                                </dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
+      
 
+        <!-- Second Row of Charts/Tables -->
+        <div class="grid grid-cols-1 gap-5 lg:grid-cols-1 mb-8">
+            <!-- Recent Applications -->
+            <div class="bg-white shadow rounded-lg">
+                <div class="px-4 py-5 border-b border-gray-200 sm:px-6 flex justify-between items-center">
+                    <h3 class="text-lg font-medium leading-6 text-gray-900">Recent Loan Applications</h3>
+                    <a href="#" class="text-sm font-medium text-green-600 hover:text-green-500">View all</a>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Applicant
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Vehicle
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Amount
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Status
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+
+                        @forelse($applicationList as $application)
+
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm font-medium text-gray-900">{{ $application->first_name.' '.$application->last_name }}</div>
+                                    <div class="text-sm text-gray-500">{{ $application->created_at }}</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">{{ $application->make_and_model }}</div>
+                                    <div class="text-sm text-gray-500">{{ $application->year_of_manufacture }}</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">TZS {{  number_format($application->loan_amount,2) }}</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                                        {{ $application->application_status }}
+                                    </span>
+                                </td>
+                            </tr>
+
+
+                            @empty
+
+                          no data
+
+                            @endforelse
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+          
+        </div>
+
+     
     </div>
 
 </div>

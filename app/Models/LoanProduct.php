@@ -22,4 +22,9 @@ class LoanProduct extends Model
         return $amount_range->principle_min_value ."-". $amount_range->principle_max_value;
     }
 
+
+    public function lender(){
+        return $this->belongsTo(Lender::class, 'institution_id');
+    }   
+
 }

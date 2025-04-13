@@ -22,6 +22,7 @@
          @case('6')
             <livewire:reports.reports />
           @break
+
           @case('7')
             <livewire:application-summary.application-summary/>
 
@@ -33,7 +34,7 @@
             <livewire:settings.settings />
             @break
 
-            
+        
             @case('10')
             
              <livewire:product-management.product-dashboard />
@@ -42,10 +43,16 @@
 
 
             @case('11')
-            
             <livewire:document.doculemt-view />
+           @break
+
+
+           @case('12')
+            
+            <livewire:settings.partner-onboarding/>
 
            @break
+
 
 
             @case('14')

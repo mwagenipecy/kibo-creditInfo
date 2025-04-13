@@ -7,6 +7,8 @@ use Livewire\WithFileUploads;
 use Livewire\WithPagination;
 use App\Models\Resource as Document;
 use Illuminate\Support\Facades\Storage;
+use App\Models\Lender;
+
 class DoculemtView extends Component
 {
 
@@ -46,24 +48,43 @@ class DoculemtView extends Component
     
     public function render()
     {
-        $documents = Document::where('name', 'like', '%' . $this->searchTerm . '%')
-                        ->orWhere('descriptions', 'like', '%' . $this->searchTerm . '%')
-                        ->orWhere('lender_id', 'like', '%' . $this->searchTerm . '%')
-                        ->orderBy('id', 'desc')
-                        ->paginate(10);
-        
-        // Get counts for the dashboard
+        $search = $this->searchTerm;
+    
+        // Search lenders separately (for dropdown, suggestions, etc.)
+        $lenders = [];
+        if (strlen($search) >= 2) {
+            $lenders = Lender::where('name', 'like', '%' . $search . '%')
+                ->orderBy('name')
+                ->limit(10)
+                ->get();
+        }
+    
+        // Search documents along with lender name
+        $documents = Document::with('lender') // assuming a Document belongsTo Lender
+            ->where(function ($query) use ($search) {
+                $query->where('resources.name', 'like', '%' . $search . '%')
+                    ->orWhere('resources.descriptions', 'like', '%' . $search . '%')
+                    ->orWhereHas('lender', function ($q) use ($search) {
+                        $q->where('name', 'like', '%' . $search . '%');
+                    });
+            })
+            ->orderBy('resources.id', 'desc')
+            ->paginate(10);
+    
+        // Document stats
         $totalDocuments = Document::count();
         $activeDocuments = Document::where('status', 'Active')->count();
         $inactiveDocuments = Document::where('status', 'Inactive')->count();
-        
+    
         return view('livewire.document.doculemt-view', [
             'documents' => $documents,
             'totalDocuments' => $totalDocuments,
             'activeDocuments' => $activeDocuments,
             'inactiveDocuments' => $inactiveDocuments,
+            'lenders' => $lenders,
         ]);
     }
+    
     
     public function resetInputFields()
     {
@@ -131,6 +152,7 @@ class DoculemtView extends Component
             $this->document->storeAs('public/documents', $fileName);
             
             $validatedData['path_url'] = $fileName;
+            $validatedData['lender_id']= auth()->user()->institution_id;
             
             Document::create($validatedData);
             session()->flash('message', 'Document added successfully!');

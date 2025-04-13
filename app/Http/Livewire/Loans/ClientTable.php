@@ -47,7 +47,9 @@ class ClientTable extends LivewireDatatable
     public function builder()
     {
 
-        return LoansModel::query()->where('client_number',session()->get('viewMemberLoan'));
+        dd(session()->get('viewMemberLoan'));
+
+        return LoansModel::query()->where('client_number',session()->get('viewMemberLoan'))->where('lender_id',auth()->user()->institution_id);
     }
 
 

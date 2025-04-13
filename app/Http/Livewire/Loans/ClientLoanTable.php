@@ -52,6 +52,7 @@ class ClientLoanTable extends LivewireDatatable
     public function builder()
      {
 
+
          if(ClientsModel::where('branch_id', auth()->user()->branch)->value('branch_id') == 25){
              return ClientsModel::query();
 

@@ -4,6 +4,7 @@ namespace App\Http\Livewire\Dashboard;
 
 use App\Models\ClientsModel;
 use App\Models\LoansModel;
+use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 
 class Commerce extends Component
@@ -29,9 +30,24 @@ class Commerce extends Component
 
 
 
+    public $loanAmount,$applicationList=[];
+    public function loadData(){
+
+        $this->loanAmount=DB::table('applications')->where('application_status','ACCEPTED')->sum('loan_amount');  
+        $this->activeLoan=DB::table('applications')->where('application_status','ACCEPTED')->count( );
+
+         $this->applicationList=DB::table('applications')->limit(5)->get();
+
+
+    }
+
+
+
     public function render()
     {
-        $this->activeLoan=LoansModel::where('status',"ACTIVE")->count();
+
+        $this->loadData();
+       // $this->activeLoan=LoansModel::where('status',"ACTIVE")->count();
         $this->totalActive=LoansModel::where('status',"ACTIVE")->sum('principle');
             
             

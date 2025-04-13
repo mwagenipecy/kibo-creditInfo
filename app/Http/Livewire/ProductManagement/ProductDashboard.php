@@ -130,6 +130,8 @@ class ProductDashboard extends Component
             'interest_tenure' => $this->interest_tenure,
             'interest_method' => $this->interest_method,
             'repayment_strategy' => $this->repayment_strategy,
+            'institution_id'=>auth()->user()->institution_id,
+           
         ], [
            
             'sub_product_name' => 'required|string|max:255',
@@ -145,6 +147,7 @@ class ProductDashboard extends Component
         ])->validate();
 
 
+
         
         try {
             if ($this->editMode) {
@@ -153,6 +156,7 @@ class ProductDashboard extends Component
                 $this->isOpen = false;
                 session()->flash('message', 'Loan product updated successfully.');
             } else {
+                $validatedData['institution_id'] = auth()->user()->institution_id;
                 LoanProduct::create($validatedData);
                 $this->isOpen = false;
 
@@ -194,11 +198,24 @@ class ProductDashboard extends Component
     {
         $searchTerm = '%' . $this->searchTerm . '%';
         
-        $loanProducts = LoanProduct::where('sub_product_name', 'like', $searchTerm)
-            ->orWhere('interest_tenure', 'like', $searchTerm)
-            ->orWhere('min_term', 'like', $searchTerm)
-            ->orderBy('id', 'desc')
-            ->paginate(10);
+        $loanProducts = LoanProduct::query()->
+       where('institution_id',auth()->user()->institution_id);
+
+
+        if ($this->searchTerm) {
+            $loanProducts = $loanProducts
+                ->where('sub_product_name', 'like', $searchTerm)
+                ->orWhere('sub_product_status', 'like', $searchTerm)
+                ->orWhere('principle_min_value', 'like', $searchTerm)
+                ->orWhere('principle_max_value', 'like', $searchTerm)
+                ->orWhere('min_term', 'like', $searchTerm)
+                ->orWhere('max_term', 'like', $searchTerm)
+                ->orWhere('interest_value', 'like', $searchTerm)
+                ->orWhere('interest_method', 'like', $searchTerm)
+                ->orWhere('repayment_strategy', 'like', $searchTerm);
+        }
+
+        $loanProducts = $loanProducts->paginate(10);
             
         return view('livewire.product-management.product-dashboard', [
             'loanProducts' => $loanProducts

@@ -28,7 +28,8 @@ class ClientsTable extends LivewireDatatable
     public function builder()
     {
 
-        return ClientsModel::query();
+
+        return ClientsModel::query()->where('lender_id',auth()->user()->institution_id);
     }
 
     public function viewClient($memberId){

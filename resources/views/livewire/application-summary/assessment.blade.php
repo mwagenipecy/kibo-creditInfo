@@ -41,37 +41,10 @@
 
     
 
-            <hr class="boder-b-0 my-6"/>
+          
 
 
 
-                <p for="stability" class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-400"> EXCEPTIONS </p>
-                <div id="stability" class="w-full bg-gray-50 rounded rounded-lg shadow-sm   p-1 mb-4" >
-                    <div class="w-full bg-white rounded rounded-lg shadow-sm" >
-
-
-                    <div id="imageGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 p-2">
-                    @forelse($images as $image)
-                    <img src="{{ asset($image->url) }}" alt="Image {{ $loop->iteration }}" class="w-full h-auto rounded-lg shadow-lg cursor-pointer">
-                @empty
-                    No image found 
-                @endforelse
-
-
-                       
-                    </div>
-
-
-
-                   </div>
-                </div>
-
-
-            <hr class="boder-b-0 my-6"/>
-
-
-
-            <div class="mt-2"></div>
 
 
 
@@ -81,10 +54,6 @@
 
 
         <div class="w-2/3">
-
-
-
-
             <p for="stability" class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-400 mt-4">ASSESSMENT</p>
             <div id="stability" class="w-full bg-gray-50 rounded rounded-lg shadow-sm   p-1 " >
                 <div class="w-full bg-white rounded rounded-lg shadow-sm   p-2 " >
@@ -470,244 +439,53 @@
 
 
 
-    <p for="stability3" class="block mb-2 mt-2 text-sm font-medium text-gray-900 dark:text-gray-400">LOAN REPAYMENT SCHEDULE</p>
-                <div id="stability3" class="w-full bg-gray-50 rounded rounded-lg shadow-sm   p-1 " >
-                    <div class="w-full bg-white rounded rounded-lg shadow-sm   p-2 " >
+  
 
-
-
-
-
-
-
-
-
-
-
-
-                    <div>
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
-        <h2 class="text-xl font-semibold mb-4 dark:text-white">Loan Calculator</h2>
-        
-        <!-- Input Form -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
-            <div>
-                <label for="principal" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Principal Amount</label>
-                <input wire:model.defer="principal" type="number" min="1" id="principal" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-            </div>
             
-            <div>
-                <label for="interestRate" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Interest Rate (%)</label>
-                <input wire:model.defer="interestRate" type="number" min="0" step="0.01" id="interestRate" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-            </div>
-            
-            <div>
-                <label for="tenure" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Tenure (Months/Periods)</label>
-                <input wire:model.defer="tenure" type="number" min="1" id="tenure" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-            </div>
-            
-            <div>
-                <label for="interestMethod" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Interest Method</label>
-                <select wire:model.defer="interestMethod" id="interestMethod" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                    <option value="reducing">Reducing Balance</option>
-                    <option value="flat">Flat Rate</option>
-                </select>
-            </div>
-            
-            <div>
-                <label for="paymentFrequency" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Payment Frequency</label>
-                <select wire:model.defer="paymentFrequency" id="paymentFrequency" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                    <option value="monthly">Monthly</option>
-                    <option value="daily">Daily</option>
+        <div class="mt-8 flex gap-4 justify-end items-right">
 
-                    <!-- <option value="quarterly">Quarterly</option>
-                    <option value="semi_annual">Semi-Annual</option>
-                    <option value="annual">Annual</option> -->
-                </select>
-            </div>
-            
-            <div>
-                <label for="startDate" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Start Date</label>
-                <input wire:model.defer="startDate" type="date" id="startDate" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-            </div>
-            
-            <div>
-                <label for="gracePeriod" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Grace Period (Months)</label>
-                <input wire:model.defer="gracePeriod" type="number" min="0" id="gracePeriod" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-            </div>
-        </div>
-        
-        <div class="mt-4">
-            <button wire:click="calculateSchedule" type="button" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                Calculate
-            </button>
-        </div>
+
+       
+       
+
+
+
+        @php
+    $applicationStatus = DB::table('applications')
+        ->where('id', session('applicationId'))
+        ->value('application_status');
+@endphp
+
+@if(in_array($applicationStatus, ['ACCEPTED', 'REJECTED']))
+    {{-- Application has already been processed --}}
+    <div class="px-4 py-2 text-sm text-gray-600 italic">
+        Application {{ strtolower($applicationStatus) }} on {{ 
+            DB::table('applications')
+                ->where('id', session('applicationId'))
+                ->value('updated_at') 
+        }}
     </div>
-    
-
-
-    <!-- Success Message - Green theme with Tailwind -->
-@if(session('success'))
-    <div class="flex items-center p-4 mb-4 rounded-lg bg-green-50 border-l-4 border-green-600">
-        <div class="flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-full bg-green-500 text-white">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-            </svg>
-        </div>
-        <div class="ml-4 flex-1">
-            <h4 class="text-lg font-medium text-green-800">Success!</h4>
-            <p class="text-green-700">{{ session('success') }}</p>
-        </div>
-        <button type="button" class="text-green-500 hover:text-green-800" onclick="this.parentElement.style.display='none'">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-            </svg>
+@else 
+    <div class="flex space-x-4">
+        <button 
+            wire:click="rejectApplication" 
+            class="px-4 py-2 bg-red-900 text-white rounded-lg hover:bg-red-700 transition-colors"
+        >
+            Reject Application
         </button>
-    </div>
-@endif
 
-<!-- Error Message with Tailwind CSS -->
-@if(session('error'))
-    <div class="flex items-center p-4 mb-4 rounded-lg bg-red-50 border-l-4 border-red-600">
-        <div class="flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-full bg-red-500 text-white">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-            </svg>
-        </div>
-        <div class="ml-4 flex-1">
-            <h4 class="text-lg font-medium text-red-800">Error</h4>
-            <p class="text-red-700">{{ session('error') }}</p>
-        </div>
-        <button type="button" class="text-red-500 hover:text-red-800" onclick="this.parentElement.style.display='none'">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-            </svg>
+        <button 
+            wire:click="acceptApplication" 
+            class="px-4 py-2 bg-green-900 text-white rounded-lg hover:bg-green-700 transition-colors"
+        >
+            Accept Application
         </button>
     </div>
 @endif
 
 
 
-    <!-- Results Summary -->
-    @if($scheduleData)
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
-        <h3 class="text-lg font-semibold mb-3 dark:text-white">Loan Summary</h3>
-        
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div class="bg-gray-50 dark:bg-gray-700 p-3 rounded">
-                <p class="text-sm text-gray-500 dark:text-gray-400">Principal Amount</p>
-                <p class="text-lg font-semibold dark:text-white">{{ number_format($this->principal, 2) }}</p>
-            </div>
-            
-            <div class="bg-gray-50 dark:bg-gray-700 p-3 rounded">
-                <p class="text-sm text-gray-500 dark:text-gray-400">Total Interest</p>
-                <p class="text-lg font-semibold dark:text-white">{{ number_format($scheduleData['footer']['total_interest'], 2) }}</p>
-            </div>
-            
-            <div class="bg-gray-50 dark:bg-gray-700 p-3 rounded">
-                <p class="text-sm text-gray-500 dark:text-gray-400">Total Payment</p>
-                <p class="text-lg font-semibold dark:text-white">
-                {{ number_format($scheduleData['footer']['total_payment'], 2) }}
-            
-            </p>
-            </div>
-            
-            <div class="bg-gray-50 dark:bg-gray-700 p-3 rounded">
-                <p class="text-sm text-gray-500 dark:text-gray-400">Interest Method</p>
-                <p class="text-lg font-semibold dark:text-white capitalize"> {{"Monthly" }} </p>
-            </div>
         </div>
-    </div>
-    
-    <!-- Repayment Schedule Table -->
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 overflow-x-auto">
-        <h3 class="text-lg font-semibold mb-3 dark:text-white">Repayment Schedule</h3>
-        
-        <table class="w-full table-auto border-collapse">
-            <thead>
-                <tr class="bg-gray-100 dark:bg-gray-700">
-                    <th class="text-left py-2 px-3 text-xs">Payment #</th>
-                    <th class="text-left py-2 px-3 text-xs">Date</th>
-                    <th class="text-right py-2 px-3 text-xs">Opening Balance</th>
-                    <th class="text-right py-2 px-3 text-xs">Payment</th>
-                    <th class="text-right py-2 px-3 text-xs">Principal</th>
-                    <th class="text-right py-2 px-3 text-xs">Interest</th>
-                    <th class="text-right py-2 px-3 text-xs">Closing Balance</th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse ($scheduleData['schedule'] as $index => $installment)
-                    <tr class="border-b dark:border-gray-600">
-                        <td class="text-xs text-slate-400 dark:text-white text-left py-1 px-2">
-                            {{ $index + 1 }}
-                        </td>
-                        <td class="text-xs text-slate-400 dark:text-white text-left py-1 px-2">
-                            {{ $installment['installment_date'] ?? '-' }}
-                        </td>
-                        <td class="text-xs text-slate-400 dark:text-white text-right py-1 px-2">
-                            {{ number_format((float)$installment['opening_balance'] ?? 0, 2) }}
-                        </td>
-                        <td class="text-xs text-slate-400 dark:text-white text-right py-1 px-2">
-                            {{ number_format((float)$installment['payment'] ?? 0, 2) }}
-                        </td>
-                        <td class="text-xs text-slate-400 dark:text-white text-right py-1 px-2">
-                            {{ number_format((float)$installment['principal'] ?? 0, 2) }}
-                        </td>
-                        <td class="text-xs text-slate-400 dark:text-white text-right py-1 px-2">
-                            {{ number_format((float)$installment['interest'] ?? 0, 2) }}
-                        </td>
-                        <td class="text-xs text-slate-400 dark:text-white text-right py-1 px-2">
-                            {{ number_format((float)$installment['closing_balance'] ?? 0, 2) }}
-                        </td>
-                    </tr>
-                @empty
-                    <tr>
-                        <td colspan="7" class="text-center text-slate-400 dark:text-white py-2">
-                            No schedule available.
-                        </td>
-                    </tr>
-                @endforelse
-            </tbody>
-            
-            <!-- Footer with totals -->
-            @if(isset($scheduleData['footer']))
-                <tfoot>
-                    <tr class="dark:bg-gray-800 font-bold text-xs bg-blue-100">
-                        <td class="text-sm text-black dark:text-white text-left py-2 px-3 text-xs">Total</td>
-                        <td class="text-sm text-black dark:text-white text-right py-2 px-3"></td>
-                        <td class="text-sm text-black dark:text-white text-right py-2 px-3"></td>
-                        <td class="text-sm text-black dark:text-white text-right py-2 px-3 text-xs">
-                            {{ number_format((float)$scheduleData['footer']['total_payment'] ?? 0, 2) }}
-                        </td>
-                        <td class="text-sm text-black dark:text-white text-right py-2 px-3 text-xs">
-                            {{ number_format((float)$scheduleData['footer']['total_principal'] ?? 0, 2) }}
-                        </td>
-                        <td class="text-sm text-black dark:text-white text-right py-2 px-3 text-xs">
-                            {{ number_format((float)$scheduleData['footer']['total_interest'] ?? 0, 2) }}
-                        </td>
-                        <td class="text-sm text-black dark:text-white text-right py-2 px-3 text-xs">
-                            {{ number_format((float)$scheduleData['footer']['final_closing_balance'] ?? 0, 2) }}
-                        </td>
-                    </tr>
-                </tfoot>
-            @endif
-        </table>
-    </div>
-    @endif
-</div>
-
-
-
-
-                    </div>
-                </div>
-
-            
-                <div class="mt-8 flex gap-4 justify-end items-right">
-                      <button wire:click="rejectApplication" class="px-4 py-2 bg-red-900 text-white rounded-lg hover:bg-red-700">Reject</button>
-
-                            <button wire:click="acceptApplication" class="px-4 py-2 bg-green-900 text-white rounded-lg hover:bg-green-700">Accept</button>
-                        </div>
 
 
 
@@ -764,34 +542,6 @@
         gauge.set(640); // Set an initial value, e.g., 640 for D1 - High Risk
         gauge.animationSpeed = 32;
     </script>
-
-
-
-<!-- Image Modal -->
-<div id="imageModal" class="fixed inset-0 bg-black bg-opacity-80 hidden items-center justify-center z-50">
-    <button onclick="closeModal()" class="absolute top-4 right-4 text-white text-4xl">&times;</button>
-    <img id="modalImage" src="" alt="Enlarged Image" class="max-w-4xl max-h-[90vh] rounded-lg shadow-2xl">
-</div>
-
-<script>
-           const modal = document.getElementById('imageModal');
-        const modalImage = document.getElementById('modalImage');
-
-        // Open Modal Listener (Using Event Delegation)
-        document.getElementById('imageGrid').addEventListener('click', (event) => {
-            if (event.target.tagName === 'IMG') {
-                modalImage.src = event.target.src;
-                modal.classList.remove('hidden');
-            }else{
-            alert('fff');
-            }
-        });
-
-        // Close Modal Listener
-        document.getElementById('imageModal').addEventListener('click', () => {
-            modal.classList.add('hidden');
-        });
-</script>
 
 
 
