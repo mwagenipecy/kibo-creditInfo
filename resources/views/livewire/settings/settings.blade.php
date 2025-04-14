@@ -268,32 +268,9 @@
                                     <input type="password" id="password_confirmation" wire:model.defer="password_confirmation" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-500 focus:ring-opacity-50">
                                 </div>
 
-                                <!-- User Role -->
-                                <div>
-                                    <label for="role" class="block text-sm font-medium text-gray-700">User Role</label>
-                                    <select id="role" wire:model.defer="role" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-500 focus:ring-opacity-50">
-                                        <option value="">Select a role</option>
-                                        <option value="admin">Administrator</option>
-                                        <option value="manager">Manager</option>
-                                        <option value="user">Regular User</option>
-                                    </select>
-                                    @error('role') 
-                                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                    @enderror
-                                </div>
+                                
 
-                                <!-- Department -->
-                                <div>
-                                    <label for="department" class="block text-sm font-medium text-gray-700">Department</label>
-                                    <select id="department" wire:model.defer="department" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-500 focus:ring-opacity-50">
-                                        <option value="">Select a department</option>
-                                  
-
-                                    </select>
-                                    @error('department') 
-                                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                    @enderror
-                                </div>
+                    
 
                                 <!-- User Status -->
                                 <div>

@@ -270,7 +270,7 @@
                                     <div class="text-sm text-gray-500">{{ $lender['country'] }}</div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm text-gray-900">{{ $lender['contactPersonName'] }}</div>
+                                    <div class="text-sm text-gray-900">{{ $lender['contactPersonName'] }}  - {{ $lender['contactPersonEmail'] }}   </div>
                                     <div class="text-sm text-gray-500">{{ $lender['contactPersonPosition'] }}</div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
@@ -293,7 +293,6 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                     <div class="flex justify-end space-x-2">
-                                        <a href="#" class="text-green-600 hover:text-green-900" wire:click="viewLender({{ $lender['id'] }})">View</a>
                                         <a href="#" class="text-indigo-600 hover:text-indigo-900" wire:click="editLender({{ $lender['id'] }})">Edit</a>
                                         @if($lender['status'] === 'PENDING')
                                             <a href="#" class="text-green-600 hover:text-green-900" wire:click="approveLender({{ $lender['id'] }})">Approve</a>
@@ -467,7 +466,6 @@
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                             <div class="flex justify-end space-x-2">
-                                <a href="#" class="text-green-600 hover:text-green-900" wire:click="viewCarDealer({{ $dealer->id }})">View</a>
                                 <a href="#" class="text-indigo-600 hover:text-indigo-900" wire:click="editCarDealer({{ $dealer->id }})">Edit</a>
                                 @if($dealer->status === 'PENDING')
                                     <a href="#" class="text-green-600 hover:text-green-900" wire:click="approveCarDealer({{ $dealer->id }})">Approve</a>

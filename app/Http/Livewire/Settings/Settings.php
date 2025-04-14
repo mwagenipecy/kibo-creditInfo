@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Validation\Rules\Password;
 use Livewire\Component;
+use App\Services\UserService;
+
 use Livewire\WithFileUploads;
 
 class Settings extends Component
@@ -71,6 +73,13 @@ class Settings extends Component
     public $accounts;
     public $user;
 
+
+    protected $userService;
+    
+
+
+
+
     protected $rules = [
         'name' => 'required|string|max:255',
         'email' => 'required|string|email|max:255|unique:users,email',
@@ -80,7 +89,7 @@ class Settings extends Component
             'regex:/^(\+255|0)[1-9]\d{8}$/',
             'unique:users,phone_number'
         ],
-        'department' => 'required'
+        'department' => 'nullable'
     ];
 
     protected $listeners = [
@@ -102,14 +111,17 @@ class Settings extends Component
             ->where('user_id', Auth::user()->id)
             ->get();
         $this->password = "";
+
     }
 
     /**
      * Mount component and load initial data
      */
-    public function mount()
+    public function mount(UserService $userService)
     {
         $this->loadDepartments();
+        $this->userService = $userService;
+
     }
 
     /**
@@ -187,54 +199,61 @@ class Settings extends Component
      */
     public function createUser(): void
     {
+
         // Validate form data
         $this->validate();
+
+
+
+        try{
+
+
+
+      
 
         // Create new user
         $user = new User();
         $user->name = $this->name;
         $user->email = $this->email;
         $user->phone_number = $this->phone_number;
-        $user->status = 'PENDING';
+        $user->status = 'ACTIVE';
         $user->department = $this->department;
         $user->password = bcrypt($this->password);
         $user->otp_time = now();
         $user->verification_status = '0';
+
+        $user->department=1;
         
         if ($user->save()) {
             // Create approval request
-            $update_value = approvals::updateOrCreate(
-                [
-                    'process_id' => $user->id,
-                    'user_id' => Auth::user()->id
-                ],
-                [
-                    'institution' => '',
-                    'process_name' => 'addUser',
-                    'process_description' => Auth::user()->name.' has requested to add a User - '.$this->name,
-                    'approval_process_description' => '',
-                    'process_code' => '30',
-                    'process_id' => $user->id,
-                    'process_status' => 'PENDING',
-                    'approval_status' => 'PENDING',
-                    'user_id'  => Auth::user()->id,
-                    'team_id'  => ''
-                ]
-            );
+           
 
             $this->newuser = $user->id;
             $this->showRoles = true;
             Session::put('newuser', $user->id);
         }
 
-        // Set success message
-        session()->flash('message', 'User created, awaiting approval');
-        session()->flash('alert-class', 'alert-success');
 
-        // Reset form fields
-        $this->resetRegistrationFields();
-        $this->closeModal();
-        $this->render();
+         // Set success message
+         session()->flash('message', 'User created, awaiting approval');
+         session()->flash('alert-class', 'alert-success');
+ 
+         // Reset form fields
+         $this->resetRegistrationFields();
+         $this->closeModal();
+         $this->render();
+
+
+
+    }
+        catch (\Exception $e) {
+            session()->flash('error', 'Error creating user: ' . $e->getMessage());
+
+            dd($e->getMessage());
+            return;
+        }
+
+       
     }
 
     /**
@@ -268,12 +287,36 @@ class Settings extends Component
             $user->name = $this->name;
             $user->email = $this->email;
             $user->phone_number = $this->phone_number;
-            $user->status = 'PENDING';
+            $user->status = 'ACTIVE';
             $user->department = $this->department;
             $user->password = bcrypt($this->password);
             $user->profile_photo_path = $profile_photo_path;
             $user->otp_time = now();
+            $user->department=1;
+
             $user->verification_status = '0';
+
+         //   $user->save();
+
+
+            $data=[
+                'name'=>$this->name,
+                'email'=>$this->email,
+                'password'=>$this->password,
+                'phone_number'=>$this->phone_number,
+                // 'department'=>$this->department,
+                'profile_photo_path'=>$profile_photo_path,
+                'status'=>'ACTIVE',
+                'otp_time'=>now(),
+                'verification_status'=>'0',
+                'department'=>1,
+                $user->verification_status = '0',
+
+
+            ];
+            $userService= new UserService();
+            $user = $userService->createUser($data, true);
+            
             
          
             
@@ -341,26 +384,7 @@ class Settings extends Component
                 $action = 'deleteUser';
             }
 
-            // Create approval request
-            approvals::updateOrCreate(
-                [
-                    'process_id' => $this->userSelected,
-                    'user_id' => Auth::user()->id
-                ],
-                [
-                    'institution' => '',
-                    'process_name' => $action,
-                    'process_description' => $this->permission.' user - '.$user->name,
-                    'approval_process_description' => '',
-                    'process_code' => '29',
-                    'process_id' => $this->userSelected,
-                    'process_status' => $this->permission,
-                    'approval_status' => 'PENDING',
-                    'user_id'  => Auth::user()->id,
-                    'team_id'  => '',
-                    'edit_package'=> null
-                ]
-            );
+           
 
             Session::flash('message', 'Status change request submitted. Awaiting approval.');
             Session::flash('alert-class', 'alert-success');
@@ -406,25 +430,7 @@ class Settings extends Component
         ];
 
         // Create approval request
-        approvals::updateOrCreate(
-            [
-                'process_id' => $this->pendinguser,
-                'user_id' => Auth::user()->id
-            ],
-            [
-                'institution' => '',
-                'process_name' => 'editUser',
-                'process_description' => 'A request to edit a ROLE of user - '.User::where('id', $this->pendinguser)->value('name'),
-                'approval_process_description' => '',
-                'process_code' => '27',
-                'process_id' => $this->pendinguser,
-                'process_status' => 'PENDING',
-                'approval_status' => 'PENDING',
-                'user_id'  => Auth::user()->id,
-                'team_id'  => '',
-                'edit_package'=> json_encode($data),
-            ]
-        );
+      
 
         // Reset fields
         $this->pendinguser = null;

@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Session;
 use Livewire\Component;
 use Livewire\WithFileUploads;
+use App\Services\UserService;
 
 class PartnerOnboarding extends Component
 {
@@ -655,17 +656,12 @@ public function render()
 
 
               
-                User::create([
+              
 
-                    'name'=>$lender->contact_person_name,
-                    'email'=>$lender->contact_person_email,
-                    'phone_number'=>$lender->contact_person_phone,
-                    'password'=>Hash::make('password'),
-                    'department'=>2,
-                    'status'=>'ACTIVE',
-                    'institution_id'=>$lender->id,
 
-                ]);
+
+
+             
 
 
                 /// send email TODO 
@@ -895,37 +891,22 @@ public function render()
                     $dealer->status = 'PENDING';
                     $dealer->save();
 
-                    
+              
+   
                 }catch(\Exception $e){
 
                     dd("saved".$e->getMessage());
                     
-
                 }
           
 
                 try{
                   
 
-                    User::create([
-
-                        'name'=>$dealer->contactPersonName,
-                        'email'=>$dealer->contactPersonEmail,
-                        'phone_number'=>$dealer->contactPersonPhone,
-                        'password'=>Hash::make('password'),
-                        'department'=>2,
-                        'status'=>'ACTIVE',
-                        'institution_id'=>$dealer->id,
-    
-                    ]);
-    
-                   
-                    
                     // Save documents
                     $this->savePartnerDocuments($dealer->id, 'car_dealer');
                     
                   
-                    
                     // Log activity
                     $this->logActivity(
                         'car_dealer_created',
@@ -965,6 +946,7 @@ public function render()
     {
 
         return [
+
             'name' => $this->name,
             'business_registration_number' => $this->businessRegistrationNumber,
             'tax_identification_number' => $this->taxIdentificationNumber,
@@ -1093,16 +1075,24 @@ public function render()
             $lender->save();
             
             // Update approval record
-            $approval = Approvals::where('process_id', $id)
-                ->where('process_name', 'addLender')
-                ->where('approval_status', 'PENDING')
-                ->first();
-                
-            if ($approval) {
-                $approval->process_status = 'APPROVED';
-                $approval->approval_status = 'APPROVED';
-                $approval->save();
-            }
+            $data=[
+
+                'name'=>$lender->contact_person_name,
+                'email'=>$lender->contact_person_email,
+                'phone_number'=>$lender->contact_person_phone,
+               
+                'department'=>2,
+                'status'=>'ACTIVE',
+                'institution_id'=>$lender->id,
+
+            ];
+
+            $userService= new UserService();
+            $user = $userService->createUser($data, true);
+            
+
+
+
             
             // Log activity
             $this->logActivity(
@@ -1216,22 +1206,33 @@ public function render()
      */
     public function approveCarDealer($id)
     {
+
+
+
         try {
             $dealer = CarDealer::findOrFail($id);
             $dealer->status = 'APPROVED';
+
+
             $dealer->save();
             
-            // Update approval record
-            $approval = Approvals::where('process_id', $id)
-                ->where('process_name', 'addCarDealer')
-                ->where('approval_status', 'PENDING')
-                ->first();
-                
-            if ($approval) {
-                $approval->process_status = 'APPROVED';
-                $approval->approval_status = 'APPROVED';
-                $approval->save();
-            }
+            
+            $data=[
+
+                'name'=>$dealer->contact_person_name,
+                'email'=>$dealer->contact_person_email,
+                'phone_number'=>$dealer->contact_person_phone,
+               // 'password'=>Hash::make('password'),
+                'department'=>3,
+                'status'=>'ACTIVE',
+                'institution_id'=>$dealer->id,
+
+            ];
+
+            $userService= new UserService();
+            $user = $userService->createUser($data, true);
+        
+
             
             // Log activity
             $this->logActivity(

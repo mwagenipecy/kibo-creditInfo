@@ -86,14 +86,14 @@
                 <form method="POST" action="{{ route('logout') }}" x-data >
                     @csrf
 
-                    <a class="font-medium text-sm text-indigo-500 hover:text-indigo-600 flex items-center py-1 mb-2 px-3"
-                       href="{{ route('logout') }}"
-                       @click.prevent="$root.submit();"
+                    <button class="font-medium text-sm text-indigo-500 hover:text-indigo-600 flex items-center py-1 mb-2 px-3"
+                      
+                      
                        @focus="open = true"
                        @focusout="open = false"
                     >
                         {{ __('Sign Out') }}
-                    </a>
+                    </button>
                 </form>
             </li>
 

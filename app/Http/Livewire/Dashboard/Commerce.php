@@ -33,10 +33,10 @@ class Commerce extends Component
     public $loanAmount,$applicationList=[];
     public function loadData(){
 
-        $this->loanAmount=DB::table('applications')->where('application_status','ACCEPTED')->sum('loan_amount');  
-        $this->activeLoan=DB::table('applications')->where('application_status','ACCEPTED')->count( );
+        $this->loanAmount=DB::table('applications')->where('lender_id',auth()->user()->institution_id)->where('application_status','ACCEPTED')->sum('loan_amount');  
+        $this->activeLoan=DB::table('applications')->where('lender_id',auth()->user()->institution_id)->where('application_status','ACCEPTED')->count( );
 
-         $this->applicationList=DB::table('applications')->limit(5)->get();
+         $this->applicationList=DB::table('applications')->where('lender_id',auth()->user()->institution_id)->limit(5)->get();
 
 
     }

@@ -281,7 +281,7 @@
                                                 </svg>
                                             @endif
                                         </div>
-                                        <span class="text-sm   @if($this->tab_id == $item) text-white font-bold  @else  text-green-800 font-semibold  @endif ml-3  "  >{{ \App\Models\menus::where('ID', $item)->first()->menu_name  }}  - {{$item}}</span>
+                                        <span class="text-sm   @if($this->tab_id == $item) text-white font-bold  @else  text-green-800 font-semibold  @endif ml-3  "  >{{ \App\Models\menus::where('ID', $item)->first()->menu_name  }}  </span>
                                     </div>
                                     <!-- Icon -->
                                     <div class="flex shrink-0 ml-2 lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">
