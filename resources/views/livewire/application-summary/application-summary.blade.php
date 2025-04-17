@@ -252,6 +252,42 @@
 
 
 
+                            <div class="bg-gray-50 rounded-lg p-4 mb-6">
+                                <h4 class="text-sm font-semibold text-gray-700 mb-3">Application Document </h4>
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                   
+
+
+                                @forelse($applicationDocuments as $appDocument)
+    <button 
+        wire:click="download('{{ $appDocument->url }}')" 
+        type="button" 
+        class="w-full md:w-1/2 border-2 border-primary-100 px-6 py-2 text-xs font-medium uppercase leading-normal text-primary-700 transition duration-150 ease-in-out hover:border-primary-accent-200 hover:bg-secondary-50/50 focus:border-primary-accent-200 focus:bg-secondary-50/50 focus:outline-none focus:ring-0 active:border-primary-accent-200 motion-reduce:transition-none dark:border-primary-400 dark:text-primary-300 dark:hover:bg-blue-950 dark:focus:bg-blue-950" 
+        data-twe-ripple-init 
+        data-twe-ripple-color="light"
+    >
+        <div class="flex items-center justify-between w-full">
+            <span class="truncate max-w-[80%] overflow-hidden whitespace-nowrap">
+                {{ $appDocument->type }}
+            </span>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 flex-shrink-0 text-primary-700 dark:text-primary-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75v6a2.25 2.25 0 002.25 2.25h10.5A2.25 2.25 0 0019.5 18.75v-6m-3.75-3L12 15m0 0L8.25 9.75M12 15V3" />
+            </svg>
+        </div>
+    </button>
+@empty
+    <div class="text-sm text-gray-500">No documents available</div>
+@endforelse
+
+
+
+
+                                </div>
+                            </div>
+
+
+
+
                             <div>
     <!-- Other application details sections would be here -->
     

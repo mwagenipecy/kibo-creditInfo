@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire\ApplicationSummary;
 
+use App\Models\Attachment;
 use Livewire\Component;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
@@ -13,7 +14,8 @@ use App\Models\EmployerVerification;
 use App\Mail\EmployerVerificationRequest;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
-
+use Illuminate\Support\Facades\Storage;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 class ApplicationSummary extends Component
 {
     public $showEmployerMessageForm = false;
@@ -25,6 +27,8 @@ class ApplicationSummary extends Component
     public $isImageModalOpen = false;
 
     public $isApplicationModalOpen = false;
+
+    public $applicationDocuments=[];
 
     public $search;
     public $selectedApplication = null;
@@ -127,6 +131,9 @@ Regards,
     {
         $this->selectedApplication = Application::findOrFail($id);
 
+        $this->applicationDocuments=Attachment::where('loan_id', $this->selectedApplication->loan_id)->get();
+
+
         session()->put('applicationId', $id);
 
         $this->images = Image::where('loan_id', $this->selectedApplication->loan_id)
@@ -144,6 +151,18 @@ Regards,
 
         $this->messageToEmployer = $this->getDefaultMessage();
     }
+
+
+
+    public function download($filePath)
+    {
+        if (Storage::disk('public')->exists($filePath)) {
+            return Storage::disk('public')->download($filePath);
+        }
+
+        session()->flash('error', 'File not found.');
+    }
+
 
     public function downloadImage($imagePath)
     {
@@ -240,6 +259,7 @@ Regards,
     public function render()
     {
         $query = Application::where('lender_id', auth()->user()->institution_id);
+
 
         if ($this->statusFilter !== 'ALL') {
             $query->where('application_status', $this->statusFilter);

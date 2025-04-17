@@ -30,6 +30,7 @@
         </div>
     @endif
 
+
     <!-- Tab Navigation -->
     <div class="mb-6 mx-4  border-b border-gray-200">
         <nav class="flex -mb-px">
@@ -323,23 +324,47 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                             <div>
                                 <label for="purchase_price" class="block text-sm font-medium text-gray-700">Purchase Price (TZS)*</label>
-                                <input type="number" id="purchase_price" wire:model.defer="purchase_price" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 sm:text-sm">
+                                <input type="number" id="purchase_price" wire:model="purchase_price" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 sm:text-sm">
                                 @error('purchase_price') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
                             </div>
                             
                             <div>
-                                <label for="down_payment" class="block text-sm font-medium text-gray-700">Down Payment (TZS)*</label>
-                                <input type="number" id="down_payment" wire:model.defer="down_payment" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 sm:text-sm">
-                                @error('down_payment') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+                                <label for="down_payment_percent" class="block text-sm font-medium text-gray-700">Down Payment (%)*</label>
+                                <input type="number" id="down_payment_percent" wire:model="down_payment_percent" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 sm:text-sm">
+                                @error('down_payment_percent') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
                             </div>
                         </div>
+
+
+
+
+                        
+
+             
                         
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                            <div>
+                           
+                        @if($down_payment_percent && $purchase_price )
+
+
+
+                        @php
+                            $this->down_payment = $purchase_price * ($down_payment_percent / 100);
+                            $this->loan_amount = max(0, $purchase_price - $this->down_payment);
+                        @endphp
+
+
+
+                              <div>
                                 <label for="loan_amount" class="block text-sm font-medium text-gray-700">Loan Amount (TZS)*</label>
-                                <input type="number" id="loan_amount" wire:model.defer="loan_amount" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 sm:text-sm">
+                                <input type="number" id="loan_amount" wire:model="loan_amount" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 sm:text-sm">
                                 @error('loan_amount') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
-                            </div>
+                              </div>
+
+
+             
+
+                       @endif 
 
 
 
@@ -391,21 +416,21 @@
 
                 <!-- Step 4: Documentation -->
                 @if($applicationStep == 3)
-                    <div>
-                        <h2 class="text-xl font-bold text-gray-900 mb-6">Documentation & Review</h2>
-                        
-                        <div class="mb-6">
-                            <h3 class="text-lg font-medium text-gray-900 mb-4">Upload Required Documents</h3>
-                            <p class="text-sm text-gray-600 mb-2">Please upload clear images of the following documents:</p>
-                            <ul class="list-disc list-inside text-sm text-gray-600 mb-4 space-y-1">
-                                <li>Vehicle photos (exterior, interior, engine)</li>
-                                <li>National ID/Passport</li>
-                                <li>Proof of income (payslips, bank statements)</li>
-                                <li>Vehicle registration documents (if applicable)</li>
-                            </ul>
-                            
-                            <!-- File Upload -->
-                            <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
+<div>
+<h2 class="text-xl font-bold text-gray-900 mb-6">Documentation & Review</h2>
+
+<div class="mb-6">
+    <h3 class="text-lg font-medium text-gray-900 mb-4">Upload Required Documents</h3>
+    <p class="text-sm text-gray-600 mb-2">Please upload clear images of the following documents:</p>
+    <ul class="list-disc list-inside text-sm text-gray-600 mb-4 space-y-1">
+        <li>Vehicle photos (exterior, interior, engine)</li>
+        <li>National ID/Passport</li>
+        <li>Proof of income (payslips, bank statements)</li>
+        <li>Vehicle registration documents (if applicable)</li>
+    </ul>
+    
+    <!-- File Upload -->
+    <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
     <div class="space-y-1 text-center">
         <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
             <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
@@ -441,9 +466,9 @@
     </div>
 </div>
 
-                            @error('images') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
-                            @error('images.*') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
-                        </div>
+@error('images') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+@error('images.*') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+</div>
                         
                         <!-- Image Previews -->
                         @if(count($imagePreviews) > 0)
@@ -468,6 +493,87 @@
                                 </div>
                             </div>
                         @endif
+
+
+
+
+
+<!-- Payslip Upload -->
+<div class="mb-6">
+    <ul class="list-disc list-inside text-sm text-gray-600 mb-4 space-y-1">
+        <li>Proof of income (payslips, bank statements)</li>
+    </ul>
+
+    <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
+        <div class="space-y-1 text-center">
+            <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
+                <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
+                      stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+
+            <div class="flex text-sm text-gray-600 justify-center">
+                <label for="payslip" class="relative cursor-pointer rounded-md font-medium text-green-600 hover:text-green-500 focus-within:outline-none">
+                    <span>Upload files</span>
+                    <input
+                        id="payslip"
+                        type="file"
+                        wire:model="payslip"
+                        accept=".pdf,application/pdf"
+                        class="sr-only"
+                    >
+                </label>
+                <p class="pl-1">or drag and drop</p>
+            </div>
+
+            <p class="text-xs text-gray-500">PDF only, max 2MB</p>
+
+            @error('payslip')
+                <p class="text-xs text-red-500 mt-2">{{ $message }}</p>
+            @enderror
+        </div>
+    </div>
+</div>
+
+<!-- Application Form Upload -->
+<div class="mb-6">
+    <ul class="list-disc list-inside text-sm text-gray-600 mb-4 space-y-1">
+        <li>Filled Loan Application Document (Uploaded by lender)</li>
+    </ul>
+
+    <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
+        <div class="space-y-1 text-center">
+            <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
+                <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
+                      stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+
+            <div class="flex text-sm text-gray-600 justify-center">
+                <label for="applicationForm" class="relative cursor-pointer rounded-md font-medium text-green-600 hover:text-green-500 focus-within:outline-none">
+                    <span>Upload files</span>
+                    <input
+                        id="applicationForm"
+                        type="file"
+                        wire:model="applicationForm"
+                        accept=".pdf,application/pdf"
+                        class="sr-only"
+                    >
+                </label>
+                <p class="pl-1">or drag and drop</p>
+            </div>
+
+            <p class="text-xs text-gray-500">PDF only, max 2MB</p>
+
+            @error('applicationForm')
+                <p class="text-xs text-red-500 mt-2">{{ $message }}</p>
+            @enderror
+        </div>
+    </div>
+</div>
+
+
+
+
+
                         
                         <!-- Application Summary -->
                         <div class="mb-6">
@@ -542,6 +648,7 @@
                                 <li>Mileage affects the vehicle's value</li>
                             </ul>
                         </div>
+
                     @elseif($applicationStep == 2)
                         <div class="prose prose-sm text-gray-600">
                             <h4 class="text-base font-medium text-gray-800">Loan Information</h4>

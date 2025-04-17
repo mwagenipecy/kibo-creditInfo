@@ -11,19 +11,14 @@ class Admin extends Component
 {
 
 
-    public $user=[],$carDealer=[],$lender=[],$application=[],$notificationDummyData=[];
+    public $user=[],$carDealer=[],$lender=[],$application=[];
 
     public function loadData(){
 
         $this->user=User::count();
         $this->carDealer=CarDealer::count();
-
-        
         $this->lender=DB::table('lenders')->count();
         $this->application=DB::table('applications')->where('application_status','ACCEPTED')->count();
-        $this->notificationDummyData= DB::table('activity_logs')->get();
-
-
 
     }
 
@@ -32,6 +27,10 @@ class Admin extends Component
     {
 
         $this->loadData();
-        return view('livewire.dashboard.admin');
+        return view('livewire.dashboard.admin',
+        [
+            'notificationDummyData'=>DB::table('activity_logs')->paginate(6),
+
+        ]);
     }
 }

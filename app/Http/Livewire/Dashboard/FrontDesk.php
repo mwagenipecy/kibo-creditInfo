@@ -3,6 +3,7 @@
 namespace App\Http\Livewire\Dashboard;
 
 use App\Models\AccountsModel;
+use App\Models\Attachment;
 use App\Models\ClientsModel;
 use App\Models\Employee;
 use App\Models\general_ledger;
@@ -38,6 +39,10 @@ class FrontDesk extends Component
     public $region;
     public $district,$applicationStep=0;
     public $ward;
+
+    public $down_payment_percent;
+
+    public $payslip;
     public $email;
     public $isEmployee = false;
     public $employeeId;
@@ -89,6 +94,8 @@ class FrontDesk extends Component
     // Additional fields
     public $amount3,$hrEmail;
     public $lender;
+    public $applicationForm;
+
     public $step = 1; // For multi-step form
     public $totalSteps = 4;
 
@@ -278,6 +285,7 @@ private function validateApplicationStep()
                 $this->validate([
                     'images' => 'array',
                     'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
+                    'payslip'=>'required',
                 ]);
                 break;
         }
@@ -426,6 +434,58 @@ private function validateApplicationStep()
             session()->flash('error', 'An error occurred while uploading images: ' . $e->getMessage());
         }
     }
+
+
+
+
+
+
+    public function saveAttachment($loan_id, $type,$file)
+    {
+        try {
+            // Define allowed file extensions
+            $allowedExtensions = ['jpg', 'jpeg', 'png', 'pdf', 'docx'];
+    
+    
+            // Generate a unique reference number
+            $this->referenceNumber = time();
+    
+            
+    
+                // Get file extension
+                $extension = strtolower($file->getClientOriginalExtension());
+    
+                // Check if the extension is allowed
+                if (!in_array($extension, $allowedExtensions)) {
+                    throw new \Exception("Unsupported file type: .$extension");
+                }
+    
+                // Generate a unique filename
+                $filename = uniqid() . '.' . $extension;
+    
+                // Store the file in public storage under assets/attachment
+                $storedPath = $file->storeAs('assets/attachment', $filename, 'public');
+    
+                // Save to database
+                Attachment::create([
+                    'url' => $storedPath,
+                    'loan_id' => $loan_id,
+                    'type' => $type,
+                ]);
+        
+    
+            // Flash success message
+            session()->flash('success', 'Files uploaded successfully.');
+    
+        } catch (\Exception $e) {
+            // Log error and flash error message
+            \Log::error('File upload error: ' . $e->getMessage());
+            session()->flash('error', 'Error uploading files: ' . $e->getMessage());
+        }
+    }
+    
+
+
     
 
     // Main method to process loan application
@@ -546,7 +606,20 @@ private function validateApplicationStep()
         // Update image references
        
            $this->saveImages($loan_id);
-     
+
+
+           if($this->payslip){
+            $this->saveAttachment($loan_id, 'payslip',$this->payslip);
+
+           }
+
+
+
+           if($this->applicationForm){
+            $this->saveAttachment($loan_id, 'application_form',$this->applicationForm);
+
+           }
+                
         // Send email notification
         try {
             Mail::to($this->email)->send(new LoanProgress(
