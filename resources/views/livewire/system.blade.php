@@ -61,9 +61,11 @@
             @case('12')
             <livewire:reconciliation.reconciliation />
             @break
+
             @case('13')
-            <livewire:reports.reports />
+            <livewire:vehicle-management.vehicle-list />
             @break
+
             @case('49')
             <livewire:approvals.approvals-processor />
             @break

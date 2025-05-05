@@ -26,6 +26,7 @@
                          <livewire:dashboard.admin/>
 
                         @elseif(auth()->user()->department == 2)
+                        
                         <livewire:dashboard.commerce/>
                         @elseif(auth()->user()->department == 3)
 

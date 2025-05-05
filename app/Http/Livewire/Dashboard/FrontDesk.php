@@ -3,11 +3,13 @@
 namespace App\Http\Livewire\Dashboard;
 
 use App\Models\AccountsModel;
+use App\Models\Application;
 use App\Models\Attachment;
 use App\Models\ClientsModel;
 use App\Models\Employee;
 use App\Models\general_ledger;
 use App\Models\Lender;
+use App\Models\Loan_sub_products;
 use App\Models\LoanProduct;
 use App\Models\loans_schedules;
 use App\Exports\LoanRepayment;
@@ -43,6 +45,8 @@ class FrontDesk extends Component
     public $down_payment_percent;
 
     public $payslip;
+
+    public $bankStatement;
     public $email;
     public $isEmployee = false;
     public $employeeId;
@@ -74,6 +78,9 @@ class FrontDesk extends Component
     public $purchase_price;
     public $down_payment;
     public $loan_amount;
+    public $selectedApplication;
+
+    public $isModalOpen=false;
     public $loan_term;
 
     // Vehicle Ownership
@@ -112,6 +119,12 @@ public $startDate;
 public $gracePeriod = 0;
 public $paymentFrequency = 'monthly';
 public $scheduleData = null;
+
+public $qualifiedLenders=[];
+
+
+
+
 
 
 
@@ -208,6 +221,62 @@ public $activeTab = 'application';
 
 
 
+public function setPreviewModal(){
+
+
+    $this->principal=$this->loan_amount;
+    $this->interestRate= $this->interestRate ?? 3.5*12;
+    $this->tenure=$this->tenure ?? 12;
+    $this->startDate= $this->startDate ?? Carbon::today()->format('Y-m-d');
+    $this->interestMethod=$this->interestMethod ?? 'reducing';
+    $this->gracePeriod=$this->gracePeriod ?? 0;
+    $this->paymentFrequency=$this->paymentFrequency ?? 'monthly';
+
+
+    $service = new \App\Services\LoanScheduleService();
+    $this->scheduleData = $service->generateLoanRepaymentSchedule(
+        $this->principal ,
+        $this->interestRate,
+        $this->tenure,
+        $this->startDate,
+        $this->interestMethod,
+        $this->gracePeriod,
+        $this->paymentFrequency
+    );
+    
+    // Also assign to calculatorScheduleData for the template to use
+    $this->calculatorScheduleData = $this->scheduleData;
+
+
+    $this->isModalOpen=true;
+}
+
+
+public function updatedTenure($tenure)
+{
+    $tenure = is_null($tenure) ? 0 : max(0, $tenure); // convert null to 0, disallow less than 0
+    $this->tenure = $tenure;
+    $this->setPreviewModal();
+}
+
+public function updatedInterestRate($interestRate)
+{
+    $interestRate = is_null($interestRate) ? 0 : max(0, $interestRate); // convert null to 0, disallow less than 0
+    $this->interestRate = $interestRate;
+    $this->setPreviewModal();
+}
+
+
+public function updatedInterestMethod($interestMethod)
+{
+    $this->interestMethod = $interestMethod ?? 'reducing'; // default to 'reducing' if null
+    $this->setPreviewModal();
+}
+
+
+
+
+
 
 public function nextApplicationStep()
 {
@@ -285,7 +354,9 @@ private function validateApplicationStep()
                 $this->validate([
                     'images' => 'array',
                     'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
-                    'payslip'=>'required',
+                    'payslip'=>'nullable|mimes:pdf|max:2048',
+                    'bankStatement'=>'required'
+
                 ]);
                 break;
         }
@@ -614,6 +685,13 @@ private function validateApplicationStep()
            }
 
 
+           if($this->bankStatement){
+            $this->saveAttachment($loan_id, 'bankStatement',$this->bankStatement);
+
+
+           }
+
+
 
            if($this->applicationForm){
             $this->saveAttachment($loan_id, 'application_form',$this->applicationForm);
@@ -665,7 +743,17 @@ private function validateApplicationStep()
         $this->amount3 = $this->amount3 ?: null;
 
 
+        // for testing 
+        $this->selectedApplication = Application::findOrFail(23);
+
+        $this->qualifiedLenders = Loan_sub_products::take(9)->get();
+
+
         $this->lenderList=Lender::get();
+
+
+
+       
 
         if($this->lender){
 

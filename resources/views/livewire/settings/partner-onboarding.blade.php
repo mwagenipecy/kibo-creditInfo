@@ -146,7 +146,9 @@
 
 
         <!-- Car Dealer Option -->
-<div class="relative rounded-lg border border-gray-300 bg-white px-6 py-5 shadow-sm hover:border-gray-400 hover:ring-1 hover:ring-gray-400 focus-within:ring-2 focus-within:ring-green-500 focus-within:ring-offset-2 cursor-pointer" wire:click="selectPartnerType('carDealer')">
+         <div class="flex gap-6 space-x-4">
+
+         <div class="relative rounded-lg border border-gray-300 bg-white px-6 py-5 shadow-sm hover:border-gray-400 hover:ring-1 hover:ring-gray-400 focus-within:ring-2 focus-within:ring-green-500 focus-within:ring-offset-2 cursor-pointer" wire:click="selectPartnerType('carDealer')">
     <div class="flex items-center">
         <div class="flex-shrink-0 bg-green-100 rounded-md p-2">
             <svg class="h-6 w-6 text-green-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -159,6 +161,26 @@
         </div>
     </div>
 </div>
+
+
+<div class="relative rounded-lg border border-gray-300 bg-white px-6 py-5 shadow-sm hover:border-gray-400 hover:ring-1 hover:ring-gray-400 focus-within:ring-2 focus-within:ring-green-500 focus-within:ring-offset-2 cursor-pointer" wire:click="openLenderModal" >
+    <div class="flex items-center">
+        <div class="flex-shrink-0 bg-green-100 rounded-md p-2">
+            <svg class="h-6 w-6 text-green-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+        </div>
+        <div class="ml-3">
+            <h3 class="text-lg font-medium text-gray-900">Lenders</h3>
+            <p class="text-sm text-gray-500">New Lender / Lender Onboarding </p>
+        </div>
+    </div>
+</div>
+
+
+
+         </div>
+
 
 
 
@@ -466,9 +488,36 @@
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                             <div class="flex justify-end space-x-2">
-                                <a href="#" class="text-indigo-600 hover:text-indigo-900" wire:click="editCarDealer({{ $dealer->id }})">Edit</a>
+                            <a href="#" class="text-indigo-600 hover:text-indigo-900" 
+                                        wire:click="editCarDealer({{ $dealer->id }})"
+                                        wire:loading.attr="disabled"
+                                        wire:loading.class="opacity-50 cursor-wait"
+                                        wire:target="editCarDealer({{ $dealer->id }})">
+                                            <span wire:loading.remove wire:target="editCarDealer({{ $dealer->id }})">Edit</span>
+                                            <span wire:loading wire:target="editCarDealer({{ $dealer->id }})">
+                                                <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-indigo-600 inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                                </svg>
+                                                Loading...
+                                            </span>
+                                        </a>
+
                                 @if($dealer->status === 'PENDING')
-                                    <a href="#" class="text-green-600 hover:text-green-900" wire:click="approveCarDealer({{ $dealer->id }})">Approve</a>
+                                    <a href="#" class="text-green-600 hover:text-green-900" 
+                                    wire:click="approveCarDealer({{ $dealer->id }})"
+                                    wire:loading.attr="disabled"
+                                    wire:loading.class="opacity-50 cursor-wait"
+                                    wire:target="approveCarDealer({{ $dealer->id }})">
+                                        <span wire:loading.remove wire:target="approveCarDealer({{ $dealer->id }})">Approve</span>
+                                        <span wire:loading wire:target="approveCarDealer({{ $dealer->id }})">
+                                            <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-green-600 inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                            </svg>
+                                            Approving...
+                                        </span>
+                                    </a>
                                 @endif
                             </div>
                         </td>
@@ -619,7 +668,7 @@
                                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                             <div>
                                                 <label for="businessRegistrationNumber" class="block text-sm font-medium text-gray-700">Business Registration Number</label>
-                                                <input type="text" id="businessRegistrationNumber" wire:model.defer="businessRegistrationNumber" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-500 focus:ring-opacity-50" required>
+                                                <input type="number" id="businessRegistrationNumber" wire:model.defer="businessRegistrationNumber" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-500 focus:ring-opacity-50" required>
                                                 @error('businessRegistrationNumber') 
                                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                                 @enderror
@@ -627,7 +676,7 @@
                                             
                                             <div>
                                                 <label for="taxIdentificationNumber" class="block text-sm font-medium text-gray-700">Tax Identification Number</label>
-                                                <input type="text" id="taxIdentificationNumber" wire:model.defer="taxIdentificationNumber" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-500 focus:ring-opacity-50" required>
+                                                <input type="number" id="taxIdentificationNumber" wire:model.defer="taxIdentificationNumber" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-500 focus:ring-opacity-50" required>
                                                 @error('taxIdentificationNumber') 
                                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                                 @enderror
@@ -918,28 +967,27 @@
         <div class="space-y-6">
             <!-- Business Registration Certificate -->
             <div>
-                <label class="block text-sm font-medium text-gray-700">Business Registration Certificate</label>
-               
-          <div class="mt-1 flex items-center">
-    <!-- Hide the actual file input with CSS -->
-            <input type="file" id="businessRegistrationDoc" wire:model="businessRegistrationDoc" 
-                class="sr-only absolute" accept=".pdf,.jpg,.jpeg,.png">
-            
-            <!-- Make the label the clickable element -->
-            <label for="businessRegistrationDoc" class="cursor-pointer inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-25 transition ease-in-out duration-150">
-                Select File
-            </label>
-            
-            <!-- Show appropriate message based on state -->
-            @if ($businessRegistrationDoc)
-                <span class="ml-2 text-sm text-green-600">File selected: {{ $businessRegistrationDoc->getClientOriginalName() }}</span>
-            @elseif ($isEditMode && !$businessRegistrationDoc)
-                <span class="ml-2 text-sm text-gray-600">Current file will be retained</span>
-            @else
-                <span class="ml-2 text-sm text-gray-500">Required</span>
-            @endif
-          </div>
-
+    <label class="block text-sm font-medium text-gray-700">Business Registration Certificate</label>
+    
+    <div class="mt-1 flex items-center">
+        <!-- Remove absolute positioning, just keep sr-only -->
+        <input type="file" id="businessRegistrationDoc" wire:model="businessRegistrationDoc" 
+            class="sr-only" accept=".pdf,.jpg,.jpeg,.png">
+        
+        <!-- Label as clickable element -->
+        <label for="businessRegistrationDoc" class="cursor-pointer inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-25 transition ease-in-out duration-150">
+            Select File
+        </label>
+        
+        <!-- Show appropriate message based on state -->
+        @if ($businessRegistrationDoc)
+            <span class="ml-2 text-sm text-green-600">File selected: {{ $businessRegistrationDoc->getClientOriginalName() }}</span>
+        @elseif ($isEditMode && !$businessRegistrationDoc)
+            <span class="ml-2 text-sm text-gray-600">Current file will be retained</span>
+                    @else
+                        <span class="ml-2 text-sm text-gray-500">Required</span>
+                    @endif
+                </div>
 
                 <div wire:loading wire:target="businessRegistrationDoc" class="mt-1 text-sm text-gray-500">
                     Uploading...
@@ -948,6 +996,9 @@
                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                 @enderror
             </div>
+
+
+
             
             <!-- Tax Clearance Certificate -->
             <div>

@@ -252,6 +252,41 @@
 
 
 
+                          
+
+
+
+                            <div class="bg-amber-50 border-l-4 mb-4 border-amber-500 rounded-lg shadow-md p-5 transition-all duration-300 hover:shadow-lg">
+            <div class="flex flex-col sm:flex-row">
+                <div class="flex-shrink-0 mb-4 sm:mb-0 sm:mr-4">
+                    <div class="bg-amber-500 text-white w-12 h-12 rounded-full flex items-center justify-center">
+                        <i class="fas fa-exclamation-triangle text-xl"></i>
+                    </div>
+                </div>
+                <div class="flex-grow">
+                    <h5 class="text-amber-800 font-semibold text-lg mb-2">Action Required!</h5>
+                    <p class="text-gray-700 mb-3">If you want this application to proceed, please approve it. Otherwise, cancel the application by rejecting it with an appropriate reason.</p>
+                    <p class="text-gray-700"><span class="font-bold text-amber-700">Note:</span> This decision cannot be changed once submitted.</p>
+                    
+                    <div class="mt-4 flex justify-end space-x-3">
+                        <button class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition-colors font-medium focus:outline-none focus:ring-2 focus:ring-gray-400">
+                            Reject
+                        </button>
+                        <button class="px-4 py-2 bg-amber-500 text-white rounded hover:bg-amber-600 transition-colors font-medium focus:outline-none focus:ring-2 focus:ring-amber-500">
+                            Approve
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+
+
+
+
+
                             <div class="bg-gray-50 rounded-lg p-4 mb-6">
                                 <h4 class="text-sm font-semibold text-gray-700 mb-3">Application Document </h4>
                                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">

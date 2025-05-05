@@ -34,7 +34,9 @@ class User extends Authenticatable
         'department',
         'employeeId',
         'branch',
-        'institution_id'
+        'institution_id',
+        'address',
+        'phone_number'
         // add this line to the array
     ];
 

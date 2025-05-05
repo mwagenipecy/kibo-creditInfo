@@ -116,5 +116,24 @@ class CarDealer extends Model
         return $query->where('status', 'REJECTED');
     }
 
+
+
+    public function vehicles()
+    {
+        return $this->hasMany(Vehicle::class);
+    }
+    
+    public function reviews()
+    {
+        return $this->hasMany(DealerReview::class);
+    }
+    
+    // Accessors
+    public function getRatingAttribute()
+    {
+        return $this->reviews()->avg('rating') ?? 0;
+    }
+
+    
     
 }

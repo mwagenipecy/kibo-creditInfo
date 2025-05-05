@@ -146,7 +146,7 @@
                             
                             <div class="mb-4">
                                 <div class="flex items-center">
-                                    <input id="isEmployee" type="checkbox" wire:model="isEmployee" class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded">
+                                    <input id="isEmployee" type="checkbox" wire:model.live="isEmployee" class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded">
                                     <label for="isEmployee" class="ml-2 block text-sm text-gray-900">
                                         Is the client employed?
                                     </label>
@@ -367,6 +367,14 @@
                        @endif 
 
 
+                       <div class="ml-3">
+                    <p class="text-sm text-green-700">
+                        Preview  Estimated Loan Repayment <a href="#" wire:click="setPreviewModal()" class="font-medium underline"> Click Here </a> .
+                    </p>
+                    </div>
+
+
+
 
                             <div>
                                 <label for="loanProductId" class="block text-sm font-medium text-gray-700">Select Lender </label>
@@ -500,8 +508,9 @@
 
 <!-- Payslip Upload -->
 <div class="mb-6">
-    <ul class="list-disc list-inside text-sm text-gray-600 mb-4 space-y-1">
-        <li>Proof of income (payslips, bank statements)</li>
+   
+     <ul class="list-disc list-inside text-sm text-gray-600 mb-4 space-y-1">
+        <li>Proof of income ( bank statements)</li>
     </ul>
 
     <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
@@ -512,12 +521,12 @@
             </svg>
 
             <div class="flex text-sm text-gray-600 justify-center">
-                <label for="payslip" class="relative cursor-pointer rounded-md font-medium text-green-600 hover:text-green-500 focus-within:outline-none">
+                <label for="bankStatement" class="relative cursor-pointer rounded-md font-medium text-green-600 hover:text-green-500 focus-within:outline-none">
                     <span>Upload files</span>
                     <input
-                        id="payslip"
+                        id="bankStatement"
                         type="file"
-                        wire:model="payslip"
+                        wire:model="bankStatement"
                         accept=".pdf,application/pdf"
                         class="sr-only"
                     >
@@ -527,12 +536,54 @@
 
             <p class="text-xs text-gray-500">PDF only, max 2MB</p>
 
-            @error('payslip')
+            @error('bankStatement')
                 <p class="text-xs text-red-500 mt-2">{{ $message }}</p>
             @enderror
         </div>
     </div>
 </div>
+
+
+  @if($this->isEmployee)
+
+
+  <div class="mb-6">
+   
+   <ul class="list-disc list-inside text-sm text-gray-600 mb-4 space-y-1">
+      <li>Proof of income (payslips)</li>
+  </ul>
+
+  <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
+      <div class="space-y-1 text-center">
+          <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
+              <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
+                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+
+          <div class="flex text-sm text-gray-600 justify-center">
+              <label for="payslip" class="relative cursor-pointer rounded-md font-medium text-green-600 hover:text-green-500 focus-within:outline-none">
+                  <span>Upload files</span>
+                  <input
+                      id="payslip"
+                      type="file"
+                      wire:model="payslip"
+                      accept=".pdf,application/pdf"
+                      class="sr-only"
+                  >
+              </label>
+              <p class="pl-1">or drag and drop</p>
+          </div>
+
+          <p class="text-xs text-gray-500">PDF only, max 2MB</p>
+
+          @error('payslip')
+              <p class="text-xs text-red-500 mt-2">{{ $message }}</p>
+          @enderror
+      </div>
+  </div>
+</div>
+
+  @endif 
 
 <!-- Application Form Upload -->
 <div class="mb-6">
@@ -883,10 +934,10 @@
                         <tfoot class="bg-gray-100">
                             <tr>
                                 <td colspan="2" class="px-3 py-2 whitespace-nowrap text-sm font-medium text-gray-900">Totals</td>
-                                <td class="px-3 py-2 whitespace-nowrap text-sm font-medium text-gray-900 text-right">{{ number_format($calculatorScheduleData['footer']['total_payment']) }}</td>
-                                <td class="px-3 py-2 whitespace-nowrap text-sm font-medium text-gray-900 text-right">{{ number_format($calculatorScheduleData['footer']['total_principal']) }}</td>
-                                <td class="px-3 py-2 whitespace-nowrap text-sm font-medium text-gray-900 text-right">{{ number_format($calculatorScheduleData['footer']['total_interest']) }}</td>
-                                <td class="px-3 py-2 whitespace-nowrap text-sm font-medium text-gray-900 text-right">{{ number_format($calculatorScheduleData['footer']['final_closing_balance']) }}</td>
+                                <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900">{{ number_format($calculatorScheduleData['footer']['total_payment']) }}</td>
+                                <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900">{{ number_format($calculatorScheduleData['footer']['total_principal']) }}</td>
+                                <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900">{{ number_format($calculatorScheduleData['footer']['total_interest']) }}</td>
+                                <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900">{{ number_format($calculatorScheduleData['footer']['final_closing_balance']) }}</td>
                             </tr>
                         </tfoot>
                     </table>
@@ -984,6 +1035,251 @@
         @endif
     </div>
 @endif
+
+
+
+
+
+
+
+
+
+
+@if($isModalOpen && $selectedApplication)
+    <div class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <!-- Background overlay -->
+            <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true" wire:click="closeApplicationModal"></div>
+
+            <!-- Modal panel -->
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+            <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-5xl sm:w-full">
+                <div class="bg-green-700 px-6 py-4 flex justify-between items-center">
+                    <h3 class="text-xl font-semibold text-white">Full Application Details</h3>
+                    <button wire:click="$toggle('isModalOpen')" class="text-white hover:text-gray-200 focus:outline-none">
+                        <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                
+                <div class="max-h-[70vh] overflow-y-auto p-6">
+                    <div class="grid grid-cols-1 gap-6">
+                        <!-- Application Status -->
+                        <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                            <div class="flex justify-between items-center">
+                                <h4 class="text-sm font-semibold text-gray-700">Application Status</h4>
+                               
+                            </div>
+                           
+                        </div>
+
+
+
+  
+
+
+                        
+                       
+                        
+                       
+
+
+
+                        <!-- Financial Information -->
+                            <div class="bg-white rounded-lg border border-gray-200 overflow-hidden">
+                                <div class="bg-gray-50 px-4 py-2 border-b border-gray-200">
+                                    <h4 class="text-sm font-semibold text-gray-700">Financial Information</h4>
+                                </div>
+                                <div class="p-4">
+                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                        <div class="bg-gray-50 p-3 rounded-lg">
+                                            <span class="text-xs text-gray-500">Purchase Price</span>
+                                            <div class="flex items-baseline">
+                                                <span class="text-lg font-bold text-gray-900">TZS {{ number_format($this->purchase_price, 2) }}</span>
+                                            </div>
+                                        </div>
+                                        <div class="bg-gray-50 p-3 rounded-lg">
+                                            <span class="text-xs text-gray-500">Down Payment</span>
+                                            <div class="flex items-baseline">
+                                                <span class="text-lg font-bold text-gray-900">TZS {{ number_format( $this->down_payment, 2) }}</span>
+                                                <span class="ml-1 text-xs text-gray-500">({{ round(($down_payment_percent)) }}%)</span>
+                                            </div>
+                                        </div>
+                                        <div class="bg-gray-50 p-3 rounded-lg">
+                                            <span class="text-xs text-gray-500">Loan Amount</span>
+                                            <div class="flex items-baseline">
+                                                <span class="text-lg font-bold text-gray-900">TZS {{ number_format(  $this->loan_amount, 2) }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+
+
+                                    <div class="mt-6 border-t border-gray-200 pt-4">
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div>
+                                                <h5 class="text-sm font-medium text-gray-700 mb-3">Loan Details</h5>
+                                                <div class="space-y-3">
+                                                    <div class="flex justify-between items-center bg-gray-50 p-2 rounded">
+                                                        <span class="text-xs text-gray-500">Loan Term</span>
+                                                        <span class="text-sm font-medium text-gray-900">
+                                                            <input type="number"  wire:model="tenure"
+                                                            
+                                                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 sm:text-sm"
+
+                                                            />
+                                                           
+
+                                                            
+                                                     </span>
+
+                                                    </div>
+                                                    <div class="flex justify-between items-center bg-gray-50 p-2 rounded">
+                                                        <span class="text-xs text-gray-500">Interest Rate p.a (%) </span>
+                                                        <span class="text-sm font-medium text-gray-900">
+                                                        <input type="number"  wire:model="interestRate"
+                                                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 sm:text-sm"
+
+                                                        />
+                                                       </span>
+                                                    </div>
+
+
+
+                                                    <div class="flex justify-between items-center bg-gray-50 p-2 rounded">
+                                                        <span class="text-xs text-gray-500">Interest Rate p.a (%) </span>
+                                                        <span class="text-sm font-medium text-gray-900">
+
+                                                    <select  wire:model="interestMethod" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 sm:text-sm">
+                                                        <option value="">-- Select Method --</option>
+                                                        <option value="reducing">Reducing </option>
+                                                        <option value="flat"> Flat  </option>
+                                                    </select>
+
+                                                </span>
+                                                    </div>
+
+             
+
+
+                                                </div>
+                                            </div>
+
+                                            <div>
+                                                <h5 class="text-sm font-medium text-gray-700 mb-3">Available Lenders </h5>
+                                                <div class="space-y-3">
+
+                                                 @forelse($qualifiedLenders as $qualified)
+
+
+                                                 <div class="flex justify-between items-center bg-gray-50 p-2 rounded">
+                                                        <span class="text-xs text-gray-500"> 
+
+                                                        {{optional($qualified->lender)->name  }} - 
+                                                        
+                                                        {{ $qualified->sub_product_name }}
+                                                    
+                                                    </span>
+                                                        <span class="text-sm font-medium text-gray-900">TZS {{ number_format( $qualified->principle_min_value, 2) }} - {{ number_format( $qualified->principle_max_value, 2) }}  </span>
+                                                    </div>
+
+
+                                                 @empty 
+
+                                                 <div class="flex justify-center items-center items-center bg-gray-50 p-2 rounded">
+                                                        <span class="text-xs text-gray-500">No available lenders for this </span>
+                                                    </div>
+
+                                                 @endforelse
+                                                    
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="mt-6 border-t border-gray-200 pt-4">
+                                        <h5 class="text-sm font-medium text-gray-700 mb-3">Payment Schedule</h5>
+                                        <div class="bg-gray-50 rounded-lg overflow-hidden border border-gray-200">
+                                            <div class="overflow-x-auto">
+                                                <table class="min-w-full divide-y divide-gray-200">
+                                                    <thead class="bg-gray-100">
+                                                        <tr>
+                                                            <th scope="col" class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Payment #</th>
+                                                            <th scope="col" class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Due Date</th>
+                                                            <th scope="col" class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Payment Amount</th>
+                                                            <th scope="col" class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Principal</th>
+                                                            <th scope="col" class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Interest</th>
+                                                            <th scope="col" class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Remaining Balance</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody class="bg-white divide-y divide-gray-200">
+                                                        
+
+
+                                                    @foreach($calculatorScheduleData['schedule'] as $index => $installment)
+
+                                                            <tr>
+                                                                <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900">{{ $index + 1 }}</td>
+                                                                <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900">{{ $installment['installment_date'] }}</td>
+                                                                <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900">TZS {{ number_format($installment['payment'],2) }}</td>
+                                                                <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900">TZS {{ number_format($installment['principal']) }}</td>
+                                                                <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900">TZS {{ number_format($installment['interest']) }}</td>
+                                                                <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900">TZS  {{ number_format($installment['closing_balance']) }} </td>
+                                                            </tr>
+                                                            @endforeach
+
+
+                                                    </tbody>
+
+                                                    <tfoot class="bg-gray-100">
+                                                        <tr>
+                                                            <td colspan="2" class="px-3 py-2 whitespace-nowrap text-sm font-medium text-gray-900">Totals</td>
+                                                            <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900">{{ number_format($calculatorScheduleData['footer']['total_payment']) }}</td>
+                                                            <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900">{{ number_format($calculatorScheduleData['footer']['total_principal']) }}</td>
+                                                            <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900">{{ number_format($calculatorScheduleData['footer']['total_interest']) }}</td>
+                                                            <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900">{{ number_format($calculatorScheduleData['footer']['final_closing_balance']) }}</td>
+                                                        </tr>
+                                                    </tfoot>
+
+
+
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    
+                                </div>
+                            </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                        
+                    </div>
+                </div>
+
+            </div>
+            
+            
+        </div>
+    </div>
+    @endif
+
+
+
 
 
 

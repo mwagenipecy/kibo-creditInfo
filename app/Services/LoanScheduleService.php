@@ -142,7 +142,7 @@ class LoanScheduleService
                 'opening_balance' => round($openingBalance, 2),
                 'payment' => round($payment, 2),
                 'principal' => round($principal, 2),
-                'interest' => round($interest, 2),
+                'interest' => round($interest, 4),
                 'closing_balance' => $remainingBalance
             ];
             
