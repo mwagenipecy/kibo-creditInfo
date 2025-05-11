@@ -2,7 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\API\StatementAnalysisController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -23,5 +23,27 @@ Route::post('bank_funds_transfer_request',[\App\Http\Controllers\InstitutionInfo
 //Route::get('bank_funds_transfer_request', function (){
 //    return 123;
 //});
+
+
+
+// Statement Analysis Routes
+Route::middleware('auth.manka.api')->prefix('statement-analysis')->group(function () {
+    // Store new statement analysis
+    Route::post('/', [StatementAnalysisController::class, 'store']);
+    
+    // Get statement analysis by ID
+    Route::get('/{id}', [StatementAnalysisController::class, 'show']);
+    
+    // Get by account number
+    Route::get('/account/search', [StatementAnalysisController::class, 'getByAccount']);
+    
+    // Get by special ID
+    Route::get('/special-id/search', [StatementAnalysisController::class, 'getBySpecialId']);
+    
+    // Get all analyses for a user
+    Route::get('/user/{userId}', [StatementAnalysisController::class, 'getByUser']);
+});
+
+
 
 
