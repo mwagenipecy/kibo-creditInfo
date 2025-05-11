@@ -3,6 +3,7 @@
 namespace App\Http\Livewire\ApplicationSummary;
 
 use App\Models\Attachment;
+use App\Models\VehicleImage;
 use Livewire\Component;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
@@ -16,6 +17,7 @@ use Illuminate\Support\Str;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\StreamedResponse;
+use function PHPUnit\Framework\isEmpty;
 class ApplicationSummary extends Component
 {
     public $showEmployerMessageForm = false;
@@ -127,18 +129,34 @@ Regards,
         $this->toggleEmployerMessageForm();
     }
 
+    public $statementData;
     public function selectApplication($id)
     {
         $this->selectedApplication = Application::findOrFail($id);
 
-        $this->applicationDocuments=Attachment::where('loan_id', $this->selectedApplication->loan_id)->get();
+        $this->applicationDocuments = Attachment::where('loan_id', $this->selectedApplication->loan_id)->get();
 
+        if ($this->applicationDocuments->isEmpty()) {
+            $this->applicationDocuments = Attachment::where('loan_id', $id)->get();
+        }
+        
 
         session()->put('applicationId', $id);
 
-        $this->images = Image::where('loan_id', $this->selectedApplication->loan_id)
-            ->pluck('url')
-            ->toArray();
+
+
+        if ($this->selectedApplication->loan_id) {
+            $this->images = Image::where('loan_id', $this->selectedApplication->loan_id)
+                ->pluck('url')
+                ->toArray();
+        }
+        
+        // If no images found for the loan, try fetching from vehicle images
+        if (empty($this->images) && $this->selectedApplication->vehicle_id) {
+            $this->images = VehicleImage::where('vehicle_id', $this->selectedApplication->vehicle_id)
+                ->pluck('image_url')
+                ->toArray();
+        }
 
         $latestVerification = EmployerVerification::where('application_id', $id)
             ->latest()
@@ -151,6 +169,80 @@ Regards,
 
         $this->messageToEmployer = $this->getDefaultMessage();
     }
+
+
+    public function show()
+    {
+        
+        // Option 1: Use a proper JSON string with correct formatting
+        $jsonString = <<<'JSON'
+{
+    "profile": {
+        "name": "255767582837",
+        "account": "255767582837",
+        "contacts": "255767582837",
+        "company": "Vodacom",
+        "currency": "Tanzanian Shilling",
+        "currency_code": "TZS",
+        "type": "mno",
+        "start_date": "2025-04-18T11:05:00",
+        "end_date": "2025-05-02T09:03:00",
+        "no_of_transactions": 17
+    },
+    "1d_analysis": {
+        "initial_info": {
+            "account_number": "255767582837", 
+            "first_date": "2025-04-18 11:05:00",
+            "last_date": "2025-05-02 09:03:00", 
+            "total_days": 14,
+            "total_active_days": 8
+        },
+        "customer_profile": {
+            "wallet_balance": 760,
+            "total_turnover": 617924,
+            "total_transactions": 17
+        },
+        "statement_check": {
+            "isvalid": true
+        }
+    },
+    "2d_analysis": {
+        "total_cash_inflow": 315000,
+        "cash_inflow": {
+            "bank_to_wallet": {
+                "total_amout": 75000,
+                "percentage_of_total": 23.81
+            },
+            "p2p_received": {
+                "total_amout": 40000,
+                "percentage_of_total": 12.7
+            }
+        },
+        "total_cash_outflow": 302924,
+        "cash_outflow": {
+            "p2p_sent": {
+                "total_amout": 180424,
+                "percentage_of_total": 59.56
+            }
+        }
+    },
+    "affordability_scores": {
+        "rank": 2,
+        "high": 19467,
+        "moderate": 14600,
+        "low": 9733
+    }
+}
+JSON;
+
+        // Parse the JSON string
+        $this->statementData = json_decode($jsonString, true);
+        
+        // If you already have the data as an array, you can skip the json_decode step
+        
+        // Pass the data to the view
+    }
+
 
 
 
@@ -256,10 +348,54 @@ Regards,
         $this->selectedApplication = null;
     }
 
+
+
+    public function actionFunction($status,$id){
+
+        if($status=="REJECTED"){
+
+            $stage="car_dealer";
+
+        }else{
+
+            $stage="statement_verification";
+        }
+
+        Application::find($id)->update([
+            'application_status'=>$status,
+            'stage_name'=>$stage,
+        
+        ]);
+        session()->flash('message',"successfully status changed to {$status}");
+    }
+
     public function render()
     {
-        $query = Application::where('lender_id', auth()->user()->institution_id);
+        $query = Application::query();
 
+        // get user institution id 
+
+        $this->show();
+
+        $userInstitutionid= auth()->user()->institution_id;
+
+        // user permission id 
+
+        $userPermissionId=auth()->user()->department;
+
+        // filter for lender is 2 and for car dealer is 3 
+
+        if($userPermissionId==3){
+
+            $query->whereIn('application_status',['pending'])
+            ->where('car_dealer_id',auth()->user()->institution_id);
+
+
+        }else{
+
+            $query->whereNotIn('application_status',['pending'])->where('lender_id', auth()->user()->institution_id);
+
+        }
 
         if ($this->statusFilter !== 'ALL') {
             $query->where('application_status', $this->statusFilter);

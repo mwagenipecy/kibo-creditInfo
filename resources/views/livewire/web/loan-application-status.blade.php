@@ -2,12 +2,12 @@
 <!-- resources/views/livewire/application-status.blade.php -->
 <div class="bg-white w-full">
     <!-- Breadcrumb -->
-    <div class="bg-gray-100 py-4 border-b border-gray-200">
+    <div class="bg-green-600 py-4 border-b border-gray-200">
         <div class="container mx-auto px-4">
             <nav class="flex" aria-label="Breadcrumb">
                 <ol class="inline-flex items-center space-x-1 md:space-x-3">
                     <li class="inline-flex items-center">
-                        <a href="" class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-green-600">
+                        <a href="" class="inline-flex items-center text-sm font-medium text-white hover:text-green-600">
                             <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path>
                             </svg>
@@ -16,18 +16,18 @@
                     </li>
                     <li>
                         <div class="flex items-center">
-                            <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                            <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                 <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
                             </svg>
-                            <a href=" " class="ml-1 text-sm font-medium text-gray-700 hover:text-green-600 md:ml-2">My Loan Applications</a>
+                            <a href=" " class="ml-1 text-sm font-medium text-white hover:text-green-600 md:ml-2">My Loan Applications</a>
                         </div>
                     </li>
                     <li aria-current="page">
                         <div class="flex items-center">
-                            <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                            <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                 <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
                             </svg>
-                            <span class="ml-1 text-sm font-medium text-gray-500 md:ml-2">Application #{{ $application->id }}</span>
+                            <span class="ml-1 text-sm font-medium text-white md:ml-2">Application #{{ $application->id }}</span>
                         </div>
                     </li>
                 </ol>
@@ -69,146 +69,137 @@
                 </div>
             </div>
             
-            <!-- Application Progress -->
             <div class="bg-white rounded-xl shadow-md p-6 mb-6">
-                <h2 class="text-xl font-bold text-gray-900 mb-6">Application Progress</h2>
-                
-                <div class="relative">
-                    <div class="absolute left-6 top-0 h-full w-0.5 bg-gray-200"></div>
-                    
-                    <div class="relative z-10 flex mb-8">
-                        <div class="flex-shrink-0 h-12 w-12 rounded-full bg-green-100 text-green-600 flex items-center justify-center border-4 border-white">
-                            <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                        </div>
-                        <div class="ml-4">
-                            <h3 class="text-lg font-medium text-gray-900">Application Submitted</h3>
-                            <p class="text-gray-600 mt-1">{{ $application->created_at->format('F d, Y \a\t h:i A') }}</p>
-                            <div class="mt-2 text-sm text-gray-700">
-                                Your application for a {{ $application->make_and_model }} has been submitted successfully to .
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="relative z-10 flex mb-8">
-                        <div class="flex-shrink-0 h-12 w-12 rounded-full
-                            {{ $application->employer_verification_sent ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-600' }}
-                            flex items-center justify-center border-4 border-white">
-                            @if($application->employer_verification_sent)
-                                <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                            @else
-                                <span class="text-lg font-bold">2</span>
-                            @endif
-                        </div>
-                        <div class="ml-4">
-                            <h3 class="text-lg font-medium text-gray-900">Employment Verification</h3>
-                            @if($application->employer_verification_sent)
-                                <p class="text-gray-600 mt-1">Email sent on {{ $application->employer_verification_sent_at->format('F d, Y') }}</p>
-                                <div class="mt-2 text-sm text-gray-700">
-                                    @if($application->employer_verified)
-                                        <div class="text-green-700">
-                                            <span class="font-medium">Verified on {{ $application->employer_verified_at->format('F d, Y') }}</span>
-                                            <p>Your employment has been successfully verified by your employer.</p>
-                                        </div>
-                                    @else
-                                        <div class="text-yellow-700">
-                                            <span class="font-medium">Pending verification</span>
-                                            <p>We're waiting for your employer to verify your employment details.</p>
-                                        </div>
-                                    @endif
-                                </div>
-                            @else
-                                <p class="text-gray-600 mt-1">Pending</p>
-                                <div class="mt-2 text-sm text-gray-700">
-                                    Employment verification email will be sent to your HR department soon.
-                                </div>
-                            @endif
-                        </div>
-                    </div>
-                    
-                    <div class="relative z-10 flex mb-8">
-                        <div class="flex-shrink-0 h-12 w-12 rounded-full
-                            {{ $application->application_status == 'approved' || $application->application_status == 'rejected' ? 
-                              ($application->application_status == 'approved' ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600') : 
-                              'bg-gray-100 text-gray-600' }}
-                            flex items-center justify-center border-4 border-white">
-                            @if($application->application_status == 'approved')
-                                <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                            @elseif($application->application_status == 'rejected')
-                                <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                            @else
-                                <span class="text-lg font-bold">3</span>
-                            @endif
-                        </div>
-                        <div class="ml-4">
-                            <h3 class="text-lg font-medium text-gray-900">Credit Assessment</h3>
-                            @if($application->application_status === 'approved')
-                                <p class="text-gray-600 mt-1">Completed on {{ $application->updated_at->format('F d, Y') }}</p>
-                                <div class="mt-2 text-sm text-green-700">
-                                    <span class="font-medium">Approved</span>
-                                    <p>Your loan application has been approved by {{ optional($application->lender)->name }}.</p>
-                                </div>
-                            @elseif($application->application_status === 'rejected')
-                                <p class="text-gray-600 mt-1">Completed on {{ $application->updated_at->format('F d, Y') }}</p>
-                                <div class="mt-2 text-sm text-red-700">
-                                    <span class="font-medium">Not Approved</span>
-                                    <p>We regret to inform you that your loan application was not approved. Please contact {{ optional($application->lender)->name }} for more information.</p>
-                                </div>
-                            @elseif($application->employer_verified)
-                                <p class="text-gray-600 mt-1">In Progress</p>
-                                <div class="mt-2 text-sm text-blue-700">
-                                    <span class="font-medium">Under Review</span>
-                                    <p>Your application is currently being reviewed by {{ optional($application->lender)->name }}. This process typically takes 1-3 business days.</p>
-                                </div>
-                            @else
-                                <p class="text-gray-600 mt-1">Pending</p>
-                                <div class="mt-2 text-sm text-gray-700">
-                                    <span class="font-medium">Waiting for Employment Verification</span>
-                                    <p>Your application will be assessed once your employment has been verified.</p>
-                                </div>
-                            @endif
-                        </div>
-                    </div>
-                    
-                    <div class="relative z-10 flex">
-                        <div class="flex-shrink-0 h-12 w-12 rounded-full
-                            {{ $application->application_status === 'approved' ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-600' }}
-                            flex items-center justify-center border-4 border-white">
-                            @if($application->application_status === 'approved')
-                                <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                            @else
-                                <span class="text-lg font-bold">4</span>
-                            @endif
-                        </div>
-                        <div class="ml-4">
-                            <h3 class="text-lg font-medium text-gray-900">Loan Disbursement</h3>
-                            @if($application->application_status === 'approved')
-                                <p class="text-gray-600 mt-1">Next Step</p>
-                                <div class="mt-2 text-sm text-gray-700">
-                                    <p>Please visit {{ optional($application->lender)->name }} to sign the loan agreement and complete the disbursement process.</p>
-                                    <a href="{{ route('loan.agreement', $application->id) }}" class="mt-2 inline-block text-green-600 hover:text-green-800 font-medium">
-                                        View Loan Agreement Details
-                                    </a>
-                                </div>
-                            @else
-                                <p class="text-gray-600 mt-1">Pending Approval</p>
-                                <div class="mt-2 text-sm text-gray-700">
-                                    <p>This step will be available after your loan application is approved.</p>
-                                </div>
-                            @endif
-                        </div>
-                    </div>
+    <h2 class="text-xl font-bold text-gray-900 mb-6">Application Progress</h2>
+
+    <div class="relative">
+        <div class="absolute left-6 top-0 h-full w-0.5 bg-gray-200"></div>
+
+        <!-- Step 1: Application Submitted -->
+        <div class="relative z-10 flex mb-8">
+            <div class="flex-shrink-0 h-12 w-12 rounded-full bg-green-100 text-green-600 flex items-center justify-center border-4 border-white">
+                <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+            </div>
+            <div class="ml-4">
+                <h3 class="text-lg font-medium text-gray-900">Application Submitted</h3>
+                <p class="text-gray-600 mt-1">{{ $application->created_at->format('F d, Y \a\t h:i A') }}</p>
+                <div class="mt-2 text-sm text-gray-700">
+                    Your request to finance a {{ $application->make_and_model }} has been submitted.
                 </div>
             </div>
+        </div>
+
+        <!-- Step 2: Car Dealer Approval -->
+        <div class="relative z-10 flex mb-8">
+            <div class="flex-shrink-0 h-12 w-12 rounded-full
+                {{ $application->stage_name=="statement_verification" ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-600' }}
+                flex items-center justify-center border-4 border-white">
+                @if($application->stage_name=="statement_verification" )
+                    <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4" />
+                    </svg>
+                @else
+                    <span class="text-lg font-bold">2</span>
+                @endif
+            </div>
+            <div class="ml-4">
+                <h3 class="text-lg font-medium text-gray-900">Car Dealer Approval</h3>
+                @if($application->stage_name=="statement_verification")
+                    <p class="text-gray-600 mt-1">Approved on {{ $application->updated_at->format('F d, Y') }}</p>
+                    <div class="mt-2 text-sm text-green-700">
+                        Your financing request has been approved by the dealer.
+                    </div>
+                @else
+                    <p class="text-gray-600 mt-1">Pending</p>
+                    <div class="mt-2 text-sm text-gray-700">
+                        Awaiting confirmation from the vehicle dealer.
+                    </div>
+                @endif
+            </div>
+        </div>
+
+        <!-- Step 3: Lender Review & Decision -->
+        <div class="relative z-10 flex mb-8">
+            <div class="flex-shrink-0 h-12 w-12 rounded-full
+                {{ in_array($application->application_status, ['approved', 'rejected']) ? 
+                    ($application->application_status == 'approved' ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600') : 
+                    'bg-gray-100 text-gray-600' }}
+                flex items-center justify-center border-4 border-white">
+                @if($application->application_status === 'approved')
+                    <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4" />
+                    </svg>
+                @elseif($application->application_status === 'rejected')
+                    <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />
+                    </svg>
+                @else
+                    <span class="text-lg font-bold">3</span>
+                @endif
+            </div>
+            <div class="ml-4">
+                <h3 class="text-lg font-medium text-gray-900">Lender Review & Statement Verifications </h3>
+                @if($application->application_status === 'approved')
+                    <p class="text-gray-600 mt-1">Approved on {{ $application->updated_at->format('F d, Y') }}</p>
+                    <div class="mt-2 text-sm text-green-700">
+                        Your loan was approved by {{ optional($application->lender)->name }}.
+                    </div>
+                @elseif($application->application_status === 'rejected')
+                    <p class="text-gray-600 mt-1">Rejected on {{ $application->updated_at->format('F d, Y') }}</p>
+                    <div class="mt-2 text-sm text-red-700">
+                        Your loan was not approved. Contact {{ optional($application->lender)->name }} for details.
+                    </div>
+                @elseif($application->dealer_approved)
+                    <p class="text-gray-600 mt-1">In Progress</p>
+                    <div class="mt-2 text-sm text-blue-700">
+                        Awaiting review by {{ optional($application->lender)->name }}.
+                    </div>
+                @else
+                    <p class="text-gray-600 mt-1">Waiting</p>
+                    <div class="mt-2 text-sm text-gray-700">
+                        Review will begin after dealer approval.
+                    </div>
+                @endif
+            </div>
+        </div>
+
+        <!-- Step 4: Loan Disbursement -->
+        <div class="relative z-10 flex">
+            <div class="flex-shrink-0 h-12 w-12 rounded-full
+                {{ $application->application_status === 'approved' ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-600' }}
+                flex items-center justify-center border-4 border-white">
+                @if($application->application_status === 'approved')
+                    <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4" />
+                    </svg>
+                @else
+                    <span class="text-lg font-bold">4</span>
+                @endif
+            </div>
+            <div class="ml-4">
+                <h3 class="text-lg font-medium text-gray-900">Loan Disbursement</h3>
+                @if($application->application_status === 'approved')
+                    <p class="text-gray-600 mt-1">Next Step</p>
+                    <div class="mt-2 text-sm text-gray-700">
+                        Please proceed to {{ optional($application->lender)->name }} to sign and complete disbursement.
+                        <a href="{{ route('loan.agreement', $application->id) }}" class="mt-2 block text-green-600 hover:text-green-800 font-medium">
+                            View Loan Agreement
+                        </a>
+                    </div>
+                @else
+                    <p class="text-gray-600 mt-1">Pending</p>
+                    <div class="mt-2 text-sm text-gray-700">
+                        Disbursement is only available after lender approval.
+                    </div>
+                @endif
+            </div>
+        </div>
+    </div>
+</div>
+
+
             
             <!-- Application Details -->
             <div class="bg-white rounded-xl shadow-md p-6 mb-6">

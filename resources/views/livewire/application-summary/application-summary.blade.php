@@ -13,6 +13,7 @@
                         </svg>
                     </div>
                 </div>
+
                 <select wire:model="statusFilter" class="rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500 py-2 px-4">
                     <option value="">All Statuses</option>
                     <option value="NEW CLIENT">New Application</option>
@@ -162,7 +163,21 @@
                         
                         <div class="p-6">
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                                <div class="bg-gray-50 rounded-lg p-4">
+
+                            <div class="bg-gray-50 rounded-lg p-4">
+                                    <h4 class="text-sm font-semibold text-gray-700 mb-3">Credit Score </h4>
+                                    <div class="space-y-2">
+                                      
+
+
+                                    <livewire:credit-score />
+                                    </div>
+                                </div>
+
+
+
+                               
+                            <div class="bg-gray-50 rounded-lg p-4">
                                     <h4 class="text-sm font-semibold text-gray-700 mb-3">Applicant Information</h4>
                                     <div class="space-y-2">
                                         <div class="flex">
@@ -181,10 +196,11 @@
                                             <span class="text-sm text-gray-500 w-1/3">Email:</span>
                                             <span class="text-sm font-medium text-gray-900">{{ $selectedApplication->email }}</span>
                                         </div>
+
+                                        
                                     </div>
-                                </div>
-                                
-                                <div class="bg-gray-50 rounded-lg p-4">
+
+                                    <div class="bg-gray-50 rounded-lg p-4">
                                     <h4 class="text-sm font-semibold text-gray-700 mb-3">Address Information</h4>
                                     <div class="space-y-2">
                                         <div class="flex">
@@ -201,8 +217,10 @@
                                         </div>
                                     </div>
                                 </div>
+                                </div>
+            
                             </div>
-                            
+                
                             <div class="bg-gray-50 rounded-lg p-4 mb-6">
                                 <h4 class="text-sm font-semibold text-gray-700 mb-3">Vehicle Information</h4>
                                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -251,34 +269,126 @@
                             </div>
 
 
+                            @if (session('success'))
+    <div class="mb-4 px-4 py-3 rounded-lg bg-green-100 border border-green-400 text-green-800 flex items-start space-x-2 shadow-md">
+        <svg class="w-6 h-6 mt-1 text-green-600" fill="none" stroke="currentColor" stroke-width="2"
+             viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M5 13l4 4L19 7"/>
+        </svg>
+        <span>{{ session('success') }}</span>
+    </div>
+@endif
+
+@if (session('error'))
+    <div class="mb-4 px-4 py-3 rounded-lg bg-red-100 border border-red-400 text-red-800 flex items-start space-x-2 shadow-md">
+        <svg class="w-6 h-6 mt-1 text-red-600" fill="none" stroke="currentColor" stroke-width="2"
+             viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+        <span>{{ session('error') }}</span>
+    </div>
+@endif
+
+@if (session('info'))
+    <div class="mb-4 px-4 py-3 rounded-lg bg-blue-100 border border-blue-400 text-blue-800 flex items-start space-x-2 shadow-md">
+        <svg class="w-6 h-6 mt-1 text-blue-600" fill="none" stroke="currentColor" stroke-width="2"
+             viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 100 20 10 10 0 000-20z"/>
+        </svg>
+        <span>{{ session('info') }}</span>
+    </div>
+@endif
+
 
                           
 
 
+                            @if($selectedApplication->application_status == 'pending')
 
-                            <div class="bg-amber-50 border-l-4 mb-4 border-amber-500 rounded-lg shadow-md p-5 transition-all duration-300 hover:shadow-lg">
-            <div class="flex flex-col sm:flex-row">
-                <div class="flex-shrink-0 mb-4 sm:mb-0 sm:mr-4">
-                    <div class="bg-amber-500 text-white w-12 h-12 rounded-full flex items-center justify-center">
-                        <i class="fas fa-exclamation-triangle text-xl"></i>
-                    </div>
-                </div>
-                <div class="flex-grow">
-                    <h5 class="text-amber-800 font-semibold text-lg mb-2">Action Required!</h5>
-                    <p class="text-gray-700 mb-3">If you want this application to proceed, please approve it. Otherwise, cancel the application by rejecting it with an appropriate reason.</p>
-                    <p class="text-gray-700"><span class="font-bold text-amber-700">Note:</span> This decision cannot be changed once submitted.</p>
-                    
-                    <div class="mt-4 flex justify-end space-x-3">
-                        <button class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition-colors font-medium focus:outline-none focus:ring-2 focus:ring-gray-400">
-                            Reject
-                        </button>
-                        <button class="px-4 py-2 bg-amber-500 text-white rounded hover:bg-amber-600 transition-colors font-medium focus:outline-none focus:ring-2 focus:ring-amber-500">
-                            Approve
-                        </button>
-                    </div>
-                </div>
+<div class="bg-amber-50 border-l-4 mb-4 border-amber-500 rounded-lg shadow-md p-5 transition-all duration-300 hover:shadow-lg">
+    <div class="flex flex-col sm:flex-row">
+        <div class="flex-shrink-0 mb-4 sm:mb-0 sm:mr-4">
+            <div class="bg-amber-500 text-white w-12 h-12 rounded-full flex items-center justify-center">
+                <i class="fas fa-exclamation-triangle text-xl"></i>
             </div>
         </div>
+        <div class="flex-grow">
+            <h5 class="text-amber-800 font-semibold text-lg mb-2">Action Required!</h5>
+            <p class="text-gray-700 mb-3">If you want this application to proceed, please approve it. Otherwise, cancel the application by rejecting it with an appropriate reason.</p>
+            <p class="text-gray-700"><span class="font-bold text-amber-700">Note:</span> This decision cannot be changed once submitted.</p>
+            
+            <div class="mt-4 flex justify-end space-x-3">
+                <button wire:click="actionFunction('REJECTED', {{ $selectedApplication->id }})" class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition-colors font-medium focus:outline-none focus:ring-2 focus:ring-gray-400">
+                    Reject
+                </button>
+                <button  wire:click="actionFunction('NEW CLIENT',{{ $selectedApplication->id }})" class="px-4 py-2 bg-amber-500 text-white rounded hover:bg-amber-600 transition-colors font-medium focus:outline-none focus:ring-2 focus:ring-amber-500">
+                    Approve
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@elseif($selectedApplication->application_status == 'REJECTED')
+
+<div class="bg-red-50 border-l-4 mb-4 border-red-500 rounded-lg shadow-md p-5 transition-all duration-300 hover:shadow-lg">
+    <div class="flex flex-col sm:flex-row">
+        <div class="flex-shrink-0 mb-4 sm:mb-0 sm:mr-4">
+            <div class="bg-red-500 text-white w-12 h-12 rounded-full flex items-center justify-center">
+                <i class="fas fa-times-circle text-xl"></i>
+            </div>
+        </div>
+        <div class="flex-grow">
+            <h5 class="text-red-800 font-semibold text-lg mb-2">Application Rejected</h5>
+            <p class="text-gray-700">This application has been rejected. No further action is required. Contact support if this was done in error.</p>
+        </div>
+    </div>
+</div>
+
+@else
+
+<div class="bg-green-50 border-l-4 mb-4 border-green-500 rounded-lg shadow-md p-5 transition-all duration-300 hover:shadow-lg">
+    <div class="flex flex-col sm:flex-row">
+        <div class="flex-shrink-0 mb-4 sm:mb-0 sm:mr-4">
+            <div class="bg-green-500 text-white w-12 h-12 rounded-full flex items-center justify-center">
+                <i class="fas fa-check-circle text-xl"></i>
+            </div>
+        </div>
+        <div class="flex-grow">
+            <h5 class="text-green-800 font-semibold text-lg mb-2">Application Approved</h5>
+            <p class="text-gray-700">This application has been successfully approved. You may now proceed with the next steps.</p>
+        </div>
+    </div>
+</div>
+
+@endif
+
+
+
+
+
+
+@if(auth()->user()->department!=3)
+
+
+
+
+<div class="container mx-auto py-6 px-4">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-lg font-bold mb-6"> Statement verification </h1>
+        
+     
+        
+        <!-- Statement Verification Component -->
+        <livewire:statement-verification :statement="$statementData" />
+        
+        <!-- Other loan details sections... -->
+    </div>
+</div>
+
 
 
 
@@ -293,7 +403,7 @@
                                    
 
 
-                                @forelse($applicationDocuments as $appDocument)
+    @forelse($applicationDocuments as $appDocument)
     <button 
         wire:click="download('{{ $appDocument->url }}')" 
         type="button" 
@@ -314,22 +424,14 @@
     <div class="text-sm text-gray-500">No documents available</div>
 @endforelse
 
+    </div>
+</div>
 
-
-
-                                </div>
-                            </div>
-
-
-
-
-                            <div>
+<div>
     <!-- Other application details sections would be here -->
-    
-    @if($selectedApplication->is_employee)
+ @if($selectedApplication->is_employee)
     <div class="bg-gray-50  mb-6 p-6 space-y-4 mt-6">
         <h2 class="text-lg font-semibold text-gray-700 border-b pb-2">Employment Information</h2>
-
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
                 <label class="block text-sm font-medium text-gray-600">Employee Number</label>
@@ -479,24 +581,18 @@
 </div>
 
 
-
-
-
-
-
-
-                            <div class="bg-gray-50 rounded-lg p-4 mb-6">
-                                <h4 class="text-sm font-semibold text-gray-700 mb-3">Attached Images</h4>
-                                <div class="flex space-x-4 overflow-x-auto">
-                                    @foreach ($images as $index => $image)
-                                        <img 
-                                            src="{{ asset('storage/' . $image) }}" 
-                                            class="w-32 h-32 object-cover rounded cursor-pointer border hover:shadow-lg" 
-                                            wire:click="showImageModal({{ $index }})"
-                                        />
-                                    @endforeach
-                                </div>
-                            </div>
+<div class="bg-gray-50 rounded-lg p-4 mb-6">
+    <h4 class="text-sm font-semibold text-gray-700 mb-3">Attached Images</h4>
+    <div class="flex space-x-4 overflow-x-auto">
+        @foreach ($images as $index => $image)
+            <img 
+                src="{{ asset('storage/' . $image) }}" 
+                class="w-32 h-32 object-cover rounded cursor-pointer border hover:shadow-lg" 
+                wire:click="showImageModal({{ $index }})"
+            />
+        @endforeach
+    </div>
+</div>
 
 
 
@@ -618,6 +714,7 @@
                             </div>
 
 
+                            @endif 
                         </div>
 
 

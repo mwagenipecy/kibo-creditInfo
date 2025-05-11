@@ -315,10 +315,40 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                     <div class="flex justify-end space-x-2">
-                                        <a href="#" class="text-indigo-600 hover:text-indigo-900" wire:click="editLender({{ $lender['id'] }})">Edit</a>
-                                        @if($lender['status'] === 'PENDING')
-                                            <a href="#" class="text-green-600 hover:text-green-900" wire:click="approveLender({{ $lender['id'] }})">Approve</a>
-                                        @endif
+                                       
+                                   <!-- Improved Lender Action Buttons with Better UI/UX -->
+<div class="flex space-x-2">
+    <!-- Edit Button -->
+    <button 
+        wire:click="editLender({{ $lender['id'] }})"
+        wire:loading.attr="disabled"
+        class="inline-flex items-center px-3 py-1.5 text-sm font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+        </svg>
+        <span wire:loading.remove wire:target="editLender({{ $lender['id'] }})">Edit</span>
+        <span wire:loading wire:target="editLender({{ $lender['id'] }})">Editing...</span>
+    </button>
+    
+    <!-- Approve Button (Only shown for PENDING lenders) -->
+    @if($lender['status'] === 'PENDING')
+        <button 
+            wire:click="approveLender({{ $lender['id'] }})"
+            wire:loading.attr="disabled"
+            wire:confirm="Are you sure you want to approve this lender?"
+            class="inline-flex items-center px-3 py-1.5 text-sm font-medium rounded-md text-green-700 bg-green-100 hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-150 ease-in-out">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+            <span wire:loading.remove wire:target="approveLender({{ $lender['id'] }})">Approve</span>
+            <span wire:loading wire:target="approveLender({{ $lender['id'] }})">Approving...</span>
+        </button>
+    @endif
+</div>
+
+
+
+
                                     </div>
                                 </td>
                             </tr>

@@ -40,8 +40,27 @@
                     </svg>
                     Please wait...
                 </x-jet-button>
+
+
+
+
+
         </div>
+
+
+        <div class="mt-6 text-center text-sm text-gray-600">
+    <p>
+        Don't have an account? 
+        <a href="{{ route('client.registration') }}" class="text-green-600 hover:underline">Create one</a> 
+        or 
+        <a href="{{ route('home.page') }}" class="text-green-600 hover:underline">go back home</a>.
+    </p>
+</div>
+
+
     </form>
+
+    
     <x-jet-validation-errors class="mt-4" />
     <!-- Footer -->
     <script>

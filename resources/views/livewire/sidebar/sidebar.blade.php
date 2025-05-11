@@ -34,6 +34,8 @@
             @click.outside="sidebarOpen = false"
             @keydown.escape.window="sidebarOpen = false"
             x-cloak="lg">
+
+            
             <!-- Sidebar header -->
             <div class="flex justify-between items-center pr-3 sm:px-2 items-center pr-3 sm:px-2 ">
                 <!-- Close button -->

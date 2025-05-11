@@ -38,7 +38,7 @@ Route::post('/password-reset', function (Illuminate\Http\Request $request) {
 })->name('password-reset');
 
 // Group routes that require authentication
-Route::middleware(['auth:sanctum', 'verified',ClientMiddleware::class,OTPMiddleware::class])->group(function () {
+Route::middleware(['auth:sanctum', 'verified',ClientMiddleware::class])->group(function () {
 
 
 
@@ -113,7 +113,6 @@ Route::get('/employer/verification-completed', [EmployerVerificationController::
     Route::get('/client-registration',[WebsiteController::class,'clientRegistration'])->name('client.registration');
 
 
-
     /////////////////// CLIENT LOAN APPLICATION /////////////////////////
     Route::get('loan/pre-qualify/{vehicleId}/{lenderId}',[WebsiteController::class,'loanApplication'])->name('loan.pre-qualify');
 
@@ -126,7 +125,6 @@ Route::get('/employer/verification-completed', [EmployerVerificationController::
 
 
     Route::get('application/status/{id}',[WebsiteController::class,'applicationStatus'])->name('application.status');
-
     Route::get('/contact',[WebsiteController::class,'contactPage'])->name('contact.page');
 
 

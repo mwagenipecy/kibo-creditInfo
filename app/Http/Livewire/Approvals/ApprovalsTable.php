@@ -1356,7 +1356,7 @@ public function approveAssignTeller($process_id,$approvalsId){
         ]);
 
 
-        $this->composeEmail(User::where('id',$process_id)->value('email'), 'Dear '.User::where('id',$process_id)->value('name').', You have been added as a user in the CyberPoint Pro System. You can proceed and login using your email and temporary password '.$password. ' use link https://testcyberpointpro.ubx.co.tz as soon as you are logged in you must change the temporary password to your choice. Thank you');
+      //  $this->composeEmail(User::where('id',$process_id)->value('email'), 'Dear '.User::where('id',$process_id)->value('name').', You have been added as a user in the CyberPoint Pro System. You can proceed and login using your email and temporary password '.$password. ' use link https://testcyberpointpro.ubx.co.tz as soon as you are logged in you must change the temporary password to your choice. Thank you');
 
         //dd($password);
     }

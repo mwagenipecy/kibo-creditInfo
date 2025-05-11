@@ -10,4 +10,10 @@ class Application extends Model
     use HasFactory;
 
     protected $guarded = [];
+
+
+    public function lender(){
+
+        return $this->belongsTo(Lender::class,'lender_id');
+    }
 }

@@ -57,6 +57,16 @@ class Vehicle extends Model
     ];
     
     // Relationships
+
+    public function frontView(){
+
+        return $this->hasMany(VehicleImage::class, 'vehicle_id')
+        ->where('view', 'front')
+        ->first();
+    
+    }
+
+
     public function make()
     {
         return $this->belongsTo(Make::class);

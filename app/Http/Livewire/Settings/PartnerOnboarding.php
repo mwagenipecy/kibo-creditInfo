@@ -591,7 +591,7 @@ public function render()
 
                     'email' => 'required|email|max:255',
                     'contactPersonName' => 'required|string|max:255',
-                    'contactPersonEmail' => 'required|email|max:255',
+                    'contactPersonEmail' => 'required|email|unique:users,email|max:255',
                 ]);
                 $this->nextStep();
                 return;

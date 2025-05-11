@@ -15,6 +15,7 @@ use App\Models\FuelType;
 use App\Models\Transmission;
 use Livewire\WithPagination;
 use Livewire\WithFileUploads;
+use App\Services\LenderFinancingService;
 
 class VehicleDetails extends Component
 {
@@ -48,7 +49,19 @@ class VehicleDetails extends Component
         
         $this->vehicle = Vehicle::with(['dealer', 'make', 'model', 'bodyType', 'fuelType', 'transmission'])->findOrFail($id);
 
-        $this->lenders=Lender::get();
+       // $this->lenders=Lender::get();
+
+        $lenderService = new LenderFinancingService();
+       // $this->eligibleLenders = $lenderService->getLendersForVehicle($id);
+
+       $this->lenders = $lenderService->getLendersForVehicle($id);
+
+        
+
+       $lenderService = new LenderFinancingService();
+       $this->eligibleLenders = $lenderService->getLendersForVehicle($id);
+
+       
         // Pre-fill message
         $this->message = "Hi, I'm interested in the " . $this->vehicle->year . " " . optional($this->vehicle->make)->name . " " . optional($this->vehicle->model)->name . " you have listed. Please contact me with more information.";
     }

@@ -100,10 +100,18 @@
                             </div>
                             
                             <div>
-                                <label for="nidanumber" class="block text-sm font-medium text-gray-700">National ID Number*</label>
-                                <input type="text" id="nidanumber" wire:model.defer="nidanumber" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 sm:text-sm">
-                                @error('nidanumber') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
-                            </div>
+                            <label for="nidanumber" class="block text-sm font-medium text-gray-700">National ID Number*</label>
+                            <input
+                                type="text"
+                                id="nidanumber"
+                                wire:model="nidanumber"
+                                placeholder="20060329-14129-00001-27"
+                                maxlength="25"
+                                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 sm:text-sm"
+                            >
+                            @error('nidanumber') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+                        </div>
+
                             
                             <div>
                                 <label for="phonenumber" class="block text-sm font-medium text-gray-700">Phone Number*</label>

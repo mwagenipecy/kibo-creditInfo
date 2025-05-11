@@ -129,5 +129,12 @@ class Lender extends Model
         return $query->where('status', 'REJECTED');
     }
 
+
+    public function financingCriteria()
+    {
+        return $this->hasMany(LenderFinancingCriteria::class);
+    }
+
+    
     
 }

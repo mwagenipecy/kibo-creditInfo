@@ -63,7 +63,7 @@ class LoanApplicationList extends Component
      */
     private function getStatusCount($status)
     {
-        return Application::
+        return Application::where('client_id',auth()->user()->id)->
         //where('email', Auth::user()->email)
             where('application_status', $status)
             ->count();

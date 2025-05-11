@@ -55,9 +55,18 @@
 
 
 
-            @case('14')
-            <livewire:procurement.procurement />
-            @break
+           @case('14')
+            
+            <livewire:lender-management.lender-settings/>
+
+           @break
+
+
+
+           
+
+
+           
             @case('12')
             <livewire:reconciliation.reconciliation />
             @break

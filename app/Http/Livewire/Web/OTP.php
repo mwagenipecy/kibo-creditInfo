@@ -35,7 +35,6 @@ class OTP extends Component
         $user = Auth::user();
         $this->email = $user->email;
         $this->phone = $user->phone;
-        
         // If no OTP exists, generate one
         if (!Session::has('otp_code')) {
             $this->generateAndSendOTP();
@@ -86,7 +85,6 @@ class OTP extends Component
     {
         // Combine the OTP digits
         $this->full_otp = $this->otp1 . $this->otp2 . $this->otp3 . $this->otp4 . $this->otp5 . $this->otp6;
-        
         // Validate all fields are filled
         $this->validate([
             'otp1' => 'required|numeric|digits:1',
@@ -116,10 +114,8 @@ class OTP extends Component
             $this->addError('otp', 'OTP has expired. Please request a new code.');
         }elseif ($this->full_otp != $stored_otp) {
 
-          
-
             $this->addError('otp', 'Invalid verification code. Please try again.');
-            return redirect()->back();
+           
         }else{
 
             // OTP is valid - Mark user as verified
@@ -146,7 +142,6 @@ class OTP extends Component
 
         // Clear previous OTP
         Session::forget(['otp_code', 'otp_expiry']);
-        
         // Generate new OTP and send
         $this->generateAndSendOTP();
         

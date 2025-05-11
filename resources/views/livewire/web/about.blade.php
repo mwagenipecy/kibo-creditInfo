@@ -35,7 +35,7 @@
                 <div class="max-w-3xl mx-auto text-center">
                     <h1 class="text-4xl md:text-5xl font-bold mb-6 leading-tight">Connecting You with Vehicle Financing Solutions</h1>
                     <p class="text-xl md:text-2xl mb-8 opacity-90">We bridge the gap between car dealers and lenders to make vehicle ownership accessible and affordable.</p>
-                    <a href="{{ route('register') }}" class="inline-block bg-white text-green-600 font-semibold py-3 px-8 rounded-lg shadow-lg hover:bg-gray-100 hover:shadow-xl transition duration-300 transform hover:-translate-y-1">Get Started Today</a>
+                    <a href="{{ route('client.registration') }}" class="inline-block bg-white text-green-600 font-semibold py-3 px-8 rounded-lg shadow-lg hover:bg-gray-100 hover:shadow-xl transition duration-300 transform hover:-translate-y-1">Get Started Today</a>
                 </div>
             </div>
             <div class="absolute bottom-[-150px] left-0 right-0 mt-16">
@@ -50,7 +50,7 @@
             <div class="max-w-6xl mx-auto">
                 <div class="flex flex-col md:flex-row items-center gap-12">
                     <div class="md:w-1/2">
-                        <img src="{{ asset('/images/mission.jpg') }}" alt="Our Mission" class="rounded-2xl shadow-xl w-full h-auto hover:shadow-2xl transition duration-300 transform hover:-translate-y-1">
+                        <img src="{{ asset('/cars/City driver-bro.png') }}" alt="Our Mission" class="rounded-2xl shadow-xl w-full h-auto hover:shadow-2xl transition duration-300 transform hover:-translate-y-1">
                     </div>
                     <div class="md:w-1/2">
                         <div class="inline-block px-3 py-1 bg-green-100 text-green-600 rounded-full text-sm font-semibold mb-4">Our Purpose</div>

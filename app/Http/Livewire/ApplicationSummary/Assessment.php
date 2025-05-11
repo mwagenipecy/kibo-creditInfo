@@ -192,41 +192,26 @@ class Assessment extends Component
         if (!$application) {
           session()->flash('error' , 'Application not found' );
         }
-        
         // Don't do anything if loan is already ACTIVE or REJECTED
         if (in_array($application->application_status, ['ACCEPTED', 'REJECTED'])) {
             session()->flash('message' ,'No action needed. Application is ' . $application->application_status );
         }
         
         $loanId = $application->loan_id;
+
+
         
         // Use transaction to handle errors and prevent partial operations
         try {
+
             DB::beginTransaction();
-            
-            // Insert loan schedule records
-            foreach ($this->scheduleData['schedule'] as $installment) {
-                DB::table('loans_schedules')->insert([
-                    'installment_date' => $installment['installment_date'],
-                    'opening_balance' => $installment['opening_balance'],
-                    'closing_balance' => $installment['closing_balance'],
-                    'installment' => $installment['payment'],
-                    'principle' => $installment['principal'],
-                    'interest' => $installment['interest'],
-                    'completion_status' => 'ACTIVE',
-                    'account_status' => 'ACTIVE',
-                    'created_at' => Carbon::now()->format('Y-m-d'),
-                    'updated_at' => Carbon::now()->format('Y-m-d'),
-                    'loan_id' => $loanId
-                ]);
-            }
             
             // Update application status
             $application->application_status = 'ACCEPTED';
             $application->save();
             
             // Update loan status
-            DB::table('loans')->where('id', $loanId)->update(['status' => 'ACTIVE']);
+           // DB::table('loans')->where('id', $loanId)->update(['status' => 'ACTIVE']);
             
             // Commit transaction if everything succeeded
             DB::commit();
@@ -311,4 +296,6 @@ class Assessment extends Component
 
         return view('livewire.application-summary.assessment');
     }
+
+
 }

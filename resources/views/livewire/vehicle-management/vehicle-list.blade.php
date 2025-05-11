@@ -332,80 +332,244 @@
                                     </div>
                                 </div>
                             </div>
+
+
+                            </div>
+                            </div>
+
+
+                            <div>  
+                            <div>  
+
+                            
                             
                             <!-- Vehicle Images Section -->
                             <div>
-                                <h3 class="text-lg font-medium text-gray-900 mb-4">Vehicle Images</h3>
-                                
-                                <div
-                                    x-data="{ isUploading: false, progress: 0 }"
-                                    x-on:livewire-upload-start="isUploading = true"
-                                    x-on:livewire-upload-finish="isUploading = false"
-                                    x-on:livewire-upload-error="isUploading = false"
-                                    x-on:livewire-upload-progress="progress = $event.detail.progress"
-                                >
-                                    <div class="flex items-center justify-center w-full">
-                                        <label for="images" class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
-                                            <div class="flex flex-col items-center justify-center pt-5 pb-6">
-                                                <svg class="w-8 h-8 mb-4 text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
-                                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
-                                                </svg>
-                                                <p class="mb-2 text-sm text-gray-500"><span class="font-semibold">Click to upload</span> or drag and drop</p>
-                                                <p class="text-xs text-gray-500">PNG, JPG or JPEG (MAX. 10MB)</p>
-                                            </div>
-                                            <input id="images" wire:model="images" type="file" class="hidden" multiple accept="image/*" />
-                                        </label>
-                                    </div>
-                                    
-                                    <!-- Progress Bar -->
-                                    <div x-show="isUploading" class="w-full bg-gray-200 rounded-full h-2.5 mt-3">
-                                        <div class="bg-green-600 h-2.5 rounded-full" x-bind:style="'width: ' + progress + '%'"></div>
-                                    </div>
-                                    
-                                    @error('images.*') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
-                                </div>
-                                
-                                <!-- Existing Images Preview -->
-                                @if($editMode && $vehicleImages && count($vehicleImages) > 0)
-                                    <div class="mt-4">
-                                        <h4 class="text-sm font-medium text-gray-700 mb-2">Current Images</h4>
-                                        <div class="grid grid-cols-4 gap-4">
-                                            @foreach($vehicleImages as $index => $image)
-                                            
-                                                <div class="relative">
-                                                    <img src="{{ asset('storage/' . $image) }}" alt="Vehicle Image" class="h-24 w-full object-cover rounded-lg">
-                                                   
-                                                    <button type="button" wire:click="removeImage('{{ $image }}')" class="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1 transform translate-x-1/2 -translate-y-1/2">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                                                        </svg>
-                                                    </button>
-
-                                                </div>
-                                            @endforeach
-                                        </div>
-                                    </div>
-                                @endif
-                                
-                                <!-- New Images Preview -->
-                                @if($images && count($images) > 0)
-                                    <div class="mt-4">
-                                        <h4 class="text-sm font-medium text-gray-700 mb-2">New Images to Upload</h4>
-                                        <div class="grid grid-cols-4 gap-4">
-                                            @foreach($images as $index => $image)
-                                                <div class="relative">
-                                                    <img src="{{ $image->temporaryUrl() }}" alt="New Vehicle Image" class="h-24 w-full object-cover rounded-lg">
-                                                    <button type="button" wire:click="removeUploadedImage({{ $index }})" class="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1 transform translate-x-1/2 -translate-y-1/2">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                                                        </svg>
-                                                    </button>
-                                                </div>
-                                            @endforeach
-                                        </div>
-                                    </div>
-                                @endif
+    <h3 class="text-lg font-medium text-gray-900 mb-4">Vehicle Images</h3>
+    
+    <!-- Image Upload Sections -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Front View -->
+        <div>
+            <h4 class="text-sm font-medium text-gray-700 mb-2">Front View Image</h4>
+            <div class="mb-3">
+                <div class="flex items-center justify-center w-full">
+                    <label for="frontImage" class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors duration-200">
+                        <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                            <svg class="w-8 h-8 mb-4 text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
+                            </svg>
+                            <p class="mb-2 text-sm text-gray-500"><span class="font-semibold">Click to upload front view</span></p>
+                            <p class="text-xs text-gray-500">PNG, JPG or JPEG (MAX. 10MB)</p>
+                        </div>
+                        <input id="frontImage" wire:model="viewImages.front" type="file" class="hidden" accept="image/*" />
+                    </label>
+                </div>
+                
+                @error('viewImages.front') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+            </div>
+            
+            <!-- Front View Image Preview -->
+            @if(isset($viewImagesPreview['front']))
+                <div class="mt-2">
+                    <div class="relative inline-block">
+                        <img src="{{ $viewImagesPreview['front'] }}" alt="Front View" class="h-24 w-auto object-cover rounded-lg">
+                        <button type="button" wire:click="removeViewImage('front')" class="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1 transform translate-x-1/2 -translate-y-1/2 shadow-md hover:bg-red-600 transition-colors duration-200">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            @endif
+        </div>
+        
+        <!-- Side View -->
+        <div>
+            <h4 class="text-sm font-medium text-gray-700 mb-2">Side View Image</h4>
+            <div class="mb-3">
+                <div class="flex items-center justify-center w-full">
+                    <label for="sideImage" class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors duration-200">
+                        <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                            <svg class="w-8 h-8 mb-4 text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
+                            </svg>
+                            <p class="mb-2 text-sm text-gray-500"><span class="font-semibold">Click to upload side view</span></p>
+                            <p class="text-xs text-gray-500">PNG, JPG or JPEG (MAX. 10MB)</p>
+                        </div>
+                        <input id="sideImage" wire:model="viewImages.side" type="file" class="hidden" accept="image/*" />
+                    </label>
+                </div>
+                
+                @error('viewImages.side') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+            </div>
+            
+            <!-- Side View Image Preview -->
+            @if(isset($viewImagesPreview['side']))
+                <div class="mt-2">
+                    <div class="relative inline-block">
+                        <img src="{{ $viewImagesPreview['side'] }}" alt="Side View" class="h-24 w-auto object-cover rounded-lg">
+                        <button type="button" wire:click="removeViewImage('side')" class="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1 transform translate-x-1/2 -translate-y-1/2 shadow-md hover:bg-red-600 transition-colors duration-200">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            @endif
+        </div>
+        
+        <!-- Back View -->
+        <div>
+            <h4 class="text-sm font-medium text-gray-700 mb-2">Back View Image</h4>
+            <div class="mb-3">
+                <div class="flex items-center justify-center w-full">
+                    <label for="backImage" class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors duration-200">
+                        <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                            <svg class="w-8 h-8 mb-4 text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
+                            </svg>
+                            <p class="mb-2 text-sm text-gray-500"><span class="font-semibold">Click to upload back view</span></p>
+                            <p class="text-xs text-gray-500">PNG, JPG or JPEG (MAX. 10MB)</p>
+                        </div>
+                        <input id="backImage" wire:model="viewImages.back" type="file" class="hidden" accept="image/*" />
+                    </label>
+                </div>
+                
+                @error('viewImages.back') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+            </div>
+            
+            <!-- Back View Image Preview -->
+            @if(isset($viewImagesPreview['back']))
+                <div class="mt-2">
+                    <div class="relative inline-block">
+                        <img src="{{ $viewImagesPreview['back'] }}" alt="Back View" class="h-24 w-auto object-cover rounded-lg">
+                        <button type="button" wire:click="removeViewImage('back')" class="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1 transform translate-x-1/2 -translate-y-1/2 shadow-md hover:bg-red-600 transition-colors duration-200">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            @endif
+        </div>
+        
+        <!-- Additional Images Section -->
+        <div>
+            <h4 class="text-sm font-medium text-gray-700 mb-2">Additional Images</h4>
+            <div class="mb-3">
+                <div class="flex items-center justify-center w-full">
+                    <label for="additionalImages" class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors duration-200">
+                        <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                            <svg class="w-8 h-8 mb-4 text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
+                            </svg>
+                            <p class="mb-2 text-sm text-gray-500"><span class="font-semibold">Click to upload additional images</span></p>
+                            <p class="text-xs text-gray-500">PNG, JPG or JPEG (MAX. 10MB)</p>
+                        </div>
+                        <input id="additionalImages" wire:model="additionalImages" type="file" class="hidden" multiple accept="image/*" />
+                    </label>
+                </div>
+                
+                @error('additionalImages.*') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+            </div>
+        </div>
+    </div>
+    
+    <!-- Existing Images Preview -->
+    @if($editMode && count($existingImages) > 0)
+        <div class="mt-6 bg-gray-50 p-4 rounded-lg border border-gray-200">
+            <h4 class="text-sm font-medium text-gray-700 mb-4">Current Images</h4>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                @if(isset($existingImages['front']))
+                    <div class="mb-4">
+                        <h5 class="text-xs font-medium text-gray-600 mb-2">Front View</h5>
+                        <div class="relative inline-block">
+                            <img src="{{ asset('storage/' . $existingImages['front']->image_url) }}" alt="Front View" class="h-24 w-auto object-cover rounded-lg shadow-sm">
+                            <button type="button" wire:click="removeExistingImage({{ $existingImages['front']->id }})" class="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1 transform translate-x-1/2 -translate-y-1/2 shadow-md hover:bg-red-600 transition-colors duration-200">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                @endif
+                
+                @if(isset($existingImages['side']))
+                    <div class="mb-4">
+                        <h5 class="text-xs font-medium text-gray-600 mb-2">Side View</h5>
+                        <div class="relative inline-block">
+                            <img src="{{ asset('storage/' . $existingImages['side']->image_url) }}" alt="Side View" class="h-24 w-auto object-cover rounded-lg shadow-sm">
+                            <button type="button" wire:click="removeExistingImage({{ $existingImages['side']->id }})" class="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1 transform translate-x-1/2 -translate-y-1/2 shadow-md hover:bg-red-600 transition-colors duration-200">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                @endif
+                
+                @if(isset($existingImages['back']))
+                    <div class="mb-4">
+                        <h5 class="text-xs font-medium text-gray-600 mb-2">Back View</h5>
+                        <div class="relative inline-block">
+                            <img src="{{ asset('storage/' . $existingImages['back']->image_url) }}" alt="Back View" class="h-24 w-auto object-cover rounded-lg shadow-sm">
+                            <button type="button" wire:click="removeExistingImage({{ $existingImages['back']->id }})" class="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1 transform translate-x-1/2 -translate-y-1/2 shadow-md hover:bg-red-600 transition-colors duration-200">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                @endif
+            </div>
+            
+            @if(count($existingImages['additional']) > 0)
+                <div class="mt-4">
+                    <h5 class="text-xs font-medium text-gray-600 mb-2">Additional Images</h5>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                        @foreach($existingImages['additional'] as $image)
+                            <div class="relative">
+                                <img src="{{ asset('storage/' . $image->image_url) }}" alt="Additional Image" class="h-24 w-full object-cover rounded-lg shadow-sm">
+                                <button type="button" wire:click="removeExistingImage({{ $image->id }})" class="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1 transform translate-x-1/2 -translate-y-1/2 shadow-md hover:bg-red-600 transition-colors duration-200">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
                             </div>
+                        @endforeach
+                    </div>
+                </div>
+            @endif
+        </div>
+    @endif
+    
+    <!-- Additional Images Preview -->
+    @if(count($additionalImages) > 0)
+        <div class="mt-6 bg-gray-50 p-4 rounded-lg border border-gray-200">
+            <h4 class="text-sm font-medium text-gray-700 mb-2">New Additional Images</h4>
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                @foreach($additionalImages as $index => $image)
+                    <div class="relative">
+                        <img src="{{ $image->temporaryUrl() }}" alt="New Vehicle Image" class="h-24 w-full object-cover rounded-lg shadow-sm">
+                        <button type="button" wire:click="removeAdditionalImage({{ $index }})" class="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1 transform translate-x-1/2 -translate-y-1/2 shadow-md hover:bg-red-600 transition-colors duration-200">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+    @endif
+</div>
+
+
+
+
+
+
                         </div>
                     </div>
                     

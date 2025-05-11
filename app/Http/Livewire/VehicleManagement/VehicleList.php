@@ -6,7 +6,6 @@ use App\Models\VehicleModel;
 use Livewire\Component;
 use App\Models\Vehicle;
 use App\Models\Make;
-use App\Models\Model;
 use App\Models\BodyType;
 use App\Models\FuelType;
 use App\Models\Transmission;
@@ -16,27 +15,37 @@ use Livewire\WithPagination;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Log;
+
 class VehicleList extends Component
 {
-
-
     use WithFileUploads, WithPagination;
     
     // Pagination theme
     protected $paginationTheme = 'tailwind';
     
     // Form properties
-
     public $showStatusDropdown = [];
     public $showForm = false;
     public $editMode = false;
     public $vehicle = [];
     public $vehicleId = null;
     public $vehicleStatus = 'active';
-    public $images = [];
-
-    public $downPaymentPercent;
-    public $vehicleImages = [];
+    
+    // New image fields with specific views
+    public $viewImages = [
+        'front' => null,
+        'side' => null,
+        'back' => null,
+    ];
+    public $additionalImages = [];
+    public $viewImagesPreview = [];
+    public $existingImages = [
+        'front' => null,
+        'side' => null,
+        'back' => null,
+        'additional' => [],
+    ];
     
     // Filter and sorting properties
     public $searchTerm = '';
@@ -52,14 +61,14 @@ class VehicleList extends Component
     // Validation rules
     protected function rules()
     {
-        return [
+        $rules = [
             'vehicle.make_id' => 'required|exists:makes,id',
             'vehicle.model_id' => 'required',
             'vehicle.body_type_id' => 'required|exists:body_types,id',
             'vehicle.fuel_type_id' => 'required|exists:fuel_types,id',
             'vehicle.transmission_id' => 'required|exists:transmissions,id',
             'vehicle.year' => 'required|integer|min:1900|max:' . (date('Y') + 1),
-            'vehicle.downPaymentPercent'=>'required|integer|max:99',
+            'vehicle.downPaymentPercent' => 'required|integer|max:99',
             'vehicle.price' => 'required|numeric|min:0',
             'vehicle.mileage' => 'required|numeric|min:0',
             'vehicle.color' => 'required|string|max:50',
@@ -68,28 +77,43 @@ class VehicleList extends Component
             'vehicle.engine_type' => 'nullable|string|max:50',
             'vehicle.horsepower' => 'nullable|integer|min:0',
             'vehicle.drivetrain' => 'nullable|string|max:10',
-            'vehicle.length' => 'nullable|numeric|min:0',
-            'vehicle.width' => 'nullable|numeric|min:0',
-            'vehicle.height' => 'nullable|numeric|min:0',
-            'vehicle.wheelbase' => 'nullable|numeric|min:0',
             'vehicle.seating_capacity' => 'nullable|integer|min:0',
-            'vehicle.cargo_volume' => 'nullable|numeric|min:0',
             'vehicle.vehicle_condition' => 'required|string|max:50',
             'vehicle.description' => 'required|string',
             'vehicle.trim' => 'nullable|string|max:50',
             'vehicle.owners' => 'nullable|integer|min:0',
             'vehicle.location' => 'required|string|max:100',
             'vehicle.is_featured' => 'boolean',
-            'images.*' => 'image|max:10240', // 10MB Max
+            'additionalImages.*' => 'nullable|image|max:10240', // 10MB Max
             'vehicleStatus' => 'required|in:active,on_hold,sold',
         ];
+
+        // Add validation rules for view images only if in create mode or if there's no existing image
+        if (!$this->editMode || ($this->editMode && !isset($this->existingImages['front']))) {
+            $rules['viewImages.front'] = 'nullable|image|max:10240';
+        } else {
+            $rules['viewImages.front'] = 'nullable|image|max:10240';
+        }
+
+        if (!$this->editMode || ($this->editMode && !isset($this->existingImages['side']))) {
+            $rules['viewImages.side'] = 'nullable|image|max:10240';
+        } else {
+            $rules['viewImages.side'] = 'nullable|image|max:10240';
+        }
+
+        if (!$this->editMode || ($this->editMode && !isset($this->existingImages['back']))) {
+            $rules['viewImages.back'] = 'nullable|image|max:10240';
+        } else {
+            $rules['viewImages.back'] = 'nullable|image|max:10240';
+        }
+
+        return $rules;
     }
     
     // Initialize component
     public function mount()
     {
-        $this->vehicle['is_featured'] = false;
-        $this->vehicleStatus = 'active';
+        $this->resetVehicleForm();
     }
     
     // Show the add vehicle form
@@ -115,8 +139,28 @@ class VehicleList extends Component
         $this->vehicle = $vehicle->toArray();
         $this->vehicleStatus = $vehicle->status;
         
-        // Get vehicle images
-        $this->vehicleImages = $vehicle->images;
+        // Get vehicle images and organize them by view
+        $vehicleImages = VehicleImage::where('vehicle_id', $id)->get();
+        
+        // Reset existing images arrays
+        $this->existingImages = [
+            'front' => null,
+            'side' => null,
+            'back' => null,
+            'additional' => [],
+        ];
+        
+        foreach ($vehicleImages as $image) {
+            if ($image->view === 'front') {
+                $this->existingImages['front'] = $image;
+            } elseif ($image->view === 'side') {
+                $this->existingImages['side'] = $image;
+            } elseif ($image->view === 'back') {
+                $this->existingImages['back'] = $image;
+            } else {
+                $this->existingImages['additional'][] = $image;
+            }
+        }
     }
     
     // Cancel form and return to listing
@@ -125,6 +169,25 @@ class VehicleList extends Component
         $this->resetVehicleForm();
         $this->showForm = false;
         $this->editMode = false;
+    }
+    
+    // Process property updates and handle image previews
+    public function updated($propertyName)
+    {
+        // Only validate the updated property
+        $this->validateOnly($propertyName);
+        
+        // Handle image previews for view-specific images
+        if (Str::startsWith($propertyName, 'viewImages.')) {
+            $viewType = Str::after($propertyName, 'viewImages.');
+            
+            if (in_array($viewType, ['front', 'side', 'back']) && 
+                isset($this->viewImages[$viewType]) && 
+                $this->viewImages[$viewType] instanceof \Livewire\TemporaryUploadedFile) {
+                
+                $this->viewImagesPreview[$viewType] = $this->viewImages[$viewType]->temporaryUrl();
+            }
+        }
     }
     
     // Add a new vehicle
@@ -140,7 +203,8 @@ class VehicleList extends Component
             $newVehicle = new Vehicle();
             $vehicleData = $this->vehicle;
 
-            $numericFields = ['length', 'width', 'height', 'wheelbase', 'seating_capacity', 'cargo_volume', 'horsepower'];
+            // Handle numeric fields that might be empty strings
+            $numericFields = ['horsepower', 'seating_capacity'];
             foreach ($numericFields as $field) {
                 if (isset($vehicleData[$field]) && $vehicleData[$field] === '') {
                     $vehicleData[$field] = null;
@@ -148,16 +212,15 @@ class VehicleList extends Component
             }
 
             $newVehicle->fill($vehicleData);
-
-
-
-            // $newVehicle->fill($this->vehicle);
             $newVehicle->dealer_id = $dealerId;
             $newVehicle->status = $this->vehicleStatus;
             $newVehicle->save();
             
-            // Upload and save images
-            $this->uploadVehicleImages($newVehicle->id);
+            // Upload and save view-specific images
+            $this->uploadVehicleViewImages($newVehicle->id);
+            
+            // Upload and save additional images
+            $this->uploadAdditionalImages($newVehicle->id);
             
             // Success message and reset form
             session()->flash('success', 'Vehicle added successfully!');
@@ -165,6 +228,7 @@ class VehicleList extends Component
             $this->showForm = false;
             
         } catch (\Exception $e) {
+            Log::error('Failed to add vehicle: ' . $e->getMessage());
             session()->flash('error', 'Failed to add vehicle. ' . $e->getMessage());
         }
     }
@@ -179,12 +243,25 @@ class VehicleList extends Component
             $existingVehicle = Vehicle::findOrFail($this->vehicleId);
             
             // Update vehicle data
-            $existingVehicle->fill($this->vehicle);
+            $vehicleData = $this->vehicle;
+            
+            // Handle numeric fields that might be empty strings
+            $numericFields = ['horsepower', 'seating_capacity'];
+            foreach ($numericFields as $field) {
+                if (isset($vehicleData[$field]) && $vehicleData[$field] === '') {
+                    $vehicleData[$field] = null;
+                }
+            }
+            
+            $existingVehicle->fill($vehicleData);
             $existingVehicle->status = $this->vehicleStatus;
             $existingVehicle->save();
             
-            // Upload and save new images
-            $this->uploadVehicleImages($existingVehicle->id);
+            // Upload and save view-specific images
+            $this->uploadVehicleViewImages($existingVehicle->id);
+            
+            // Upload and save additional images
+            $this->uploadAdditionalImages($existingVehicle->id);
             
             // Success message and reset form
             session()->flash('success', 'Vehicle updated successfully!');
@@ -192,6 +269,7 @@ class VehicleList extends Component
             $this->showForm = false;
             
         } catch (\Exception $e) {
+            Log::error('Failed to update vehicle: ' . $e->getMessage());
             session()->flash('error', 'Failed to update vehicle. ' . $e->getMessage());
         }
     }
@@ -234,19 +312,9 @@ class VehicleList extends Component
         try {
             $vehicle = Vehicle::findOrFail($id);
             
-            // Delete associated images from storage
-            // foreach ($vehicle->images as $image) {
-            //     Storage::delete('public/' . $image->path);
-            //     $image->delete();
-            // }
-            
-            // Delete the vehicle
-
+            // Mark as deleted instead of actual deletion
             $vehicle->status = 'deleted';
             $vehicle->save();
-
-    
-            //delete();
             
             session()->flash('success', 'Vehicle deleted successfully');
             
@@ -255,44 +323,123 @@ class VehicleList extends Component
         }
     }
     
-    // Remove an existing image
-    public function removeImage($path)
+    // Remove an existing image from database
+    public function removeExistingImage($id)
     {
         try {
-            $image = VehicleImage::where('image_url',$path)->first();
-            Storage::delete('public/' . $path);
+            $image = VehicleImage::findOrFail($id);
+            $view = $image->view;
+            
+            // Delete file from storage
+            if($image->image_url) {
+                Storage::delete('public/' . $image->image_url);
+            }
+            
+            // Delete record from database
             $image->delete();
             
-            // Refresh images list
-           // $this->vehicleImages = VehicleImage::where('vehicle_id', $this->vehicleId)->get();
+            // Update the existingImages array
+            if ($view === 'front') {
+                $this->existingImages['front'] = null;
+            } elseif ($view === 'side') {
+                $this->existingImages['side'] = null;
+            } elseif ($view === 'back') {
+                $this->existingImages['back'] = null;
+            } else {
+                // Remove from additional images array
+                $this->existingImages['additional'] = array_filter(
+                    $this->existingImages['additional'], 
+                    function($img) use ($id) {
+                        return $img->id !== $id;
+                    }
+                );
+                // Re-index the array
+                $this->existingImages['additional'] = array_values($this->existingImages['additional']);
+            }
             
             session()->flash('success', 'Image removed successfully');
             
         } catch (\Exception $e) {
-
-            dd($e->getMessage());
+            Log::error('Failed to remove image: ' . $e->getMessage());
             session()->flash('error', 'Failed to remove image. ' . $e->getMessage());
         }
     }
     
-    // Remove a newly uploaded image (before saving)
-    public function removeUploadedImage($index)
+    // Remove a view-specific image before saving
+    public function removeViewImage($view)
     {
-        array_splice($this->images, $index, 1);
+        if (isset($this->viewImages[$view])) {
+            $this->viewImages[$view] = null;
+            
+            // Also remove from preview
+            if (isset($this->viewImagesPreview[$view])) {
+                unset($this->viewImagesPreview[$view]);
+            }
+        }
     }
     
-    // Upload vehicle images
-    private function uploadVehicleImages($vehicleId)
+    // Remove an additional image before saving
+    public function removeAdditionalImage($index)
     {
-        if (!empty($this->images)) {
-            foreach ($this->images as $image) {
-                $path = $image->store('vehicles/' . $vehicleId, 'public');
-                
-                VehicleImage::create([
-                    'vehicle_id' => $vehicleId,
-                    'image_url' => $path,
-                    'sort_order' => 0, // Default sort order
-                ]);
+        if (isset($this->additionalImages[$index])) {
+            unset($this->additionalImages[$index]);
+            $this->additionalImages = array_values($this->additionalImages);
+        }
+    }
+    
+    // Upload view-specific vehicle images
+    private function uploadVehicleViewImages($vehicleId)
+    {
+        foreach (['front', 'side', 'back'] as $view) {
+            if (!empty($this->viewImages[$view]) && $this->viewImages[$view] instanceof \Livewire\TemporaryUploadedFile) {
+                try {
+                    // Check if there's already an image for this view
+                    $existingImage = VehicleImage::where('vehicle_id', $vehicleId)
+                        ->where('view', $view)
+                        ->first();
+                    
+                    // If exists, delete the old file
+                    if ($existingImage && $existingImage->image_url) {
+                        Storage::delete('public/' . $existingImage->image_url);
+                        $existingImage->delete();
+                    }
+                    
+                    // Store the new image
+                    $path = $this->viewImages[$view]->store('vehicles/' . $vehicleId, 'public');
+                    
+                    // Create image record
+                    VehicleImage::create([
+                        'vehicle_id' => $vehicleId,
+                        'image_url' => $path,
+                        'view' => $view,
+                        'is_featured' => ($view === 'front') ? true : false, // Make front view the featured image
+                    ]);
+                } catch (\Exception $e) {
+                    Log::error("Failed to upload {$view} image: " . $e->getMessage());
+                }
+            }
+        }
+    }
+    
+    // Upload additional vehicle images
+    private function uploadAdditionalImages($vehicleId)
+    {
+        if (!empty($this->additionalImages)) {
+            foreach ($this->additionalImages as $image) {
+                if ($image instanceof \Livewire\TemporaryUploadedFile) {
+                    try {
+                        $path = $image->store('vehicles/' . $vehicleId, 'public');
+                        
+                        VehicleImage::create([
+                            'vehicle_id' => $vehicleId,
+                            'image_url' => $path,
+                            'view' => 'additional',
+                            'is_featured' => false,
+                        ]);
+                    } catch (\Exception $e) {
+                        Log::error("Failed to upload additional image: " . $e->getMessage());
+                    }
+                }
             }
         }
     }
@@ -315,37 +462,43 @@ class VehicleList extends Component
             'engine_type' => '',
             'horsepower' => '',
             'drivetrain' => '',
-            'length' => '',
-            'width' => '',
-            'height' => '',
-            'wheelbase' => '',
             'seating_capacity' => '',
-            'cargo_volume' => '',
             'vehicle_condition' => '',
             'description' => '',
             'trim' => '',
             'owners' => 0,
             'location' => '',
             'is_featured' => false,
-            'downPaymentPercent'=>''
+            'downPaymentPercent' => ''
         ];
         
         $this->vehicleId = null;
         $this->vehicleStatus = 'active';
-        $this->images = [];
-        $this->vehicleImages = [];
+        $this->viewImages = [
+            'front' => null,
+            'side' => null,
+            'back' => null,
+        ];
+        $this->additionalImages = [];
+        $this->viewImagesPreview = [];
+        $this->existingImages = [
+            'front' => null,
+            'side' => null,
+            'back' => null,
+            'additional' => [],
+        ];
         $this->resetValidation();
     }
     
     // Render the component
     public function render()
     {
-        $models=[];
+        $models = [];
         // Get makes, models, body types, etc.
         $makes = Make::orderBy('name')->get();
-        $models = (isset($this->vehicle['make_id']) && $this->vehicle['make_id']) 
-        ? VehicleModel::where('make_id', $this->vehicle['make_id'])->get() 
-        : VehicleModel::orderBy('name')->get();
+        $models = isset($this->vehicle['make_id']) && $this->vehicle['make_id']
+            ? VehicleModel::where('make_id', $this->vehicle['make_id'])->get() 
+            : VehicleModel::orderBy('name')->get();
         
         $bodyTypes = BodyType::orderBy('name')->get();
         $fuelTypes = FuelType::orderBy('name')->get();
@@ -355,8 +508,8 @@ class VehicleList extends Component
         $dealerId = Auth::user()->institution_id;
         
         $vehiclesQuery = Vehicle::where('dealer_id', $dealerId)
-           ->
-            with(['make', 'model', 'transmission', 'fuelType', 'images'])
+            ->where('status', '!=', 'deleted')
+            ->with(['make', 'model', 'transmission', 'fuelType', 'images'])
             ->when($this->searchTerm, function ($query) {
                 return $query->where(function ($q) {
                     $q->whereHas('make', function ($q) {
@@ -382,8 +535,6 @@ class VehicleList extends Component
         $onHoldCount = Vehicle::where('dealer_id', $dealerId)->where('status', 'on_hold')->count();
         $soldCount = Vehicle::where('dealer_id', $dealerId)->where('status', 'sold')->count();
         $featuredCount = Vehicle::where('dealer_id', $dealerId)->where('is_featured', true)->count();
-
-
         
         return view('livewire.vehicle-management.vehicle-list', [
             'vehicles' => $vehicles,
@@ -398,6 +549,4 @@ class VehicleList extends Component
             'featuredCount' => $featuredCount,
         ]);
     }
-
-
 }

@@ -150,6 +150,23 @@ public $activeTab = 'application';
         }
     }
 
+
+    public function updatedNidanumber($value)
+{
+    // Remove any non-digit characters
+    $digits = preg_replace('/\D/', '', $value);
+
+    // Format as 20060329-14129-00001-27
+    $formatted = '';
+    if (strlen($digits) > 0) $formatted .= substr($digits, 0, 8);
+    if (strlen($digits) > 8) $formatted .= '-' . substr($digits, 8, 5);
+    if (strlen($digits) > 13) $formatted .= '-' . substr($digits, 13, 5);
+    if (strlen($digits) > 18) $formatted .= '-' . substr($digits, 18, 2);
+
+    $this->nidanumber = $formatted;
+}
+
+
     public function prevStep()
     {
         if ($this->step > 1) {
@@ -662,6 +679,7 @@ private function validateApplicationStep()
             'employer_name' => $this->employerName,
             'lender_id'=>$this->lender,
             'hrEmail'=>$this->hrEmail,
+            'car_dealer_id'=>auth()->user()->institution_id,
             'created_at' => now(),
             'updated_at' => now(),
         ]);

@@ -63,7 +63,7 @@ public function render()
     
     // Only fetch featured vehicles if not already set by search
     if (!isset($this->featuredVehicles)) {
-        $this->featuredVehicles = Vehicle::with('dealer')->where('is_featured', true)->latest()->take(6)->get();
+        $this->featuredVehicles = Vehicle::with('dealer')->where('is_featured', true)->latest()->take(12)->get();
     }
     
     $topDealers = CarDealer::withCount(['vehicles', 'reviews'])->orderByDesc('reviews_count')->take(4)->get();

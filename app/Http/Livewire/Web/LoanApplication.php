@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire\Web;
 
+use App\Models\LenderFinancingCriteria;
 use App\Models\Loan_sub_products;
 use Livewire\Component;
 use App\Models\Vehicle;
@@ -10,12 +11,15 @@ use App\Models\LoanProduct;
 use App\Models\Region;
 use App\Models\District;
 use App\Models\Application;
+use App\Models\Attachment;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\EmploymentVerification;
+use Livewire\WithFileUploads;
+
 class LoanApplication extends Component
 {
-
+    use WithFileUploads;
 
     public $vehicle;
     public $lender;
@@ -25,6 +29,7 @@ class LoanApplication extends Component
     
     // Form inputs
     public $first_name;
+    public $index=1;
     public $middle_name;
     public $last_name;
     public $email;
@@ -33,56 +38,111 @@ class LoanApplication extends Component
     public $region;
     public $district;
     public $street;
+    
+    // Employment Status
+    public $is_employed = null;
+    
+    // Employment Information - only required if employed
     public $employer_name;
     public $hrEmail;
     public $is_employee = false;
     public $employee_id;
-
-    public $downPaymentPercent;
     public $monthly_income;
+    
+    // Loan Details
+    public $downPaymentPercent;
     public $purchase_price;
     public $down_payment = 0;
     public $loan_amount;
     public $loanProductId;
+    public $tenure;
     public $terms = false;
     
     // Calculated values
     public $estimated_payment = null;
     
-    protected $rules = [
-        'first_name' => 'required|string|max:50',
-        'middle_name' => 'nullable|string|max:50',
-        'last_name' => 'required|string|max:50',
-        'email' => 'required|email|max:100',
-        'phone_number' => 'required|string|max:20',
-        'national_id' => 'required|string|max:50',
-        'region' => 'required',
-        'district' => 'required',
-        'street' => 'required|string|max:100',
-        'employer_name' => 'required|string|max:100',
-        'hrEmail' => 'required|email|max:100',
-        'is_employee' => 'boolean',
-        'employee_id' => 'required_if:is_employee,true|nullable|string|max:50',
-        'monthly_income' => 'required|numeric|min:100000',
-        'down_payment' => 'required|numeric|min:0',
-        'loanProductId' => 'required',
-        'terms' => 'accepted',
-    ];
+    // File uploads
+    public $id_document;
+    public $bank_statement;
+    public $payslip;
+    public $application_document;
+
+    protected function rules()
+    {
+        $rules = [
+            'first_name' => 'required|string|max:50',
+            'middle_name' => 'nullable|string|max:50',
+            'last_name' => 'required|string|max:50',
+            'email' => 'required|email|max:100',
+            'phone_number' => 'required|string|max:20',
+            'national_id' => ['required', 'regex:/^\d{8}-\d{5}-\d{5}-\d{2}$/'],
+            'region' => 'required',
+            'district' => 'required',
+            'street' => 'required|string|max:100',
+            'is_employed' => 'required|boolean',
+            'down_payment' => 'required|numeric|min:0',
+            'tenure' => 'required',
+            'terms' => 'accepted',
+            'id_document' => 'required|file|max:2048|mimes:jpg,jpeg,png,pdf',
+            'bank_statement' => 'required|file|max:5120|mimes:jpg,jpeg,png,pdf',
+        ];
+
+        // Only add employment validation rules if the user is employed
+        if ($this->is_employed) {
+            $rules['employer_name'] = 'required|string|max:100';
+            $rules['hrEmail'] = 'required|email|max:100';
+            $rules['monthly_income'] = 'required|numeric|min:100000';
+            $rules['payslip'] = 'required|file|max:2048|mimes:jpg,jpeg,png,pdf';
+            
+            // Only required if the person is a government employee
+            if ($this->is_employee) {
+                $rules['employee_id'] = 'required|string|max:50';
+            }
+        }
+        
+        // Application document is optional
+        $rules['application_document'] = 'nullable|file|max:5120|mimes:jpg,jpeg,png,pdf,docx';
+
+        return $rules;
+    }
+
+    public function getLoanTeam($lender)
+    {
+        // Assuming loan_terms_range is a string like "1-32"
+        $range = $lender->loan_terms_range;
     
-    public function mount($vehicleId ,$lenderid )
+        // Split the string by the dash
+        [$start, $end] = explode('-', $range);
+    
+        // Convert to integers
+        $start = (int) $start;
+        $end = (int) $end;
+    
+        // Create the range array
+        $terms = range($start, $end);
+    
+        return $terms;
+    }
+
+    public function mount($vehicleId=null, $lenderId=null)
     {
 
-     
-        $vehicle_id=$vehicleId;
         
-         $lender_id=$lenderid;
+        $vehicle_id = $vehicleId;
+        $lender_id = $lenderId;
+
+
+        
         $this->vehicle = Vehicle::findOrFail($vehicle_id);
-
-
-      
         $this->lender = Lender::findOrFail($lender_id);
+        $this->loanProducts = $this->getLoanTeam($this->lender);
+
+        $this->downPaymentPercent = LenderFinancingCriteria::where('lender_id', $lender_id)
+                                    ->where('make_id', $this->vehicle->make_id)
+                                    ->where('model_id', $this->vehicle->model_id)
+                                    ->first()->min_down_payment_percent;
+
         $this->regions = Region::all();
-        $this->loanProducts = Loan_sub_products::where('institution_id', $this->lender->id)->get();
         
         // Pre-fill values
         if (Auth::check()) {
@@ -97,11 +157,7 @@ class LoanApplication extends Component
         $this->calculateLoanAmount();
     }
     
-    // When region changes, update districts
-    public function updatedRegion()
-    {
-       // $this->districts = District::where('region_id', $this->region)->get();
-    }
+  
     
     // When down payment changes, recalculate loan amount
     public function updatedDownPayment()
@@ -160,9 +216,50 @@ class LoanApplication extends Component
         $this->estimated_payment = round($this->estimated_payment, 2);
     }
     
+    /**
+     * Save file attachments
+     */
+    public function saveAttachment($loan_id, $type, $file)
+    {
+        try {
+            // Define allowed file extensions
+            $allowedExtensions = ['jpg', 'jpeg', 'png', 'pdf', 'docx'];
+    
+            // Generate a unique reference number
+            $referenceNumber = time();
+    
+            // Get file extension
+            $extension = strtolower($file->getClientOriginalExtension());
+    
+            // Check if the extension is allowed
+            if (!in_array($extension, $allowedExtensions)) {
+                throw new \Exception("Unsupported file type: .$extension");
+            }
+    
+            // Generate a unique filename
+            $filename = uniqid() . '.' . $extension;
+    
+            // Store the file in public storage under assets/attachment
+            $storedPath = $file->storeAs('assets/attachment', $filename, 'public');
+    
+            // Save to database
+            Attachment::create([
+                'url' => $storedPath,
+                'loan_id' => $loan_id,
+                'type' => $type,
+            ]);
+            
+            return true;
+        } catch (\Exception $e) {
+            // Log error
+            \Log::error('File upload error: ' . $e->getMessage());
+            return false;
+        }
+    }
+    
     public function submitApplication()
     {
-      //  $this->validate();
+        $this->validate();
         
         // Create application record
         $application = new Application();
@@ -172,53 +269,79 @@ class LoanApplication extends Component
         $application->phone_number = $this->phone_number;
         $application->national_id = $this->national_id;
         $application->region = $this->region;
-        $application->district =$this->district;
+        $application->district = $this->district;
         $application->street = $this->street;
         $application->email = $this->email;
         $application->application_status = 'pending';
-        $application->make_and_model = 'toyota'; // $this->vehicle->make . ' ' . $this->vehicle->model;
+        $application->make_and_model = optional($this->vehicle->make)->name . ' ' . optional($this->vehicle->model)->name;
         $application->year_of_manufacture = $this->vehicle->year;
         $application->vin = $this->vehicle->vin;
         $application->color = $this->vehicle->color;
         $application->mileage = $this->vehicle->mileage;
         $application->purchase_price = $this->purchase_price;
         $application->down_payment = $this->down_payment;
-        $application->loan_id = $this->loanProductId;
         $application->loan_amount = $this->loan_amount;
         $application->loanProductId = $this->loanProductId;
-        $application->is_employee = $this->is_employee;
-        $application->employee_id = $this->employee_id;
-        $application->monthly_income = $this->monthly_income;
-        $application->employer_name = $this->employer_name;
+        $application->tenure = $this->tenure;
         $application->lender_id = $this->lender->id;
-        $application->hrEmail = $this->hrEmail;
-        $application->employer_verification_sent = false;
-        $application->employer_verified = false;
-        $application->employer_verification_status = 'pending';
-        $application->client_id=auth()->user()->id;
+        $application->client_id = auth()->user()->id;
+        $application->car_dealer_id = $this->vehicle->dealer_id;
+        $application->stage_name='car_dealer';
+        $application->vehicle_id=$this->vehicle->id;
+        
+        // Only set employment related fields if employed
+        if ($this->is_employed) {
+           $application->is_employee =$this->is_employed;
+            $application->employer_name = $this->employer_name;
+            $application->hrEmail = $this->hrEmail;
+            $application->monthly_income = $this->monthly_income;
+          //  $application->is_employee = $this->is_employee;
+            $application->employee_id = $this->employee_id;
+            $application->employer_verification_sent = false;
+            $application->employer_verified = false;
+            $application->employer_verification_status = 'pending';
+        } else {
+            $application->is_employee =false;
+        }
         
         // Save the application
         $application->save();
         
-        // Send employment verification email
-        try {
-          //  Mail::to($this->hrEmail)->send(new EmploymentVerification($application));
-            
-            // Update application status
-            // $application->employer_verification_sent = true;
-            // $application->employer_verification_sent_at = now();
-            // $application->save();
-        } catch (\Exception $e) {
-            // Log email sending failure
-            \Log::error('Failed to send employment verification email: ' . $e->getMessage());
+        // Upload and save attachments
+        if ($this->id_document) {
+            $this->saveAttachment($application->id, 'id_document', $this->id_document);
+        }
+        
+        if ($this->bank_statement) {
+            $this->saveAttachment($application->id, 'bank_statement', $this->bank_statement);
+        }
+        
+        // Conditionally upload payslip if employed
+        if ($this->is_employed && $this->payslip) {
+            $this->saveAttachment($application->id, 'payslip', $this->payslip);
+        }
+        
+        // Optional application document
+        if ($this->application_document) {
+            $this->saveAttachment($application->id, 'application_document', $this->application_document);
+        }
+        
+        // Send employment verification email if employed
+        if ($this->is_employed) {
+            try {
+               // Mail::to($this->hrEmail)->send(new EmploymentVerification($application));
+                
+                // Update application status
+               // $application->employer_verification_sent = true;
+              //  $application->employer_verification_sent_at = now();
+               // $application->save();
+            } catch (\Exception $e) {
+                // Log email sending failure
+                \Log::error('Failed to send employment verification email: ' . $e->getMessage());
+            }
         }
 
-        session()->flash('success', 'Your loan application has been submitted successfully.!');
-
-        
-        // Redirect to application confirmation page
-     //   return redirect()->route('loan.application.confirmation', $application->id)
-       //     ->with('success', 'Your loan application has been submitted successfully.');
+        session()->flash('success', 'Your loan application has been submitted successfully!');
     }
     
     public function render()
@@ -231,6 +354,5 @@ class LoanApplication extends Component
             'loanProducts' => $this->loanProducts,
         ]);
     }
-
 
 }
