@@ -389,41 +389,309 @@
     </div>
 
     <!-- Footer would go here -->
-
     <script>
-        // Script to handle navigation between profile sections
-        document.addEventListener('DOMContentLoaded', function() {
-            const navLinks = document.querySelectorAll('nav a');
-            
-            navLinks.forEach(link => {
-                link.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    
-                    // Remove active class from all links
-                    navLinks.forEach(l => {
-                        l.classList.remove('bg-green-50', 'text-green-700', 'border-l-4', 'border-green-600');
-                        l.classList.add('text-gray-700', 'hover:bg-gray-50', 'hover:text-gray-900');
-                    });
-                    
-                    // Add active class to clicked link
-                    this.classList.add('bg-green-50', 'text-green-700', 'border-l-4', 'border-green-600');
-                    this.classList.remove('text-gray-700', 'hover:bg-gray-50', 'hover:text-gray-900');
-                    
-                    // Get the target section ID from the href attribute
-                    const targetId = this.getAttribute('href').substring(1);
-                    const targetSection = document.getElementById(targetId);
-                    
-                    // Scroll to the target section
-                    window.scrollTo({
-                        top: targetSection.offsetTop - 20,
-                        behavior: 'smooth'
-                    });
-                });
-            });
+    // Complete JavaScript for Profile Settings - Fixed for Livewire compatibility
+    document.addEventListener('DOMContentLoaded', function() {
+        
+        // Initialize Alpine.js data for tab functionality
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('tabs', () => ({
+                activeTab: 'profile' // Default tab, this will be synced with Livewire
+            }));
         });
-    </script>
 
-                                              
+        // Wait for Livewire to be ready
+        if (typeof Livewire !== 'undefined') {
+            document.addEventListener('livewire:load', function () {
+                initializeProfileNavigation();
+            });
+        }
+        
+        // Also initialize immediately in case Livewire is already loaded
+        setTimeout(initializeProfileNavigation, 100);
+    });
+
+    function initializeProfileNavigation() {
+        // Use more specific selector that matches your actual navigation structure
+        const navLinks = document.querySelectorAll('nav a[wire\\:click\\.prevent]');
+        
+        if (navLinks.length === 0) {
+            // Fallback selector if the above doesn't work
+            const fallbackLinks = document.querySelectorAll('nav a[href^="#"]');
+            fallbackLinks.forEach(link => {
+                setupLinkHandler(link);
+            });
+        } else {
+            navLinks.forEach(link => {
+                setupLinkHandler(link);
+            });
+        }
+    }
+
+    function setupLinkHandler(link) {
+        // Remove any existing event listeners to prevent duplicates
+        link.removeEventListener('click', handleNavClick);
+        link.addEventListener('click', handleNavClick);
+    }
+
+    function handleNavClick(e) {
+        // For Livewire links, don't prevent default - let Livewire handle it
+        if (this.hasAttribute('wire:click.prevent')) {
+            // Extract tab name from wire:click.prevent attribute
+            const wireClick = this.getAttribute('wire:click.prevent');
+            const tabMatch = wireClick.match(/setActiveTab\('(\w+)'\)/);
+            
+            if (tabMatch) {
+                const tabName = tabMatch[1];
+                
+                // Smooth scroll to the section after Livewire updates
+                setTimeout(() => {
+                    scrollToSection(tabName);
+                }, 150);
+                
+                // Update URL hash
+                updateUrlHash(tabName);
+            }
+        } else {
+            // Handle regular anchor links
+            e.preventDefault();
+            
+            const href = this.getAttribute('href');
+            if (href && href.startsWith('#')) {
+                const tabName = href.substring(1);
+                
+                // Manually update active states for non-Livewire links
+                updateActiveStates(this);
+                
+                // Show/hide sections
+                showSection(tabName);
+                
+                // Smooth scroll
+                scrollToSection(tabName);
+                
+                // Update URL hash
+                updateUrlHash(tabName);
+            }
+        }
+    }
+
+    function updateActiveStates(activeLink) {
+        // Remove active class from all links
+        const allLinks = document.querySelectorAll('nav a');
+        allLinks.forEach(link => {
+            link.classList.remove('bg-green-50', 'text-green-700', 'border-l-4', 'border-green-600');
+            link.classList.add('text-gray-700', 'hover:bg-gray-50', 'hover:text-gray-900');
+        });
+        
+        // Add active class to clicked link
+        activeLink.classList.add('bg-green-50', 'text-green-700', 'border-l-4', 'border-green-600');
+        activeLink.classList.remove('text-gray-700', 'hover:bg-gray-50', 'hover:text-gray-900');
+    }
+
+    function showSection(tabName) {
+        // Hide all sections
+        const allSections = document.querySelectorAll('[id][x-show]');
+        allSections.forEach(section => {
+            section.style.display = 'none';
+        });
+        
+        // Show target section
+        const targetSection = document.getElementById(tabName);
+        if (targetSection) {
+            targetSection.style.display = 'block';
+        }
+    }
+
+    function scrollToSection(tabName) {
+        const targetSection = document.getElementById(tabName);
+        if (targetSection) {
+            // Calculate offset accounting for any fixed headers
+            const headerOffset = 80; // Adjust based on your header height
+            const elementPosition = targetSection.getBoundingClientRect().top;
+            const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+            
+            window.scrollTo({
+                top: Math.max(0, offsetPosition),
+                behavior: 'smooth'
+            });
+        }
+    }
+
+    function updateUrlHash(tabName) {
+        if (history.pushState && tabName) {
+            const newUrl = window.location.protocol + "//" + 
+                          window.location.host + 
+                          window.location.pathname + '#' + tabName;
+            window.history.pushState({tab: tabName}, '', newUrl);
+        }
+    }
+
+    // Handle browser back/forward buttons
+    window.addEventListener('popstate', function(e) {
+        if (e.state && e.state.tab) {
+            const tabName = e.state.tab;
+            
+            // Try to trigger Livewire method first
+            if (typeof Livewire !== 'undefined' && Livewire.emit) {
+                Livewire.emit('setActiveTab', tabName);
+            } else {
+                // Fallback to manual handling
+                const targetLink = document.querySelector(`nav a[href="#${tabName}"]`);
+                if (targetLink) {
+                    updateActiveStates(targetLink);
+                    showSection(tabName);
+                    scrollToSection(tabName);
+                }
+            }
+        }
+    });
+
+    // Listen for Livewire events to sync URL hash
+    document.addEventListener('livewire:load', function () {
+        if (typeof Livewire !== 'undefined') {
+            // Listen for tab changes from Livewire component
+            Livewire.on('tabChanged', tabName => {
+                updateUrlHash(tabName);
+                setTimeout(() => scrollToSection(tabName), 100);
+            });
+        }
+    });
+
+    // Handle direct access via URL hash on page load
+    window.addEventListener('load', function() {
+        const hash = window.location.hash.substring(1);
+        const validTabs = ['profile', 'security', 'preferences', 'danger'];
+        
+        if (hash && validTabs.includes(hash)) {
+            if (typeof Livewire !== 'undefined') {
+                // Wait for Livewire to be fully loaded
+                setTimeout(() => {
+                    if (Livewire.emit) {
+                        Livewire.emit('setActiveTab', hash);
+                    }
+                }, 300);
+            } else {
+                // Fallback for non-Livewire setup
+                const targetLink = document.querySelector(`nav a[href="#${hash}"]`);
+                if (targetLink) {
+                    setTimeout(() => {
+                        updateActiveStates(targetLink);
+                        showSection(hash);
+                        scrollToSection(hash);
+                    }, 100);
+                }
+            }
+        }
+    });
+
+    // Handle file input changes for profile photo
+    document.addEventListener('change', function(e) {
+        if (e.target.type === 'file' && e.target.id === 'photo') {
+            const file = e.target.files[0];
+            if (file) {
+                // Basic file validation
+                const validTypes = ['image/jpeg', 'image/png', 'image/gif'];
+                const maxSize = 2 * 1024 * 1024; // 2MB
+                
+                if (!validTypes.includes(file.type)) {
+                    alert('Please select a valid image file (JPG, PNG, or GIF)');
+                    e.target.value = '';
+                    return;
+                }
+                
+                if (file.size > maxSize) {
+                    alert('File size must be less than 2MB');
+                    e.target.value = '';
+                    return;
+                }
+                
+                // Preview the image (optional)
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const preview = document.querySelector('img[alt*="Profile"]');
+                    if (preview) {
+                        preview.src = e.target.result;
+                    }
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+    });
+
+    // Handle modal functionality for delete account
+    function setupModalHandlers() {
+        // Listen for custom events to show/hide modals
+        window.addEventListener('show-delete-confirmation', function() {
+            const modal = document.querySelector('[x-data*="open"]');
+            if (modal && modal.__x) {
+                modal.__x.$data.open = true;
+            }
+        });
+        
+        // Handle Escape key to close modals
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                const openModal = document.querySelector('[x-data*="open"][x-show="open"]');
+                if (openModal && openModal.__x) {
+                    openModal.__x.$data.open = false;
+                }
+            }
+        });
+    }
+
+    // Initialize modal handlers when DOM is ready
+    document.addEventListener('DOMContentLoaded', setupModalHandlers);
+
+    // Smooth scrolling for any remaining anchor links
+    document.addEventListener('click', function(e) {
+        const target = e.target.closest('a[href^="#"]');
+        if (target && !target.hasAttribute('wire:click.prevent')) {
+            const href = target.getAttribute('href');
+            if (href !== '#' && href.length > 1) {
+                const targetElement = document.querySelector(href);
+                if (targetElement) {
+                    e.preventDefault();
+                    targetElement.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            }
+        }
+    });
+
+    // Form validation helpers
+    function validateForm(formElement) {
+        const requiredFields = formElement.querySelectorAll('[required]');
+        let isValid = true;
+        
+        requiredFields.forEach(field => {
+            if (!field.value.trim()) {
+                field.classList.add('border-red-500');
+                isValid = false;
+            } else {
+                field.classList.remove('border-red-500');
+            }
+        });
+        
+        return isValid;
+    }
+
+    // Add form validation on submit
+    document.addEventListener('submit', function(e) {
+        if (!e.target.hasAttribute('wire:submit.prevent')) {
+            if (!validateForm(e.target)) {
+                e.preventDefault();
+                alert('Please fill in all required fields');
+            }
+        }
+    });
+
+    // Console log for debugging
+    console.log('Profile Settings JavaScript loaded successfully');
+</script>
+
+
+
                                                     
-                                                    
-                                                    </div>
+      </div>

@@ -131,15 +131,7 @@
             <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">
                     <tr>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            <div class="flex items-center">
-                                <input 
-                                    wire:model="selectAll" 
-                                    type="checkbox" 
-                                    class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300 rounded"
-                                >
-                            </div>
-                        </th>
+                       
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                             Type
                         </th>
@@ -157,16 +149,7 @@
 
                     @forelse ($notificationDummyData as $notification)
                         <tr class="{{ $notification->readStatus ? '' : 'bg-blue-50' }}">
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="flex items-center">
-                                    <input 
-                                        wire:model="selectedNotifications" 
-                                        value="{{ $notification->id }}" 
-                                        type="checkbox" 
-                                        class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300 rounded"
-                                    >
-                                </div>
-                            </td>
+                           
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="flex items-center">
                                     @switch($notification->entity_type ?? 'default')

@@ -51,6 +51,24 @@ Route::middleware(['auth:sanctum', 'verified',ClientMiddleware::class])->group(f
 
 
 
+       /////////////////// CLIENT LOAN APPLICATION /////////////////////////
+       Route::get('loan/pre-qualify/{vehicleId}/{lenderId}',[WebsiteController::class,'loanApplication'])->name('loan.pre-qualify');
+
+
+      //////////////////////////////////// OTP /////////////////////////////
+      Route::get('account',[WebsiteController::class,'accountPage'])->name('account.setting');
+
+
+
+          ////////////////////// LOAN APPLICATION /////////////////////////////////
+    Route::get('loan/application/{id}',[])->name('loan.application');
+    Route::get('loan/list',[WebsiteController::class,'applicationList'])->name('application.list');
+    Route::get('application/status/{id}',[WebsiteController::class,'applicationStatus'])->name('application.status');
+   
+
+
+
+
     Route::fallback(function() {
 
         // If the user is authenticated, redirect to the dashboard
@@ -120,22 +138,12 @@ Route::get('/employer/verification-completed', [EmployerVerificationController::
     Route::get('/client-registration',[WebsiteController::class,'clientRegistration'])->name('client.registration');
 
 
-    /////////////////// CLIENT LOAN APPLICATION /////////////////////////
-    Route::get('loan/pre-qualify/{vehicleId}/{lenderId}',[WebsiteController::class,'loanApplication'])->name('loan.pre-qualify');
 
 
-    ////////////////////// LOAN APPLICATION /////////////////////////////////
-    Route::get('loan/application/{id}',[])->name('loan.application');
 
-
-    Route::get('loan/list',[WebsiteController::class,'applicationList'])->name('application.list');
-
-
-    Route::get('application/status/{id}',[WebsiteController::class,'applicationStatus'])->name('application.status');
+   
     Route::get('/contact',[WebsiteController::class,'contactPage'])->name('contact.page');
 
 
 
-    //////////////////////////////////// OTP /////////////////////////////
-
-    Route::get('account',[WebsiteController::class,'accountPage'])->name('account.setting');
+ 

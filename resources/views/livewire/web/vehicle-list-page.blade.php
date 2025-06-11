@@ -657,10 +657,10 @@ input[type=range]::-moz-range-thumb {
                                 <div class="flex items-center mt-1">
                                     <img 
                                         src="{{ asset('/cars/icon.avif')}}" 
-                                        alt="{{ $vehicle->dealer->name }}" 
+                                        alt="{{ optional($vehicle->dealer)->name }}" 
                                         class="w-4 h-4 rounded-full object-cover border border-gray-200"
                                     >
-                                    <span class="ml-1.5 text-xs text-gray-500">{{ $vehicle->dealer->name }} • {{ $vehicle->dealer->location }}</span>
+                                    <span class="ml-1.5 text-xs text-gray-500">{{ optional($vehicle->dealer)->name }} • {{ optional($vehicle->dealer)->location }}</span>
                                 </div>
                             </div>
                             <div class="text-green-600 font-bold text-base sm:text-right">
