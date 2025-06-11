@@ -52,6 +52,13 @@ Route::middleware(['auth:sanctum', 'verified',ClientMiddleware::class])->group(f
 
 
     Route::fallback(function() {
+
+        // If the user is authenticated, redirect to the dashboard
+        if (Auth::check()) {
+            return redirect()->route('CyberPoint-Pro');
+        }
+
+       // dd("okkk");
         return view('pages/utility/404');
     });
 });
