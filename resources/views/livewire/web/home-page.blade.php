@@ -264,13 +264,13 @@
                 <div class="mt-3">
                     <div class="flex flex-wrap gap-2">
                         <span class="text-xs text-gray-500">Popular:</span>
-                        <a href="#" class="text-xs text-blue-600 hover:text-blue-800 hover:underline">SUVs</a>
+                        <a href="{{ url('vehicle/list') }}" class="text-xs text-blue-600 hover:text-blue-800 hover:underline">SUVs</a>
                         <span class="text-gray-300">|</span>
-                        <a href="#" class="text-xs text-blue-600 hover:text-blue-800 hover:underline">Under 10M</a>
+                        <a href="{{ url('vehicle/list') }}" class="text-xs text-blue-600 hover:text-blue-800 hover:underline">Under 10M</a>
                         <span class="text-gray-300">|</span>
-                        <a href="#" class="text-xs text-blue-600 hover:text-blue-800 hover:underline">Toyota</a>
+                        <a href="{{ url('vehicle/list') }}" class="text-xs text-blue-600 hover:text-blue-800 hover:underline">Toyota</a>
                         <span class="text-gray-300">|</span>
-                        <a href="#" class="text-xs text-blue-600 hover:text-blue-800 hover:underline">Automatic</a>
+                        <a href="{{ url('vehicle/list') }}" class="text-xs text-blue-600 hover:text-blue-800 hover:underline">Automatic</a>
                     </div>
                 </div>
             </div>
@@ -363,7 +363,7 @@
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 mr-1.5 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
                     <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
                 </svg>
-                {{ $vehicle->dealer->location ?? 'Not specified' }}
+                {{ $vehicle->location ?? 'Not specified' }}
             </div>
         </div>
         
@@ -425,7 +425,7 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                                 </svg>
-                                {{ $dealer->location }}
+                                {{ $dealer->region }} - {{ $dealer->city }}
                             </p>
                         </div>
                         <img src="{{ asset('/cars/icon.avif') }}" alt="{{ $dealer->name }}" class="w-10 h-10 rounded-full object-cover border border-gray-200">
@@ -435,12 +435,12 @@
                 <!-- Stats -->
                 <div class="flex divide-x divide-gray-100">
                     <div class="flex-1 p-3 text-center">
-                        <div class="text-sm font-medium text-gray-900">{{ $dealer->vehicles_count }}</div>
+                        <div class="text-sm font-medium text-gray-900">{{ $dealer->dealerCarCount() }}</div>
                         <div class="text-xs text-gray-500">Vehicles</div>
                     </div>
                     <div class="flex-1 p-3 text-center">
                         <div class="flex items-center justify-center">
-                            <span class="text-sm font-medium text-gray-900 mr-1">{{ $dealer->rating }}</span>
+                            <span class="text-sm font-medium text-gray-900 mr-1">{{ $dealer->rateCarDealer() }} /10</span>
                             <svg class="w-4 h-4 text-yellow-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                                 <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                             </svg>
@@ -450,7 +450,7 @@
                 </div>
                 
                 <!-- Action Link -->
-                <a href="#" class="block text-center py-2 text-sm font-medium text-green-600 hover:text-green-700 hover:bg-green-50 transition-colors duration-150 border-t border-gray-100">
+                <a href="{{ route('vehicle.list') }}" class="block text-center py-2 text-sm font-medium text-green-600 hover:text-green-700 hover:bg-green-50 transition-colors duration-150 border-t border-gray-100">
                     Browse Inventory
                 </a>
             </div>
@@ -523,7 +523,8 @@
             </div>
             
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <div class="bg-white rounded-xl shadow-md p-6 relative">
+               
+               <div class="bg-white rounded-xl shadow-md p-6 relative">
                     <div class="absolute -top-4 left-6 text-green-600">
                         <svg class="w-8 h-8 text-green-600 opacity-25" fill="currentColor" viewBox="0 0 32 32" aria-hidden="true">
                             <path d="M9.352 4C4.456 7.456 1 13.12 1 19.36c0 5.088 3.072 8.064 6.624 8.064 3.36 0 5.856-2.688 5.856-5.856 0-3.168-2.208-5.472-5.088-5.472-.576 0-1.344.096-1.536.192.48-3.264 3.552-7.104 6.624-9.024L9.352 4zm16.512 0c-4.8 3.456-8.256 9.12-8.256 15.36 0 5.088 3.072 8.064 6.624 8.064 3.264 0 5.856-2.688 5.856-5.856 0-3.168-2.304-5.472-5.184-5.472-.576 0-1.248.096-1.44.192.48-3.264 3.456-7.104 6.528-9.024L25.864 4z" />
@@ -544,6 +545,9 @@
                         </div>
                     </div>
                 </div>
+
+
+
                 
                 <div class="bg-white rounded-xl shadow-md p-6 relative">
                     <div class="absolute -top-4 left-6 text-green-600">
@@ -571,6 +575,42 @@
                         </div>
                     </div>
                 </div>
+
+
+
+                <div class="bg-white rounded-xl shadow-md p-6 relative">
+    <div class="absolute -top-4 left-6 text-green-600">
+        <svg class="w-8 h-8 text-green-600 opacity-25" fill="currentColor" viewBox="0 0 32 32" aria-hidden="true">
+            <path d="M9.352 4C4.456 7.456 1 13.12 1 19.36c0 5.088 3.072 8.064 6.624 8.064 3.36 0 5.856-2.688 5.856-5.856 0-3.168-2.208-5.472-5.088-5.472-.576 0-1.344.096-1.536.192.48-3.264 3.552-7.104 6.624-9.024L9.352 4zm16.512 0c-4.8 3.456-8.256 9.12-8.256 15.36 0 5.088 3.072 8.064 6.624 8.064 3.264 0 5.856-2.688 5.856-5.856 0-3.168-2.304-5.472-5.184-5.472-.576 0-1.248.096-1.44.192.48-3.264 3.456-7.104 6.528-9.024L25.864 4z" />
+        </svg>
+    </div>
+
+    <p class="mt-4 text-gray-600 italic">
+        Kibo Auto made the car buying process smooth and stress-free. Their team was helpful and transparent, and I found exactly what I was looking for.
+    </p>
+
+    <div class="mt-6 flex items-center">
+        <img src="{{ asset('/cars/icon.avif') }}" alt="Customer" class="w-12 h-12 rounded-full object-cover">
+        <div class="ml-3">
+            <h4 class="text-base font-semibold text-gray-900">Aisha Mwakalinga</h4>
+            <div class="flex mt-1">
+                @for($i = 1; $i <= 5; $i++)
+                    <svg class="w-4 h-4 {{ $i <= 5 ? 'text-yellow-400' : 'text-gray-300' }}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                    </svg>
+                @endfor
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
             </div>
         </div>
     </div>

@@ -140,7 +140,7 @@ class LoanApplication extends Component
         $this->downPaymentPercent = LenderFinancingCriteria::where('lender_id', $lender_id)
                                     ->where('make_id', $this->vehicle->make_id)
                                     ->where('model_id', $this->vehicle->model_id)
-                                    ->first()->min_down_payment_percent;
+                                    ->first()->min_down_payment_percent ?? 0;
 
         $this->regions = Region::all();
         
@@ -295,7 +295,7 @@ class LoanApplication extends Component
             $application->employer_name = $this->employer_name;
             $application->hrEmail = $this->hrEmail;
             $application->monthly_income = $this->monthly_income;
-          //  $application->is_employee = $this->is_employee;
+          // $application->is_employee = $this->is_employee;
             $application->employee_id = $this->employee_id;
             $application->employer_verification_sent = false;
             $application->employer_verified = false;
@@ -342,6 +342,8 @@ class LoanApplication extends Component
         }
 
         session()->flash('success', 'Your loan application has been submitted successfully!');
+
+        return redirect()->route('application.list');
     }
     
     public function render()

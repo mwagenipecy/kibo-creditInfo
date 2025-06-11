@@ -122,6 +122,25 @@ class CarDealer extends Model
     {
         return $this->hasMany(Vehicle::class);
     }
+
+
+    public function dealerCarCount(){
+
+        return Vehicle::where('dealer_id', $this->id)
+           // ->where('status', 'ACTIVE')
+            ->count();
+    }
+
+
+    public function rateCarDealer()
+    {
+        return rand(7, 9);
+    }
+    /**
+     * Get the reviews for the car dealer.
+     */
+
+
     
     public function reviews()
     {

@@ -66,7 +66,7 @@ public function render()
         $this->featuredVehicles = Vehicle::with('dealer')->where('is_featured', true)->latest()->take(12)->get();
     }
     
-    $topDealers = CarDealer::withCount(['vehicles', 'reviews'])->orderByDesc('reviews_count')->take(4)->get();
+    $topDealers = CarDealer::withCount(['vehicles', 'reviews'])->orderByDesc('reviews_count')->take(8)->get();
     
     return view('livewire.web.home-page', [
         'makes' => $makes,

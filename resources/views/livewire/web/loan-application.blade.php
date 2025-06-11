@@ -74,7 +74,7 @@
                         <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
                             <div>
                                 <div class="text-xs text-gray-500">Condition</div>
-                                <div class="text-sm font-medium">{{ $vehicle->condition }}</div>
+                                <div class="text-sm font-medium">{{ $vehicle->vehicle_condition }}</div>
                             </div>
                             <div>
                                 <div class="text-xs text-gray-500">Mileage</div>

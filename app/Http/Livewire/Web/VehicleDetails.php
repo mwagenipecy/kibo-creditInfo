@@ -33,6 +33,7 @@ class VehicleDetails extends Component
 
     public $lenders=[];
 
+    public $simiralVehicles=[];
     public $monthly_payment=[];
     
     protected $rules = [
@@ -56,6 +57,8 @@ class VehicleDetails extends Component
 
        $this->lenders = $lenderService->getLendersForVehicle($id);
 
+
+       $this->simiralVehicles=$this->getSimiralVehiclesProperty();
         
 
        $lenderService = new LenderFinancingService();
@@ -65,6 +68,21 @@ class VehicleDetails extends Component
         // Pre-fill message
         $this->message = "Hi, I'm interested in the " . $this->vehicle->year . " " . optional($this->vehicle->make)->name . " " . optional($this->vehicle->model)->name . " you have listed. Please contact me with more information.";
     }
+
+
+    public function getSimiralVehiclesProperty()
+    {
+        // Get similar vehicles (same make/model or category but different vehicles)
+        return Vehicle::where(function($query) {
+                $query->where('make_id', $this->vehicle->make_id)
+                    ->orWhere('body_type_id', $this->vehicle->body_type_id);
+            })
+            ->where('id', '!=', $this->vehicle->id)
+            ->take(4)
+            ->get();
+    }
+
+
     
     public function submitInquiry()
     {

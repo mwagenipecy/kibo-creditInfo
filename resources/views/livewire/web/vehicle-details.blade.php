@@ -179,7 +179,7 @@
             </svg>
             <div>
                 <div class="text-xs text-gray-500">Fuel Type</div>
-                <div class="font-semibold">{{ $vehicle->fuel_type }}</div>
+                <div class="font-semibold"> {{ optional($vehicle->fuelType)->name }} </div>
             </div>
         </div>
         <div class="flex items-center px-4 py-2">
@@ -219,7 +219,7 @@
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-6">
                     <div class="bg-gray-50 p-4 rounded-lg border border-gray-100 hover:shadow-md transition duration-300">
                         <div class="text-gray-500 text-sm mb-1">Condition</div>
-                        <div class="font-semibold text-gray-900">{{ $vehicle->condition }}</div>
+                        <div class="font-semibold text-gray-900">{{ $vehicle->vehicle_condition }}</div>
                     </div>
                     <div class="bg-gray-50 p-4 rounded-lg border border-gray-100 hover:shadow-md transition duration-300">
                         <div class="text-gray-500 text-sm mb-1">Year</div>
@@ -227,7 +227,7 @@
                     </div>
                     <div class="bg-gray-50 p-4 rounded-lg border border-gray-100 hover:shadow-md transition duration-300">
                         <div class="text-gray-500 text-sm mb-1">Body Type</div>
-                        <div class="font-semibold text-gray-900">{{ $vehicle->body_type }}</div>
+                        <div class="font-semibold text-gray-900">{{ optional($vehicle->bodyType)->name }}</div>
                     </div>
                     <div class="bg-gray-50 p-4 rounded-lg border border-gray-100 hover:shadow-md transition duration-300">
                         <div class="text-gray-500 text-sm mb-1">Color</div>
@@ -235,7 +235,7 @@
                     </div>
                     <div class="bg-gray-50 p-4 rounded-lg border border-gray-100 hover:shadow-md transition duration-300">
                         <div class="text-gray-500 text-sm mb-1">Engine</div>
-                        <div class="font-semibold text-gray-900">{{ $vehicle->engine_size }}</div>
+                        <div class="font-semibold text-gray-900">{{ $vehicle->engine_size }} cc </div>
                     </div>
                     <div class="bg-gray-50 p-4 rounded-lg border border-gray-100 hover:shadow-md transition duration-300">
                         <div class="text-gray-500 text-sm mb-1">Drive Type</div>
@@ -287,7 +287,7 @@
                         </div>
                         <div class="flex justify-between py-3 border-b border-gray-200">
                             <span class="text-gray-600">Fuel Type</span>
-                            <span class="font-medium text-gray-900">{{ $vehicle->fuel_type }}</span>
+                            <span class="font-medium text-gray-900">{{ optional($vehicle->fuelType)->name }}</span>
                         </div>
                         <div class="flex justify-between py-3 border-b border-gray-200">
                             <span class="text-gray-600">Transmission</span>
@@ -376,46 +376,124 @@
         
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             <!-- Similar Vehicle Card 1 -->
-            <div class="bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-md transition duration-300">
-                <img src="{{ asset('/cars/blue-car-driving-road.jpg') }}" alt="Similar Vehicle" class="w-full h-40 object-cover">
-                <div class="p-4">
-                    <h3 class="font-medium text-gray-900 mb-1">2022 Toyota Corolla LE</h3>
-                    <div class="text-green-600 font-bold mb-2">TZS 23,500,000</div>
-                    <div class="flex justify-between text-sm text-gray-500">
-                        <span>35,000 km</span>
-                        <span>Automatic</span>
-                        <span>Petrol</span>
+
+            @forelse($simiralVehicles as $vehicle)
+
+
+            <div class="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden hover:shadow-md transition-all duration-200">
+            <!-- Vehicle Image with Overlays -->
+            <div class="relative">
+                <a href="{{ route('vehicle.list', $vehicle->id) }}" class="block relative">
+                
+                @php
+                    $frontImage = $vehicle->frontView();
+                @endphp
+
+                <img 
+                        src="{{ $frontImage ? asset('storage/' . $frontImage->image_url) : asset('cars/blue-car-driving-road.jpg') }}" 
+                        alt="{{ optional($vehicle->make)->name }} {{ optional($vehicle->model)->name }}" 
+                        class="w-full h-44 object-cover"
+                    >
+                    
+                    <!-- Price Tag - Top Left -->
+                    <div class="absolute top-3 left-3 bg-white py-1 px-2 rounded shadow-sm text-green-600 font-bold text-sm">
+                        TZS {{ number_format($vehicle->price) }}
                     </div>
-                </div>
+                    
+                    <!-- Feature Badge - If Featured -->
+                    @if($vehicle->is_featured)
+                    <div class="absolute top-3 right-3">
+                        <span class="bg-green-600 text-white text-xs font-medium px-2 py-0.5 rounded-sm shadow-sm">Featured</span>
+                    </div>
+                    @endif
+                    
+                    <!-- Year Badge -->
+                    <div class="absolute bottom-3 right-3">
+                        <span class="bg-black bg-opacity-60 text-white text-xs px-1.5 py-0.5 rounded">{{ $vehicle->year }}</span>
+                    </div>
+                </a>
             </div>
             
-            <!-- Similar Vehicle Card 2 -->
-            <div class="bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-md transition duration-300">
-                <img src="{{ asset('/cars/blue-car-driving-road.jpg') }}" alt="Similar Vehicle" class="w-full h-40 object-cover">
-                <div class="p-4">
-                    <h3 class="font-medium text-gray-900 mb-1">2023 Honda Civic EX</h3>
-                    <div class="text-green-600 font-bold mb-2">TZS 28,900,000</div>
-                    <div class="flex justify-between text-sm text-gray-500">
-                        <span>20,000 km</span>
-                        <span>CVT</span>
-                        <span>Petrol</span>
+            <!-- Vehicle Details -->
+            <div class="p-3">
+                <!-- Title and Essentials -->
+                <div class="mb-2">
+                    <h3 class="font-semibold text-gray-800 text-sm leading-tight truncate">
+                        <a href="{{ route('vehicle.list', $vehicle->id) }}" class="hover:text-green-600">
+                            {{ optional($vehicle->make)->name }} {{ optional($vehicle->model)->name }} {{ $vehicle->trim }}
+                        </a>
+                    </h3>
+                    <div class="flex items-center justify-between mt-1 text-xs text-gray-500">
+                        <span class="flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                            </svg>
+                            {{ number_format($vehicle->mileage) }} km
+                        </span>
+                        <span class="flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                            </svg>
+                            {{ optional($vehicle->transmission)->name }}
+                        </span>
                     </div>
                 </div>
+                
+                <!-- Specs Pills - Horizontal Scroll -->
+                <div class="flex space-x-1.5 overflow-x-auto pb-1.5 mb-2 scrollbar-hide">
+                    <span class="flex-shrink-0 bg-gray-100 text-gray-800 text-xs px-1.5 py-0.5 rounded whitespace-nowrap">
+                        {{ optional($vehicle->bodyType)->name }}
+                    </span>
+                    <span class="flex-shrink-0 bg-gray-100 text-gray-800 text-xs px-1.5 py-0.5 rounded whitespace-nowrap">
+                        {{ optional($vehicle->fuelType)->name }}
+                    </span>
+                    @if($vehicle->color)
+                    <span class="flex-shrink-0 bg-gray-100 text-gray-800 text-xs px-1.5 py-0.5 rounded whitespace-nowrap">
+                        {{ $vehicle->color }}
+                    </span>
+                    @endif
+                </div>
+                
+                <!-- Footer with Dealer Info and CTA -->
+                <div class="flex items-center justify-between pt-2 border-t border-gray-100">
+                    <div class="flex items-center">
+                        <img 
+                            src="{{ asset('/cars/icon.avif')}}" 
+                            alt="{{ optional($vehicle->dealer)->name }}" 
+                            class="w-5 h-5 rounded-full object-cover border border-gray-200"
+                        >
+                        <span class="ml-1.5 text-xs text-gray-600 truncate max-w-[120px]">{{ optional($vehicle->dealer)->name }}</span>
+                    </div>
+                    <a 
+                        href="{{ route('view.vehicle', $vehicle->id) }}" 
+                        class="text-xs font-medium text-green-600 hover:text-green-700 flex items-center"
+                    >
+                        View
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 ml-0.5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+                        </svg>
+                    </a>
+                </div>
             </div>
+        </div>
+
+
             
-            <!-- Similar Vehicle Card 3 -->
+            @empty
+
             <div class="bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-md transition duration-300">
-                <img src="{{ asset('/cars/blue-car-driving-road.jpg') }}" alt="Similar Vehicle" class="w-full h-40 object-cover">
-                <div class="p-4">
-                    <h3 class="font-medium text-gray-900 mb-1">2021 Mazda 3 Touring</h3>
-                    <div class="text-green-600 font-bold mb-2">TZS 26,200,000</div>
-                    <div class="flex justify-between text-sm text-gray-500">
-                        <span>45,000 km</span>
-                        <span>Automatic</span>
-                        <span>Petrol</span>
-                    </div>
+                <img src="{{ asset('/cars/blue-car-driving-road.jpg') }}" alt="No Similar Vehicles" class="w-full h-40 object-cover">
+                <div class="p-4 text-center">
+                    <h3 class="font-medium text-gray-900 mb-1">No Similar Vehicles Found</h3>
+                    <p class="text-gray-500">Check back later for more options.</p>
                 </div>
             </div>
+
+            @endforelse 
+            
+      
+            
+           
         </div>
     </div>
     
@@ -435,6 +513,73 @@
            <!-- Right Column - Dealer Info, Financing, Quick Actions, Similar Vehicles -->
 <div class="lg:w-1/3 space-y-8">
     <!-- Dealer Information -->
+   
+    
+    <!-- Financing Options Section -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+        <div class="bg-gradient-to-r from-green-600/10 to-green-600/5 p-6 border-b border-gray-100">
+            <h2 class="text-xl font-bold text-gray-900 flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-600 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+                Financing Options
+            </h2>
+            <p class="text-gray-600 mt-2">Get pre-approved with our trusted financing partners</p>
+        </div>
+        
+        <div class="p-6">
+            <!-- Financing Cards -->
+            <div class="space-y-4">
+                @foreach($lenders as $lender)
+                <div class="border border-gray-200 rounded-lg hover:border-green-200 transition-colors duration-300 overflow-hidden">
+                    <div class="flex items-center justify-between p-4">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0 h-12 w-12 bg-gray-100 rounded-md flex items-center justify-center p-2">
+                                <img src="{{ asset('/cars/icon.avif') }}" alt="{{ $lender->name }}" class="max-h-full max-w-full object-contain">
+                            </div>
+                            <div class="ml-4">
+                                <h4 class="font-medium text-gray-900">{{ $lender->name }}</h4>
+                                <div class="flex items-center mt-1">
+                                    <span class="font-medium text-green-600 text-sm">{{ $lender->interest_rate_range }}%</span>
+                                    <span class="mx-2 text-gray-300">•</span>
+                                    <span class="text-gray-600 text-sm">Up to {{ $lender->max_term }} months</span>
+                                </div>
+                            </div>
+                        </div>
+                        <a href="{{ route('loan.pre-qualify',[$vehicle->id,$lender->id]) }}" 
+                           class="bg-white hover:bg-green-50 text-green-600 border border-green-600 font-medium py-2 px-4 rounded-lg text-sm transition-colors duration-300">
+                            Apply
+                        </a>
+                    </div>
+                </div>
+                @endforeach
+            </div>
+            
+           
+            
+            <!-- Financing CTA -->
+            <div class="mt-6 bg-green-50 p-4 rounded-lg border border-green-100">
+                <div class="flex">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-green-600 mr-3 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                    </svg>
+                    <div>
+                        <h4 class="font-medium text-green-800 mb-1">Pre-qualify for Financing</h4>
+                        <p class="text-sm text-green-700">Check your eligibility without affecting your credit score.</p>
+                        <!-- <a href="#" class="inline-flex items-center mt-2 text-sm font-medium text-green-700 hover:text-green-800">
+                            Learn more 
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+                            </svg>
+                        </a> -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
         <!-- Header with background -->
         <div class="bg-gradient-to-r from-green-600/10 to-green-600/5 p-6 border-b border-gray-100">
@@ -569,79 +714,20 @@
 
             
             <!-- View Inventory Link -->
-            <div class="mt-4 text-center">
+            <!-- <div class="mt-4 text-center">
                 <a href="{{ url('vehicle/list') }}" class="inline-flex items-center text-green-600 hover:text-green-800 font-medium transition duration-300">
                     View Dealer's Inventory
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
                     </svg>
                 </a>
-            </div>
+            </div> -->
         </div>
     </div>
-    
-    <!-- Financing Options Section -->
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-        <div class="bg-gradient-to-r from-green-600/10 to-green-600/5 p-6 border-b border-gray-100">
-            <h2 class="text-xl font-bold text-gray-900 flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-600 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
-                </svg>
-                Financing Options
-            </h2>
-            <p class="text-gray-600 mt-2">Get pre-approved with our trusted financing partners</p>
-        </div>
-        
-        <div class="p-6">
-            <!-- Financing Cards -->
-            <div class="space-y-4">
-                @foreach($lenders as $lender)
-                <div class="border border-gray-200 rounded-lg hover:border-green-200 transition-colors duration-300 overflow-hidden">
-                    <div class="flex items-center justify-between p-4">
-                        <div class="flex items-center">
-                            <div class="flex-shrink-0 h-12 w-12 bg-gray-100 rounded-md flex items-center justify-center p-2">
-                                <img src="{{ asset('/cars/icon.avif') }}" alt="{{ $lender->name }}" class="max-h-full max-w-full object-contain">
-                            </div>
-                            <div class="ml-4">
-                                <h4 class="font-medium text-gray-900">{{ $lender->name }}</h4>
-                                <div class="flex items-center mt-1">
-                                    <span class="font-medium text-green-600 text-sm">{{ $lender->interest_rate_range }}%</span>
-                                    <span class="mx-2 text-gray-300">•</span>
-                                    <span class="text-gray-600 text-sm">Up to {{ $lender->max_term }} months</span>
-                                </div>
-                            </div>
-                        </div>
-                        <a href="{{ route('loan.pre-qualify',[$vehicle->id,$lender->id]) }}" 
-                           class="bg-white hover:bg-green-50 text-green-600 border border-green-600 font-medium py-2 px-4 rounded-lg text-sm transition-colors duration-300">
-                            Apply
-                        </a>
-                    </div>
-                </div>
-                @endforeach
-            </div>
-            
-           
-            
-            <!-- Financing CTA -->
-            <div class="mt-6 bg-green-50 p-4 rounded-lg border border-green-100">
-                <div class="flex">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-green-600 mr-3 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                    </svg>
-                    <div>
-                        <h4 class="font-medium text-green-800 mb-1">Pre-qualify for Financing</h4>
-                        <p class="text-sm text-green-700">Check your eligibility without affecting your credit score.</p>
-                        <a href="#" class="inline-flex items-center mt-2 text-sm font-medium text-green-700 hover:text-green-800">
-                            Learn more 
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
-                            </svg>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+
+
+
+
     
     <!-- Quick Actions -->
     <!-- <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
