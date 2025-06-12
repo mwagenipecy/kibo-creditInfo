@@ -68,6 +68,80 @@ Regards,
 " . config('app.name');
     }
 
+
+
+
+
+    public function rejectApplication(){
+
+        $applicationId = session('applicationId');
+        $application = Application::find($applicationId);
+
+        $loanId = $application->loan_id;
+
+
+        $application->application_status = 'REJECTED';
+        $application->save();
+        
+        // Update loan status
+        DB::table('loans')->where('id', $loanId)->update(['status' => 'REJECTED']);
+        
+
+
+    }
+
+
+    public function acceptApplication()
+    {
+        $applicationId = session('applicationId');
+        $application = Application::find($applicationId);
+        
+        // Check if application exists
+        if (!$application) {
+          session()->flash('error' , 'Application not found' );
+        }
+        // Don't do anything if loan is already ACTIVE or REJECTED
+        if (in_array($application->application_status, ['ACCEPTED', 'REJECTED'])) {
+            session()->flash('message' ,'No action needed. Application is ' . $application->application_status );
+        }
+        
+        $loanId = $application->loan_id;
+
+
+        
+        // Use transaction to handle errors and prevent partial operations
+        try {
+
+            DB::beginTransaction();
+            
+            // Update application status
+            $application->application_status = 'ACCEPTED';
+            $application->save();
+            
+            // Update loan status
+           // DB::table('loans')->where('id', $loanId)->update(['status' => 'ACTIVE']);
+            
+            // Commit transaction if everything succeeded
+            DB::commit();
+            
+            return session()->flash('message' , 'Application accepted successfully');
+        } catch (\Exception $e) {
+            // Rollback transaction if any operation fails
+            DB::rollBack();
+
+
+            dd($e->getMessage());
+            
+            // Log the error for debugging
+            \Log::error('Error accepting application: ' . $e->getMessage());
+            
+            session()->flash('error' , 'Failed to accept application' );
+        }
+    }
+
+
+
+
     public function toggleEmployerMessageForm()
     {
         $this->showEmployerMessageForm = !$this->showEmployerMessageForm;
@@ -325,23 +399,23 @@ JSON;
         $this->isModalOpen = false;
     }
 
-    public function acceptApplication($id)
-    {
-        $application = Application::findOrFail($id);
-        $application->update(['application_status' => 'ACCEPTED']);
+    // public function acceptApplication($id)
+    // {
+    //     $application = Application::findOrFail($id);
+    //     $application->update(['application_status' => 'ACCEPTED']);
 
-        session()->flash('message', 'Application accepted.');
-        $this->resetView();
-    }
+    //     session()->flash('message', 'Application accepted.');
+    //     $this->resetView();
+    // }
 
-    public function rejectApplication($id)
-    {
-        $application = Application::findOrFail($id);
-        $application->update(['application_status' => 'REJECTED']);
+    // public function rejectApplication($id)
+    // {
+    //     $application = Application::findOrFail($id);
+    //     $application->update(['application_status' => 'REJECTED']);
 
-        session()->flash('message', 'Application rejected.');
-        $this->resetView();
-    }
+    //     session()->flash('message', 'Application rejected.');
+    //     $this->resetView();
+    // }
 
     private function resetView()
     {

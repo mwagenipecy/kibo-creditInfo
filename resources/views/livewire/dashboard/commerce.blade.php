@@ -82,7 +82,7 @@
                             <dl>
                                 <dt class="text-sm font-medium text-gray-500 truncate">Average Loan Amount</dt>
                                 <dd>
-                                    <div class="text-lg font-medium text-gray-900">TZS  {{ $loanAmount/12 }}</div>
+                                    <div class="text-lg font-medium text-gray-900">TZS  {{ number_format($loanAmount/12,2) }}</div>
                                     <div class="flex items-baseline">
                                         <span class="text-sm text-green-600 font-semibold">+3.2%</span>
                                         <span class="ml-1 text-xs text-gray-500">from last month</span>
@@ -128,7 +128,7 @@
             <div class="bg-white shadow rounded-lg">
                 <div class="px-4 py-5 border-b border-gray-200 sm:px-6 flex justify-between items-center">
                     <h3 class="text-lg font-medium leading-6 text-gray-900">Recent Loan Applications</h3>
-                    <a href="#" class="text-sm font-medium text-green-600 hover:text-green-500">View all</a>
+                    <!-- <a href="#" class="text-sm font-medium text-green-600 hover:text-green-500">View all</a> -->
                 </div>
                 <div class="overflow-x-auto">
                     <table class="min-w-full divide-y divide-gray-200">
@@ -164,11 +164,25 @@
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="text-sm text-gray-900">TZS {{  number_format($application->loan_amount,2) }}</div>
                                 </td>
+
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                                        @if($application->application_status == 'REJECTED')
+                                            bg-red-100 text-red-800
+                                        @elseif($application->application_status == 'APPROVED')
+                                            bg-green-100 text-green-800
+                                        @elseif($application->application_status == 'ACCEPTED')
+                                            bg-emerald-100 text-emerald-800
+                                        @elseif($application->application_status == 'NEW CLIENT')
+                                            bg-yellow-100 text-yellow-800
+                                        @else
+                                            bg-gray-100 text-gray-800
+                                        @endif">
                                         {{ $application->application_status }}
                                     </span>
                                 </td>
+
+
                             </tr>
 
 

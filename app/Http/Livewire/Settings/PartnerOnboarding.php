@@ -169,6 +169,39 @@ class PartnerOnboarding extends Component
         $this->carDealers = CarDealer::with('documents')->latest()->get();
     }
     
+
+    public $showPreviewModal = false;
+public $previewDocumentType = null;
+public $previewDocumentPath = null;
+
+public function previewDocument($documentType)
+{
+    $this->previewDocumentType = $documentType;
+    
+    // Set the document path based on type
+    switch($documentType) {
+        case 'businessRegistrationDoc':
+            $this->previewDocumentPath = $this->existingBusinessRegistrationDoc;
+            break;
+        case 'taxClearanceDoc':
+            $this->previewDocumentPath = $this->existingTaxClearanceDoc;
+            break;
+        // Add other cases...
+    }
+    
+    $this->showPreviewModal = true;
+}
+
+public function closePreview()
+{
+    $this->showPreviewModal = false;
+    $this->previewDocumentType = null;
+    $this->previewDocumentPath = null;
+}
+
+
+
+
     /**
      * Load available car brands
      */

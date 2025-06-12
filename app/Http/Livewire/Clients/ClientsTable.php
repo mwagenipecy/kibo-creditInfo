@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire\Clients;
 
+use App\Models\Application;
 use App\Models\BranchesModel;
 use App\Models\Employee;
 use App\Models\LoansModel;
@@ -29,7 +30,7 @@ class ClientsTable extends LivewireDatatable
     {
 
 
-        return ClientsModel::query()->where('lender_id',auth()->user()->institution_id);
+        return Application::query()->where('lender_id',auth()->user()->institution_id)->where('application_status','ACCEPTED');
     }
 
     public function viewClient($memberId){
@@ -78,17 +79,37 @@ class ClientsTable extends LivewireDatatable
             })->label('email'),
 
 
-            Column::callback(['phone_number','client_number'],function ($phone_number,$client_number){
-                return LoansModel::where('client_number',$client_number)->count();
-            })->label('Total Car loans'),
+            Column::name('created_at')->label('report date'),
 
-            Column::callback(['branch','client_number'],function ($branch,$client_number){
-                return LoansModel::where('client_number',$client_number)->where('status','ACTIVE')->count();
-            })->label('active Car loans'),
+            Column::callback(['make_and_model','year_of_manufacture'],function($make, $model){
 
-                Column::callback(['id'], function ($id) {
-                    return view('livewire.clients.action-buttons', ['id' => $id, 'move' => false]);
-                })->unsortable()->label('Action'),
+                return $make.' '.$model;
+            })->label('Car Info')->searchable(),
+
+
+           
+
+            Column::callback(['down_payment'],function($amount){
+
+                return $amount ? number_format($amount,2).' TZS' : '0.00 TZS';
+            })->label('Down payment Price')->searchable(),
+
+
+
+            Column::callback(['loan_amount'],function($amount){
+
+                return $amount ? number_format($amount,2).' TZS' : '0.00 TZS';
+            })->label('Loan Amount')->searchable(),
+
+
+
+            // Column::callback(['branch','client_number'],function ($branch,$client_number){
+            //     return LoansModel::where('client_number',$client_number)->where('status','ACTIVE')->count();
+            // })->label('active Car loans'),
+
+                Column::callback(['purchase_price'], function ($id) {
+                    return number_format($id,2). ' TZS';
+                })->unsortable()->label('Total Price'),
 
 
 

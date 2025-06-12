@@ -81,509 +81,612 @@
         @endif
 
         @if($showForm)
-            <!-- Vehicle Add/Edit Form -->
-            <div class="bg-white rounded-xl shadow-md p-6 mb-6">
-                <h2 class="text-xl font-bold text-gray-900 mb-6">{{ $editMode ? 'Edit Vehicle' : 'Add New Vehicle' }}</h2>
-                
-                <form wire:submit.prevent="{{ $editMode ? 'updateVehicle' : 'addVehicle' }}">
+          
 
 
-
-                @if ($errors->any())
-                    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-                        <strong class="font-bold">Whoops! Something went wrong.</strong>
-                        <ul class="mt-2 list-disc list-inside text-sm text-red-600">
-                            @foreach ($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                @endif
-
-
-
-                    <!-- Two Column Form Layout -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <!-- Left Column -->
-                        <div class="space-y-6">
-                            <!-- Basic Details Section -->
-                            <div>
-                                <h3 class="text-lg font-medium text-gray-900 mb-4">Basic Details</h3>
-                                
-                                <div class="grid grid-cols-2 gap-4">
-                                    <div>
-                                        <label for="make_id" class="block text-sm font-medium text-gray-700 mb-1">Make*</label>
-                                        <select id="make_id" wire:model="vehicle.make_id" class="w-full rounded-lg border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-200 focus:ring-opacity-50">
-                                            <option value="">Select Make</option>
-                                            @foreach($makes as $make)
-                                                <option value="{{ $make->id }}">{{ $make->name }}</option>
-                                            @endforeach
-                                        </select>
-                                        @error('vehicle.make_id') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
-                                    </div>
-                                    
-                                    <div>
-                                        <label for="model_id" class="block text-sm font-medium text-gray-700 mb-1">Model*</label>
-                                        <select id="model_id" wire:model="vehicle.model_id" class="w-full rounded-lg border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-200 focus:ring-opacity-50">
-                                            <option value="">Select Model</option>
-                                            @foreach($models as $model)
-                                                <option value="{{ $model->id }}">{{ $model->name }}</option>
-                                            @endforeach
-                                        </select>
-                                        @error('vehicle.model_id') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
-                                    </div>
-                                </div>
-                                
-                                <div class="grid grid-cols-2 gap-4 mt-4">
-                                    <div>
-                                        <label for="trim" class="block text-sm font-medium text-gray-700 mb-1">Trim</label>
-                                        <input type="text" id="trim" wire:model="vehicle.trim" class="w-full rounded-lg border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-200 focus:ring-opacity-50">
-                                        @error('vehicle.trim') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
-                                    </div>
-                                    
-                                    <div>
-                                        <label for="year" class="block text-sm font-medium text-gray-700 mb-1">Year*</label>
-                                        <input type="number" id="year" wire:model="vehicle.year" class="w-full rounded-lg border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-200 focus:ring-opacity-50">
-                                        @error('vehicle.year') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- Specifications Section -->
-                            <div>
-                                <h3 class="text-lg font-medium text-gray-900 mb-4">Specifications</h3>
-                                
-                                <div class="grid grid-cols-2 gap-4">
-                                    <div>
-                                        <label for="body_type_id" class="block text-sm font-medium text-gray-700 mb-1">Body Type*</label>
-                                        <select id="body_type_id" wire:model="vehicle.body_type_id" class="w-full rounded-lg border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-200 focus:ring-opacity-50">
-                                            <option value="">Select Body Type</option>
-                                            @foreach($bodyTypes as $bodyType)
-                                                <option value="{{ $bodyType->id }}">{{ $bodyType->name }}</option>
-                                            @endforeach
-                                        </select>
-                                        @error('vehicle.body_type_id') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
-                                    </div>
-                                    
-                                    <div>
-                                        <label for="fuel_type_id" class="block text-sm font-medium text-gray-700 mb-1">Fuel Type*</label>
-                                        <select id="fuel_type_id" wire:model="vehicle.fuel_type_id" class="w-full rounded-lg border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-200 focus:ring-opacity-50">
-                                            <option value="">Select Fuel Type</option>
-                                            @foreach($fuelTypes as $fuelType)
-                                                <option value="{{ $fuelType->id }}">{{ $fuelType->name }}</option>
-                                            @endforeach
-                                        </select>
-                                        @error('vehicle.fuel_type_id') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
-                                    </div>
-                                </div>
-                                
-                                <div class="grid grid-cols-2 gap-4 mt-4">
-                                    <div>
-                                        <label for="transmission_id" class="block text-sm font-medium text-gray-700 mb-1">Transmission*</label>
-                                        <select id="transmission_id" wire:model="vehicle.transmission_id" class="w-full rounded-lg border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-200 focus:ring-opacity-50">
-                                            <option value="">Select Transmission</option>
-                                            @foreach($transmissions as $transmission)
-                                                <option value="{{ $transmission->id }}">{{ $transmission->name }}</option>
-                                            @endforeach
-                                        </select>
-                                        @error('vehicle.transmission_id') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
-                                    </div>
-                                    
-                                    <div>
-                                        <label for="drivetrain" class="block text-sm font-medium text-gray-700 mb-1">Drivetrain</label>
-                                        <select id="drivetrain" wire:model="vehicle.drivetrain" class="w-full rounded-lg border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-200 focus:ring-opacity-50">
-                                            <option value="">Select Drivetrain</option>
-                                            <option value="FWD">Front-Wheel Drive (FWD)</option>
-                                            <option value="RWD">Rear-Wheel Drive (RWD)</option>
-                                            <option value="AWD">All-Wheel Drive (AWD)</option>
-                                            <option value="4WD">Four-Wheel Drive (4WD)</option>
-                                        </select>
-                                        @error('vehicle.drivetrain') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
-                                    </div>
-                                </div>
-                                
-                                <div class="grid grid-cols-2 gap-4 mt-4">
-                                    <div>
-                                        <label for="engine_size" class="block text-sm font-medium text-gray-700 mb-1">Engine Size</label>
-                                        <input type="text" id="engine_size" wire:model="vehicle.engine_size" placeholder="e.g. 2.0L" class="w-full rounded-lg border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-200 focus:ring-opacity-50">
-                                        @error('vehicle.engine_size') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
-                                    </div>
-                                    
-                                    <div>
-                                        <label for="engine_type" class="block text-sm font-medium text-gray-700 mb-1">Engine Type</label>
-                                        <input type="text" id="engine_type" wire:model="vehicle.engine_type" placeholder="e.g. V6 Turbo" class="w-full rounded-lg border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-200 focus:ring-opacity-50">
-                                        @error('vehicle.engine_type') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
-                                    </div>
-                                </div>
-                                
-                                <div class="grid grid-cols-2 gap-4 mt-4">
-                                    <div>
-                                        <label for="horsepower" class="block text-sm font-medium text-gray-700 mb-1">Horsepower</label>
-                                        <input type="number" id="horsepower" wire:model="vehicle.horsepower" class="w-full rounded-lg border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-200 focus:ring-opacity-50">
-                                        @error('vehicle.horsepower') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
-                                    </div>
-                                    
-                                    <div>
-                                        <label for="seating_capacity" class="block text-sm font-medium text-gray-700 mb-1">Seating Capacity</label>
-                                        <input type="number" id="seating_capacity" wire:model="vehicle.seating_capacity" class="w-full rounded-lg border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-200 focus:ring-opacity-50">
-                                        @error('vehicle.seating_capacity') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Right Column -->
-                        <div class="space-y-6">
-                            <!-- Listing Details Section -->
-                            <div>
-                                <h3 class="text-lg font-medium text-gray-900 mb-4">Listing Details</h3>
-                                
-                                <div class="grid grid-cols-2 gap-4">
-                                    <div>
-                                        <label for="vehicle_condition" class="block text-sm font-medium text-gray-700 mb-1">Condition*</label>
-                                        <select id="vehicle_condition" wire:model="vehicle.vehicle_condition" class="w-full rounded-lg border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-200 focus:ring-opacity-50">
-                                            <option value="">Select Condition</option>
-                                            <option value="New">New</option>
-                                            <option value="Used">Used</option>
-                                            <option value="Certified Pre-Owned">Certified Pre-Owned</option>
-                                        </select>
-                                        @error('vehicle.vehicle_condition') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
-                                    </div>
-                                    
-                                    <div>
-                                        <label for="price" class="block text-sm font-medium text-gray-700 mb-1">Price (TZS)*</label>
-                                        <input type="number" id="price" wire:model="vehicle.price" class="w-full rounded-lg border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-200 focus:ring-opacity-50">
-                                        @error('vehicle.price') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
-                                    </div>
-
-
-                                    <div>
-                                        <label for="downPaymentPercent" class="block text-sm font-medium text-gray-700 mb-1">Down payment (%)*</label>
-                                        <input type="number" id="downPaymentPercent" wire:model="vehicle.downPaymentPercent" class="w-full rounded-lg border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-200 focus:ring-opacity-50">
-                                        @error('vehicle.downPaymentPercent') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
-                                    </div>
-
-
-
-                                </div>
-                                
-                                <div class="grid grid-cols-2 gap-4 mt-4">
-                                    <div>
-                                        <label for="mileage" class="block text-sm font-medium text-gray-700 mb-1">Mileage (KM)*</label>
-                                        <input type="number" id="mileage" wire:model="vehicle.mileage" class="w-full rounded-lg border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-200 focus:ring-opacity-50">
-                                        @error('vehicle.mileage') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
-                                    </div>
-                                    
-                                    <div>
-                                        <label for="color" class="block text-sm font-medium text-gray-700 mb-1">Color*</label>
-                                        <input type="text" id="color" wire:model="vehicle.color" class="w-full rounded-lg border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-200 focus:ring-opacity-50">
-                                        @error('vehicle.color') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
-                                    </div>
-                                </div>
-                                
-                                <div class="grid grid-cols-2 gap-4 mt-4">
-                                    <div>
-                                        <label for="vin" class="block text-sm font-medium text-gray-700 mb-1">VIN*</label>
-                                        <input type="text" id="vin" wire:model="vehicle.vin" class="w-full rounded-lg border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-200 focus:ring-opacity-50">
-                                        @error('vehicle.vin') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
-                                    </div>
-                                    
-                                    <div>
-                                        <label for="owners" class="block text-sm font-medium text-gray-700 mb-1">Previous Owners</label>
-                                        <input type="number" id="owners" wire:model="vehicle.owners" class="w-full rounded-lg border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-200 focus:ring-opacity-50">
-                                        @error('vehicle.owners') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
-                                    </div>
-                                </div>
-                                
-                                <div class="mt-4">
-                                    <label for="location" class="block text-sm font-medium text-gray-700 mb-1">Location*</label>
-                                    <input type="text" id="location" wire:model="vehicle.location" class="w-full rounded-lg border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-200 focus:ring-opacity-50">
-                                    @error('vehicle.location') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
-                                </div>
-                            </div>
-                            
-                            <!-- Description and Status Section -->
-                            <div>
-                                <div class="mb-4">
-                                    <label for="description" class="block text-sm font-medium text-gray-700 mb-1">Description*</label>
-                                    <textarea id="description" wire:model="vehicle.description" rows="5" class="w-full rounded-lg border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-200 focus:ring-opacity-50"></textarea>
-                                    @error('vehicle.description') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
-                                </div>
-                                
-                                <div class="grid grid-cols-3 gap-4">
-                                    <div class="flex items-center">
-                                        <input type="checkbox" id="is_featured" wire:model="vehicle.is_featured" class="rounded border-gray-300 text-green-600 shadow-sm focus:border-green-300 focus:ring focus:ring-green-200 focus:ring-opacity-50">
-                                        <label for="is_featured" class="ml-2 block text-sm text-gray-900">Featured Vehicle</label>
-                                    </div>
-                                    
-                                    <div class="flex items-center">
-                                        <input type="radio" id="status_active" wire:model="vehicleStatus" value="active" class="rounded-full border-gray-300 text-green-600 shadow-sm focus:border-green-300 focus:ring focus:ring-green-200 focus:ring-opacity-50">
-                                        <label for="status_active" class="ml-2 block text-sm text-gray-900">Active</label>
-                                    </div>
-                                    
-                                    <div class="flex items-center">
-                                        <input type="radio" id="status_on_hold" wire:model="vehicleStatus" value="on_hold" class="rounded-full border-gray-300 text-yellow-600 shadow-sm focus:border-yellow-300 focus:ring focus:ring-yellow-200 focus:ring-opacity-50">
-                                        <label for="status_on_hold" class="ml-2 block text-sm text-gray-900">On Hold</label>
-                                    </div>
-                                    
-                                    <div class="flex items-center">
-                                        <input type="radio" id="status_sold" wire:model="vehicleStatus" value="sold" class="rounded-full border-gray-300 text-red-600 shadow-sm focus:border-red-300 focus:ring focus:ring-red-200 focus:ring-opacity-50">
-                                        <label for="status_sold" class="ml-2 block text-sm text-gray-900">Sold</label>
-                                    </div>
-                                </div>
-                            </div>
-
-
-                            </div>
-                            </div>
-
-
-                            <div>  
-                            <div>  
-
-                            
-                            
-                            <!-- Vehicle Images Section -->
-                            <div>
-    <h3 class="text-lg font-medium text-gray-900 mb-4">Vehicle Images</h3>
-    
-    <!-- Image Upload Sections -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <!-- Front View -->
-        <div>
-            <h4 class="text-sm font-medium text-gray-700 mb-2">Front View Image</h4>
-            <div class="mb-3">
-                <div class="flex items-center justify-center w-full">
-                    <label for="frontImage" class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors duration-200">
-                        <div class="flex flex-col items-center justify-center pt-5 pb-6">
-                            <svg class="w-8 h-8 mb-4 text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
-                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
-                            </svg>
-                            <p class="mb-2 text-sm text-gray-500"><span class="font-semibold">Click to upload front view</span></p>
-                            <p class="text-xs text-gray-500">PNG, JPG or JPEG (MAX. 10MB)</p>
-                        </div>
-                        <input id="frontImage" wire:model="viewImages.front" type="file" class="hidden" accept="image/*" />
-                    </label>
-                </div>
-                
-                @error('viewImages.front') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+        <!-- Vehicle Add/Edit Form -->
+<div class="bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-2xl border border-gray-100 overflow-hidden">
+    <!-- Header Section -->
+    <div class="bg-gradient-to-r from-green-600 to-green-700 px-8 py-6">
+        <div class="flex items-center justify-between">
+            <div>
+                <h2 class="text-2xl font-bold text-green-800 mb-1">
+                    {{ $editMode ? 'Edit Vehicle' : 'Add New Vehicle' }}
+                </h2>
+                <p class="text-green-700 text-sm">
+                    {{ $editMode ? 'Update vehicle information and images' : 'Create a new vehicle listing with all details' }}
+                </p>
             </div>
-            
-            <!-- Front View Image Preview -->
-            @if(isset($viewImagesPreview['front']))
-                <div class="mt-2">
-                    <div class="relative inline-block">
-                        <img src="{{ $viewImagesPreview['front'] }}" alt="Front View" class="h-24 w-auto object-cover rounded-lg">
-                        <button type="button" wire:click="removeViewImage('front')" class="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1 transform translate-x-1/2 -translate-y-1/2 shadow-md hover:bg-red-600 transition-colors duration-200">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                        </button>
-                    </div>
+            <div class="hidden lg:block">
+                <div class="bg-white bg-opacity-20 backdrop-blur-sm rounded-xl p-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                    </svg>
                 </div>
-            @endif
-        </div>
-        
-        <!-- Side View -->
-        <div>
-            <h4 class="text-sm font-medium text-gray-700 mb-2">Side View Image</h4>
-            <div class="mb-3">
-                <div class="flex items-center justify-center w-full">
-                    <label for="sideImage" class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors duration-200">
-                        <div class="flex flex-col items-center justify-center pt-5 pb-6">
-                            <svg class="w-8 h-8 mb-4 text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
-                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
-                            </svg>
-                            <p class="mb-2 text-sm text-gray-500"><span class="font-semibold">Click to upload side view</span></p>
-                            <p class="text-xs text-gray-500">PNG, JPG or JPEG (MAX. 10MB)</p>
-                        </div>
-                        <input id="sideImage" wire:model="viewImages.side" type="file" class="hidden" accept="image/*" />
-                    </label>
-                </div>
-                
-                @error('viewImages.side') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
-            </div>
-            
-            <!-- Side View Image Preview -->
-            @if(isset($viewImagesPreview['side']))
-                <div class="mt-2">
-                    <div class="relative inline-block">
-                        <img src="{{ $viewImagesPreview['side'] }}" alt="Side View" class="h-24 w-auto object-cover rounded-lg">
-                        <button type="button" wire:click="removeViewImage('side')" class="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1 transform translate-x-1/2 -translate-y-1/2 shadow-md hover:bg-red-600 transition-colors duration-200">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-            @endif
-        </div>
-        
-        <!-- Back View -->
-        <div>
-            <h4 class="text-sm font-medium text-gray-700 mb-2">Back View Image</h4>
-            <div class="mb-3">
-                <div class="flex items-center justify-center w-full">
-                    <label for="backImage" class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors duration-200">
-                        <div class="flex flex-col items-center justify-center pt-5 pb-6">
-                            <svg class="w-8 h-8 mb-4 text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
-                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
-                            </svg>
-                            <p class="mb-2 text-sm text-gray-500"><span class="font-semibold">Click to upload back view</span></p>
-                            <p class="text-xs text-gray-500">PNG, JPG or JPEG (MAX. 10MB)</p>
-                        </div>
-                        <input id="backImage" wire:model="viewImages.back" type="file" class="hidden" accept="image/*" />
-                    </label>
-                </div>
-                
-                @error('viewImages.back') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
-            </div>
-            
-            <!-- Back View Image Preview -->
-            @if(isset($viewImagesPreview['back']))
-                <div class="mt-2">
-                    <div class="relative inline-block">
-                        <img src="{{ $viewImagesPreview['back'] }}" alt="Back View" class="h-24 w-auto object-cover rounded-lg">
-                        <button type="button" wire:click="removeViewImage('back')" class="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1 transform translate-x-1/2 -translate-y-1/2 shadow-md hover:bg-red-600 transition-colors duration-200">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-            @endif
-        </div>
-        
-        <!-- Additional Images Section -->
-        <div>
-            <h4 class="text-sm font-medium text-gray-700 mb-2">Additional Images</h4>
-            <div class="mb-3">
-                <div class="flex items-center justify-center w-full">
-                    <label for="additionalImages" class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors duration-200">
-                        <div class="flex flex-col items-center justify-center pt-5 pb-6">
-                            <svg class="w-8 h-8 mb-4 text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
-                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
-                            </svg>
-                            <p class="mb-2 text-sm text-gray-500"><span class="font-semibold">Click to upload additional images</span></p>
-                            <p class="text-xs text-gray-500">PNG, JPG or JPEG (MAX. 10MB)</p>
-                        </div>
-                        <input id="additionalImages" wire:model="additionalImages" type="file" class="hidden" multiple accept="image/*" />
-                    </label>
-                </div>
-                
-                @error('additionalImages.*') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
             </div>
         </div>
     </div>
-    
-    <!-- Existing Images Preview -->
-    @if($editMode && count($existingImages) > 0)
-        <div class="mt-6 bg-gray-50 p-4 rounded-lg border border-gray-200">
-            <h4 class="text-sm font-medium text-gray-700 mb-4">Current Images</h4>
-            
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                @if(isset($existingImages['front']))
-                    <div class="mb-4">
-                        <h5 class="text-xs font-medium text-gray-600 mb-2">Front View</h5>
-                        <div class="relative inline-block">
-                            <img src="{{ asset('storage/' . $existingImages['front']->image_url) }}" alt="Front View" class="h-24 w-auto object-cover rounded-lg shadow-sm">
-                            <button type="button" wire:click="removeExistingImage({{ $existingImages['front']->id }})" class="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1 transform translate-x-1/2 -translate-y-1/2 shadow-md hover:bg-red-600 transition-colors duration-200">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                                </svg>
-                            </button>
+
+    <div class="p-8">
+        <form wire:submit.prevent="{{ $editMode ? 'updateVehicle' : 'addVehicle' }}">
+            <!-- Error Messages -->
+            @if ($errors->any())
+                <div class="bg-gradient-to-r from-red-50 to-red-100 border-l-4 border-red-400 rounded-lg p-6 mb-8 shadow-sm">
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0">
+                            <svg class="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                        <div class="ml-3">
+                            <h3 class="text-sm font-medium text-red-800">Please fix the following errors:</h3>
+                            <ul class="mt-2 text-sm text-red-700 space-y-1">
+                                @foreach ($errors->all() as $error)
+                                    <li class="flex items-center">
+                                        <span class="w-1 h-1 bg-red-400 rounded-full mr-2"></span>
+                                        {{ $error }}
+                                    </li>
+                                @endforeach
+                            </ul>
                         </div>
                     </div>
-                @endif
+                </div>
+            @endif
+
+          
+
+            <!-- Two Column Form Layout -->
+            <div class="grid grid-cols-1 xl:grid-cols-2 gap-8">
+                <!-- Left Column -->
+                <div class="space-y-8">
+                    <!-- Basic Details Section -->
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200">
+                        <div class="flex items-center mb-6">
+                            <div class="bg-blue-100 rounded-lg p-2 mr-3">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </div>
+                            <h3 class="text-lg font-semibold text-gray-900">Basic Details</h3>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="space-y-2">
+                                <label for="make_id" class="block text-sm font-medium text-gray-700">Make*</label>
+                                <select id="make_id" wire:model="vehicle.make_id" class="w-full rounded-xl border-gray-300 shadow-sm focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200 bg-gray-50 focus:bg-white">
+                                    <option value="">Select Make</option>
+                                    @foreach($makes as $make)
+                                        <option value="{{ $make->id }}">{{ $make->name }}</option>
+                                    @endforeach
+                                </select>
+                                @error('vehicle.make_id') <p class="mt-1 text-sm text-red-600 flex items-center"><svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>{{ $message }}</p> @enderror
+                            </div>
+                            
+                            <div class="space-y-2">
+                                <label for="model_id" class="block text-sm font-medium text-gray-700">Model*</label>
+                                <select id="model_id" wire:model="vehicle.model_id" class="w-full rounded-xl border-gray-300 shadow-sm focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200 bg-gray-50 focus:bg-white">
+                                    <option value="">Select Model</option>
+                                    @foreach($models as $model)
+                                        <option value="{{ $model->id }}">{{ $model->name }}</option>
+                                    @endforeach
+                                </select>
+                                @error('vehicle.model_id') <p class="mt-1 text-sm text-red-600 flex items-center"><svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>{{ $message }}</p> @enderror
+                            </div>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                            <div class="space-y-2">
+                                <label for="trim" class="block text-sm font-medium text-gray-700">Trim</label>
+                                <input type="text" id="trim" wire:model="vehicle.trim" placeholder="e.g., Sport, Limited" class="w-full rounded-xl border-gray-300 shadow-sm focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200 bg-gray-50 focus:bg-white">
+                                @error('vehicle.trim') <p class="mt-1 text-sm text-red-600 flex items-center"><svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>{{ $message }}</p> @enderror
+                            </div>
+                            
+                            <div class="space-y-2">
+                                <label for="year" class="block text-sm font-medium text-gray-700">Year*</label>
+                                <input type="number" id="year" wire:model="vehicle.year" placeholder="2024" min="1900" max="2030" class="w-full rounded-xl border-gray-300 shadow-sm focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200 bg-gray-50 focus:bg-white">
+                                @error('vehicle.year') <p class="mt-1 text-sm text-red-600 flex items-center"><svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>{{ $message }}</p> @enderror
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Specifications Section -->
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200">
+                        <div class="flex items-center mb-6">
+                            <div class="bg-purple-100 rounded-lg p-2 mr-3">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                            </div>
+                            <h3 class="text-lg font-semibold text-gray-900">Specifications</h3>
+                        </div>
+                        
+                        <div class="space-y-6">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="space-y-2">
+                                    <label for="body_type_id" class="block text-sm font-medium text-gray-700">Body Type*</label>
+                                    <select id="body_type_id" wire:model="vehicle.body_type_id" class="w-full rounded-xl border-gray-300 shadow-sm focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200 bg-gray-50 focus:bg-white">
+                                        <option value="">Select Body Type</option>
+                                        @foreach($bodyTypes as $bodyType)
+                                            <option value="{{ $bodyType->id }}">{{ $bodyType->name }}</option>
+                                        @endforeach
+                                    </select>
+                                    @error('vehicle.body_type_id') <p class="mt-1 text-sm text-red-600 flex items-center"><svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>{{ $message }}</p> @enderror
+                                </div>
+                                
+                                <div class="space-y-2">
+                                    <label for="fuel_type_id" class="block text-sm font-medium text-gray-700">Fuel Type*</label>
+                                    <select id="fuel_type_id" wire:model="vehicle.fuel_type_id" class="w-full rounded-xl border-gray-300 shadow-sm focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200 bg-gray-50 focus:bg-white">
+                                        <option value="">Select Fuel Type</option>
+                                        @foreach($fuelTypes as $fuelType)
+                                            <option value="{{ $fuelType->id }}">{{ $fuelType->name }}</option>
+                                        @endforeach
+                                    </select>
+                                    @error('vehicle.fuel_type_id') <p class="mt-1 text-sm text-red-600 flex items-center"><svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>{{ $message }}</p> @enderror
+                                </div>
+                            </div>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="space-y-2">
+                                    <label for="transmission_id" class="block text-sm font-medium text-gray-700">Transmission*</label>
+                                    <select id="transmission_id" wire:model="vehicle.transmission_id" class="w-full rounded-xl border-gray-300 shadow-sm focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200 bg-gray-50 focus:bg-white">
+                                        <option value="">Select Transmission</option>
+                                        @foreach($transmissions as $transmission)
+                                            <option value="{{ $transmission->id }}">{{ $transmission->name }}</option>
+                                        @endforeach
+                                    </select>
+                                    @error('vehicle.transmission_id') <p class="mt-1 text-sm text-red-600 flex items-center"><svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>{{ $message }}</p> @enderror
+                                </div>
+                                
+                                <div class="space-y-2">
+                                    <label for="drivetrain" class="block text-sm font-medium text-gray-700">Drivetrain</label>
+                                    <select id="drivetrain" wire:model="vehicle.drivetrain" class="w-full rounded-xl border-gray-300 shadow-sm focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200 bg-gray-50 focus:bg-white">
+                                        <option value="">Select Drivetrain</option>
+                                        <option value="FWD">Front-Wheel Drive (FWD)</option>
+                                        <option value="RWD">Rear-Wheel Drive (RWD)</option>
+                                        <option value="AWD">All-Wheel Drive (AWD)</option>
+                                        <option value="4WD">Four-Wheel Drive (4WD)</option>
+                                    </select>
+                                    @error('vehicle.drivetrain') <p class="mt-1 text-sm text-red-600 flex items-center"><svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>{{ $message }}</p> @enderror
+                                </div>
+                            </div>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="space-y-2">
+                                    <label for="engine_size" class="block text-sm font-medium text-gray-700">Engine Size</label>
+                                    <input type="text" id="engine_size" wire:model="vehicle.engine_size" placeholder="e.g. 2.0L" class="w-full rounded-xl border-gray-300 shadow-sm focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200 bg-gray-50 focus:bg-white">
+                                    @error('vehicle.engine_size') <p class="mt-1 text-sm text-red-600 flex items-center"><svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>{{ $message }}</p> @enderror
+                                </div>
+                                
+                                <div class="space-y-2">
+                                    <label for="engine_type" class="block text-sm font-medium text-gray-700">Engine Type</label>
+                                    <input type="text" id="engine_type" wire:model="vehicle.engine_type" placeholder="e.g. V6 Turbo" class="w-full rounded-xl border-gray-300 shadow-sm focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200 bg-gray-50 focus:bg-white">
+                                    @error('vehicle.engine_type') <p class="mt-1 text-sm text-red-600 flex items-center"><svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>{{ $message }}</p> @enderror
+                                </div>
+                            </div>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="space-y-2">
+                                    <label for="horsepower" class="block text-sm font-medium text-gray-700">Horsepower</label>
+                                    <input type="number" id="horsepower" wire:model="vehicle.horsepower" placeholder="300" class="w-full rounded-xl border-gray-300 shadow-sm focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200 bg-gray-50 focus:bg-white">
+                                    @error('vehicle.horsepower') <p class="mt-1 text-sm text-red-600 flex items-center"><svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>{{ $message }}</p> @enderror
+                                </div>
+                                
+                                <div class="space-y-2">
+                                    <label for="seating_capacity" class="block text-sm font-medium text-gray-700">Seating Capacity</label>
+                                    <input type="number" id="seating_capacity" wire:model="vehicle.seating_capacity" placeholder="5" min="1" max="50" class="w-full rounded-xl border-gray-300 shadow-sm focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200 bg-gray-50 focus:bg-white">
+                                    @error('vehicle.seating_capacity') <p class="mt-1 text-sm text-red-600 flex items-center"><svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>{{ $message }}</p> @enderror
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 
-                @if(isset($existingImages['side']))
-                    <div class="mb-4">
-                        <h5 class="text-xs font-medium text-gray-600 mb-2">Side View</h5>
-                        <div class="relative inline-block">
-                            <img src="{{ asset('storage/' . $existingImages['side']->image_url) }}" alt="Side View" class="h-24 w-auto object-cover rounded-lg shadow-sm">
-                            <button type="button" wire:click="removeExistingImage({{ $existingImages['side']->id }})" class="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1 transform translate-x-1/2 -translate-y-1/2 shadow-md hover:bg-red-600 transition-colors duration-200">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                <!-- Right Column -->
+                <div class="space-y-8">
+                    <!-- Listing Details Section -->
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200">
+                        <div class="flex items-center mb-6">
+                            <div class="bg-green-100 rounded-lg p-2 mr-3">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
                                 </svg>
-                            </button>
+                            </div>
+                            <h3 class="text-lg font-semibold text-gray-900">Listing Details</h3>
+                        </div>
+                        
+                        <div class="space-y-6">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="space-y-2">
+                                    <label for="vehicle_condition" class="block text-sm font-medium text-gray-700">Condition*</label>
+                                    <select id="vehicle_condition" wire:model="vehicle.vehicle_condition" class="w-full rounded-xl border-gray-300 shadow-sm focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200 bg-gray-50 focus:bg-white">
+                                        <option value="">Select Condition</option>
+                                        <option value="New">New</option>
+                                        <option value="Used">Used</option>
+                                        <option value="Certified Pre-Owned">Certified Pre-Owned</option>
+                                    </select>
+                                    @error('vehicle.vehicle_condition') <p class="mt-1 text-sm text-red-600 flex items-center"><svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>{{ $message }}</p> @enderror
+                                </div>
+                                
+                                <div class="space-y-2">
+                                    <label for="price" class="block text-sm font-medium text-gray-700">Price (TZS)*</label>
+                                    <div class="relative">
+                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                            <span class="text-gray-500 sm:text-sm">TZS</span>
+                                        </div>
+                                        <input type="number" id="price" wire:model="vehicle.price" placeholder="50,000,000" class="w-full pl-12 rounded-xl border-gray-300 shadow-sm focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200 bg-gray-50 focus:bg-white">
+                                    </div>
+                                    @error('vehicle.price') <p class="mt-1 text-sm text-red-600 flex items-center"><svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>{{ $message }}</p> @enderror
+                                </div>
+                            </div>
+
+                            <div class="space-y-2">
+                                <label for="downPaymentPercent" class="block text-sm font-medium text-gray-700">Down Payment (%)*</label>
+                                <div class="relative">
+                                    <input type="number" id="downPaymentPercent" wire:model="vehicle.downPaymentPercent" placeholder="30" min="0" max="100" class="w-full rounded-xl border-gray-300 shadow-sm focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200 bg-gray-50 focus:bg-white">
+                                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                        <span class="text-gray-500 sm:text-sm">%</span>
+                                    </div>
+                                </div>
+                                @error('vehicle.downPaymentPercent') <p class="mt-1 text-sm text-red-600 flex items-center"><svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>{{ $message }}</p> @enderror
+                            </div>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="space-y-2">
+                                    <label for="mileage" class="block text-sm font-medium text-gray-700">Mileage (KM)*</label>
+                                    <div class="relative">
+                                        <input type="number" id="mileage" wire:model="vehicle.mileage" placeholder="50,000" class="w-full rounded-xl border-gray-300 shadow-sm focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200 bg-gray-50 focus:bg-white">
+                                        <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                            <span class="text-gray-500 sm:text-sm">KM</span>
+                                        </div>
+                                    </div>
+                                    @error('vehicle.mileage') <p class="mt-1 text-sm text-red-600 flex items-center"><svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>{{ $message }}</p> @enderror
+                                </div>
+                                
+                                <div class="space-y-2">
+                                    <label for="color" class="block text-sm font-medium text-gray-700">Color*</label>
+                                    <input type="text" id="color" wire:model="vehicle.color" placeholder="e.g., Midnight Blue" class="w-full rounded-xl border-gray-300 shadow-sm focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200 bg-gray-50 focus:bg-white">
+                                    @error('vehicle.color') <p class="mt-1 text-sm text-red-600 flex items-center"><svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>{{ $message }}</p> @enderror
+                                </div>
+                            </div>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="space-y-2">
+                                    <label for="vin" class="block text-sm font-medium text-gray-700">VIN*</label>
+                                    <input type="text" id="vin" wire:model="vehicle.vin" placeholder="1HGBH41JXMN109186" class="w-full rounded-xl border-gray-300 shadow-sm focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200 bg-gray-50 focus:bg-white font-mono text-sm">
+                                    @error('vehicle.vin') <p class="mt-1 text-sm text-red-600 flex items-center"><svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>{{ $message }}</p> @enderror
+                                </div>
+                                
+                                <div class="space-y-2">
+                                    <label for="owners" class="block text-sm font-medium text-gray-700">Previous Owners</label>
+                                    <input type="number" id="owners" wire:model="vehicle.owners" placeholder="1" min="0" max="10" class="w-full rounded-xl border-gray-300 shadow-sm focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200 bg-gray-50 focus:bg-white">
+                                    @error('vehicle.owners') <p class="mt-1 text-sm text-red-600 flex items-center"><svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>{{ $message }}</p> @enderror
+                                </div>
+                            </div>
+                            
+                            <div class="space-y-2">
+                                <label for="location" class="block text-sm font-medium text-gray-700">Location*</label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                        </svg>
+                                    </div>
+                                    <input type="text" id="location" wire:model="vehicle.location" placeholder="Dar es Salaam, Tanzania" class="w-full pl-10 rounded-xl border-gray-300 shadow-sm focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200 bg-gray-50 focus:bg-white">
+                                </div>
+                                @error('vehicle.location') <p class="mt-1 text-sm text-red-600 flex items-center"><svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>{{ $message }}</p> @enderror
+                            </div>
                         </div>
                     </div>
-                @endif
-                
-                @if(isset($existingImages['back']))
-                    <div class="mb-4">
-                        <h5 class="text-xs font-medium text-gray-600 mb-2">Back View</h5>
-                        <div class="relative inline-block">
-                            <img src="{{ asset('storage/' . $existingImages['back']->image_url) }}" alt="Back View" class="h-24 w-auto object-cover rounded-lg shadow-sm">
-                            <button type="button" wire:click="removeExistingImage({{ $existingImages['back']->id }})" class="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1 transform translate-x-1/2 -translate-y-1/2 shadow-md hover:bg-red-600 transition-colors duration-200">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    
+                    <!-- Description and Status Section -->
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200">
+                        <div class="flex items-center mb-6">
+                            <div class="bg-orange-100 rounded-lg p-2 mr-3">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7" />
                                 </svg>
-                            </button>
+                            </div>
+                            <h3 class="text-lg font-semibold text-gray-900">Description & Status</h3>
+                        </div>
+                        
+                        <div class="space-y-6">
+                            <div class="space-y-2">
+                                <label for="description" class="block text-sm font-medium text-gray-700">Description*</label>
+                                <textarea id="description" wire:model="vehicle.description" rows="5" placeholder="Provide a detailed description of the vehicle including features, maintenance history, and any additional information..." class="w-full rounded-xl border-gray-300 shadow-sm focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200 bg-gray-50 focus:bg-white resize-none"></textarea>
+                                @error('vehicle.description') <p class="mt-1 text-sm text-red-600 flex items-center"><svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>{{ $message }}</p> @enderror
+                            </div>
+                            
+                            <div class="space-y-4">
+                                <div class="flex items-center p-4 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl">
+                                    <input type="checkbox" id="is_featured" wire:model="vehicle.is_featured" class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring-2 focus:ring-blue-200 transition-all duration-200">
+                                    <label for="is_featured" class="ml-3 text-sm font-medium text-gray-900 flex items-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-yellow-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                        </svg>
+                                        Featured Vehicle
+                                        <span class="ml-2 text-xs text-gray-500">(Premium placement)</span>
+                                    </label>
+                                </div>
+                                
+                                <div class="space-y-3">
+                                    <label class="text-sm font-medium text-gray-700">Vehicle Status</label>
+                                    <div class="grid grid-cols-3 gap-3">
+                                        <label class="relative flex items-center justify-center p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-green-300 transition-all duration-200 group">
+                                            <input type="radio" id="status_active" wire:model="vehicleStatus" value="active" class="sr-only">
+                                            <div class="text-center">
+                                                <div class="w-3 h-3 bg-green-500 rounded-full mx-auto mb-2"></div>
+                                                <span class="text-sm font-medium text-gray-700">Active</span>
+                                            </div>
+                                        </label>
+                                        
+                                        <label class="relative flex items-center justify-center p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-yellow-300 transition-all duration-200 group">
+                                            <input type="radio" id="status_on_hold" wire:model="vehicleStatus" value="on_hold" class="sr-only">
+                                            <div class="text-center">
+                                                <div class="w-3 h-3 bg-yellow-500 rounded-full mx-auto mb-2"></div>
+                                                <span class="text-sm font-medium text-gray-700">On Hold</span>
+                                            </div>
+                                        </label>
+                                        
+                                        <label class="relative flex items-center justify-center p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-red-300 transition-all duration-200 group">
+                                            <input type="radio" id="status_sold" wire:model="vehicleStatus" value="sold" class="sr-only">
+                                            <div class="text-center">
+                                                <div class="w-3 h-3 bg-red-500 rounded-full mx-auto mb-2"></div>
+                                                <span class="text-sm font-medium text-gray-700">Sold</span>
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                @endif
+                </div>
             </div>
-            
-            @if(count($existingImages['additional']) > 0)
-                <div class="mt-4">
-                    <h5 class="text-xs font-medium text-gray-600 mb-2">Additional Images</h5>
-                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-                        @foreach($existingImages['additional'] as $image)
+
+            <!-- Vehicle Images Section -->
+            <div class="mt-8 bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200">
+                <div class="flex items-center mb-6">
+                    <div class="bg-indigo-100 rounded-lg p-2 mr-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-900">Vehicle Images</h3>
+                        <p class="text-sm text-gray-600">Upload high-quality images to showcase your vehicle</p>
+                    </div>
+                </div>
+                
+                <!-- Image Upload Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+                    <!-- Front View -->
+                    <div class="space-y-3">
+                        <h4 class="text-sm font-medium text-gray-700 flex items-center">
+                            <span class="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
+                            Front View
+                        </h4>
+                        <div class="relative group">
+                            <label for="frontImage" class="flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-gray-300 rounded-xl cursor-pointer bg-gray-50 hover:bg-gray-100 transition-all duration-200 group-hover:border-blue-400">
+                                <div class="flex flex-col items-center justify-center py-6">
+                                    <svg class="w-8 h-8 mb-2 text-gray-500 group-hover:text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 48 48">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" />
+                                    </svg>
+                                    <p class="text-xs text-gray-500 text-center">
+                                        <span class="font-semibold">Click to upload</span><br/>
+                                        PNG, JPG (MAX. 10MB)
+                                    </p>
+                                </div>
+                                <input id="frontImage" wire:model="viewImages.front" type="file" class="hidden" accept="image/*" />
+                            </label>
+                        </div>
+                        @error('viewImages.front') <p class="text-xs text-red-600 flex items-center"><svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>{{ $message }}</p> @enderror
+                        
+                        @if(isset($viewImagesPreview['front']))
                             <div class="relative">
-                                <img src="{{ asset('storage/' . $image->image_url) }}" alt="Additional Image" class="h-24 w-full object-cover rounded-lg shadow-sm">
-                                <button type="button" wire:click="removeExistingImage({{ $image->id }})" class="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1 transform translate-x-1/2 -translate-y-1/2 shadow-md hover:bg-red-600 transition-colors duration-200">
+                                <img src="{{ $viewImagesPreview['front'] }}" alt="Front View" class="w-full h-24 object-cover rounded-lg shadow-sm">
+                                <button type="button" wire:click="removeViewImage('front')" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 shadow-lg hover:bg-red-600 transition-colors duration-200">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                                     </svg>
                                 </button>
                             </div>
-                        @endforeach
+                        @endif
+                    </div>
+                    
+                    <!-- Side View -->
+                    <div class="space-y-3">
+                        <h4 class="text-sm font-medium text-gray-700 flex items-center">
+                            <span class="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
+                            Side View
+                        </h4>
+                        <div class="relative group">
+                            <label for="sideImage" class="flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-gray-300 rounded-xl cursor-pointer bg-gray-50 hover:bg-gray-100 transition-all duration-200 group-hover:border-green-400">
+                                <div class="flex flex-col items-center justify-center py-6">
+                                    <svg class="w-8 h-8 mb-2 text-gray-500 group-hover:text-green-500" fill="none" stroke="currentColor" viewBox="0 0 48 48">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" />
+                                    </svg>
+                                    <p class="text-xs text-gray-500 text-center">
+                                        <span class="font-semibold">Click to upload</span><br/>
+                                        PNG, JPG (MAX. 10MB)
+                                    </p>
+                                </div>
+                                <input id="sideImage" wire:model="viewImages.side" type="file" class="hidden" accept="image/*" />
+                            </label>
+                        </div>
+                        @error('viewImages.side') <p class="text-xs text-red-600 flex items-center"><svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>{{ $message }}</p> @enderror
+                        
+                        @if(isset($viewImagesPreview['side']))
+                            <div class="relative">
+                                <img src="{{ $viewImagesPreview['side'] }}" alt="Side View" class="w-full h-24 object-cover rounded-lg shadow-sm">
+                                <button type="button" wire:click="removeViewImage('side')" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 shadow-lg hover:bg-red-600 transition-colors duration-200">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
+                            </div>
+                        @endif
+                    </div>
+                    
+                    <!-- Back View -->
+                    <div class="space-y-3">
+                        <h4 class="text-sm font-medium text-gray-700 flex items-center">
+                            <span class="w-2 h-2 bg-purple-500 rounded-full mr-2"></span>
+                            Back View
+                        </h4>
+                        <div class="relative group">
+                            <label for="backImage" class="flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-gray-300 rounded-xl cursor-pointer bg-gray-50 hover:bg-gray-100 transition-all duration-200 group-hover:border-purple-400">
+                                <div class="flex flex-col items-center justify-center py-6">
+                                    <svg class="w-8 h-8 mb-2 text-gray-500 group-hover:text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 48 48">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" />
+                                    </svg>
+                                    <p class="text-xs text-gray-500 text-center">
+                                        <span class="font-semibold">Click to upload</span><br/>
+                                        PNG, JPG (MAX. 10MB)
+                                    </p>
+                                </div>
+                                <input id="backImage" wire:model="viewImages.back" type="file" class="hidden" accept="image/*" />
+                            </label>
+                        </div>
+                        @error('viewImages.back') <p class="text-xs text-red-600 flex items-center"><svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>{{ $message }}</p> @enderror
+                        
+                        @if(isset($viewImagesPreview['back']))
+                            <div class="relative">
+                                <img src="{{ $viewImagesPreview['back'] }}" alt="Back View" class="w-full h-24 object-cover rounded-lg shadow-sm">
+                                <button type="button" wire:click="removeViewImage('back')" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 shadow-lg hover:bg-red-600 transition-colors duration-200">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
+                            </div>
+                        @endif
+                    </div>
+                    
+                    <!-- Additional Images -->
+                    <div class="space-y-3">
+                        <h4 class="text-sm font-medium text-gray-700 flex items-center">
+                            <span class="w-2 h-2 bg-orange-500 rounded-full mr-2"></span>
+                            Additional
+                        </h4>
+                        <div class="relative group">
+                            <label for="additionalImages" class="flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-gray-300 rounded-xl cursor-pointer bg-gray-50 hover:bg-gray-100 transition-all duration-200 group-hover:border-orange-400">
+                                <div class="flex flex-col items-center justify-center py-6">
+                                    <svg class="w-8 h-8 mb-2 text-gray-500 group-hover:text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 48 48">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" />
+                                    </svg>
+                                    <p class="text-xs text-gray-500 text-center">
+                                        <span class="font-semibold">Multiple files</span><br/>
+                                        PNG, JPG (MAX. 10MB)
+                                    </p>
+                                </div>
+                                <input id="additionalImages" wire:model="additionalImages" type="file" class="hidden" multiple accept="image/*" />
+                            </label>
+                        </div>
+                        @error('additionalImages.*') <p class="text-xs text-red-600 flex items-center"><svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>{{ $message }}</p> @enderror
                     </div>
                 </div>
-            @endif
-        </div>
-    @endif
-    
-    <!-- Additional Images Preview -->
-    @if(count($additionalImages) > 0)
-        <div class="mt-6 bg-gray-50 p-4 rounded-lg border border-gray-200">
-            <h4 class="text-sm font-medium text-gray-700 mb-2">New Additional Images</h4>
-            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-                @foreach($additionalImages as $index => $image)
-                    <div class="relative">
-                        <img src="{{ $image->temporaryUrl() }}" alt="New Vehicle Image" class="h-24 w-full object-cover rounded-lg shadow-sm">
-                        <button type="button" wire:click="removeAdditionalImage({{ $index }})" class="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1 transform translate-x-1/2 -translate-y-1/2 shadow-md hover:bg-red-600 transition-colors duration-200">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                
+                <!-- Existing Images Preview -->
+                @if($editMode && count($existingImages) > 0)
+                    <div class="mt-8 p-6 bg-gradient-to-r from-gray-50 to-blue-50 rounded-xl border border-blue-200">
+                        <h4 class="text-sm font-medium text-gray-700 mb-4 flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-600 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                             </svg>
-                        </button>
+                            Current Images
+                        </h4>
+                        
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            @foreach(['front', 'side', 'back'] as $view)
+                                @if(isset($existingImages[$view]))
+                                    <div class="space-y-2">
+                                        <h5 class="text-xs font-medium text-gray-600 capitalize">{{ $view }} View</h5>
+                                        <div class="relative group">
+                                            <img src="{{ asset('storage/' . $existingImages[$view]->image_url) }}" alt="{{ ucfirst($view) }} View" class="w-full h-24 object-cover rounded-lg shadow-sm">
+                                            <button type="button" wire:click="removeExistingImage({{ $existingImages[$view]->id }})" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 shadow-lg hover:bg-red-600 transition-colors duration-200 opacity-0 group-hover:opacity-100">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </div>
+                                @endif
+                            @endforeach
+                        </div>
+                        
+                        @if(count($existingImages['additional']) > 0)
+                            <div class="mt-6">
+                                <h5 class="text-xs font-medium text-gray-600 mb-3">Additional Images</h5>
+                                <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3">
+                                    @foreach($existingImages['additional'] as $image)
+                                        <div class="relative group">
+                                            <img src="{{ asset('storage/' . $image->image_url) }}" alt="Additional Image" class="w-full h-20 object-cover rounded-lg shadow-sm">
+                                            <button type="button" wire:click="removeExistingImage({{ $image->id }})" class="absolute -top-1 -right-1 bg-red-500 text-white rounded-full p-1 shadow-lg hover:bg-red-600 transition-colors duration-200 opacity-0 group-hover:opacity-100">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endif
                     </div>
-                @endforeach
+                @endif
+                
+                <!-- New Additional Images Preview -->
+                @if(count($additionalImages) > 0)
+                    <div class="mt-6 p-6 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl border border-green-200">
+                        <h4 class="text-sm font-medium text-gray-700 mb-3 flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-600 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                            </svg>
+                            New Additional Images
+                        </h4>
+                        <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3">
+                            @foreach($additionalImages as $index => $image)
+                                <div class="relative group">
+                                    <img src="{{ $image->temporaryUrl() }}" alt="New Vehicle Image" class="w-full h-20 object-cover rounded-lg shadow-sm">
+                                    <button type="button" wire:click="removeAdditionalImage({{ $index }})" class="absolute -top-1 -right-1 bg-red-500 text-white rounded-full p-1 shadow-lg hover:bg-red-600 transition-colors duration-200 opacity-0 group-hover:opacity-100">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
             </div>
-        </div>
-    @endif
+            
+            <!-- Form Buttons -->
+            <div class="flex flex-col sm:flex-row justify-end space-y-3 sm:space-y-0 sm:space-x-4 mt-10 pt-6 border-t border-gray-200">
+                <button type="button" wire:click="cancelForm" class="w-full sm:w-auto px-6 py-3 bg-white border-2 border-gray-300 rounded-xl font-medium text-gray-700 hover:bg-gray-50 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-all duration-200 flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                    Cancel
+                </button>
+                <button type="submit" class="w-full sm:w-auto px-8 py-3 bg-gradient-to-r from-green-600 to-green-700 border border-transparent rounded-xl font-medium text-green-800 hover:from-green-700 hover:to-green-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all duration-200 flex items-center justify-center shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+                    @if($editMode)
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                        </svg>
+                        Update Vehicle
+                    @else
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                        </svg>
+                        Add Vehicle
+                    @endif
+                </button>
+            </div>
+        </form>
+    </div>
 </div>
 
 
 
-
-
-
-                        </div>
-                    </div>
-                    
-                    <!-- Form Buttons -->
-                    <div class="flex justify-end space-x-3 mt-8">
-                        <button type="button" wire:click="cancelForm" class="px-4 py-2 bg-white border border-gray-300 rounded-md font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors duration-150">
-                            Cancel
-                        </button>
-                        <button type="submit" class="px-4 py-2 bg-green-600 border border-transparent rounded-md font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors duration-150">
-                            {{ $editMode ? 'Update Vehicle' : 'Add Vehicle' }}
-                        </button>
-                    </div>
-                </form>
-            </div>
         @else
             <!-- Vehicle Listing Section -->
             <div class="bg-white rounded-xl shadow-md p-6 mb-6">

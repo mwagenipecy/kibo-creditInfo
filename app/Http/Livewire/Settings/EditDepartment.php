@@ -173,28 +173,8 @@ class EditDepartment extends Component
 
 
 
-        $data = [
-            'status' => 'ACTIVE',
-            'department_name' => $this->role_name,
-            'permissions' => json_encode($stringArray),
-            'description' => $this->description
-        ];
+       
 
-        $update_value = approvals::updateOrCreate([
-
-            'institution' => '',
-            'process_name' => 'editRole',
-            'process_description' => ' A request to edit a Role - '.$this->role_name,
-            'approval_process_description' => '',
-            'process_code' => '22',
-            'process_id' => $this->selectedrole,
-            'process_status' => 'PENDING',
-            'approval_status' => 'PENDING',
-            'user_id'  => Auth::user()->id,
-            'team_id'  => '',
-            'edit_package'=> json_encode($data),
-
-        ] );
         Session::flash('message', 'Awaiting approval');
         Session::flash('alert-class', 'alert-success');
 

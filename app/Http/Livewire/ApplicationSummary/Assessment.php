@@ -67,6 +67,7 @@ class Assessment extends Component
     public $selectedLoan;
     public $ClosedLoanBalance;
 
+    public $appllicationId;
     protected $listeners = ['refresh'=>'$refresh'];
 
 
@@ -275,10 +276,16 @@ class Assessment extends Component
     }
 
 
-    public function mount()
+
+    public function mount($applicationId)
     {
+
+        $this->appllicationId=null;
+
+        $this->appllicationId=$applicationId;
          $this->loadData();
 
+         echo $this->appllicationId;
         // Set default start date to today
         $this->startDate = Carbon::today()->format('Y-m-d');
         
@@ -289,9 +296,12 @@ class Assessment extends Component
 
 
 
+
+
     public function render()
     {
 
+        
     //  $this->scheduleData =$this->generateSchedule();
 
         return view('livewire.application-summary.assessment');

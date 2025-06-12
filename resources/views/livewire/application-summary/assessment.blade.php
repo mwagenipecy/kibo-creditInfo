@@ -18,13 +18,6 @@
 
     </div>
 
-
-
-
-
-
-  
-
             
 <div class="mt-8 flex gap-4 justify-end items-right">
  @php

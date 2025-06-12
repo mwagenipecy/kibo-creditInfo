@@ -4,6 +4,7 @@ namespace App\Http\Livewire\Settings;
 
 use App\Http\Traits\MailSender;
 use App\Models\approvals;
+use App\Models\Department;
 use App\Models\departmentsList;
 use App\Models\User;
 use App\Models\UserSubMenu;
@@ -72,14 +73,7 @@ class Settings extends Component
     public $team;
     public $accounts;
     public $user;
-
-
     protected $userService;
-    
-
-
-
-
     protected $rules = [
         'name' => 'required|string|max:255',
         'email' => 'required|string|email|max:255|unique:users,email',
@@ -144,6 +138,7 @@ class Settings extends Component
             ->get();
         $this->usersList = User::get();
         $this->pendingUsers = User::get();
+        $this->departments=Department::get();
 
         return view('livewire.settings.settings', [
             'totalUsers' => User::count(),
@@ -151,7 +146,6 @@ class Settings extends Component
             'inactiveUsers' => $this->inActiveUsers,
         ]);
     }
-
     /**
      * Change active tab view
      */
@@ -159,7 +153,6 @@ class Settings extends Component
     {
         $this->tab_id = $id;
     }
-
     /**
      * Set users tab as active
      */
@@ -167,7 +160,6 @@ class Settings extends Component
     {
         $this->tab_id = 6;
     }
-
     /**
      * Open user creation modal
      */
@@ -176,7 +168,6 @@ class Settings extends Component
         $this->resetRegistrationFields();
         $this->showCreateNewUser = true;
     }
-
     /**
      * Reset user registration form fields
      */
@@ -222,7 +213,7 @@ class Settings extends Component
         $user->otp_time = now();
         $user->verification_status = '0';
 
-        $user->department=1;
+        //$user->department=1;
         
         if ($user->save()) {
             // Create approval request

@@ -49,7 +49,7 @@ class CreateRole extends Component
         $this->validate();
 
         $Role = new departmentsList;
-        $Role->status = 'PENDING';
+        $Role->status = 'ACTIVE';
         $Role->department_name = $this->role_name;
         $Role->permissions = json_encode($this->permissions);
         $Role->description = $this->description;
@@ -60,26 +60,6 @@ class CreateRole extends Component
             session()->flash('alert-class', 'alert-success');
 
 
-            $update_value = approvals::updateOrCreate(
-                [
-                    'process_id' => $Role->id,
-                    'user_id' => Auth::user()->id
-
-                ],
-                [
-                    'institution' => '',
-                    'process_name' => 'addDepartment',
-                    'process_description' => 'A requested to add a ROLE - '.$this->role_name,
-                    'approval_process_description' => '',
-                    'process_code' => '30',
-                    'process_id' => $Role->id,
-                    'process_status' => 'PENDING',
-                    'approval_status' => 'PENDING',
-                    'user_id'  => Auth::user()->id,
-                    'team_id'  => ''
-
-                ]
-            );
 
 
             $this->permissions = [];

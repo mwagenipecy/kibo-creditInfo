@@ -169,7 +169,6 @@
     </div>
 
     <!-- MODALS -->
- 
 
   <!-- Standard Modal - User Registration -->
 <div class="@if($showCreateNewUser) fixed @else hidden @endif inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
@@ -285,25 +284,33 @@
                                     @enderror
                                 </div>
 
-                                <!-- Profile Photo (optional) -->
-                                <div class="md:col-span-2">
-                                    <label for="profile_photo" class="block text-sm font-medium text-gray-700">Profile Photo (Optional)</label>
-                                    <div class="mt-1 flex items-center">
-                                        <input type="file" id="profile_photo" wire:model="profile_photo" class="hidden">
-                                        <label for="profile_photo" class="cursor-pointer inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-25 transition ease-in-out duration-150">
-                                            Select Photo
-                                        </label>
-                                        @if ($profile_photo)
-                                            <span class="ml-2 text-sm text-gray-600">Photo selected</span>
-                                        @endif
-                                    </div>
-                                    <div wire:loading wire:target="profile_photo" class="mt-1 text-sm text-gray-500">
-                                        Uploading...
-                                    </div>
-                                    @error('profile_photo') 
+
+
+                                   <!-- User Status -->
+                                   <div>
+                                    <label for="status" class="block text-sm font-medium text-gray-700">Status</label>
+                                    <select id="status" wire:model.defer="department" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-500 focus:ring-opacity-50">
+                                       
+                                    <option value=""> select role </option>
+
+                                    @foreach($departments as $department)
+
+                                    @if($department->id==2 || $department->id==3 )
+                                     @continue
+                                    @endif
+
+                                        <option value="{{ $department->id }}">{{ $department->department_name }}</option>
+                                        
+                                    @endforeach
+                                        
+                                    </select>
+                                    @error('department') 
                                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                     @enderror
                                 </div>
+
+
+                              
                             </div>
                         </div>
                     </div>

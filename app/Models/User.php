@@ -36,7 +36,8 @@ class User extends Authenticatable
         'branch',
         'institution_id',
         'address',
-        'phone_number'
+        'phone_number',
+        'status'
         // add this line to the array
     ];
 

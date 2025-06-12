@@ -48,14 +48,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="bg-gray-50 px-4 py-4 sm:px-6">
-                    <div class="text-sm">
-                        <a href="#" class="font-medium text-green-600 hover:text-green-500">
-                            View all lenders
-                            <span class="sr-only">Total Lenders</span>
-                        </a>
-                    </div>
-                </div>
+             
             </div>
 
             <!-- Total Car Dealers -->
@@ -88,14 +81,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="bg-gray-50 px-4 py-4 sm:px-6">
-                    <div class="text-sm">
-                        <a href="#" class="font-medium text-green-600 hover:text-green-500">
-                            View all car dealers
-                            <span class="sr-only">Total Car Dealers</span>
-                        </a>
-                    </div>
-                </div>
+               
             </div>
 
             <!-- Pending Approvals -->
@@ -129,14 +115,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="bg-gray-50 px-4 py-4 sm:px-6">
-                    <div class="text-sm">
-                        <a href="#" class="font-medium text-green-600 hover:text-green-500">
-                            Review pending approvals
-                            <span class="sr-only">Pending Approvals</span>
-                        </a>
-                    </div>
-                </div>
+              
             </div>
         </div>
 
@@ -292,8 +271,8 @@
                                     <div class="text-sm text-gray-500">{{ $lender['country'] }}</div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm text-gray-900">{{ $lender['contactPersonName'] }}  - {{ $lender['contactPersonEmail'] }}   </div>
-                                    <div class="text-sm text-gray-500">{{ $lender['contactPersonPosition'] }}</div>
+                                    <div class="text-sm text-gray-900">{{ $lender['contact_person_name'] }}  - {{ $lender['contact_person_email'] }}   </div>
+                                    <div class="text-sm text-gray-500">{{ $lender['contact_person_position'] }}</div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     @if($lender['status'] === 'APPROVED')
@@ -983,7 +962,12 @@
                         </div>
 
 
-                          <!-- Step 3: Documentation -->
+
+
+
+
+                        
+       <!-- Step 3: Documentation -->
 <div class="@if($currentStep === 3) block @else hidden @endif">
     <div class="mb-6 p-4 border border-gray-200 rounded-lg">
         <h4 class="text-lg font-medium text-gray-900 mb-4 flex items-center">
@@ -997,27 +981,58 @@
         <div class="space-y-6">
             <!-- Business Registration Certificate -->
             <div>
-    <label class="block text-sm font-medium text-gray-700">Business Registration Certificate</label>
-    
-    <div class="mt-1 flex items-center">
-        <!-- Remove absolute positioning, just keep sr-only -->
-        <input type="file" id="businessRegistrationDoc" wire:model="businessRegistrationDoc" 
-            class="sr-only" accept=".pdf,.jpg,.jpeg,.png">
-        
-        <!-- Label as clickable element -->
-        <label for="businessRegistrationDoc" class="cursor-pointer inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-25 transition ease-in-out duration-150">
-            Select File
-        </label>
-        
-        <!-- Show appropriate message based on state -->
-        @if ($businessRegistrationDoc)
-            <span class="ml-2 text-sm text-green-600">File selected: {{ $businessRegistrationDoc->getClientOriginalName() }}</span>
-        @elseif ($isEditMode && !$businessRegistrationDoc)
-            <span class="ml-2 text-sm text-gray-600">Current file will be retained</span>
+                <label class="block text-sm font-medium text-gray-700">Business Registration Certificate</label>
+                
+                <div class="mt-1 flex items-center">
+                    <input type="file" id="businessRegistrationDoc" wire:model="businessRegistrationDoc" 
+                        class="sr-only" accept=".pdf,.jpg,.jpeg,.png">
+                    
+                    <label for="businessRegistrationDoc" class="cursor-pointer inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-25 transition ease-in-out duration-150">
+                        Select File
+                    </label>
+                    
+                    @if ($businessRegistrationDoc)
+                        <span class="ml-2 text-sm text-green-600">File selected: {{ $businessRegistrationDoc->getClientOriginalName() }}</span>
+                    @elseif ($isEditMode && !$businessRegistrationDoc && isset($existingBusinessRegistrationDoc))
+                        <span class="ml-2 text-sm text-gray-600">Current file will be retained</span>
                     @else
                         <span class="ml-2 text-sm text-gray-500">Required</span>
                     @endif
                 </div>
+
+                <!-- Preview/Download Section for Business Registration -->
+                @if ($isEditMode && isset($existingBusinessRegistrationDoc) && !$businessRegistrationDoc)
+                    <div class="mt-2 p-3 bg-gray-50 rounded-md border">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                </svg>
+                                <span class="text-sm text-gray-700">{{ basename($existingBusinessRegistrationDoc) }}</span>
+                            </div>
+                            <div class="flex space-x-2">
+                                <!-- Preview Button -->
+                                <button type="button" 
+                                    wire:click="previewDocument('businessRegistrationDoc')"
+                                    class="inline-flex items-center px-2 py-1 text-xs font-medium text-blue-600 bg-blue-100 rounded hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                    </svg>
+                                    Preview
+                                </button>
+                                <!-- Download Button -->
+                                <a href="{{ route('document.download', ['type' => 'businessRegistrationDoc', 'id' => $recordId ?? 0]) }}" 
+                                   class="inline-flex items-center px-2 py-1 text-xs font-medium text-green-600 bg-green-100 rounded hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-green-500">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                    </svg>
+                                    Download
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                @endif
 
                 <div wire:loading wire:target="businessRegistrationDoc" class="mt-1 text-sm text-gray-500">
                     Uploading...
@@ -1027,9 +1042,6 @@
                 @enderror
             </div>
 
-
-
-            
             <!-- Tax Clearance Certificate -->
             <div>
                 <label class="block text-sm font-medium text-gray-700">Tax Clearance Certificate</label>
@@ -1041,13 +1053,44 @@
                     </label>
                     @if ($taxClearanceDoc)
                         <span class="ml-2 text-sm text-green-600">File selected: {{ $taxClearanceDoc->getClientOriginalName() }}</span>
-                    @elseif ($isEditMode && !$taxClearanceDoc)
+                    @elseif ($isEditMode && !$taxClearanceDoc && isset($existingTaxClearanceDoc))
                         <span class="ml-2 text-sm text-gray-600">Current file will be retained</span>
                     @else
                         <span class="ml-2 text-sm text-gray-500">Required</span>
                     @endif
                 </div>
 
+                <!-- Preview/Download Section for Tax Clearance -->
+                @if ($isEditMode && isset($existingTaxClearanceDoc) && !$taxClearanceDoc)
+                    <div class="mt-2 p-3 bg-gray-50 rounded-md border">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                </svg>
+                                <span class="text-sm text-gray-700">{{ basename($existingTaxClearanceDoc) }}</span>
+                            </div>
+                            <div class="flex space-x-2">
+                                <button type="button" 
+                                    wire:click="previewDocument('taxClearanceDoc')"
+                                    class="inline-flex items-center px-2 py-1 text-xs font-medium text-blue-600 bg-blue-100 rounded hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                    </svg>
+                                    Preview
+                                </button>
+                                <a href="{{ route('document.download', ['type' => 'taxClearanceDoc', 'id' => $recordId ?? 0]) }}" 
+                                   class="inline-flex items-center px-2 py-1 text-xs font-medium text-green-600 bg-green-100 rounded hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-green-500">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                    </svg>
+                                    Download
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                @endif
 
                 <div wire:loading wire:target="taxClearanceDoc" class="mt-1 text-sm text-gray-500">
                     Uploading...
@@ -1057,8 +1100,6 @@
                 @enderror
             </div>
 
-
-            
             <!-- Financial License -->
             <div>
                 <label class="block text-sm font-medium text-gray-700">Financial License</label>
@@ -1070,12 +1111,44 @@
                     </label>
                     @if ($financialLicenseDoc)
                         <span class="ml-2 text-sm text-green-600">File selected: {{ $financialLicenseDoc->getClientOriginalName() }}</span>
-                    @elseif ($isEditMode && !$financialLicenseDoc)
+                    @elseif ($isEditMode && !$financialLicenseDoc && isset($existingFinancialLicenseDoc))
                         <span class="ml-2 text-sm text-gray-600">Current file will be retained</span>
                     @else
                         <span class="ml-2 text-sm text-gray-500">Required</span>
                     @endif
                 </div>
+
+                <!-- Preview/Download Section for Financial License -->
+                @if ($isEditMode && isset($existingFinancialLicenseDoc) && !$financialLicenseDoc)
+                    <div class="mt-2 p-3 bg-gray-50 rounded-md border">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                </svg>
+                                <span class="text-sm text-gray-700">{{ basename($existingFinancialLicenseDoc) }}</span>
+                            </div>
+                            <div class="flex space-x-2">
+                                <button type="button" 
+                                    wire:click="previewDocument('financialLicenseDoc')"
+                                    class="inline-flex items-center px-2 py-1 text-xs font-medium text-blue-600 bg-blue-100 rounded hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                    </svg>
+                                    Preview
+                                </button>
+                                <a href="{{ route('document.download', ['type' => 'financialLicenseDoc', 'id' => $recordId ?? 0]) }}" 
+                                   class="inline-flex items-center px-2 py-1 text-xs font-medium text-green-600 bg-green-100 rounded hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-green-500">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                    </svg>
+                                    Download
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                @endif
 
                 <div wire:loading wire:target="financialLicenseDoc" class="mt-1 text-sm text-gray-500">
                     Uploading...
@@ -1096,12 +1169,43 @@
                     </label>
                     @if ($logo)
                         <span class="ml-2 text-sm text-green-600">Logo selected: {{ $logo->getClientOriginalName() }}</span>
-                    @elseif ($isEditMode && !$logo)
+                    @elseif ($isEditMode && !$logo && isset($existingLogo))
                         <span class="ml-2 text-sm text-gray-600">Current logo will be retained</span>
                     @else
                         <span class="ml-2 text-sm text-gray-500">Optional</span>
                     @endif
                 </div>
+
+                <!-- Preview/Download Section for Logo -->
+                @if ($isEditMode && isset($existingLogo) && !$logo)
+                    <div class="mt-2 p-3 bg-gray-50 rounded-md border">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <img src="{{ Storage::url($existingLogo) }}" alt="Current Logo" class="h-8 w-8 object-cover rounded mr-2">
+                                <span class="text-sm text-gray-700">{{ basename($existingLogo) }}</span>
+                            </div>
+                            <div class="flex space-x-2">
+                                <button type="button" 
+                                    wire:click="previewDocument('logo')"
+                                    class="inline-flex items-center px-2 py-1 text-xs font-medium text-blue-600 bg-blue-100 rounded hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                    </svg>
+                                    Preview
+                                </button>
+                                <a href="{{ route('document.download', ['type' => 'logo', 'id' => $recordId ?? 0]) }}" 
+                                   class="inline-flex items-center px-2 py-1 text-xs font-medium text-green-600 bg-green-100 rounded hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-green-500">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                    </svg>
+                                    Download
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                @endif
+
                 <div wire:loading wire:target="logo" class="mt-1 text-sm text-gray-500">
                     Uploading...
                 </div>
@@ -1110,7 +1214,6 @@
                 @enderror
             </div>
 
-            
             <!-- Additional Documents -->
             <div>
                 <label class="block text-sm font-medium text-gray-700">Additional Documents (Optional)</label>
@@ -1122,12 +1225,44 @@
                     </label>
                     @if ($additionalDoc)
                         <span class="ml-2 text-sm text-green-600">File selected: {{ $additionalDoc->getClientOriginalName() }}</span>
-                    @elseif ($isEditMode && !$additionalDoc)
+                    @elseif ($isEditMode && !$additionalDoc && isset($existingAdditionalDoc))
                         <span class="ml-2 text-sm text-gray-600">Current file will be retained</span>
                     @else
                         <span class="ml-2 text-sm text-gray-500">Optional</span>
                     @endif
                 </div>
+
+                <!-- Preview/Download Section for Additional Documents -->
+                @if ($isEditMode && isset($existingAdditionalDoc) && !$additionalDoc)
+                    <div class="mt-2 p-3 bg-gray-50 rounded-md border">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                </svg>
+                                <span class="text-sm text-gray-700">{{ basename($existingAdditionalDoc) }}</span>
+                            </div>
+                            <div class="flex space-x-2">
+                                <button type="button" 
+                                    wire:click="previewDocument('additionalDoc')"
+                                    class="inline-flex items-center px-2 py-1 text-xs font-medium text-blue-600 bg-blue-100 rounded hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                    </svg>
+                                    Preview
+                                </button>
+                                <a href="{{ route('document.download', ['type' => 'additionalDoc', 'id' => $recordId ?? 0]) }}" 
+                                   class="inline-flex items-center px-2 py-1 text-xs font-medium text-green-600 bg-green-100 rounded hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-green-500">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                    </svg>
+                                    Download
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                @endif
 
                 <div wire:loading wire:target="additionalDoc" class="mt-1 text-sm text-gray-500">
                     Uploading...
@@ -1136,11 +1271,107 @@
                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                 @enderror
             </div>
-
-
         </div>
     </div>
 </div>
+
+<!-- Document Preview Modal -->
+@if($showPreviewModal)
+    <div class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true" wire:click="closePreview"></div>
+            
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+            
+            <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full">
+                <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg leading-6 font-medium text-gray-900">
+                            Document Preview
+                        </h3>
+                        <button type="button" 
+                            wire:click="closePreview"
+                            class="text-gray-400 hover:text-gray-600">
+                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+                    
+                    <div class="mt-2">
+                        @if($previewDocumentType && $previewDocumentPath)
+                            @php
+                                $extension = strtolower(pathinfo($previewDocumentPath, PATHINFO_EXTENSION));
+                                $isImage = in_array($extension, ['jpg', 'jpeg', 'png', 'gif', 'webp']);
+                                $isPdf = $extension === 'pdf';
+                            @endphp
+                            
+                            @if($isImage)
+                                <div class="text-center">
+                                    <img src="{{ Storage::url($previewDocumentPath) }}" 
+                                         alt="Document Preview" 
+                                         class="max-w-full h-auto mx-auto rounded-lg shadow-lg"
+                                         style="max-height: 70vh;">
+                                </div>
+                            @elseif($isPdf)
+                                <div class="w-full h-96">
+                                    <iframe src="{{ Storage::url($previewDocumentPath) }}" 
+                                            class="w-full h-full border-0 rounded-lg"
+                                            type="application/pdf">
+                                        <p class="text-center text-gray-500 py-8">
+                                            Your browser doesn't support PDF preview. 
+                                            <a href="{{ Storage::url($previewDocumentPath) }}" 
+                                               target="_blank" 
+                                               class="text-blue-600 hover:text-blue-800 underline">
+                                                Click here to download and view the document.
+                                            </a>
+                                        </p>
+                                    </iframe>
+                                </div>
+                            @else
+                                <div class="text-center py-8">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                    </svg>
+                                    <p class="text-gray-500 mb-4">Preview not available for this file type.</p>
+                                    <a href="{{ Storage::url($previewDocumentPath) }}" 
+                                       target="_blank" 
+                                       class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 active:bg-blue-900 focus:outline-none focus:border-blue-900 focus:ring ring-blue-300 disabled:opacity-25 transition ease-in-out duration-150">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                        </svg>
+                                        Download Document
+                                    </a>
+                                </div>
+                            @endif
+                        @endif
+                    </div>
+                </div>
+                
+                <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                    <button type="button" 
+                        wire:click="closePreview"
+                        class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-gray-600 text-base font-medium text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 sm:ml-3 sm:w-auto sm:text-sm">
+                        Close
+                    </button>
+                    
+                    @if($previewDocumentPath)
+                        <a href="{{ route('document.download', ['type' => $previewDocumentType, 'id' => $recordId ?? 0]) }}" 
+                           class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                            Download
+                        </a>
+                    @endif
+                </div>
+            </div>
+        </div>
+    </div>
+@endif
+
+
+
 
 
 
