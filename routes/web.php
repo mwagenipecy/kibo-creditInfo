@@ -55,16 +55,8 @@ Route::middleware(['auth:sanctum', 'verified',ClientMiddleware::class])->group(f
        Route::get('loan/pre-qualify/{vehicleId}/{lenderId}',[WebsiteController::class,'loanApplication'])->name('loan.pre-qualify');
 
 
-      //////////////////////////////////// OTP /////////////////////////////
-      Route::get('account',[WebsiteController::class,'accountPage'])->name('account.setting');
+     
 
-
-
-          ////////////////////// LOAN APPLICATION /////////////////////////////////
-    Route::get('loan/application/{id}',[])->name('loan.application');
-    Route::get('loan/list',[WebsiteController::class,'applicationList'])->name('application.list');
-    Route::get('application/status/{id}',[WebsiteController::class,'applicationStatus'])->name('application.status');
-   
 
 
 
@@ -73,7 +65,7 @@ Route::middleware(['auth:sanctum', 'verified',ClientMiddleware::class])->group(f
 
         // If the user is authenticated, redirect to the dashboard
         if (Auth::check()) {
-            return redirect()->route('CyberPoint-Pro');
+           // return redirect()->route('CyberPoint-Pro');
         }
 
        // dd("okkk");
@@ -140,10 +132,21 @@ Route::get('/employer/verification-completed', [EmployerVerificationController::
 
 
 
+ //////////////////////////////////// OTP /////////////////////////////
+ Route::get('account',[WebsiteController::class,'accountPage'])->name('account.setting');
+
+
 
    
     Route::get('/contact',[WebsiteController::class,'contactPage'])->name('contact.page');
 
 
 
+
+          ////////////////////// LOAN APPLICATION /////////////////////////////////
+          Route::get('loan/application/{id}',[])->name('loan.application');
+          Route::get('loan/list',[WebsiteController::class,'applicationList'])->name('application.list');
+          Route::get('application/status/{id}',[WebsiteController::class,'applicationStatus'])->name('application.status');
+         
+      
  
