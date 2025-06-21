@@ -21,18 +21,12 @@ use App\Http\Controllers\EmployerVerificationController;
 
 
 
-Route::get('/microfinance_registration_link',[\App\Http\Controllers\CompanyRequest::class,'index']);
-Route::post('registration/submition',[\App\Http\Controllers\CompanyRequest::class,'create'])->name('saccossRequestForm');
-
 // Redirect to login page
 Route::redirect('/', 'welcome');
 
 // Route for password reset form submission
 Route::post('/password-reset', function (Illuminate\Http\Request $request) {
     $email = $request->input('email');
-
-
-
     Session::put('status',"This password is not registered");
         return redirect()->route('password.request');
 })->name('password-reset');
@@ -44,33 +38,22 @@ Route::middleware(['auth:sanctum', 'verified',ClientMiddleware::class])->group(f
 
     // Route for the main dashboard page
     Route::get('/System', \App\Http\Livewire\System::class)->name('System');
-
     Route::get('/CyberPoint-Pro', \App\Http\Livewire\System::class)->name('CyberPoint-Pro');
-
    // Route::get('/otp-page',[WebsiteController::class,'Otp'])->name('otp-page');
-
-
-
-       /////////////////// CLIENT LOAN APPLICATION /////////////////////////
-       Route::get('loan/pre-qualify/{vehicleId}/{lenderId}',[WebsiteController::class,'loanApplication'])->name('loan.pre-qualify');
-
-
-     
-
-
-
 
 
     Route::fallback(function() {
 
         // If the user is authenticated, redirect to the dashboard
         if (Auth::check()) {
-           // return redirect()->route('CyberPoint-Pro');
+            return redirect()->route('CyberPoint-Pro');
         }
 
        // dd("okkk");
         return view('pages/utility/404');
     });
+
+
 });
 
 
@@ -138,8 +121,12 @@ Route::get('/employer/verification-completed', [EmployerVerificationController::
     Route::get('/contact',[WebsiteController::class,'contactPage'])->name('contact.page');
 
 
- //////////////////////////////////// OTP /////////////////////////////
- Route::get('account',[WebsiteController::class,'accountPage'])->name('account.setting');
+
+    Route::middleware(['auth:sanctum', 'verified',ClientMiddleware::class])->group(function () {
+
+
+            //////////////////////////////////// OTP /////////////////////////////
+            Route::get('account',[WebsiteController::class,'accountPage'])->name('account.setting');
 
 
 
@@ -149,5 +136,7 @@ Route::get('/employer/verification-completed', [EmployerVerificationController::
           Route::get('application/status/{id}',[WebsiteController::class,'applicationStatus'])->name('application.status');
          
 
-      
- 
+         /////////////////// CLIENT LOAN APPLICATION /////////////////////////
+          Route::get('loan/pre-qualify/{vehicleId}/{lenderId}',[WebsiteController::class,'loanApplication'])->name('loan.pre-qualify');
+
+    });
