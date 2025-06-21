@@ -132,14 +132,14 @@ Route::get('/employer/verification-completed', [EmployerVerificationController::
 
 
 
- //////////////////////////////////// OTP /////////////////////////////
- Route::get('account',[WebsiteController::class,'accountPage'])->name('account.setting');
-
 
 
    
     Route::get('/contact',[WebsiteController::class,'contactPage'])->name('contact.page');
 
+
+ //////////////////////////////////// OTP /////////////////////////////
+ Route::get('account',[WebsiteController::class,'accountPage'])->name('account.setting');
 
 
 
@@ -148,5 +148,6 @@ Route::get('/employer/verification-completed', [EmployerVerificationController::
           Route::get('loan/list',[WebsiteController::class,'applicationList'])->name('application.list');
           Route::get('application/status/{id}',[WebsiteController::class,'applicationStatus'])->name('application.status');
          
+
       
  

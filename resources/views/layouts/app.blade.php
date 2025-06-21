@@ -7,6 +7,7 @@
 
         <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
         <link href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css" rel="stylesheet" />
+        <link rel="icon" href="{{ asset('/InstitutionLogo/carLogo.png') }}" type="image/png">
 
         <title>{{ config('app.name', 'KIBO') }}</title>
 
