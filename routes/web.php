@@ -122,7 +122,7 @@ Route::get('/employer/verification-completed', [EmployerVerificationController::
 
 
 
-    Route::middleware(['auth:sanctum', 'verified',ClientMiddleware::class])->group(function () {
+    Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 
 
             //////////////////////////////////// OTP /////////////////////////////
