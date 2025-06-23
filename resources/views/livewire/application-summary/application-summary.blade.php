@@ -164,15 +164,7 @@
                         <div class="p-6">
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
 
-                            <div class="bg-gray-50 rounded-lg p-4">
-                                    <h4 class="text-sm font-semibold text-gray-700 mb-3">Credit Score </h4>
-                                    <div class="space-y-2">
-                                      
-
-
-                                    <livewire:credit-score />
-                                    </div>
-                                </div>
+                           
 
 
 

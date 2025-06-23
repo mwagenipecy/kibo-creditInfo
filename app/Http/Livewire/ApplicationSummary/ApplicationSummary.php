@@ -488,3 +488,18 @@ JSON;
         ]);
     }
 }
+
+
+
+
+
+
+// <div class="bg-gray-50 rounded-lg p-4">
+// <h4 class="text-sm font-semibold text-gray-700 mb-3">Credit Score </h4>
+// <div class="space-y-2">
+  
+
+
+// <livewire:credit-score />
+// </div>
+// </div>
