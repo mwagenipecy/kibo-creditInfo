@@ -78,7 +78,7 @@
             @empty
                 <!-- Fallback image when no images are available -->
                 <div class="absolute inset-0 w-full h-full">
-                    <img src="{{ asset('cars/blue-car-driving-road.jpg') }}" 
+                    <img src="{{ asset('/default/car1.jpg') }}" 
                          alt="Vehicle Image Placeholder" 
                          class="w-full h-full object-cover">
                 </div>
@@ -390,7 +390,7 @@
                 @endphp
 
                 <img 
-                        src="{{ $frontImage ? asset('storage/' . $frontImage->image_url) : asset('cars/blue-car-driving-road.jpg') }}" 
+                        src="{{ $frontImage ? asset('storage/' . $frontImage->image_url) : asset('/default/car1.jpg') }}" 
                         alt="{{ optional($vehicle->make)->name }} {{ optional($vehicle->model)->name }}" 
                         class="w-full h-44 object-cover"
                     >
@@ -482,7 +482,7 @@
             @empty
 
             <div class="bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-md transition duration-300">
-                <img src="{{ asset('/cars/blue-car-driving-road.jpg') }}" alt="No Similar Vehicles" class="w-full h-40 object-cover">
+                <img src="{{ asset('//default/car1.jpg') }}" alt="No Similar Vehicles" class="w-full h-40 object-cover">
                 <div class="p-4 text-center">
                     <h3 class="font-medium text-gray-900 mb-1">No Similar Vehicles Found</h3>
                     <p class="text-gray-500">Check back later for more options.</p>

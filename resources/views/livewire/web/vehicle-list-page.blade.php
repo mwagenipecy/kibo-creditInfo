@@ -524,7 +524,7 @@ input[type=range]::-moz-range-thumb {
                 @endphp
 
                 <img 
-                        src="{{ $frontImage ? asset('storage/' . $frontImage->image_url) : asset('cars/blue-car-driving-road.jpg') }}" 
+                        src="{{ $frontImage ? asset('storage/' . $frontImage->image_url) : asset('/default/car1.jpg') }}" 
                         alt="{{ optional($vehicle->make)->name }} {{ optional($vehicle->model)->name }}" 
                         class="w-full h-44 object-cover"
                     >
@@ -624,7 +624,7 @@ input[type=range]::-moz-range-thumb {
                 <div class="sm:w-1/3 lg:w-1/4 relative">
                     <a href="{{ route('vehicle.list', $vehicle->id) }}" class="block h-full">
                         <img 
-                            src="{{ asset('/cars/blue-car-driving-road.jpg')}}" 
+                            src="{{ asset('//default/car1.jpg')}}" 
                             alt="{{ optional($vehicle->make)->name }} {{ optional($vehicle->model)->name }}" 
                             class="w-full h-48 sm:h-full object-cover"
                         >

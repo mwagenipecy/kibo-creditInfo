@@ -22,7 +22,7 @@
                 buttonText: 'View Dealers' 
             },
             { 
-                image: '{{ asset('/cars/blue-car-driving-road.jpg') }}', 
+                image: '{{ asset('//default/car1.jpg') }}', 
                 title: 'Best Deals Guaranteed', 
                 description: 'Quality vehicles at competitive prices', 
                 buttonText: 'See Deals' 
@@ -298,7 +298,7 @@
 @endphp
 
         <img 
-            src="{{ $frontImage ? asset('storage/' . $frontImage->image_url) : asset('cars/blue-car-driving-road.jpg') }}"
+            src="{{ $frontImage ? asset('storage/' . $frontImage->image_url) : asset('/default/car1.jpg') }}"
             alt="{{ optional($vehicle->make)->name }} {{ optional($vehicle->model)->name }}"
             class="w-full h-full object-cover transition duration-300 group-hover:scale-105"
         />

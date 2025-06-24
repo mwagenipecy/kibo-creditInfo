@@ -65,7 +65,7 @@
                        
 
 
-                        <img src="{{ $frontImage ? asset('storage/' . $frontImage->image_url) : asset('cars/blue-car-driving-road.jpg') }}" alt="{{ $vehicle->make }} {{ $vehicle->model }}" class="w-full h-32 object-cover rounded-lg">
+                        <img src="{{ $frontImage ? asset('storage/' . $frontImage->image_url) : asset('/default/car1.jpg') }}" alt="{{ $vehicle->make }} {{ $vehicle->model }}" class="w-full h-32 object-cover rounded-lg">
                     </div>
                     <div class="md:w-3/4">
                         <h3 class="text-lg font-bold text-gray-900 mb-2">

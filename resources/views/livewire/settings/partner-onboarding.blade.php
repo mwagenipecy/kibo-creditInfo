@@ -245,7 +245,8 @@
                                     <div class="flex items-center">
                                         <div class="flex-shrink-0 h-10 w-10">
                                             @if($lender['logo'])
-                                                <img class="h-10 w-10 rounded-full" src="{{ $lender['logo'] }}" alt="{{ $lender['name'] }} logo">
+                                            <img class="h-10 w-10 rounded-full" src="{{ asset('storage/' . $lender['logo']) }}" alt="{{ $lender['name'] }} logo">
+
                                             @else
                                                 <div class="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center">
                                                     <span class="text-green-700 font-semibold text-sm">{{ substr($lender['name'], 0, 2) }}</span>
