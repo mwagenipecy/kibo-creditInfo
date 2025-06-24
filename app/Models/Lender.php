@@ -130,6 +130,18 @@ class Lender extends Model
     }
 
 
+
+    public function bills()
+    {
+        return $this->hasMany(Bill::class, 'entity_id')->where('entity_type', 'lender');
+    }
+
+    public function billingConfiguration()
+    {
+        return $this->hasOne(BillingConfiguration::class, 'entity_id')->where('entity_type', 'lender');
+    }
+
+
     public function financingCriteria()
     {
         return $this->hasMany(LenderFinancingCriteria::class);

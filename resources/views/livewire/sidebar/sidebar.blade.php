@@ -369,6 +369,7 @@
             </div>
             @endforeach
         </nav>
+        
 
         <!-- Footer/User section -->
         <div class="p-4 border-t border-gray-100">

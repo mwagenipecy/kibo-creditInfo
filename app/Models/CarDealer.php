@@ -68,6 +68,18 @@ class CarDealer extends Model
         return $this->logo ? Storage::url($this->logo) : null;
     }
 
+
+    public function bills()
+    {
+        return $this->hasMany(Bill::class, 'entity_id')->where('entity_type', 'car_dealer');
+    }
+
+    public function billingConfiguration()
+    {
+        return $this->hasOne(BillingConfiguration::class, 'entity_id')->where('entity_type', 'car_dealer');
+    }
+
+
     /**
      * Get the status badge HTML.
      *

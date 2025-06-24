@@ -63,11 +63,20 @@
 
 
 
+
+           @case('15')
+            
+            <livewire:report.billing-management />
+
+           @break
+
+
+
            
 
 
            
-            @case('12')
+            @case('125')
             <livewire:reconciliation.reconciliation />
             @break
 

@@ -1,9 +1,11 @@
 <?php
 
+use App\Http\Controllers\BillingController;
 use App\Http\Controllers\WebsiteController;
 use App\Http\Livewire\Web\Account;
 use App\Http\Middleware\ClientMiddleware;
 use App\Http\Middleware\OTPMiddleware;
+use App\Models\Bill;
 use App\Models\departmentsList;
 use App\Http\Livewire\VerifyOtp;
 use App\Models\approvals;
@@ -40,6 +42,12 @@ Route::middleware(['auth:sanctum', 'verified',ClientMiddleware::class])->group(f
     Route::get('/System', \App\Http\Livewire\System::class)->name('System');
     Route::get('/CyberPoint-Pro', \App\Http\Livewire\System::class)->name('CyberPoint-Pro');
    // Route::get('/otp-page',[WebsiteController::class,'Otp'])->name('otp-page');
+
+
+   Route::get('/billing/bills/{bill}/pdf', [BillingController::class, 'generatePDF'])->name('billing.pdf');
+   Route::get('/billing/export', [BillingController::class, 'export'])->name('billing.export');
+   Route::get('/payments/{payment}/receipt', [BillingController::class, 'generatePaymentReceipt'])->name('payment.receipt');
+
 
 
     Route::fallback(function() {
