@@ -70,10 +70,16 @@
         <div class="relative w-full" style="padding-bottom: 56.25%;">
             @forelse($vehicle->images as $index => $image)
                 <div x-show="activeSlide === {{ $index }}" class="absolute inset-0 w-full h-full">
-                    <img src="{{ asset('storage/' . $image) }}" 
-                         alt="Vehicle {{ $index + 1 }}" 
-                         class="w-full h-full transition-all duration-300"
-                         :class="fitMode === 'contain' ? 'object-contain' : 'object-cover'">
+                
+                <img 
+                    src="{{ $image ? asset('storage/' . $image) : asset('default/car1.jpg') }}" 
+                    alt="Vehicle {{ $index + 1 }}" 
+                    class="w-full h-full transition-all duration-300"
+                    :class="fitMode === 'contain' ? 'object-contain' : 'object-cover'"
+                    onerror="this.onerror=null; this.src='{{ asset('default/car1.jpg') }}';"
+                />
+
+
                 </div>
             @empty
                 <!-- Fallback image when no images are available -->
@@ -130,10 +136,16 @@
             @foreach($vehicle->images as $index => $image)
                 <button @click="activeSlide = {{ $index }}" class="focus:outline-none">
                     <div class="relative aspect-w-4 aspect-h-3 rounded-md overflow-hidden group">
-                        <img src="{{ asset('storage/' . $image) }}" 
-                             alt="Thumbnail {{ $index + 1 }}" 
-                             class="w-full h-full object-cover transition-all duration-200"
-                             :class="activeSlide === {{ $index }} ? 'ring-2 ring-green-600' : 'ring-1 ring-gray-200 group-hover:ring-gray-300'">
+                   
+                    <img 
+                        src="{{ $image ? asset('storage/' . $image) : asset('default/car1.jpg') }}" 
+                        alt="Thumbnail {{ $index + 1 }}" 
+                        class="w-full h-full object-cover transition-all duration-200"
+                        :class="activeSlide === {{ $index }} ? 'ring-2 ring-green-600' : 'ring-1 ring-gray-200 group-hover:ring-gray-300'"
+                        onerror="this.onerror=null; this.src='{{ asset('default/car1.jpg') }}';"
+                    />
+
+
                              
                         @if(isset($image->view) && !empty($image->view))
                             <div class="absolute bottom-0 inset-x-0 bg-black/50 text-white text-xs text-center py-0.5 capitalize">
@@ -390,10 +402,12 @@
                 @endphp
 
                 <img 
-                        src="{{ $frontImage ? asset('storage/' . $frontImage->image_url) : asset('/default/car1.jpg') }}" 
-                        alt="{{ optional($vehicle->make)->name }} {{ optional($vehicle->model)->name }}" 
-                        class="w-full h-44 object-cover"
-                    >
+                    src="{{ $frontImage ? asset('storage/' . $frontImage->image_url) : asset('default/car1.jpg') }}" 
+                    alt="{{ optional($vehicle->make)->name }} {{ optional($vehicle->model)->name }}" 
+                    class="w-full h-44 object-cover"
+                    onerror="this.onerror=null; this.src='{{ asset('default/car1.jpg') }}';"
+                />
+
                     
                     <!-- Price Tag - Top Left -->
                     <div class="absolute top-3 left-3 bg-white py-1 px-2 rounded shadow-sm text-green-600 font-bold text-sm">
@@ -457,11 +471,13 @@
                 <!-- Footer with Dealer Info and CTA -->
                 <div class="flex items-center justify-between pt-2 border-t border-gray-100">
                     <div class="flex items-center">
-                        <img 
-                            src="{{ asset('/cars/icon.avif')}}" 
-                            alt="{{ optional($vehicle->dealer)->name }}" 
-                            class="w-5 h-5 rounded-full object-cover border border-gray-200"
-                        >
+                    <img 
+                        src="{{ asset('default/car1.jpg') }}" 
+                        alt="{{ optional($vehicle->dealer)->name }}" 
+                        class="w-5 h-5 rounded-full object-cover border border-gray-200"
+                        onerror="this.onerror=null; this.src='{{ asset('default/car1.jpg') }}';"
+                    />
+
                         <span class="ml-1.5 text-xs text-gray-600 truncate max-w-[120px]">{{ optional($vehicle->dealer)->name }}</span>
                     </div>
                     <a 
