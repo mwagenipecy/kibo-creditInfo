@@ -297,11 +297,13 @@
     $frontImage = $vehicle->frontView();
 @endphp
 
-        <img 
-            src="{{ $frontImage ? asset('storage/' . $frontImage->image_url) : asset('/default/car1.jpg') }}"
-            alt="{{ optional($vehicle->make)->name }} {{ optional($vehicle->model)->name }}"
-            class="w-full h-full object-cover transition duration-300 group-hover:scale-105"
-        />
+            <img 
+                src="{{ $frontImage ? asset('storage/' . $frontImage->image_url) : asset('default/car1.jpg') }}"
+                onerror="this.onerror=null; this.src='{{ asset('default/car1.jpg') }}';"
+                alt="{{ optional($vehicle->make)->name }} {{ optional($vehicle->model)->name }}"
+                class="w-full h-full object-cover transition duration-300 group-hover:scale-105"
+            />
+
         
         <!-- Tags & Badge Overlays -->
         <div class="absolute top-2 left-2 flex flex-col gap-1.5">

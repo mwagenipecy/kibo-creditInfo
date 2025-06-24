@@ -602,7 +602,14 @@
                                     <div class="space-y-2">
                                         <h5 class="text-xs font-medium text-gray-600 capitalize">{{ $view }} View</h5>
                                         <div class="relative group">
-                                            <img src="{{ asset('storage/' . $existingImages[$view]->image_url) }}" alt="{{ ucfirst($view) }} View" class="w-full h-24 object-cover rounded-lg shadow-sm">
+                                          
+                                        <img 
+                                                src="{{ isset($existingImages[$view]) ? asset('storage/' . $existingImages[$view]->image_url) : asset('default/car1.jpg') }}"
+                                                alt="{{ ucfirst($view) }} View"
+                                                class="w-full h-24 object-cover rounded-lg shadow-sm"
+                                                onerror="this.onerror=null; this.src='{{ asset('default/car1.jpg') }}';"
+                                            />
+                                           
                                             <button type="button" wire:click="removeExistingImage({{ $existingImages[$view]->id }})" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 shadow-lg hover:bg-red-600 transition-colors duration-200 opacity-0 group-hover:opacity-100">
                                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -620,7 +627,13 @@
                                 <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3">
                                     @foreach($existingImages['additional'] as $image)
                                         <div class="relative group">
-                                            <img src="{{ asset('storage/' . $image->image_url) }}" alt="Additional Image" class="w-full h-20 object-cover rounded-lg shadow-sm">
+                                        <img 
+                                            src="{{ $image->image_url ? asset('storage/' . $image->image_url) : asset('default/car1.jpg') }}" 
+                                            alt="Additional Image" 
+                                            class="w-full h-20 object-cover rounded-lg shadow-sm"
+                                            onerror="this.onerror=null; this.src='{{ asset('default/car1.jpg') }}';"
+                                        />
+
                                             <button type="button" wire:click="removeExistingImage({{ $image->id }})" class="absolute -top-1 -right-1 bg-red-500 text-white rounded-full p-1 shadow-lg hover:bg-red-600 transition-colors duration-200 opacity-0 group-hover:opacity-100">
                                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -646,8 +659,15 @@
                         <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3">
                             @foreach($additionalImages as $index => $image)
                                 <div class="relative group">
-                                    <img src="{{ $image->temporaryUrl() }}" alt="New Vehicle Image" class="w-full h-20 object-cover rounded-lg shadow-sm">
-                                    <button type="button" wire:click="removeAdditionalImage({{ $index }})" class="absolute -top-1 -right-1 bg-red-500 text-white rounded-full p-1 shadow-lg hover:bg-red-600 transition-colors duration-200 opacity-0 group-hover:opacity-100">
+                                <img 
+                                            src="{{ $image ? $image->temporaryUrl() : asset('default/car1.jpg') }}" 
+                                            alt="New Vehicle Image" 
+                                            class="w-full h-20 object-cover rounded-lg shadow-sm"
+                                            onerror="this.onerror=null; this.src='{{ asset('default/car1.jpg') }}';"
+                                        />
+
+
+                                        <button type="button" wire:click="removeAdditionalImage({{ $index }})" class="absolute -top-1 -right-1 bg-red-500 text-white rounded-full p-1 shadow-lg hover:bg-red-600 transition-colors duration-200 opacity-0 group-hover:opacity-100">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                                         </svg>
@@ -789,7 +809,12 @@
                                             @if(count($vehicle->images) > 0)
 
                                              
-                                                    <img src="{{  asset('storage/' . $vehicle->images[0])  }}" alt="{{ $vehicle->year }} {{ optional($vehicle->make)->name }} {{ optional($vehicle->model)->name }}" class="h-10 w-16 object-cover">
+                                            <img 
+                                                    src="{{ isset($vehicle->images[0]) ? asset('storage/' . $vehicle->images[0]) : asset('default/car1.jpg') }}"
+                                                    alt="{{ $vehicle->year }} {{ optional($vehicle->make)->name }} {{ optional($vehicle->model)->name }}"
+                                                    class="h-10 w-16 object-cover"
+                                                    onerror="this.onerror=null;this.src='{{ asset('default/car1.jpg') }}';"
+                                                />
                                                 @else
                                                     <div class="h-10 w-16 flex items-center justify-center bg-gray-200 text-gray-400">
                                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">

@@ -523,11 +523,13 @@ input[type=range]::-moz-range-thumb {
                     $frontImage = $vehicle->frontView();
                 @endphp
 
-                <img 
-                        src="{{ $frontImage ? asset('storage/' . $frontImage->image_url) : asset('/default/car1.jpg') }}" 
+                    <img 
+                        src="{{ $frontImage ? asset('storage/' . $frontImage->image_url) : asset('default/car1.jpg') }}" 
                         alt="{{ optional($vehicle->make)->name }} {{ optional($vehicle->model)->name }}" 
                         class="w-full h-44 object-cover"
-                    >
+                        onerror="this.onerror=null;this.src='{{ asset('default/car1.jpg') }}';"
+                    />
+
                     
                     <!-- Price Tag - Top Left -->
                     <div class="absolute top-3 left-3 bg-white py-1 px-2 rounded shadow-sm text-green-600 font-bold text-sm">
@@ -591,11 +593,13 @@ input[type=range]::-moz-range-thumb {
                 <!-- Footer with Dealer Info and CTA -->
                 <div class="flex items-center justify-between pt-2 border-t border-gray-100">
                     <div class="flex items-center">
-                        <img 
-                            src="{{ asset('/cars/icon.avif')}}" 
-                            alt="{{ optional($vehicle->dealer)->name }}" 
-                            class="w-5 h-5 rounded-full object-cover border border-gray-200"
-                        >
+                    <img 
+                        src="{{ asset('cars/icon.avif') }}" 
+                        alt="{{ optional($vehicle->dealer)->name }}" 
+                        class="w-5 h-5 rounded-full object-cover border border-gray-200"
+                        onerror="this.onerror=null; this.src='{{ asset('default/car1.jpg') }}';"
+                    />
+
                         <span class="ml-1.5 text-xs text-gray-600 truncate max-w-[120px]">{{ optional($vehicle->dealer)->name }}</span>
                     </div>
                     <a 
