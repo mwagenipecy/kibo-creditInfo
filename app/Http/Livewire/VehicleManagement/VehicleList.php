@@ -388,61 +388,195 @@ class VehicleList extends Component
     }
     
     // Upload view-specific vehicle images
+  
     private function uploadVehicleViewImages($vehicleId)
-    {
-        foreach (['front', 'side', 'back'] as $view) {
-            if (!empty($this->viewImages[$view]) && $this->viewImages[$view] instanceof \Livewire\TemporaryUploadedFile) {
+{
+    foreach (['front', 'side', 'back'] as $view) {
+        if (!empty($this->viewImages[$view]) && $this->viewImages[$view] instanceof \Livewire\TemporaryUploadedFile) {
+            try {
+                // Check if there's already an image for this view
+                $existingImage = VehicleImage::where('vehicle_id', $vehicleId)
+                    ->where('view', $view)
+                    ->first();
+                
+                // If exists, delete the old file
+                if ($existingImage && $existingImage->image_url) {
+                    Storage::delete('public/' . $existingImage->image_url);
+                    $existingImage->delete();
+                }
+                
+                // Process and compress image to WebP format
+                $compressedImagePath = $this->processAndCompressImage(
+                    $this->viewImages[$view], 
+                    'vehicles/' . $vehicleId, 
+                    $view
+                );
+                
+                // Create image record
+                VehicleImage::create([
+                    'vehicle_id' => $vehicleId,
+                    'image_url' => $compressedImagePath,
+                    'view' => $view,
+                    'is_featured' => ($view === 'front') ? true : false, // Make front view the featured image
+                ]);
+            } catch (\Exception $e) {
+                Log::error("Failed to upload {$view} image: " . $e->getMessage());
+            }
+        }
+    }
+}
+
+// Upload additional vehicle images
+private function uploadAdditionalImages($vehicleId)
+{
+    if (!empty($this->additionalImages)) {
+        foreach ($this->additionalImages as $index => $image) {
+            if ($image instanceof \Livewire\TemporaryUploadedFile) {
                 try {
-                    // Check if there's already an image for this view
-                    $existingImage = VehicleImage::where('vehicle_id', $vehicleId)
-                        ->where('view', $view)
-                        ->first();
+                    // Process and compress image to WebP format
+                    $compressedImagePath = $this->processAndCompressImage(
+                        $image, 
+                        'vehicles/' . $vehicleId, 
+                        'additional_' . $index
+                    );
                     
-                    // If exists, delete the old file
-                    if ($existingImage && $existingImage->image_url) {
-                        Storage::delete('public/' . $existingImage->image_url);
-                        $existingImage->delete();
-                    }
-                    
-                    // Store the new image
-                    $path = $this->viewImages[$view]->store('vehicles/' . $vehicleId, 'public');
-                    
-                    // Create image record
                     VehicleImage::create([
                         'vehicle_id' => $vehicleId,
-                        'image_url' => $path,
-                        'view' => $view,
-                        'is_featured' => ($view === 'front') ? true : false, // Make front view the featured image
+                        'image_url' => $compressedImagePath,
+                        'view' => 'additional',
+                        'is_featured' => false,
                     ]);
                 } catch (\Exception $e) {
-                    Log::error("Failed to upload {$view} image: " . $e->getMessage());
+                    Log::error("Failed to upload additional image: " . $e->getMessage());
                 }
             }
         }
+    }
+}
+
+/**
+ * Process and compress image to WebP format
+ * 
+ * @param \Livewire\TemporaryUploadedFile $uploadedFile
+ * @param string $directory
+ * @param string $filename
+ * @return string
+ */
+private function processAndCompressImage($uploadedFile, $directory, $filename)
+{
+    // Get the temporary file path
+    $tempPath = $uploadedFile->getRealPath();
+    
+    // Create image resource from uploaded file
+    $imageInfo = getimagesize($tempPath);
+    $mimeType = $imageInfo['mime'];
+    
+    switch ($mimeType) {
+        case 'image/jpeg':
+            $image = imagecreatefromjpeg($tempPath);
+            break;
+        case 'image/png':
+            $image = imagecreatefrompng($tempPath);
+            break;
+        case 'image/gif':
+            $image = imagecreatefromgif($tempPath);
+            break;
+        case 'image/webp':
+            $image = imagecreatefromwebp($tempPath);
+            break;
+        default:
+            throw new \Exception('Unsupported image format: ' . $mimeType);
     }
     
-    // Upload additional vehicle images
-    private function uploadAdditionalImages($vehicleId)
-    {
-        if (!empty($this->additionalImages)) {
-            foreach ($this->additionalImages as $image) {
-                if ($image instanceof \Livewire\TemporaryUploadedFile) {
-                    try {
-                        $path = $image->store('vehicles/' . $vehicleId, 'public');
-                        
-                        VehicleImage::create([
-                            'vehicle_id' => $vehicleId,
-                            'image_url' => $path,
-                            'view' => 'additional',
-                            'is_featured' => false,
-                        ]);
-                    } catch (\Exception $e) {
-                        Log::error("Failed to upload additional image: " . $e->getMessage());
-                    }
-                }
-            }
-        }
+    if (!$image) {
+        throw new \Exception('Failed to create image resource');
     }
+    
+    // Get original dimensions
+    $originalWidth = imagesx($image);
+    $originalHeight = imagesy($image);
+    
+    // Calculate new dimensions (max width: 1200px, maintain aspect ratio)
+    $maxWidth = 1200;
+    $maxHeight = 800;
+    
+    if ($originalWidth > $maxWidth || $originalHeight > $maxHeight) {
+        $ratio = min($maxWidth / $originalWidth, $maxHeight / $originalHeight);
+        $newWidth = round($originalWidth * $ratio);
+        $newHeight = round($originalHeight * $ratio);
+        
+        // Create resized image
+        $resizedImage = imagecreatetruecolor($newWidth, $newHeight);
+        
+        // Preserve transparency for PNG/GIF
+        imagealphablending($resizedImage, false);
+        imagesavealpha($resizedImage, true);
+        
+        // Resize image
+        imagecopyresampled(
+            $resizedImage, $image, 
+            0, 0, 0, 0, 
+            $newWidth, $newHeight, 
+            $originalWidth, $originalHeight
+        );
+        
+        imagedestroy($image);
+        $image = $resizedImage;
+    }
+    
+    // Generate unique filename with WebP extension
+    $webpFilename = $filename . '_' . time() . '_' . uniqid() . '.webp';
+    $webpPath = $directory . '/' . $webpFilename;
+    
+    // Ensure directory exists
+    $fullDirectory = storage_path('app/public/' . $directory);
+    if (!file_exists($fullDirectory)) {
+        mkdir($fullDirectory, 0755, true);
+    }
+    
+    // Save as WebP with compression (quality: 80 for good balance of size and quality)
+    $fullWebpPath = storage_path('app/public/' . $webpPath);
+    $success = imagewebp($image, $fullWebpPath, 80);
+    
+    // Clean up memory
+    imagedestroy($image);
+    
+    if (!$success) {
+        throw new \Exception('Failed to save WebP image');
+    }
+    
+    return $webpPath;
+}
+
+/**
+ * Validate image before processing
+ * 
+ * @param \Livewire\TemporaryUploadedFile $file
+ * @return bool
+ */
+private function validateImage($file)
+{
+    // Check file size (max 10MB)
+    if ($file->getSize() > 10 * 1024 * 1024) {
+        throw new \Exception('Image file too large. Maximum size is 10MB.');
+    }
+    
+    // Check if it's a valid image
+    $imageInfo = getimagesize($file->getRealPath());
+    if (!$imageInfo) {
+        throw new \Exception('Invalid image file.');
+    }
+    
+    // Check allowed formats
+    $allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+    if (!in_array($imageInfo['mime'], $allowedTypes)) {
+        throw new \Exception('Unsupported image format. Allowed: JPEG, PNG, GIF, WebP');
+    }
+    
+    return true;
+}
+
+
     
     // Reset vehicle form
     private function resetVehicleForm()
