@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\BillingController;
+use App\Http\Controllers\GarageManagementController;
+use App\Http\Controllers\InsuranceController;
 use App\Http\Controllers\WebsiteController;
 use App\Http\Livewire\Web\Account;
 use App\Http\Middleware\ClientMiddleware;
@@ -21,8 +23,6 @@ use Laravel\Fortify\Http\Controllers\AuthenticatedSessionController;
 use App\Http\Traits\MailSender;
 use App\Http\Controllers\EmployerVerificationController;
 
-
-
 // Redirect to login page
 Route::redirect('/', 'welcome');
 
@@ -33,58 +33,30 @@ Route::post('/password-reset', function (Illuminate\Http\Request $request) {
         return redirect()->route('password.request');
 })->name('password-reset');
 
-// Group routes that require authentication
-Route::middleware(['auth:sanctum', 'verified',ClientMiddleware::class])->group(function () {
+// OTP verification routes - Only authenticated users but before OTP verification
+Route::middleware(['auth:sanctum', ClientMiddleware::class])->group(function () {
+    // OTP verification page doesn't need the OTP middleware
+    Route::get('/otp-page', [WebsiteController::class,'Otp'])->name('otp-page');
+});
 
-
-
+// Group routes that require authentication AND OTP verification
+Route::middleware(['auth:sanctum', 'verified', ClientMiddleware::class, OTPMiddleware::class])->group(function () {
     // Route for the main dashboard page
     Route::get('/System', \App\Http\Livewire\System::class)->name('System');
     Route::get('/CyberPoint-Pro', \App\Http\Livewire\System::class)->name('CyberPoint-Pro');
-   // Route::get('/otp-page',[WebsiteController::class,'Otp'])->name('otp-page');
 
-
-   Route::get('/billing/bills/{bill}/pdf', [BillingController::class, 'generatePDF'])->name('billing.pdf');
-   Route::get('/billing/export', [BillingController::class, 'export'])->name('billing.export');
-   Route::get('/payments/{payment}/receipt', [BillingController::class, 'generatePaymentReceipt'])->name('payment.receipt');
-
-
+    Route::get('/billing/bills/{bill}/pdf', [BillingController::class, 'generatePDF'])->name('billing.pdf');
+    Route::get('/billing/export', [BillingController::class, 'export'])->name('billing.export');
+    Route::get('/payments/{payment}/receipt', [BillingController::class, 'generatePaymentReceipt'])->name('payment.receipt');
 
     Route::fallback(function() {
-
         // If the user is authenticated, redirect to the dashboard
         if (Auth::check()) {
             return redirect()->route('CyberPoint-Pro');
         }
-
-       // dd("okkk");
         return view('pages/utility/404');
     });
-
-
 });
-
-
-
-
-////// OTP verifications 
-Route::middleware(['auth:sanctum', 'verified', ClientMiddleware::class])->group(function () {
-    // OTP verification page doesn't need the OTP middleware
-    Route::get('/otp-page', [WebsiteController::class, 'Otp'])->name('otp-page');
-    
-    // OTP verification submission route
-   // Route::post('/verify-otp', [WebsiteController::class, 'verifyOtp'])->name('verify-otp');
-});
-
-
-    //////////////////////////////////// OTP //////////////////////////////
-
-
-
-
-
-
-
 
 // Employer verification routes
 Route::get('/employer/verification/{token}', [EmployerVerificationController::class, 'showForm'])
@@ -102,49 +74,34 @@ Route::get('/employer/verification-invalid', [EmployerVerificationController::cl
 Route::get('/employer/verification-completed', [EmployerVerificationController::class, 'completed'])
     ->name('employer.verification.completed');
 
+// Website management section (public routes)
+Route::get('welcome',[WebsiteController::class,'index'])->name('home.page');
+Route::get('vehicle/list',[WebsiteController::class,'vehicleList'])->name('vehicle.list');
+Route::get('view/vehicle/{vehicleId}',[WebsiteController::class,'viewVehicleData'])->name('view.vehicle');
 
+// ABOUT US PAGE
+Route::get('/about-us',[WebsiteController::class,'aboutPage'])->name('about.us');
 
+// Garage management
+Route::get('garage-list',[GarageManagementController::class,'index'])->name('garage.list');
 
-    ///// website management section 
-    Route::get('welcome',[WebsiteController::class,'index'])->name('home.page');
-    Route::get('vehicle/list',[WebsiteController::class,'vehicleList'])->name('vehicle.list');
-    Route::get('view/vehicle/{vehicleId}',[WebsiteController::class,'viewVehicleData'])->name('view.vehicle');
+// Insurance management
+Route::get('insurance',[InsuranceController::class,'index'])->name('insurance.index');
 
+// CLIENT REGISTRATION FORM
+Route::get('/client-registration',[WebsiteController::class,'clientRegistration'])->name('client.registration');
 
-    /////////////////////ABOUT US PAGE ///////////////
-    Route::get('/about-us',[WebsiteController::class,'aboutPage'])->name('about.us');
+Route::get('/contact',[WebsiteController::class,'contactPage'])->name('contact.page');
 
+// Routes that require authentication AND OTP verification
+Route::middleware(['auth:sanctum', 'verified', OTPMiddleware::class])->group(function () {
+    Route::get('account',[WebsiteController::class,'accountPage'])->name('account.setting');
 
+    // LOAN APPLICATION
+    Route::get('loan/application/{id}',[])->name('loan.application');
+    Route::get('loan/list',[WebsiteController::class,'applicationList'])->name('application.list');
+    Route::get('application/status/{id}',[WebsiteController::class,'applicationStatus'])->name('application.status');
 
-
-    ///////////////////CLIENT REGISTRATION FORM ///////////////////
-    Route::get('/client-registration',[WebsiteController::class,'clientRegistration'])->name('client.registration');
-
-
-
-
-
-
-   
-    Route::get('/contact',[WebsiteController::class,'contactPage'])->name('contact.page');
-
-
-
-    Route::middleware(['auth:sanctum', 'verified'])->group(function () {
-
-
-            //////////////////////////////////// OTP /////////////////////////////
-            Route::get('account',[WebsiteController::class,'accountPage'])->name('account.setting');
-
-
-
-          ////////////////////// LOAN APPLICATION /////////////////////////////////
-          Route::get('loan/application/{id}',[])->name('loan.application');
-          Route::get('loan/list',[WebsiteController::class,'applicationList'])->name('application.list');
-          Route::get('application/status/{id}',[WebsiteController::class,'applicationStatus'])->name('application.status');
-         
-
-         /////////////////// CLIENT LOAN APPLICATION /////////////////////////
-          Route::get('loan/pre-qualify/{vehicleId}/{lenderId}',[WebsiteController::class,'loanApplication'])->name('loan.pre-qualify');
-
-    });
+    // CLIENT LOAN APPLICATION
+    Route::get('loan/pre-qualify/{vehicleId}/{lenderId}',[WebsiteController::class,'loanApplication'])->name('loan.pre-qualify');
+});

@@ -127,6 +127,23 @@
                     <span>Vehicles</span>
                     <span class="absolute -bottom-[2px] left-1/2 w-0 h-[3px] bg-green-500 group-hover:w-4/5 group-hover:-translate-x-1/2 transition-all duration-300 ease-out rounded-full @if(Route::is('vehicle.list')) w-4/5 -translate-x-1/2 @endif"></span>
                 </a>
+
+
+                <a href="{{ route('garage.list') }}" class="group relative text-gray-700 @if(Route::is('garage.list')) text-green-600 @endif hover:text-green-600 px-3 py-2 rounded-md text-sm lg:text-base font-medium transition-colors duration-300">
+                    <span>Garages</span>
+                    <span class="absolute -bottom-[2px] left-1/2 w-0 h-[3px] bg-green-500 group-hover:w-4/5 group-hover:-translate-x-1/2 transition-all duration-300 ease-out rounded-full @if(Route::is('garage.list')) w-4/5 -translate-x-1/2 @endif"></span>
+                </a>
+
+
+
+                <a href="{{ route('insurance.index') }}" class="group relative text-gray-700 @if(Route::is('insurance.index')) text-green-600 @endif hover:text-green-600 px-3 py-2 rounded-md text-sm lg:text-base font-medium transition-colors duration-300">
+                    <span>Insurance</span>
+                    <span class="absolute -bottom-[2px] left-1/2 w-0 h-[3px] bg-green-500 group-hover:w-4/5 group-hover:-translate-x-1/2 transition-all duration-300 ease-out rounded-full @if(Route::is('insurance.index')) w-4/5 -translate-x-1/2 @endif"></span>
+                </a>
+
+
+
+                
                 
                 <a href="{{ route('about.us') }}" class="group relative text-gray-700 @if(Route::is('about.us')) text-green-600 @endif hover:text-green-600 px-3 py-2 rounded-md text-sm lg:text-base font-medium transition-colors duration-300">
                     <span>About Us</span>
@@ -189,6 +206,20 @@
                             </div>
                             
                             <!-- Dashboard Link -->
+
+                            @if(auth()->user()->department==1 || auth()->user()->department==2 || auth()->user()->department==3)
+
+                                    <a href="{{ url('CyberPoint-Pro') }}" @click="mobileMenuOpen = false" class="flex items-center px-4 py-2.5 rounded-lg text-base font-medium bg-white shadow-sm text-gray-900 hover:text-green-600 transition-colors duration-300">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                                        </svg>
+                                        Dashboard
+                                    </a>
+
+
+                                    @else 
+
+
                             <a href="{{ route('application.list') }}" class="block px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-green-600 transition-colors duration-300">
                                 <div class="flex items-center">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 text-gray-400 group-hover:text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -208,6 +239,8 @@
                                     Account Settings
                                 </div>
                             </a>
+
+                            @endif 
 
                             <!-- Logout -->
                             <div class="border-t border-gray-100 mt-1 pt-1">
@@ -289,6 +322,32 @@
                 </svg>
                 Vehicles
             </a>
+
+
+
+                <a href="{{ route('garage.list') }}" @click="mobileMenuOpen = false" class="flex items-center py-3 px-4 text-base font-medium rounded-lg text-gray-900 hover:bg-gray-50 hover:text-green-600 @if(Route::is('garage.list')) bg-green-50 text-green-600 @endif transition-colors duration-300">
+                
+                <svg  class="h-5 w-5 mr-3 @if(Route::is('garage.list')) text-green-500 @else text-gray-400 @endif" 
+                data-slot="icon" fill="none" stroke-width="1.5" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M11.42 15.17 17.25 21A2.652 2.652 0 0 0 21 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 1 1-3.586-3.586l6.837-5.63m5.108-.233c.55-.164 1.163-.188 1.743-.14a4.5 4.5 0 0 0 4.486-6.336l-3.276 3.277a3.004 3.004 0 0 1-2.25-2.25l3.276-3.276a4.5 4.5 0 0 0-6.336 4.486c.091 1.076-.071 2.264-.904 2.95l-.102.085m-1.745 1.437L5.909 7.5H4.5L2.25 3.75l1.5-1.5L7.5 4.5v1.409l4.26 4.26m-1.745 1.437 1.745-1.437m6.615 8.206L15.75 15.75M4.867 19.125h.008v.008h-.008v-.008Z"></path>
+                </svg>
+
+
+                Garages
+            </a>
+
+
+
+
+           <a href="{{ route('insurance.index') }}" @click="mobileMenuOpen = false" class="flex items-center py-3 px-4 text-base font-medium rounded-lg text-gray-900 hover:bg-gray-50 hover:text-green-600 @if(Route::is('insurance.index')) bg-green-50 text-green-600 @endif transition-colors duration-300">
+                <svg data-slot="icon"  class="h-5 w-5 mr-3 @if(Route::is('insurance.index')) text-green-500 @else text-gray-400 @endif" fill="none" stroke-width="1.5" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"></path>
+                </svg>
+
+                Insurance
+            </a>
+
+
             
             <a href="{{ route('about.us') }}" @click="mobileMenuOpen = false" class="flex items-center py-3 px-4 text-base font-medium rounded-lg text-gray-900 hover:bg-gray-50 hover:text-green-600 @if(Route::is('about.us')) bg-green-50 text-green-600 @endif transition-colors duration-300">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 @if(Route::is('about.us')) text-green-500 @else text-gray-400 @endif" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -340,6 +399,18 @@
                     </div>
                 </div>
                 <div class="mt-4 space-y-2">
+
+                   @if(auth()->user()->department==1 || auth()->user()->department==2 || auth()->user()->department==3)
+
+                   <a href="{{ url('CyberPoint-Pro') }}" @click="mobileMenuOpen = false" class="flex items-center px-4 py-2.5 rounded-lg text-base font-medium bg-white shadow-sm text-gray-900 hover:text-green-600 transition-colors duration-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                        </svg>
+                        Dashboard
+                    </a>
+
+
+                   @else 
                     <a href="{{ route('application.list') }}" @click="mobileMenuOpen = false" class="flex items-center px-4 py-2.5 rounded-lg text-base font-medium bg-white shadow-sm text-gray-900 hover:text-green-600 transition-colors duration-300">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
@@ -353,6 +424,8 @@
                         </svg>
                         Account Settings
                     </a>
+
+                    @endif 
                     
                     <a href="{{ route('logout') }}" 
                         onclick="event.preventDefault(); document.getElementById('logout-form-mobile').submit();" 

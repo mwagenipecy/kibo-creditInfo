@@ -11,7 +11,6 @@ use App\Models\User;
 use Carbon\Carbon;
 use App\Services\SMSService;
 
-
 class OTP extends Component
 {
     public $otp1;
@@ -23,6 +22,9 @@ class OTP extends Component
     public $full_otp;
     public $email;
     public $phone;
+    public $otpExpiry = 0;
+    
+    protected $listeners = ['clearOtpFields', 'refreshTimer'];
     
     // When component initializes
     public function mount()
@@ -35,10 +37,32 @@ class OTP extends Component
         $user = Auth::user();
         $this->email = $user->email;
         $this->phone = $user->phone;
+        
+        // Check if user is already verified
+        if (!is_null($user->email_verified_at)) {
+            return redirect()->route('CyberPoint-Pro');
+        }
+        
         // If no OTP exists, generate one
         if (!Session::has('otp_code')) {
             $this->generateAndSendOTP();
         }
+        
+        // Initialize timer
+        $this->updateOtpExpiry();
+    }
+    
+    // Update OTP expiry time
+    public function updateOtpExpiry()
+    {
+        if (!Session::has('otp_expiry')) {
+            $this->otpExpiry = 0;
+            return;
+        }
+        
+        $expiry = Session::get('otp_expiry');
+        $secondsLeft = Carbon::now()->diffInSeconds($expiry, false);
+        $this->otpExpiry = max(0, $secondsLeft);
     }
     
     // Generate a 6-digit OTP, store it in session with expiry time, and send via email and SMS
@@ -54,13 +78,18 @@ class OTP extends Component
         Session::put('otp_code', $otp);
         Session::put('otp_expiry', $expiry);
         
-        // Send OTP via email
-        $link = route('login');
-
-        Mail::to($user->email)->send(new OTPMail($link, $user->name, $otp));
+        // Update component expiry
+        $this->updateOtpExpiry();
         
-       
+        try {
+            // Send OTP via email
+            $link = route('otp-page');
+            Mail::to($user->email)->send(new OTPMail($link, $user->name, $otp));
+        } catch (\Exception $e) {
+            \Log::error('Failed to send OTP email: ' . $e->getMessage());
+        }
 
+        // Uncomment when SMS service is ready
         // try {
         //     $smsService = new SMSService();
         //     $smsService->send($user->phone, "Your verification code is: $otp. It will expire in 10 minutes.");
@@ -68,15 +97,13 @@ class OTP extends Component
         //     \Log::error('Failed to send SMS: ' . $e->getMessage());
         // }
 
-
-        
         // Flash message for test environments
         if (app()->environment('local', 'testing')) {
             Session::flash('test_otp', $otp);
         }
         
         $this->dispatchBrowserEvent('otp-sent', [
-            'message' => 'A verification code has been sent to your phone and email.'
+            'message' => 'A verification code has been sent to your email' . ($this->phone ? ' and phone' : '') . '.'
         ]);
     }
     
@@ -85,6 +112,7 @@ class OTP extends Component
     {
         // Combine the OTP digits
         $this->full_otp = $this->otp1 . $this->otp2 . $this->otp3 . $this->otp4 . $this->otp5 . $this->otp6;
+        
         // Validate all fields are filled
         $this->validate([
             'otp1' => 'required|numeric|digits:1',
@@ -110,64 +138,80 @@ class OTP extends Component
         
         // Check if OTP has expired
         if (Carbon::now()->isAfter($expiry)) {
-
             $this->addError('otp', 'OTP has expired. Please request a new code.');
-        }elseif ($this->full_otp != $stored_otp) {
-
-            $this->addError('otp', 'Invalid verification code. Please try again.');
-           
-        }else{
-
-            // OTP is valid - Mark user as verified
-            $user = Auth::user();
-            $user->email_verified_at = Carbon::now();
-            $user->save();
-            
-            // Clear session OTP data
-            Session::forget(['otp_code', 'otp_expiry']);
-            
-            // Redirect to dashboard or intended page
-            Session::flash('success', 'Your account has been successfully verified!');
-            return redirect()->route('CyberPoint-Pro');
-
-
+            $this->clearOtpInputs();
+            return;
         }
         
-       
+        // Check if OTP matches
+        if ($this->full_otp != $stored_otp) {
+            $this->addError('otp', 'Invalid verification code. Please try again.');
+            $this->clearOtpInputs();
+            return;
+        }
+        
+        // OTP is valid - Mark user as verified
+        $user = Auth::user();
+        $user->email_verified_at = Carbon::now();
+        $user->save();
+        
+        // Clear session OTP data
+        Session::forget(['otp_code', 'otp_expiry']);
+        
+        // Flash success message
+        Session::flash('success', 'Your account has been successfully verified!');
+        
+        // Redirect to dashboard or intended page
+        return redirect()->route('CyberPoint-Pro');
+    }
+    
+    // Clear OTP input fields
+    public function clearOtpInputs()
+    {
+        $this->reset(['otp1', 'otp2', 'otp3', 'otp4', 'otp5', 'otp6', 'full_otp']);
+        $this->dispatchBrowserEvent('clear-otp-fields');
     }
     
     // Resend OTP
     public function resendOTP()
     {
+        // Check if we can resend (not too frequent)
+        if (Session::has('otp_expiry')) {
+            $lastSent = Session::get('otp_expiry')->subMinutes(10);
+            if (Carbon::now()->diffInSeconds($lastSent) < 60) {
+                $this->addError('otp', 'Please wait at least 1 minute before requesting a new code.');
+                return;
+            }
+        }
 
         // Clear previous OTP
         Session::forget(['otp_code', 'otp_expiry']);
+        
+        // Clear input fields
+        $this->clearOtpInputs();
+        
         // Generate new OTP and send
         $this->generateAndSendOTP();
         
-        // Reset input fields
-        $this->reset(['otp1', 'otp2', 'otp3', 'otp4', 'otp5', 'otp6', 'full_otp']);
-        
         $this->dispatchBrowserEvent('otp-resent', [
-            'message' => 'A new verification code has been sent to your phone and email.'
+            'message' => 'A new verification code has been sent to your email' . ($this->phone ? ' and phone' : '') . '.',
+            'timeLeft' => 600 // 10 minutes
         ]);
     }
     
-    // Check if OTP is expired for the timer
-    public function getOTPExpiryProperty()
+    // Refresh timer method for periodic updates
+    public function refreshTimer()
     {
-        if (!Session::has('otp_expiry')) {
-            return 0;
-        }
-        
-        $expiry = Session::get('otp_expiry');
-        return Carbon::now()->diffInSeconds($expiry, false);
+        $this->updateOtpExpiry();
+        return $this->otpExpiry;
     }
     
     public function render()
     {
+        $this->updateOtpExpiry();
+        
         return view('livewire.web.o-t-p', [
-            'otpExpiry' => $this->OTPExpiry
+            'otpExpiry' => $this->otpExpiry
         ]);
     }
 }

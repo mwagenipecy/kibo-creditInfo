@@ -14,11 +14,6 @@
         <!-- Styles -->
         @livewireStyles
 
-
-
-
-
-
     </head>
     <body
         class="font-inter antialiased bg-slate-100 text-slate-600"

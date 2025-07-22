@@ -101,6 +101,60 @@ class User extends Authenticatable
 
 
 
+    public function needsOtpVerification()
+    {
+        return is_null($this->email_verified_at);
+    }
+
+    /**
+     * Mark user as OTP verified
+     *
+     * @return void
+     */
+    public function markOtpAsVerified()
+    {
+        $this->forceFill([
+            'email_verified_at' => $this->freshTimestamp(),
+        ])->save();
+    }
+
+    /**
+     * Get masked phone number for display
+     *
+     * @return string|null
+     */
+    public function getMaskedPhoneAttribute()
+    {
+        if (!$this->phone) {
+            return null;
+        }
+
+        $phone = $this->phone;
+        if (strlen($phone) >= 7) {
+            return substr($phone, 0, 3) . '***' . substr($phone, -4);
+        }
+
+        return $phone;
+    }
+
+    /**
+     * Get masked email for display
+     *
+     * @return string
+     */
+    public function getMaskedEmailAttribute()
+    {
+        $email = $this->email;
+        $atPosition = strpos($email, '@');
+        
+        if ($atPosition > 1) {
+            return substr($email, 0, 1) . '***' . substr($email, $atPosition);
+        }
+        
+        return $email;
+    }
+    
+
     
 
 }
