@@ -7,117 +7,70 @@ use Illuminate\Support\Facades\Log;
 
 class VehicleInsuranceCalculator extends Component
 {
-    // Vehicle Information
-    public $vehicleType = '';
-    public $vehicleMake = '';
-    public $vehicleModel = '';
-    public $yearOfManufacture = '';
-    public $engineCapacity = '';
-    public $vehicleValue = '';
-    public $vehicleUsage = '';
-    public $registrationNumber = '';
-
-    // Driver Information
-    public $driverAge = '';
-    public $drivingExperience = '';
-    public $location = '';
-    public $hasClaimsHistory = false;
-    public $claimsCount = 0;
-
-    // Coverage Options
-    public $coverageType = 'third_party';
-    public $excessAmount = 100000;
-    public $includeWindscreen = false;
-    public $includeRadio = false;
-    public $includePersonalAccident = false;
+    // Basic inputs
+    public $insurableValue = '';
+    public $vehicleClass = '';
+    public $typeOfCover = '';
+    public $carryingPassengers = 'No';
 
     // Results
     public $calculationResults = null;
     public $showResults = false;
-    public $showContactForm = false;
 
     // Contact Form
     public $customerName = '';
     public $customerPhone = '';
     public $customerEmail = '';
-    public $preferredContact = 'phone';
-    public $additionalNotes = '';
+    public $showContactForm = false;
 
-    public $vehicleTypes = [
-        'private_car' => 'Private Car',
-        'commercial_vehicle' => 'Commercial Vehicle',
-        'motorcycle' => 'Motorcycle',
-        'bus' => 'Bus/Public Transport',
-        'truck' => 'Truck/Heavy Vehicle',
-        'taxi' => 'Taxi'
+    // Vehicle Classes from Excel
+    public $vehicleClasses = [
+        'Private Cars' => 'Private Cars',
+        'Motorcycle Wheelers 2' => 'Motorcycle Wheelers 2',
+        'Motorcycle Wheelers 3' => 'Motorcycle Wheelers 3',
+        'Commercial Vehicles' => 'Commercial Vehicles',
+        'Special Type of Vehicle' => 'Special Type of Vehicle'
     ];
 
-    public $vehicleMakes = [
-        'Toyota' => 'Toyota',
-        'Honda' => 'Honda',
-        'Nissan' => 'Nissan',
-        'Mitsubishi' => 'Mitsubishi',
-        'Suzuki' => 'Suzuki',
-        'Isuzu' => 'Isuzu',
-        'Mazda' => 'Mazda',
-        'Subaru' => 'Subaru',
-        'Mercedes-Benz' => 'Mercedes-Benz',
-        'BMW' => 'BMW',
-        'Volkswagen' => 'Volkswagen',
-        'Ford' => 'Ford',
-        'Hyundai' => 'Hyundai',
-        'Kia' => 'Kia',
-        'Other' => 'Other'
-    ];
-
-    public $vehicleUsages = [
-        'private' => 'Private Use',
-        'commercial' => 'Commercial Use',
-        'taxi' => 'Taxi/Hire',
-        'public_transport' => 'Public Transport',
-        'government' => 'Government',
-        'diplomatic' => 'Diplomatic'
-    ];
-
-    public $tanzanianRegions = [
-        'Dar es Salaam' => 'Dar es Salaam',
-        'Arusha' => 'Arusha',
-        'Mwanza' => 'Mwanza',
-        'Dodoma' => 'Dodoma',
-        'Mbeya' => 'Mbeya',
-        'Morogoro' => 'Morogoro',
-        'Tanga' => 'Tanga',
-        'Iringa' => 'Iringa',
-        'Mtwara' => 'Mtwara',
-        'Tabora' => 'Tabora',
-        'Kigoma' => 'Kigoma',
-        'Shinyanga' => 'Shinyanga',
-        'Kagera' => 'Kagera',
-        'Kilimanjaro' => 'Kilimanjaro',
-        'Manyara' => 'Manyara',
-        'Lindi' => 'Lindi',
-        'Ruvuma' => 'Ruvuma',
-        'Rukwa' => 'Rukwa',
-        'Pwani' => 'Pwani (Coast)',
-        'Singida' => 'Singida',
-        'Katavi' => 'Katavi',
-        'Simiyu' => 'Simiyu',
-        'Geita' => 'Geita',
-        'Njombe' => 'Njombe',
-        'Songwe' => 'Songwe'
+    // Coverage types based on vehicle class
+    public $coverageOptions = [
+        'Private Cars' => [
+            'Comprehensive Free Vehicle' => ['rate' => 0.035, 'min_premium' => 250000, 'type' => 'CC'],
+            'Comprehensive Claim Record' => ['rate' => 0.04, 'min_premium' => 250000, 'type' => 'CC'],
+            'Third Party Fire Theft' => ['rate' => 0.02, 'min_premium' => 200000, 'type' => 'TPFT'],
+            'Third Party Only' => ['rate' => 0, 'min_premium' => 100000, 'type' => 'TPO']
+        ],
+        'Motorcycle Wheelers 2' => [
+            'Comprehensive Free Vehicle' => ['rate' => 0.05, 'min_premium' => 0, 'additional' => 15000, 'type' => 'CC'],
+            'Comprehensive Claim Record' => ['rate' => 0.06, 'min_premium' => 0, 'additional' => 15000, 'type' => 'CC'],
+            'Third Party Fire Theft' => ['rate' => 0.035, 'min_premium' => 100000, 'additional' => 15000, 'type' => 'TPFT'],
+            'Third Party Only' => ['rate' => 0, 'min_premium' => 50000, 'additional' => 15000, 'type' => 'TPO']
+        ],
+        'Motorcycle Wheelers 3' => [
+            'Comprehensive Free Vehicle' => ['rate' => 0.06, 'min_premium' => 125000, 'additional' => 45000, 'type' => 'CC'],
+            'Comprehensive Claim Record' => ['rate' => 0.07, 'min_premium' => 125000, 'additional' => 45000, 'type' => 'CC'],
+            'Third Party Fire Theft' => ['rate' => 0.035, 'min_premium' => 100000, 'additional' => 45000, 'type' => 'TPFT'],
+            'Third Party Only' => ['rate' => 0, 'min_premium' => 75000, 'additional' => 45000, 'type' => 'TPO']
+        ],
+        'Commercial Vehicles' => [
+            'Own Goods Comprehensive Free Vehicle' => ['rate' => 0.0425, 'min_premium' => 500000, 'type' => 'CC'],
+            'Own Goods Comprehensive Claim Record' => ['rate' => 0.0475, 'min_premium' => 500000, 'type' => 'CC'],
+            'Own Goods Third Party Fire Theft' => ['rate' => 0.025, 'min_premium' => 350000, 'type' => 'TPFT'],
+            'General Cartage Comprehensive Free Vehicle' => ['rate' => 0.05, 'min_premium' => 500000, 'type' => 'CC'],
+            'General Cartage Third Party Fire Theft' => ['rate' => 0.03, 'min_premium' => 350000, 'type' => 'TPFT'],
+            'Third Party Only (up to 2 tonnes)' => ['rate' => 0, 'min_premium' => 150000, 'type' => 'TPO'],
+            'Third Party Only (5-10 tonnes)' => ['rate' => 0, 'min_premium' => 250000, 'type' => 'TPO'],
+            'Third Party Only (above 10 tonnes)' => ['rate' => 0, 'min_premium' => 300000, 'type' => 'TPO']
+        ],
+        'Special Type of Vehicle' => [
+            'Comprehensive (Farm Tractors, Forklifts, etc.)' => ['rate' => 0.02, 'min_premium' => 250000, 'type' => 'CC']
+        ]
     ];
 
     protected $rules = [
-        'vehicleType' => 'required',
-        'vehicleMake' => 'required',
-        'vehicleModel' => 'required',
-        'yearOfManufacture' => 'required|integer|min:1980|max:2025',
-        'engineCapacity' => 'required|integer|min:50|max:8000',
-        'vehicleValue' => 'required|numeric|min:500000',
-        'vehicleUsage' => 'required',
-        'driverAge' => 'required|integer|min:18|max:80',
-        'drivingExperience' => 'required|integer|min:0|max:60',
-        'location' => 'required',
+        'insurableValue' => 'required|numeric|min:500000',
+        'vehicleClass' => 'required',
+        'typeOfCover' => 'required',
         'customerName' => 'required_if:showContactForm,true|string|max:255',
         'customerPhone' => 'required_if:showContactForm,true|string|max:20',
         'customerEmail' => 'nullable|email|max:255'
@@ -125,41 +78,31 @@ class VehicleInsuranceCalculator extends Component
 
     public function mount()
     {
-        $this->yearOfManufacture = date('Y');
-        $this->location = 'Dar es Salaam';
-        $this->driverAge = 25;
-        $this->drivingExperience = 3;
+        $this->insurableValue = 5000000; // Default value from Excel
     }
 
-    public function updatedHasClaimsHistory()
+    public function updatedVehicleClass()
     {
-        if (!$this->hasClaimsHistory) {
-            $this->claimsCount = 0;
-        }
+        $this->typeOfCover = '';
+        $this->calculationResults = null;
+        $this->showResults = false;
     }
 
-    public function updatedCoverageType()
+    public function getAvailableCoverageOptions()
     {
-        // Reset add-ons for third party
-        if ($this->coverageType === 'third_party') {
-            $this->includeWindscreen = false;
-            $this->includeRadio = false;
+        if (!$this->vehicleClass || !isset($this->coverageOptions[$this->vehicleClass])) {
+            return [];
         }
+        
+        return $this->coverageOptions[$this->vehicleClass];
     }
 
     public function calculateInsurance()
     {
         $this->validate([
-            'vehicleType' => 'required',
-            'vehicleMake' => 'required',
-            'vehicleModel' => 'required',
-            'yearOfManufacture' => 'required|integer|min:1980|max:2025',
-            'engineCapacity' => 'required|integer|min:50|max:8000',
-            'vehicleValue' => 'required|numeric|min:500000',
-            'vehicleUsage' => 'required',
-            'driverAge' => 'required|integer|min:18|max:80',
-            'drivingExperience' => 'required|integer|min:0|max:60',
-            'location' => 'required'
+            'insurableValue' => 'required|numeric|min:500000',
+            'vehicleClass' => 'required',
+            'typeOfCover' => 'required'
         ]);
 
         try {
@@ -169,15 +112,6 @@ class VehicleInsuranceCalculator extends Component
             $this->emit('notify', [
                 'type' => 'success',
                 'message' => 'Insurance premium calculated successfully!'
-            ]);
-
-            // Log the calculation for analytics
-            Log::info('Insurance calculation performed', [
-                'vehicle_type' => $this->vehicleType,
-                'vehicle_value' => $this->vehicleValue,
-                'coverage_type' => $this->coverageType,
-                'location' => $this->location,
-                'calculated_premium' => $this->calculationResults['total_premium']
             ]);
 
         } catch (\Exception $e) {
@@ -192,235 +126,59 @@ class VehicleInsuranceCalculator extends Component
 
     private function performCalculation()
     {
+        $insurableValue = (float) $this->insurableValue;
+        $coverageData = $this->coverageOptions[$this->vehicleClass][$this->typeOfCover];
+        
+        // Calculate base premium
         $basePremium = 0;
-        $vehicleAge = date('Y') - $this->yearOfManufacture;
-        $vehicleValue = (float) $this->vehicleValue;
-
-        // Base premium calculation based on coverage type
-        if ($this->coverageType === 'third_party') {
-            $basePremium = $this->calculateThirdPartyPremium();
-        } else {
-            $basePremium = $this->calculateComprehensivePremium($vehicleValue, $vehicleAge);
+        if ($coverageData['rate'] > 0) {
+            $basePremium = $insurableValue * $coverageData['rate'];
         }
-
-        // Apply multipliers
-        $multipliers = $this->calculateMultipliers($vehicleAge);
-        $adjustedPremium = $basePremium * $multipliers['total_multiplier'];
-
-        // Add-ons (only for comprehensive)
-        $addOns = [];
-        $addOnsCost = 0;
-
-        if ($this->coverageType === 'comprehensive') {
-            if ($this->includeWindscreen) {
-                $windscreenCost = $vehicleValue * 0.005; // 0.5% of vehicle value
-                $addOns['windscreen'] = $windscreenCost;
-                $addOnsCost += $windscreenCost;
-            }
-
-            if ($this->includeRadio) {
-                $radioCost = min(200000, $vehicleValue * 0.002); // Max TSh 200,000
-                $addOns['radio'] = $radioCost;
-                $addOnsCost += $radioCost;
-            }
+        
+        // Apply minimum premium
+        if (isset($coverageData['min_premium']) && $basePremium < $coverageData['min_premium']) {
+            $basePremium = $coverageData['min_premium'];
         }
-
-        if ($this->includePersonalAccident) {
-            $personalAccidentCost = 50000; // Fixed TSh 50,000
-            $addOns['personal_accident'] = $personalAccidentCost;
-            $addOnsCost += $personalAccidentCost;
+        
+        // Add additional charges (for motorcycles with passengers)
+        $additionalCharge = 0;
+        if (isset($coverageData['additional']) && $this->carryingPassengers === 'Yes') {
+            $additionalCharge = $coverageData['additional'];
         }
-
-        // Government levy and taxes
-        $governmentLevy = ($adjustedPremium + $addOnsCost) * 0.04; // 4% levy
-        $stampDuty = 2000; // Fixed TSh 2,000
-        $serviceTax = ($adjustedPremium + $addOnsCost) * 0.18; // 18% VAT
-
-        $totalPremium = $adjustedPremium + $addOnsCost + $governmentLevy + $stampDuty + $serviceTax;
-
+        
+        $premiumExclVat = $basePremium + $additionalCharge;
+        
+        // Calculate VAT (18%)
+        $vatRate = 0.18;
+        $vatAmount = $premiumExclVat * $vatRate;
+        $totalPremium = $premiumExclVat + $vatAmount;
+        
         return [
+            'insurable_value' => $insurableValue,
+            'vehicle_class' => $this->vehicleClass,
+            'type_of_cover' => $this->typeOfCover,
+            'coverage_type' => $coverageData['type'],
+            'premium_rate' => $coverageData['rate'],
             'base_premium' => round($basePremium),
-            'multipliers' => $multipliers,
-            'adjusted_premium' => round($adjustedPremium),
-            'add_ons' => $addOns,
-            'add_ons_total' => round($addOnsCost),
-            'government_levy' => round($governmentLevy),
-            'stamp_duty' => round($stampDuty),
-            'service_tax' => round($serviceTax),
+            'additional_charge' => round($additionalCharge),
+            'premium_excl_vat' => round($premiumExclVat),
+            'vat_rate' => $vatRate,
+            'vat_amount' => round($vatAmount),
             'total_premium' => round($totalPremium),
             'monthly_premium' => round($totalPremium / 12),
-            'excess_amount' => $this->excessAmount,
-            'coverage_details' => $this->getCoverageDetails()
+            'excess_info' => $this->getExcessInfo($coverageData['type'])
         ];
     }
 
-    private function calculateThirdPartyPremium()
+    private function getExcessInfo($coverageType)
     {
-        $basePremiums = [
-            'private_car' => [
-                '0-1000' => 80000,
-                '1001-1500' => 120000,
-                '1501-2000' => 160000,
-                '2001+' => 200000
-            ],
-            'commercial_vehicle' => [
-                '0-1000' => 150000,
-                '1001-1500' => 200000,
-                '1501-2000' => 250000,
-                '2001+' => 300000
-            ],
-            'motorcycle' => [
-                '0-250' => 50000,
-                '251-500' => 70000,
-                '501+' => 90000
-            ],
-            'taxi' => [
-                '0-1500' => 250000,
-                '1501-2000' => 300000,
-                '2001+' => 350000
-            ],
-            'bus' => 400000,
-            'truck' => 350000
+        $excessInfo = [
+            'CC' => 'For Comprehensive Cover: 5% of claim amount, minimum TZS 350,000 (double for total theft)',
+            'TPFT' => 'NIL for Third Party claims',
+            'TPO' => 'NIL for Third Party claims'
         ];
-
-        $vehicleCategory = $this->vehicleType;
-        $engineCC = (int) $this->engineCapacity;
-
-        if (isset($basePremiums[$vehicleCategory])) {
-            if (is_array($basePremiums[$vehicleCategory])) {
-                foreach ($basePremiums[$vehicleCategory] as $range => $premium) {
-                    if (strpos($range, '-') !== false) {
-                        [$min, $max] = explode('-', $range);
-                        if ($engineCC >= (int)$min && $engineCC <= (int)$max) {
-                            return $premium;
-                        }
-                    } elseif (strpos($range, '+') !== false) {
-                        $min = (int) str_replace('+', '', $range);
-                        if ($engineCC >= $min) {
-                            return $premium;
-                        }
-                    }
-                }
-                // Default to highest premium if no match
-                return end($basePremiums[$vehicleCategory]);
-            } else {
-                return $basePremiums[$vehicleCategory];
-            }
-        }
-
-        return 120000; // Default premium
-    }
-
-    private function calculateComprehensivePremium($vehicleValue, $vehicleAge)
-    {
-        // Base rate as percentage of vehicle value
-        $baseRates = [
-            'private_car' => 0.04, // 4%
-            'commercial_vehicle' => 0.06, // 6%
-            'motorcycle' => 0.05, // 5%
-            'taxi' => 0.08, // 8%
-            'bus' => 0.07, // 7%
-            'truck' => 0.06 // 6%
-        ];
-
-        $baseRate = $baseRates[$this->vehicleType] ?? 0.04;
-        return $vehicleValue * $baseRate;
-    }
-
-    private function calculateMultipliers($vehicleAge)
-    {
-        $multipliers = [
-            'age_multiplier' => 1.0,
-            'experience_multiplier' => 1.0,
-            'location_multiplier' => 1.0,
-            'usage_multiplier' => 1.0,
-            'claims_multiplier' => 1.0,
-            'vehicle_age_multiplier' => 1.0
-        ];
-
-        // Driver age multiplier
-        if ($this->driverAge < 25) {
-            $multipliers['age_multiplier'] = 1.3;
-        } elseif ($this->driverAge >= 25 && $this->driverAge <= 35) {
-            $multipliers['age_multiplier'] = 1.0;
-        } elseif ($this->driverAge > 65) {
-            $multipliers['age_multiplier'] = 1.2;
-        } else {
-            $multipliers['age_multiplier'] = 0.9; // Discount for experienced drivers
-        }
-
-        // Driving experience multiplier
-        if ($this->drivingExperience < 2) {
-            $multipliers['experience_multiplier'] = 1.4;
-        } elseif ($this->drivingExperience >= 5) {
-            $multipliers['experience_multiplier'] = 0.9;
-        }
-
-        // Location multiplier
-        $riskAreas = ['Dar es Salaam', 'Arusha', 'Mwanza'];
-        if (in_array($this->location, $riskAreas)) {
-            $multipliers['location_multiplier'] = 1.2;
-        } else {
-            $multipliers['location_multiplier'] = 0.9;
-        }
-
-        // Usage multiplier
-        $usageMultipliers = [
-            'private' => 1.0,
-            'commercial' => 1.3,
-            'taxi' => 1.5,
-            'public_transport' => 1.4,
-            'government' => 0.9,
-            'diplomatic' => 0.8
-        ];
-        $multipliers['usage_multiplier'] = $usageMultipliers[$this->vehicleUsage] ?? 1.0;
-
-        // Claims history multiplier
-        if ($this->hasClaimsHistory) {
-            $multipliers['claims_multiplier'] = 1.0 + ($this->claimsCount * 0.2);
-        } else {
-            $multipliers['claims_multiplier'] = 0.9; // No claims discount
-        }
-
-        // Vehicle age multiplier
-        if ($vehicleAge > 10) {
-            $multipliers['vehicle_age_multiplier'] = 1.3;
-        } elseif ($vehicleAge > 5) {
-            $multipliers['vehicle_age_multiplier'] = 1.1;
-        }
-
-        // Calculate total multiplier
-        $multipliers['total_multiplier'] = array_product($multipliers);
-
-        return $multipliers;
-    }
-
-    private function getCoverageDetails()
-    {
-        if ($this->coverageType === 'third_party') {
-            return [
-                'Third Party Injury/Death' => 'Up to TSh 30,000,000',
-                'Third Party Property Damage' => 'Up to TSh 5,000,000',
-                'Passenger Liability' => 'Up to TSh 10,000,000 per person',
-                'Legal Costs' => 'Covered',
-                'Own Vehicle Damage' => 'Not Covered',
-                'Theft/Fire' => 'Not Covered'
-            ];
-        } else {
-            return [
-                'Third Party Injury/Death' => 'Up to TSh 30,000,000',
-                'Third Party Property Damage' => 'Up to TSh 5,000,000',
-                'Own Vehicle Damage' => 'Market Value less excess',
-                'Theft & Hijacking' => 'Market Value less excess',
-                'Fire & Lightning' => 'Covered',
-                'Flood & Storm Damage' => 'Covered',
-                'Windscreen' => $this->includeWindscreen ? 'Covered' : 'Not Covered',
-                'Radio/Accessories' => $this->includeRadio ? 'Covered up to limit' : 'Not Covered',
-                'Personal Accident' => $this->includePersonalAccident ? 'TSh 2,000,000' : 'Not Covered',
-                'Towing Services' => 'Covered',
-                'Emergency Repairs' => 'Covered'
-            ];
-        }
+        
+        return $excessInfo[$coverageType] ?? 'Please contact us for excess details';
     }
 
     public function showContactModal()
@@ -443,21 +201,14 @@ class VehicleInsuranceCalculator extends Component
         ]);
 
         try {
-            // Here you would typically save to database or send email
-            // For now, we'll just log the inquiry
             Log::info('Insurance inquiry submitted', [
                 'customer_name' => $this->customerName,
                 'customer_phone' => $this->customerPhone,
                 'customer_email' => $this->customerEmail,
-                'vehicle_details' => [
-                    'type' => $this->vehicleType,
-                    'make' => $this->vehicleMake,
-                    'model' => $this->vehicleModel,
-                    'value' => $this->vehicleValue
-                ],
-                'calculated_premium' => $this->calculationResults['total_premium'] ?? null,
-                'preferred_contact' => $this->preferredContact,
-                'notes' => $this->additionalNotes
+                'vehicle_class' => $this->vehicleClass,
+                'type_of_cover' => $this->typeOfCover,
+                'insurable_value' => $this->insurableValue,
+                'calculated_premium' => $this->calculationResults['total_premium'] ?? null
             ]);
 
             $this->emit('notify', [
@@ -482,21 +233,16 @@ class VehicleInsuranceCalculator extends Component
         $this->customerName = '';
         $this->customerPhone = '';
         $this->customerEmail = '';
-        $this->preferredContact = 'phone';
-        $this->additionalNotes = '';
     }
 
     public function resetCalculator()
     {
         $this->reset([
-            'vehicleType', 'vehicleMake', 'vehicleModel', 'yearOfManufacture',
-            'engineCapacity', 'vehicleValue', 'vehicleUsage', 'registrationNumber',
-            'driverAge', 'drivingExperience', 'hasClaimsHistory', 'claimsCount',
-            'coverageType', 'includeWindscreen', 'includeRadio', 'includePersonalAccident',
+            'insurableValue', 'vehicleClass', 'typeOfCover', 'carryingPassengers',
             'calculationResults', 'showResults'
         ]);
         
-        $this->mount(); // Reset to default values
+        $this->mount();
     }
 
     public function render()
@@ -504,3 +250,10 @@ class VehicleInsuranceCalculator extends Component
         return view('livewire.vehicle-insurance-calculator');
     }
 }
+
+
+
+
+
+
+
