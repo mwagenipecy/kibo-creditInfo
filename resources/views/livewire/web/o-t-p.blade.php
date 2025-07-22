@@ -50,6 +50,7 @@
             </div>
         </div>
 
+
         <!-- Right side - OTP Form -->
         <div class="w-full lg:w-1/2 flex items-center justify-center p-6">
             <div class="w-full max-w-md">
@@ -97,7 +98,7 @@
                 @endif
 
                 <div class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-                    <form wire:submit.prevent="verifyOTP" class="space-y-6">
+                    <div  class="space-y-6">
                         <div class="mb-6">
                             <div class="text-center mb-4">
                                 <p class="text-sm text-gray-600">Enter the 6-digit code we sent to:</p>
@@ -152,19 +153,30 @@
 
                         <!-- Submit Button -->
                         <div>
-                            <button type="submit" 
-                                    class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors duration-200">
-                                <span wire:loading.remove wire:target="verifyOTP">Verify Account</span>
-                                <span wire:loading wire:target="verifyOTP" class="flex items-center">
-                                    <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                    </svg>
-                                    Verifying...
-                                </span>
-                            </button>
+                        <button wire:click="verifyOTP" 
+    class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors duration-200"
+    wire:loading.attr="disabled">
+
+    {{-- Show this span when not loading --}}
+    <span wire:loading.remove wire:target="verifyOTP">Verify Account</span>
+
+    {{-- Show this span when loading --}}
+    <span wire:loading.flex wire:target="verifyOTP" class="items-center">
+        <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg"
+             fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                    stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 
+                  3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        Verifying...
+    </span>
+</button>
+
+
                         </div>
-                    </form>
+                        </div>
 
                     <div class="mt-6 text-center">
                         <div class="flex items-center justify-center">
@@ -451,4 +463,7 @@
             clearOtpInputs();
         });
     </script>
+
+
+
 </div>

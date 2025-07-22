@@ -627,25 +627,25 @@
                         <nav class="flex items-center justify-between" aria-label="Progress">
                             <ol role="list" class="space-y-3 md:flex md:space-y-0 md:space-x-8">
                                 <li class="md:flex-1">
-                                    <button wire:click="setStep(1)" class="flex flex-col border-l-4 md:border-l-0 md:border-t-4 border-green-600 py-2 pl-4 md:pl-0 md:pt-4 md:pb-0">
+                                    <button wire:click="setStep(1)" class="flex flex-col border-l-4 md:border-l-0 md:border-t-4 @if($currentStep==1) border-green-600 @else border-gray-200  @endif  py-2 pl-4 md:pl-0 md:pt-4 md:pb-0">
                                         <span class="text-xs text-green-600 font-semibold tracking-wide uppercase">Step 1</span>
                                         <span class="text-sm font-medium">Basic Information</span>
                                     </button>
                                 </li>
                                 <li class="md:flex-1">
-                                    <button wire:click="setStep(2)" class="flex flex-col border-l-4 md:border-l-0 md:border-t-4 border-gray-200 py-2 pl-4 md:pl-0 md:pt-4 md:pb-0">
+                                    <button wire:click="setStep(2)" class="flex flex-col border-l-4 md:border-l-0 md:border-t-4  @if($currentStep==2) border-green-600 @else border-gray-200  @endif  py-2 pl-4 md:pl-0 md:pt-4 md:pb-0">
                                         <span class="text-xs text-gray-500 font-semibold tracking-wide uppercase">Step 2</span>
                                         <span class="text-sm font-medium">Financial Details</span>
                                     </button>
                                 </li>
                                 <li class="md:flex-1">
-                                    <button wire:click="setStep(3)" class="flex flex-col border-l-4 md:border-l-0 md:border-t-4 border-gray-200 py-2 pl-4 md:pl-0 md:pt-4 md:pb-0">
+                                    <button wire:click="setStep(3)" class="flex flex-col border-l-4 md:border-l-0 md:border-t-4  @if($currentStep==3) border-green-600 @else border-gray-200  @endif  py-2 pl-4 md:pl-0 md:pt-4 md:pb-0">
                                         <span class="text-xs text-gray-500 font-semibold tracking-wide uppercase">Step 3</span>
                                         <span class="text-sm font-medium">Documentation</span>
                                     </button>
                                 </li>
                                 <li class="md:flex-1">
-                                    <button wire:click="setStep(4)" class="flex flex-col border-l-4 md:border-l-0 md:border-t-4 border-gray-200 py-2 pl-4 md:pl-0 md:pt-4 md:pb-0">
+                                    <button wire:click="setStep(4)" class="flex flex-col border-l-4 md:border-l-0 md:border-t-4 @if($currentStep==4) border-green-600 @else border-gray-200  @endif   py-2 pl-4 md:pl-0 md:pt-4 md:pb-0">
                                         <span class="text-xs text-gray-500 font-semibold tracking-wide uppercase">Step 4</span>
                                         <span class="text-sm font-medium">Review & Submit</span>
                                     </button>
@@ -2126,6 +2126,13 @@
 <!-- Step 3: Documentation -->
 <div class="@if($currentStep === 3) block @else hidden @endif space-y-6" aria-labelledby="step3-heading">
    <h4 id="step3-heading" class="sr-only">Documentation</h4>
+ 
+ 
+  
+
+
+
+
    <section aria-labelledby="documents-heading" class="bg-white rounded-lg border border-gray-200 shadow-sm">
    <h5 id="documents-heading" class="text-lg font-medium text-gray-900 px-4 py-3 bg-gray-50 border-b border-gray-200 rounded-t-lg flex items-center">
       <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -2148,7 +2155,6 @@
                </p>
             </div>
          </div>
-
       </div>
 
       <!-- Business Registration Document -->
@@ -2165,64 +2171,72 @@
                   <p class="mt-1 text-sm text-gray-500">The official business registration document from the registrar.</p>
                </div>
             </div>
-            <div   x-data="{ fileName: '', fileSelected: false }" class="mt-4"  >
-               <div 
-                  x-show="!fileSelected"
-                  class="relative border-2 border-gray-300 border-dashed rounded-md p-6 flex justify-center cursor-pointer hover:bg-gray-50"
-                  @click="$refs.businessRegInput.click()"
-                  >
-                  <div class="space-y-1 text-center">
-                     <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
-                        <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                     </svg>
-                     <div class="flex text-sm text-gray-600 justify-center">
-                        <span class="relative font-medium text-green-600 hover:text-green-500">
-                        Upload a file
-                        <input 
-                            id="businessRegistrationDoc" 
-                            wire:model="businessRegistrationDoc" 
-                            type="file" 
-                            class="hidden"
-                            accept=".pdf,.jpg,.jpeg,.png"
-                        >
-
-
-                        </span>
-                        <p class="pl-1">or drag and drop</p>
-                     </div>
-                     <p class="text-xs text-gray-500">PDF, JPG, JPEG, PNG up to 5MB</p>
-                  </div>
-               </div>
-               <div 
-                  x-show="fileSelected"
-                  class="bg-gray-50 rounded-md border border-gray-300 p-3"
-                  >
-                  <div class="flex items-center justify-between">
-                     <div class="flex items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            
+            <div class="mt-4">
+               @if(!$businessRegistrationDoc)
+                  <label for="businessRegistrationDoc" class="relative border-2 border-gray-300 border-dashed rounded-md p-6 flex justify-center cursor-pointer hover:bg-gray-50 transition-colors block">
+                     <div class="space-y-1 text-center">
+                        <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
+                           <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                         </svg>
-                        <span class="text-sm font-medium text-gray-900" x-text="fileName"></span>
+                        <div class="flex text-sm text-gray-600 justify-center">
+                           <span class="font-medium text-green-600 hover:text-green-500">
+                              Upload a file
+                           </span>
+                           <p class="pl-1">or drag and drop</p>
+                        </div>
+                        <p class="text-xs text-gray-500">PDF, JPG, JPEG, PNG up to 5MB</p>
                      </div>
-                     <button 
-                        type="button" 
-                        class="text-sm font-medium text-red-600 hover:text-red-500"
-                        x-on:click="
-                        $wire.set('businessRegistrationDoc', null);
-                        fileSelected = false;
-                        fileName = '';
-                        "
-                        >
-                     Remove
-                     </button>
+                  </label>
+                  <input 
+                     id="businessRegistrationDoc" 
+                     wire:model="businessRegistrationDoc" 
+                     type="file" 
+                     class="hidden"
+                     accept=".pdf,.jpg,.jpeg,.png"
+                  >
+               @else
+                  <div class="bg-gray-50 rounded-md border border-gray-300 p-3">
+                     <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                           <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                           </svg>
+                           <span class="text-sm font-medium text-gray-900">
+                              @if(is_object($businessRegistrationDoc))
+                                 {{ $businessRegistrationDoc->getClientOriginalName() }}
+                              @else
+                                 Business Registration Document
+                              @endif
+                           </span>
+                        </div>
+                        <button 
+                           type="button" 
+                           wire:click="removeBusinessRegistrationDoc"
+                           class="text-sm font-medium text-red-600 hover:text-red-500 transition-colors">
+                           Remove
+                        </button>
+                     </div>
+                  </div>
+               @endif
+               
+               @error('businessRegistrationDoc') 
+                  <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+               @enderror
+               
+               <div wire:loading wire:target="businessRegistrationDoc" class="mt-2">
+                  <div class="flex items-center text-sm text-gray-600">
+                     <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-gray-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                     </svg>
+                     Uploading...
                   </div>
                </div>
-               @error('businessRegistrationDoc') 
-               <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-               @enderror
             </div>
          </div>
       </div>
+
       <!-- Tax Clearance Document -->
       <div class="bg-white border border-gray-200 rounded-lg shadow-sm">
          <div class="p-4">
@@ -2237,71 +2251,71 @@
                   <p class="mt-1 text-sm text-gray-500">Current tax clearance document from the revenue authority.</p>
                </div>
             </div>
-            <div 
-               x-data="{ fileName: '', fileSelected: false }"
-               class="mt-4"
-               >
-               <div 
-                  x-show="!fileSelected"
-                  class="relative border-2 border-gray-300 border-dashed rounded-md p-6 flex justify-center cursor-pointer hover:bg-gray-50"
-                  @click="$refs.taxClearanceInput.click()"
-                  >
-                  <div class="space-y-1 text-center">
-                     <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
-                        <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                     </svg>
-                     <div class="flex text-sm text-gray-600 justify-center">
-                        <span class="relative font-medium text-green-600 hover:text-green-500">
-                        Upload a file
-                       
-
-                           <input 
-                            id="taxClearanceDoc" 
-                            wire:model="taxClearanceDoc" 
-                            type="file" 
-                            class="hidden"
-                            accept=".pdf,.jpg,.jpeg,.png"
-                        >
-
-                        </span>
-                        <p class="pl-1">or drag and drop</p>
-                     </div>
-                     <p class="text-xs text-gray-500">PDF, JPG, JPEG, PNG up to 5MB</p>
-                  </div>
-               </div>
-               <div 
-                  x-show="fileSelected"
-                  class="bg-gray-50 rounded-md border border-gray-300 p-3"
-                  >
-                  <div class="flex items-center justify-between">
-                     <div class="flex items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            
+            <div class="mt-4">
+               @if(!$taxClearanceDoc)
+                  <label for="taxClearanceDoc" class="relative border-2 border-gray-300 border-dashed rounded-md p-6 flex justify-center cursor-pointer hover:bg-gray-50 transition-colors block">
+                     <div class="space-y-1 text-center">
+                        <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
+                           <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                         </svg>
-                        <span class="text-sm font-medium text-gray-900" x-text="fileName"></span>
+                        <div class="flex text-sm text-gray-600 justify-center">
+                           <span class="font-medium text-green-600 hover:text-green-500">
+                              Upload a file
+                           </span>
+                           <p class="pl-1">or drag and drop</p>
+                        </div>
+                        <p class="text-xs text-gray-500">PDF, JPG, JPEG, PNG up to 5MB</p>
                      </div>
-                     <button 
-                        type="button" 
-                        class="text-sm font-medium text-red-600 hover:text-red-500"
-                        x-on:click="
-                        $wire.set('taxClearanceDoc', null);
-                        fileSelected = false;
-                        fileName = '';
-                        "
-                        >
-                     Remove
-                     </button>
+                  </label>
+                  <input 
+                     id="taxClearanceDoc" 
+                     wire:model="taxClearanceDoc" 
+                     type="file" 
+                     class="hidden"
+                     accept=".pdf,.jpg,.jpeg,.png"
+                  >
+               @else
+                  <div class="bg-gray-50 rounded-md border border-gray-300 p-3">
+                     <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                           <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                           </svg>
+                           <span class="text-sm font-medium text-gray-900">
+                              @if(is_object($taxClearanceDoc))
+                                 {{ $taxClearanceDoc->getClientOriginalName() }}
+                              @else
+                                 Tax Clearance Document
+                              @endif
+                           </span>
+                        </div>
+                        <button 
+                           type="button" 
+                           wire:click="removeTaxClearanceDoc"
+                           class="text-sm font-medium text-red-600 hover:text-red-500 transition-colors">
+                           Remove
+                        </button>
+                     </div>
+                  </div>
+               @endif
+               
+               @error('taxClearanceDoc') 
+                  <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+               @enderror
+               
+               <div wire:loading wire:target="taxClearanceDoc" class="mt-2">
+                  <div class="flex items-center text-sm text-gray-600">
+                     <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-gray-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                     </svg>
+                     Uploading...
                   </div>
                </div>
-               @error('taxClearanceDoc') 
-               <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-               @enderror
             </div>
          </div>
       </div>
-
-
-
 
       <!-- Company Logo (Optional) -->
       <div class="bg-white border border-gray-200 rounded-lg shadow-sm">
@@ -2317,77 +2331,79 @@
                   <p class="mt-1 text-sm text-gray-500">Your company logo for display on the platform.</p>
                </div>
             </div>
-            <div 
-               x-data="{ fileName: '', fileSelected: false, preview: null }"
-               class="mt-4"
-               >
-               <div 
-                  x-show="!fileSelected"
-                  class="relative border-2 border-gray-300 border-dashed rounded-md p-6 flex justify-center cursor-pointer hover:bg-gray-50"
-                  @click="$refs.logoInput.click()"
-                  >
-                  <div class="space-y-1 text-center">
-                     <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
-                        <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                     </svg>
-                     <div class="flex text-sm text-gray-600 justify-center">
-                        <span class="relative font-medium text-green-600 hover:text-green-500">
-                        Upload a file
-                        <input 
-                           x-ref="logoInput"
-                           id="logo" 
-                           wire:model="logo" 
-                           type="file" 
-                           class="sr-only"
-                           x-on:change="
-                           fileName = $event.target.files[0].name;
-                           fileSelected = true;
-                           const reader = new FileReader();
-                           reader.onload = (e) => {
-                           preview = e.target.result;
-                           };
-                           reader.readAsDataURL($event.target.files[0]);
-                           "
-                           accept="image/*"
-                           >
-                        </span>
-                        <p class="pl-1">or drag and drop</p>
+            
+            <div class="mt-4">
+               @if(!$logo)
+                  <label for="logo" class="relative border-2 border-gray-300 border-dashed rounded-md p-6 flex justify-center cursor-pointer hover:bg-gray-50 transition-colors block">
+                     <div class="space-y-1 text-center">
+                        <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
+                           <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                        <div class="flex text-sm text-gray-600 justify-center">
+                           <span class="font-medium text-green-600 hover:text-green-500">
+                              Upload a file
+                           </span>
+                           <p class="pl-1">or drag and drop</p>
+                        </div>
+                        <p class="text-xs text-gray-500">PNG, JPG, JPEG up to 2MB</p>
                      </div>
-                     <p class="text-xs text-gray-500">PNG, JPG, JPEG up to 2MB</p>
-                  </div>
-               </div>
-
-               <div 
-                  x-show="fileSelected"
-                  class="bg-gray-50 rounded-md border border-gray-300 p-3"
+                  </label>
+                  <input 
+                     id="logo" 
+                     wire:model="logo" 
+                     type="file" 
+                     class="hidden"
+                     accept="image/*"
                   >
-                  <div class="flex items-center justify-between">
-                     <div class="flex items-center space-x-3">
-                        <template x-if="preview">
-                           <img x-bind:src="preview" class="h-14 w-14 object-contain bg-white border rounded" alt="Logo preview">
-                        </template>
-                        <span class="text-sm font-medium text-gray-900" x-text="fileName"></span>
+               @else
+                  <div class="bg-gray-50 rounded-md border border-gray-300 p-3">
+                     <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                           @if($logo && method_exists($logo, 'temporaryUrl'))
+                              <img src="{{ $logo->temporaryUrl() }}" class="h-14 w-14 object-contain bg-white border rounded" alt="Logo preview">
+                           @else
+                              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                              </svg>
+                           @endif
+                           <span class="text-sm font-medium text-gray-900">
+                              @if(is_object($logo))
+                                 {{ $logo->getClientOriginalName() }}
+                              @else
+                                 Company Logo
+                              @endif
+                           </span>
+                        </div>
+                        <button 
+                           type="button" 
+                           wire:click="removeLogo"
+                           class="text-sm font-medium text-red-600 hover:text-red-500 transition-colors">
+                           Remove
+                        </button>
                      </div>
-                     <button 
-                        type="button" 
-                        class="text-sm font-medium text-red-600 hover:text-red-500"
-                        x-on:click="
-                        $wire.set('logo', null);
-                        fileSelected = false;
-                        fileName = '';
-                        preview = null;
-                        "
-                        >
-                     Remove
-                     </button>
                   </div>
-               </div>
+               @endif
+               
                @error('logo') 
-               <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                  <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                @enderror
+               
+               <div wire:loading wire:target="logo" class="mt-2">
+                  <div class="flex items-center text-sm text-gray-600">
+                     <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-gray-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                     </svg>
+                     Uploading...
+                  </div>
+               </div>
             </div>
          </div>
-   </section>
+      </div>
+   </div>
+</section>
+
+
  </div>
 
 

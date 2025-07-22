@@ -9,6 +9,7 @@ use Livewire\WithFileUploads;
 use App\Models\NodesList;
 use Mediconesystems\LivewireDatatables\Column;
 use Mediconesystems\LivewireDatatables\Http\Livewire\LivewireDatatable;
+use PhpOffice\PhpSpreadsheet\Calculation\TextData\Search;
 
 class Users extends LivewireDatatable
 {
@@ -25,8 +26,8 @@ class Users extends LivewireDatatable
     {
         return [
             Column::name('id')->label('ID'),
-            Column::name('name')->label('Name'),
-            Column::name('email')->label('Email'),
+            Column::name('name')->label('Name')->searchable(),
+        Column::name('email')->label('Email')->searchable(),
 
             Column::name('phone_number')->label('Phone Number'),
             Column::name('created_at')->label('Created At'),

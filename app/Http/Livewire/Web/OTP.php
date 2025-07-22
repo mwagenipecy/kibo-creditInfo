@@ -110,10 +110,15 @@ class OTP extends Component
     // Handle the form submission
     public function verifyOTP()
     {
-        // Combine the OTP digits
+        // Combine OTP
+
+
+
         $this->full_otp = $this->otp1 . $this->otp2 . $this->otp3 . $this->otp4 . $this->otp5 . $this->otp6;
-        
-        // Validate all fields are filled
+    
+
+       // dd($this->full_otp); reach here very fine
+        // Validate inputs
         $this->validate([
             'otp1' => 'required|numeric|digits:1',
             'otp2' => 'required|numeric|digits:1',
@@ -121,55 +126,67 @@ class OTP extends Component
             'otp4' => 'required|numeric|digits:1',
             'otp5' => 'required|numeric|digits:1',
             'otp6' => 'required|numeric|digits:1',
-        ], [
-            'required' => 'All OTP fields are required',
-            'numeric' => 'OTP can only contain numbers',
-            'digits' => 'Each field must contain exactly one digit',
         ]);
-        
-        // Check if OTP is valid and not expired
+
+
+       // dd("here also");   
+
+        // Check session
         if (!Session::has('otp_code') || !Session::has('otp_expiry')) {
             $this->addError('otp', 'OTP session has expired. Please request a new code.');
+            $this->clearOtpInputs();
             return;
         }
-        
+
+
+        //dd("test"); // code run fine here
+    
         $stored_otp = Session::get('otp_code');
         $expiry = Session::get('otp_expiry');
-        
-        // Check if OTP has expired
+
+       // dd($stored_otp, $expiry, $this->full_otp); // run fine to here 
+    
         if (Carbon::now()->isAfter($expiry)) {
+
+
             $this->addError('otp', 'OTP has expired. Please request a new code.');
             $this->clearOtpInputs();
-            return;
+            
+        }else{
+
+            if ($this->full_otp !== $stored_otp) {
+                $this->addError('otp', 'Invalid verification code. Please try again.');
+                $this->clearOtpInputs();
+               
+            }else{
+
+
+                   // Mark verified
+                    $user = Auth::user();
+                    $user->email_verified_at = Carbon::now();
+                    $user->save();
+                    Session::forget(['otp_code', 'otp_expiry']);
+                    session()->flash('success', 'Your account has been successfully verified!');
+                    return redirect()->route('CyberPoint-Pro');
+
+
+            }
+
+
         }
-        
-        // Check if OTP matches
-        if ($this->full_otp != $stored_otp) {
-            $this->addError('otp', 'Invalid verification code. Please try again.');
-            $this->clearOtpInputs();
-            return;
-        }
-        
-        // OTP is valid - Mark user as verified
-        $user = Auth::user();
-        $user->email_verified_at = Carbon::now();
-        $user->save();
-        
-        // Clear session OTP data
-        Session::forget(['otp_code', 'otp_expiry']);
-        
-        // Flash success message
-        Session::flash('success', 'Your account has been successfully verified!');
-        
-        // Redirect to dashboard or intended page
-        return redirect()->route('CyberPoint-Pro');
+
+    
+
+    
+     
     }
+    
     
     // Clear OTP input fields
     public function clearOtpInputs()
     {
         $this->reset(['otp1', 'otp2', 'otp3', 'otp4', 'otp5', 'otp6', 'full_otp']);
-        $this->dispatchBrowserEvent('clear-otp-fields');
+       // $this->dispatchBrowserEvent('clear-otp-fields');
     }
     
     // Resend OTP

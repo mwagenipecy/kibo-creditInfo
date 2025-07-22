@@ -88,7 +88,7 @@
                         ['id' => 6, 'label' => 'Users'],
                         ['id' => 2, 'label' => 'Roles'],
                         ['id' => 1, 'label' => 'User Profile'],
-                        ['id' => 10, 'label' => 'Password Policy'],
+                      //  ['id' => 10, 'label' => 'Password Policy'],
                     ];
                 @endphp
 
