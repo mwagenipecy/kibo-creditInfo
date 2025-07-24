@@ -3,41 +3,41 @@
         .app-color { color: #005A06; }
         .app-bg-color { background: #005A06; }
         .app-bg-hover:hover { background: #005A06; }
-        
+
         /* Custom scrollbar */
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        
+
         /* Smooth transitions */
         .sidebar-transition { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-        
+
         /* Loading animation */
         @keyframes spin {
             from { transform: rotate(0deg); }
             to { transform: rotate(360deg); }
         }
         .spin { animation: spin 1s linear infinite; }
-        
+
         /* Mobile first approach */
-        .sidebar-mobile { 
-            width: 100vw; 
+        .sidebar-mobile {
+            width: 100vw;
             max-width: 320px;
         }
-        
+
         /* Tablet styles */
         @media (min-width: 640px) {
-            .sidebar-tablet { 
-                width: 280px; 
+            .sidebar-tablet {
+                width: 280px;
             }
         }
-        
+
         /* Desktop styles */
         @media (min-width: 1024px) {
-            .sidebar-desktop { 
-                width: 280px; 
+            .sidebar-desktop {
+                width: 280px;
             }
-            .sidebar-collapsed { 
-                width: 80px; 
+            .sidebar-collapsed {
+                width: 80px;
             }
             .sidebar-collapsed .sidebar-text {
                 opacity: 0;
@@ -47,59 +47,59 @@
                 display: none;
             }
         }
-        
+
         /* Ultra-wide screens */
         @media (min-width: 1536px) {
-            .sidebar-ultrawide { 
-                width: 320px; 
+            .sidebar-ultrawide {
+                width: 320px;
             }
         }
-        
+
         /* Menu item states */
         .menu-item {
             transition: all 0.2s ease-in-out;
             color: #005A06;
         }
-        
+
         .menu-item:hover {
             background: #80ad83 !important;
             color: white !important;
             transform: translateX(4px);
         }
-        
+
         .menu-item:hover svg {
             color: white !important;
         }
-        
+
         .menu-item:hover svg path {
             fill: white !important;
             stroke: white !important;
         }
-        
+
         .menu-item:hover span {
             color: white !important;
         }
-        
+
         /* Active menu item */
         .menu-item.active {
             background: #005A06 !important;
             color: white !important;
         }
-        
+
         .menu-item.active svg {
             color: white !important;
         }
-        
+
         .menu-item.active svg path {
             fill: white !important;
             stroke: white !important;
         }
-        
+
         .menu-item.active span {
             color: white !important;
             font-weight: bold;
         }
-        
+
         /* Logo responsiveness - Much bigger and more visible */
         .logo-section {
             flex: 1;
@@ -108,7 +108,7 @@
             align-items: center;
             padding: 8px 12px;
         }
-        
+
         .logo-responsive {
             height: 64px;
             width: auto;
@@ -117,7 +117,7 @@
             transition: all 0.3s ease;
             min-height: 64px;
         }
-        
+
         @media (max-width: 639px) {
             .logo-responsive {
                 height: 56px;
@@ -127,38 +127,38 @@
                 padding: 6px 8px;
             }
         }
-        
+
         @media (min-width: 640px) and (max-width: 1023px) {
             .logo-responsive {
                 height: 60px;
                 min-height: 60px;
             }
         }
-        
+
         @media (min-width: 1024px) {
             .logo-responsive {
                 height: 68px;
                 min-height: 68px;
             }
-            
+
             .sidebar-collapsed .logo-responsive {
                 height: 48px;
                 min-height: 48px;
             }
         }
-        
+
         /* Increase header height to accommodate larger logo */
         .sidebar .flex.items-center.p-4.border-b {
             min-height: 80px;
             padding: 12px 16px;
         }
-        
+
         /* Text hiding for collapsed sidebar */
         .sidebar-text {
             opacity: 1;
             transition: opacity 0.3s ease;
         }
-        
+
         /* Backdrop */
         .sidebar-backdrop {
             position: fixed;
@@ -169,12 +169,12 @@
             visibility: hidden;
             transition: all 0.3s ease;
         }
-        
+
         .sidebar-backdrop.show {
             opacity: 1;
             visibility: visible;
         }
-        
+
         /* Sidebar positioning - Fixed mobile view */
         .sidebar {
             position: fixed;
@@ -185,27 +185,27 @@
             transform: translateX(-100%);
             transition: transform 0.3s ease;
         }
-        
+
         .sidebar.open {
             transform: translateX(0);
         }
-        
+
         @media (min-width: 1024px) {
             .sidebar {
                 position: static;
                 transform: translateX(0) !important;
             }
         }
-        
+
         /* Collapse button rotation */
         .collapse-icon {
             transition: transform 0.3s ease;
         }
-        
+
         .collapse-icon.rotated {
             transform: rotate(180deg);
         }
-        
+
         /* Mobile menu button - Fixed z-index */
         .mobile-menu-btn {
             position: fixed;
@@ -214,7 +214,7 @@
             z-index: 60;
             display: block;
         }
-        
+
         @media (min-width: 1024px) {
             .mobile-menu-btn {
                 display: none;
@@ -244,7 +244,7 @@
 
     <!-- Sidebar -->
     <div id="sidebar" class="sidebar flex flex-col sidebar-mobile sm:sidebar-tablet lg:sidebar-desktop xl:sidebar-ultrawide sidebar-transition no-scrollbar bg-white border-r border-gray-200 shadow-lg lg:shadow-none overflow-y-auto">
-        
+
         <!-- Sidebar header - Fixed logo layout -->
         <div class="flex items-center p-4 border-b border-gray-100">
             <!-- Mobile close button -->
@@ -253,14 +253,14 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                 </svg>
             </button>
-            
+
             <!-- Logo section - Now takes full width -->
             <div class="logo-section">
                 <a href="{{ route('CyberPoint-Pro') }}" class="flex items-center justify-center">
                     <img class="logo-responsive h-16 w-auto max-w-full object-contain" src="{{ asset('/logo2.png') }}" alt="Kibo Pro Logo" />
                 </a>
             </div>
-            
+
             <!-- Desktop expand/collapse button -->
             <button id="collapseBtn" class="hidden lg:flex p-2 rounded-md text-gray-500 hover:text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-green-600 ml-2" onclick="toggleSidebar()">
                 <svg id="collapseIcon" class="collapse-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -280,7 +280,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />
                         </svg>
                     </div>
-                    
+
                     <!-- Dashboard icon -->
                     <div id="icon-0" class="flex-shrink-0" wire:loading.remove wire:target="menuItemClicked(0)">
                         <svg class="w-6 h-6 text-current" viewBox="0 0 24 24">
@@ -289,7 +289,7 @@
                             <path class="fill-current opacity-50" d="M12 15c-1.654 0-3-1.346-3-3 0-.462.113-.894.3-1.285L6 6l4.714 3.301A2.973 2.973 0 0112 9c1.654 0 3 1.346 3 3s-1.346 3-3 3z" />
                         </svg>
                     </div>
-                    
+
                     <span class="sidebar-text text-sm font-medium truncate">
                         Dashboard
                     </span>
@@ -306,7 +306,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />
                         </svg>
                     </div>
-                    
+
                     <!-- Menu icons -->
                     <div id="icon-{{ $item }}" class="flex-shrink-0" wire:loading.remove wire:target="menuItemClicked({{ $item }})">
                         @switch($item)
@@ -386,15 +386,15 @@
                                 </svg>
                         @endswitch
                     </div>
-                    
+
                     <span class="sidebar-text text-sm font-medium truncate">
-                        {{ \App\Models\menus::where('ID', $item)->first()->menu_name ?? 'Menu Item' }}   
+                        {{ \App\Models\menus::where('ID', $item)->first()->menu_name ?? 'Menu Item' }}    
                     </span>
                 </div>
             </div>
             @endforeach
         </nav>
-        
+
 
         <!-- Footer/User section -->
         <div class="p-4 border-t border-gray-100">
@@ -433,7 +433,7 @@
             sidebar.classList.add('open');
             backdrop.classList.add('show');
             document.body.style.overflow = 'hidden';
-            
+
             // Force styles for mobile
             if (window.innerWidth < 1024) {
                 sidebar.style.transform = 'translateX(0)';
@@ -449,7 +449,7 @@
             sidebar.classList.remove('open');
             backdrop.classList.remove('show');
             document.body.style.overflow = '';
-            
+
             // Force styles for mobile
             if (window.innerWidth < 1024) {
                 sidebar.style.transform = 'translateX(-100%)';
@@ -459,7 +459,7 @@
         // Toggle sidebar collapse (desktop)
         function toggleSidebar() {
             sidebarExpanded = !sidebarExpanded;
-            
+
             if (sidebarExpanded) {
                 sidebar.classList.remove('sidebar-collapsed');
                 collapseIcon.classList.remove('rotated');
@@ -472,32 +472,32 @@
         // Menu item clicked - Fixed color updates
         function menuItemClicked(itemId) {
             console.log('Menu item clicked:', itemId); // Debug log
-            
+
             // Remove active class from all menu items
             document.querySelectorAll('.menu-item').forEach(item => {
                 item.classList.remove('active');
             });
-            
+
             // Add active class to clicked item
             const clickedItem = document.getElementById(`menu-${itemId}`);
             if (clickedItem) {
                 clickedItem.classList.add('active');
                 console.log('Active class added to:', itemId); // Debug log
             }
-            
+
             // Update current active tab
             currentActiveTab = itemId;
-            
+
             // Force update colors
             updateMenuColors();
-            
+
             // Close mobile sidebar after selection
             if (window.innerWidth < 1024) {
                 setTimeout(() => {
                     closeSidebar();
                 }, 300);
             }
-            
+
             // Call Livewire method
             if (typeof Livewire !== 'undefined') {
                 Livewire.emit('menuItemClicked', itemId);
@@ -511,7 +511,7 @@
             document.querySelectorAll('.menu-item').forEach(item => {
                 const spans = item.querySelectorAll('span');
                 const svgPaths = item.querySelectorAll('svg path');
-                
+
                 if (item.classList.contains('active')) {
                     // Active item - white text
                     spans.forEach(span => {
@@ -573,13 +573,13 @@
             document.querySelectorAll('.menu-item').forEach(item => {
                 item.classList.remove('active');
             });
-            
+
             // Add active class to specified item
             const activeItem = document.getElementById(`menu-${itemId}`);
             if (activeItem) {
                 activeItem.classList.add('active');
             }
-            
+
             // Force update colors
             updateMenuColors();
         }
@@ -587,39 +587,39 @@
         // Initialize event listeners
         document.addEventListener('DOMContentLoaded', function() {
             console.log('DOM loaded, initializing sidebar'); // Debug log
-            
+
             // Set initial active state
             setActiveMenuItem(currentActiveTab);
-            
+
             // Window resize
             window.addEventListener('resize', handleResize);
-            
+
             // Escape key
             document.addEventListener('keydown', handleEscape);
-            
+
             // Click outside
             document.addEventListener('click', handleClickOutside);
-            
+
             // Initial screen size setup
             handleResize();
-            
+
             // Handle touch events for mobile swipe
             let touchStartX = 0;
             let touchEndX = 0;
-            
+
             sidebar.addEventListener('touchstart', function(e) {
                 touchStartX = e.changedTouches[0].screenX;
             });
-            
+
             sidebar.addEventListener('touchend', function(e) {
                 touchEndX = e.changedTouches[0].screenX;
                 handleSwipe();
             });
-            
+
             function handleSwipe() {
                 const swipeDistance = touchStartX - touchEndX;
                 const minSwipeDistance = 100;
-                
+
                 // Swipe left to close
                 if (swipeDistance > minSwipeDistance && sidebarOpen) {
                     closeSidebar();
@@ -642,7 +642,7 @@
         // Responsive behavior
         function updateSidebarForScreenSize() {
             const isDesktop = window.innerWidth >= 1024;
-            
+
             if (isDesktop) {
                 // Desktop behavior
                 sidebar.style.position = 'static';
@@ -654,7 +654,7 @@
                 sidebar.style.position = 'fixed';
                 backdrop.style.display = 'block';
                 mobileMenuBtn.style.display = 'block';
-                
+
                 if (!sidebarOpen) {
                     sidebar.style.transform = 'translateX(-100%)';
                 }
@@ -677,7 +677,7 @@
         function showLoading(itemId) {
             const loadingElement = document.getElementById(`loading-${itemId}`);
             const iconElement = document.getElementById(`icon-${itemId}`);
-            
+
             if (loadingElement && iconElement) {
                 loadingElement.classList.remove('hidden');
                 iconElement.classList.add('hidden');
@@ -687,7 +687,7 @@
         function hideLoading(itemId) {
             const loadingElement = document.getElementById(`loading-${itemId}`);
             const iconElement = document.getElementById(`icon-${itemId}`);
-            
+
             if (loadingElement && iconElement) {
                 loadingElement.classList.add('hidden');
                 iconElement.classList.remove('hidden');
@@ -707,7 +707,7 @@
                     }
                 }
             }
-            
+
             // Alt + C to toggle collapse (desktop)
             if (e.altKey && e.key === 'c') {
                 e.preventDefault();
@@ -748,7 +748,7 @@
                 item.addEventListener('touchstart', function() {
                     this.style.transform = 'scale(0.98)';
                 });
-                
+
                 item.addEventListener('touchend', function() {
                     this.style.transform = 'scale(1)';
                 });

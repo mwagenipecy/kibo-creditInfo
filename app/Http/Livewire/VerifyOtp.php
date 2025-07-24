@@ -33,15 +33,12 @@ class VerifyOtp extends Component
 
     public function boot(): void
     {
-        // Ensure user is authenticated
         if (!Auth::check()) {
             redirect()->route('login')->send();
         }
 
-        // Initialize attempt counter
         $this->attemptCount = Cache::get($this->getAttemptKey(), 0);
-        
-        // Check if user is locked out
+
         if ($this->attemptCount >= $this->maxAttempts) {
             $this->handleLockout();
             return;
@@ -54,47 +51,41 @@ class VerifyOtp extends Component
     public function mount(): void
     {
         $user = Auth::user();
-        $user->email_verified_at = Carbon::now();
-        $user->save();
 
         if (!$user) {
             redirect()->route('login')->send();
         }
 
+        $user->email_verified_at = Carbon::now();
+        $user->save();
 
-
-        // Generate new OTP if none exists or expired
         $this->generateAndSendOTP($user);
     }
 
     private function generateAndSendOTP(User $user): void
     {
         try {
-            // Generate secure 6-digit OTP
             $otp = random_int(100000, 999999);
-            
-            // Store OTP with expiration (5 minutes)
+
             Cache::put($this->getOTPKey($user->id), [
                 'otp' => $otp,
                 'created_at' => now(),
                 'expires_at' => now()->addMinutes(5)
             ], now()->addMinutes(5));
 
-            // Update user verification status
             $user->update([
                 'email_verified_at' => null,
-                'otp' => $otp // Keep for backward compatibility if needed
+                'otp' => $otp
             ]);
 
-            // Send OTP email
             $this->sendOTPEmail($user, $otp);
-            
+
         } catch (\Exception $e) {
             Log::error('Failed to generate/send OTP', [
                 'user_id' => $user->id,
                 'error' => $e->getMessage()
             ]);
-            
+
             $this->error = true;
             $this->errorMessage = 'Failed to send OTP. Please try again.';
         }
@@ -108,26 +99,24 @@ class VerifyOtp extends Component
 
     public function resendOTP(): void
     {
-        // Prevent spam resending
         $resendKey = "resend_otp_{$this->getUserId()}";
-        
+
         if (Cache::has($resendKey)) {
             $this->error = true;
             $this->errorMessage = 'Please wait before requesting another OTP.';
             return;
         }
 
-        // Set cooldown period (30 seconds)
         Cache::put($resendKey, true, now()->addSeconds(30));
-        
+
         $this->isResending = true;
         $user = Auth::user();
-        
+
         if ($user) {
             $this->generateAndSendOTP($user);
-            $this->remainingSeconds = 120; // Reset timer
+            $this->remainingSeconds = 120;
         }
-        
+
         $this->isResending = false;
     }
 
@@ -138,104 +127,96 @@ class VerifyOtp extends Component
 
     private function handleTimeout()
     {
-        // Clear OTP cache
         Cache::forget($this->getOTPKey($this->getUserId()));
-        
+
         Auth::guard('web')->logout();
         Session::flush();
-        
+
         return redirect()->route('login')->with('message', 'Session expired. Please login again.');
     }
 
     public function logout()
     {
-        // Clean up cache entries
         Cache::forget($this->getOTPKey($this->getUserId()));
         Cache::forget($this->getAttemptKey());
-        
+
         Auth::guard('web')->logout();
         Session::flush();
-        
+
         return redirect()->route('login');
     }
 
-    public function submitOTP($value): ?\Illuminate\Http\RedirectResponse
+    // ❌ FIXED: Removed return type declaration
+    public function submitOTP($value)
     {
         $userId = $this->getUserId();
-        
-        // Check lockout status
+
         if ($this->attemptCount >= $this->maxAttempts) {
             $this->handleLockout();
-            return null;
+            return;
         }
 
-        // Validate input
         if (!is_numeric($value) || strlen($value) !== 6) {
             $this->handleInvalidOTP();
-            return null;
+            return;
         }
 
-        // Get stored OTP data
         $otpData = Cache::get($this->getOTPKey($userId));
-        
+
         if (!$otpData) {
             $this->error = true;
             $this->errorMessage = 'OTP expired. Please request a new one.';
-            return null;
+            return;
         }
 
-        // Check if OTP is expired
         if (Carbon::parse($otpData['expires_at'])->isPast()) {
             Cache::forget($this->getOTPKey($userId));
             $this->error = true;
             $this->errorMessage = 'OTP expired. Please request a new one.';
-            return null;
+            return;
         }
 
-        // Verify OTP
         if ((int)$otpData['otp'] === (int)$value) {
             return $this->handleValidOTP($userId);
         } else {
             $this->handleInvalidOTP();
-            return null;
+            return;
         }
     }
 
-    private function handleValidOTP(int $userId): \Illuminate\Http\RedirectResponse
+    // ❌ FIXED: Removed return type declaration
+    private function handleValidOTP(int $userId)
     {
         try {
             DB::beginTransaction();
-            
-            // Update user verification
+
             DB::table('users')
                 ->where('id', $userId)
                 ->update([
                     'verification_status' => 1,
                     'email_verified_at' => Carbon::now(),
-                    'otp' => null // Clear OTP from database
+                    'otp' => null
                 ]);
-            
-            // Clean up cache
+
             Cache::forget($this->getOTPKey($userId));
             Cache::forget($this->getAttemptKey());
-            
+
             DB::commit();
-            
+
             Log::info('User successfully verified OTP', ['user_id' => $userId]);
-            
-            return redirect('System');
-            
-            
+
+            return redirect()->route('System');
+
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Failed to update user verification status', [
                 'user_id' => $userId,
                 'error' => $e->getMessage()
             ]);
-            
+
             $this->error = true;
             $this->errorMessage = 'Verification failed. Please try again.';
-            return null;
+            return;
         }
     }
 
@@ -243,14 +224,14 @@ class VerifyOtp extends Component
     {
         $this->attemptCount++;
         Cache::put($this->getAttemptKey(), $this->attemptCount, now()->addMinutes(15));
-        
+
         $remainingAttempts = $this->maxAttempts - $this->attemptCount;
-        
+
         $this->error = true;
-        $this->errorMessage = $remainingAttempts > 0 
+        $this->errorMessage = $remainingAttempts > 0
             ? "Invalid OTP. You have {$remainingAttempts} attempts remaining."
             : "Too many invalid attempts. Please try again later.";
-        
+
         if ($remainingAttempts <= 0) {
             $this->handleLockout();
         }
@@ -258,13 +239,12 @@ class VerifyOtp extends Component
 
     private function handleLockout(): void
     {
-        // Lock user for 15 minutes
         Cache::put($this->getLockoutKey(), true, now()->addMinutes(15));
-        
+
         Log::warning('User locked out due to too many OTP attempts', [
             'user_id' => $this->getUserId()
         ]);
-        
+
         $this->error = true;
         $this->errorMessage = 'Too many failed attempts. Account locked for 15 minutes.';
     }

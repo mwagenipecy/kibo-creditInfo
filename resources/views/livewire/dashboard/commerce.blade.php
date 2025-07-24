@@ -12,13 +12,13 @@
                 </p>
             </div>
             <div class="mt-4 md:mt-0 flex space-x-3">
-               
-               
+
+
             </div>
         </div>
 
         <!-- Key Metrics Section -->
-        <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 mb-8">
+        <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 mb-8">
             <!-- Total Loan Value -->
             <div class="bg-white overflow-hidden shadow rounded-lg">
                 <div class="px-4 py-5 sm:p-6">
@@ -95,7 +95,7 @@
             </div>
 
             <!-- Repayment Rate -->
-            <div class="bg-white overflow-hidden shadow rounded-lg">
+            {{-- <div class="bg-white overflow-hidden shadow rounded-lg">
                 <div class="px-4 py-5 sm:p-6">
                     <div class="flex items-center">
                         <div class="flex-shrink-0 bg-yellow-100 rounded-md p-3">
@@ -117,10 +117,10 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> --}}
         </div>
 
-      
+
 
         <!-- Second Row of Charts/Tables -->
         <div class="grid grid-cols-1 gap-5 lg:grid-cols-1 mb-8">
@@ -166,7 +166,7 @@
                                 </td>
 
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
                                         @if($application->application_status == 'REJECTED')
                                             bg-red-100 text-red-800
                                         @elseif($application->application_status == 'APPROVED')
@@ -197,10 +197,10 @@
                 </div>
             </div>
 
-          
+
         </div>
 
-     
+
     </div>
 
 </div>

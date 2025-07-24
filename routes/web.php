@@ -34,7 +34,7 @@ Route::post('/password-reset', function (Illuminate\Http\Request $request) {
 })->name('password-reset');
 
 // OTP verification routes - Only authenticated users but before OTP verification
-Route::middleware(['auth:sanctum', ClientMiddleware::class])->group(function () {
+Route::middleware(['auth:sanctum'])->group(function () {
     // OTP verification page doesn't need the OTP middleware
     Route::get('/otp-page', [WebsiteController::class,'Otp'])->name('otp-page');
 });
@@ -61,16 +61,16 @@ Route::middleware(['auth:sanctum', 'verified', ClientMiddleware::class, OTPMiddl
 // Employer verification routes
 Route::get('/employer/verification/{token}', [EmployerVerificationController::class, 'showForm'])
     ->name('employer.verification');
-    
+
 Route::post('/employer/verification/{token}', [EmployerVerificationController::class, 'submitForm'])
     ->name('employer.verification.submit');
-    
+
 Route::get('/employer/verification-thank-you', [EmployerVerificationController::class, 'thankYou'])
     ->name('employer.verification.thank-you');
-    
+
 Route::get('/employer/verification-invalid', [EmployerVerificationController::class, 'invalid'])
     ->name('employer.verification.invalid');
-    
+
 Route::get('/employer/verification-completed', [EmployerVerificationController::class, 'completed'])
     ->name('employer.verification.completed');
 

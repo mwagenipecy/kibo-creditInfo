@@ -2,7 +2,7 @@
     <!-- Main Content -->
     <div class="p-4 lg:p-6">
         <!-- Hero Banner -->
-       
+
 
 
         <!-- Main Template Library -->
@@ -23,10 +23,10 @@
                     </svg>
                     Upload Template
                 </button>
-                @endif 
-                
+                @endif
+
             </div>
-            
+
             <div class="p-6">
                 <!-- Alerts -->
                 @if (session()->has('message'))
@@ -40,7 +40,7 @@
                         </div>
                     </div>
                 @endif
-                
+
                 @if (session()->has('error'))
                     <div class="mb-6 bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-r-md flex items-start animate-fadeIn" role="alert">
                         <svg class="h-6 w-6 text-red-500 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
@@ -52,7 +52,7 @@
                         </div>
                     </div>
                 @endif
-                
+
                 <!-- Search and Filter -->
                 <div class="mb-8 grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div class="relative">
@@ -61,8 +61,8 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                             </svg>
                         </div>
-                        <input wire:model.debounce.300ms="searchTerm" type="text" 
-                            class="pl-10 pr-4 py-3 w-full border border-gray-300 rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500" 
+                        <input wire:model.debounce.300ms="searchTerm" type="text"
+                            class="pl-10 pr-4 py-3 w-full border border-gray-300 rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
                             placeholder="Search templates...">
                     </div>
 
@@ -72,8 +72,8 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5m5 5v-5" />
                             </svg>
                         </div>
-                        <input wire:model.debounce.300ms="searchTerm" type="text" 
-                            class="pl-10 pr-4 py-3 w-full border border-gray-300 rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500" 
+                        <input wire:model.debounce.300ms="searchTerm" type="text"
+                            class="pl-10 pr-4 py-3 w-full border border-gray-300 rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
                             placeholder="Search lenders...">
 
                         @if(!empty($lenders))
@@ -111,7 +111,7 @@
                         </button>
                     </div>
                 </div>
-                
+
                 <!-- Templates Table -->
                 <div class="overflow-x-auto bg-white rounded-xl border border-gray-200">
                     <table class="min-w-full divide-y divide-gray-200 table-fixed">
@@ -150,19 +150,19 @@
                                             {{ Str::limit($document->descriptions, 80) }}
                                         </div>
                                     </td>
-                                    
+
                                     @if(auth()->user()->department != 2)
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <div class="text-sm text-gray-900">{{ $document->lender->name ?? 'N/A' }}</div>
                                     </td>
                                     @endif
-                                    
+
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full {{ $document->status == 'Active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
                                             {{ $document->status }}
                                         </span>
                                     </td>
-                                    
+
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                                         {{ $document->created_at->format('M d, Y') }}
                                     </td>
@@ -189,11 +189,11 @@
                                                 </svg>
                                             </button>
 
-                                            @endif 
+                                            @endif
                                         </div>
                                     </td>
 
-                                  
+
 
 
                                 </tr>
@@ -213,15 +213,15 @@
                         </tbody>
                     </table>
                 </div>
-                
+
                 <!-- Pagination -->
-                <div class="mt-6">
+                {{-- <div class="mt-6">
                     {{ $documents->links() }}
-                </div>
+                </div> --}}
             </div>
         </div>
     </div>
-    
+
     <!-- Create/Edit Modal -->
     @if($isOpen)
         <div class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
@@ -231,7 +231,7 @@
                 <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
                 <!-- Modal container with solid background for focus -->
                 <div class="inline-block align-bottom bg-white rounded-xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-3xl sm:w-full animate-fadeIn">
-                   
+
                     <div class="bg-gradient-to-r from-green-600 to-green-700 px-6 py-4">
                         <h3 class="text-lg leading-6 font-medium text-white flex items-center" id="modal-title">
                             @if($editMode)
@@ -255,11 +255,11 @@
                                     <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Template Name</label>
                                     <input type="text" id="name" wire:model="name" placeholder="Enter template name"
                                         class="shadow-sm focus:ring-green-500 focus:border-green-500 block w-full sm:text-sm border-gray-300 rounded-lg @error('name') border-red-300 @enderror">
-                                    @error('name') 
+                                    @error('name')
                                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                     @enderror
                                 </div>
-                                
+
                                 <div>
                                     <label for="status" class="block text-sm font-medium text-gray-700 mb-1">Status</label>
                                     <select id="status" wire:model="status"
@@ -268,11 +268,11 @@
                                         <option value="Active">Active</option>
                                         <option value="Inactive">Inactive</option>
                                     </select>
-                                    @error('status') 
+                                    @error('status')
                                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                     @enderror
                                 </div>
-                                
+
                                 <div>
                                     <label for="document" class="block text-sm font-medium text-gray-700 mb-1">
                                         Template File {{ $editMode ? '(Leave empty to keep current file)' : '' }}
@@ -295,7 +295,7 @@
                                         </svg>
                                         Uploading template...
                                     </div>
-                                    @error('document') 
+                                    @error('document')
                                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                     @enderror
                                     @if($editMode && $path_url)
@@ -307,17 +307,17 @@
                                         </p>
                                     @endif
                                 </div>
-                                
+
                                 <div class="md:col-span-2">
                                     <label for="descriptions" class="block text-sm font-medium text-gray-700 mb-1">Description</label>
                                     <textarea id="descriptions" wire:model="descriptions" rows="4" placeholder="Enter template description..."
                                         class="shadow-sm focus:ring-green-500 focus:border-green-500 block w-full sm:text-sm border-gray-300 rounded-lg @error('descriptions') border-red-300 @enderror"></textarea>
-                                    @error('descriptions') 
+                                    @error('descriptions')
                                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                     @enderror
                                 </div>
                             </div>
-                            
+
                             <div class="flex items-center justify-end space-x-3 pt-4 border-t">
                                 <button type="button" wire:click="closeModal" class="px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
                                     Cancel
@@ -354,7 +354,7 @@
                             Delete Template
                         </h3>
                     </div>
-                    
+
                     <!-- Content -->
                     <div class="bg-white px-6 py-6">
                         <div class="sm:flex sm:items-start">
@@ -375,7 +375,7 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <!-- Footer with action buttons -->
                         <div class="mt-6 sm:flex sm:flex-row-reverse">
                             <button type="button" wire:click="deleteDocument" class="w-full inline-flex justify-center rounded-lg border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm">
@@ -402,7 +402,7 @@
         .animate-fadeIn {
             animation: fadeIn 0.3s ease-out;
         }
-        
+
         @keyframes fadeIn {
             from {
                 opacity: 0;

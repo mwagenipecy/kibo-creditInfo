@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Laravel\Jetstream\Clientship as JetstreamClientship;
 
+
 class Clientship extends JetstreamClientship
 {
     /**

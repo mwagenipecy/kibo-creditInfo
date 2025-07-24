@@ -23,6 +23,7 @@
         "livewire-ui/modal": "^1.0",
         "livewire/livewire": "^2.5",
         "maatwebsite/excel": "^3.1",
+        "mcamara/laravel-localization": "^2.0",
         "mediconesystems/livewire-datatables": "^0.9.5",
         "mohsenabrishami/stethoscope": "^2.0",
         "phpmailer/phpmailer": "^6.8",
