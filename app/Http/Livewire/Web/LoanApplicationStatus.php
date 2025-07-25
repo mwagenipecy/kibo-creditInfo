@@ -2,6 +2,8 @@
 
 namespace App\Http\Livewire\Web;
 
+use App\Models\LenderFinancingCriteria;
+use App\Models\Vehicle;
 use Livewire\Component;
 use App\Models\Application;
 use App\Models\LoanProduct;
@@ -13,6 +15,7 @@ class LoanApplicationStatus extends Component
     public $application;
     public $loanProduct;
     public $monthlyPayment;
+    public $interest_rate;
     
     public function mount($id)
     {
@@ -32,6 +35,16 @@ class LoanApplicationStatus extends Component
         // Get the loan product
         $this->loanProduct = LoanProduct::find($this->application->loanProductId);
         
+        $vehicleId=$this->application->vehicle_id;
+
+        // get model and make
+        $vehicle = Vehicle::findOrFail($vehicleId);
+        // get interest rate
+        $this->interest_rate= LenderFinancingCriteria::where('lender_id', $this->application->lender_id)
+            ->where('make_id', $vehicle->make_id)
+            ->where('model_id', $vehicle->model_id)
+            ->value('interest_rate');
+
         // Calculate monthly payment
         $this->calculateMonthlyPayment();
     }

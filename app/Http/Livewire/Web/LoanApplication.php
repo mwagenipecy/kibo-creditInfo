@@ -137,12 +137,18 @@ class LoanApplication extends Component
         $this->lender = Lender::findOrFail($lender_id);
         $this->loanProducts = $this->getLoanTeam($this->lender);
 
+
+       // dd($this->vehicle->make_id, $this->vehicle->model_id, $lender_id);
+
         $this->downPaymentPercent = LenderFinancingCriteria::where('lender_id', $lender_id)
                                     ->where('make_id', $this->vehicle->make_id)
                                     ->where('model_id', $this->vehicle->model_id)
                                     ->first()->min_down_payment_percent ?? 0;
 
         $this->regions = Region::all();
+
+
+        $this->down_payment = $this->downPaymentPercent / 100 * $this->vehicle->price;
         
         // Pre-fill values
         if (Auth::check()) {

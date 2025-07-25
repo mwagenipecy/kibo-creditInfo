@@ -307,13 +307,13 @@
             </div>
             
             <!-- Application Document Upload -->
-            <div class="mt-4">
+            <!-- <div class="mt-4">
                 <label for="application_document" class="block text-sm font-medium text-gray-700 mb-1">Upload Application Form (if available)</label>
                 <input type="file" id="application_document" wire:model="application_document" class="w-full p-2 border border-gray-300 rounded-lg" accept=".pdf,.jpg,.jpeg,.png,.docx">
                 <p class="mt-1 text-xs text-gray-500">Accepted formats: JPG, PNG, PDF, DOCX (Max size: 5MB)</p>
                 @error('application_document') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
                 <div wire:loading wire:target="application_document" class="mt-1 text-sm text-gray-600">Uploading...</div>
-            </div>
+            </div> -->
             
             <!-- Monthly Payment Estimate -->
             @if($estimated_payment)
@@ -336,7 +336,7 @@
         <div class="mb-6">
 
         <div class="mt-4 p-4 mb-4 text-sm text-green-800 bg-green-100 border border-green-200 rounded-lg">
-            After submission, please send your bank statement to <a href="mailto:creditinfo@vehicle.co.tz" class="font-semibold underline text-green-700">creditinfo@vehicle.co.tz</a>.
+            After submission, please send your bank statement to <a href="mailto:kiboauto@gmail.com" class="font-semibold underline text-green-700">kiboauto@gmail.com</a>.
         </div>
 
 

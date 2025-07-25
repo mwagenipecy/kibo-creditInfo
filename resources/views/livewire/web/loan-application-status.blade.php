@@ -298,6 +298,9 @@
                             </div>
                         </div>
 
+
+                        @if($application->is_employee)
+
                         <div>
                             <h3 class="text-lg font-medium text-gray-900 mb-3">Employment Information</h3>
                             <div class="space-y-3">
@@ -325,6 +328,7 @@
                             </div>
                         </div>
 
+                         @endif 
                         <div>
                             <h3 class="text-lg font-medium text-gray-900 mb-3">Vehicle Information</h3>
                             <div class="space-y-3">
@@ -379,12 +383,12 @@
                                 </div>
                                 <div class="grid grid-cols-2">
                                     <div class="text-sm text-gray-500">Loan Term</div>
-                                    <div class="text-sm font-medium text-gray-900">{{ $loanProduct?->term }} months
+                                    <div class="text-sm font-medium text-gray-900">{{ $application->tenure }} months
                                     </div>
                                 </div>
                                 <div class="grid grid-cols-2">
                                     <div class="text-sm text-gray-500">Interest Rate</div>
-                                    <div class="text-sm font-medium text-gray-900">{{ $loanProduct?->interest_rate }}%
+                                    <div class="text-sm font-medium text-gray-900">{{ $interest_rate }}%
                                     </div>
                                 </div>
                                 <div class="grid grid-cols-2">

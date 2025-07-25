@@ -158,6 +158,20 @@
                                 </div>
                                 @error('criteria.min_down_payment_percent') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
                             </div>
+
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Interest Rate</label>
+                                <div class="relative rounded-md shadow-sm">
+                                    <input type="number"  wire:model="criteria.interest_rate" class="focus:ring-green-500 focus:border-green-500 block w-full pl-3 pr-12 py-2 border-gray-300 rounded-md">
+                                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                        <span class="text-gray-500 sm:text-sm">%</span>
+                                    </div>
+                                </div>
+                                @error('criteria.interest_rate') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
+                            </div>
+
+
                         </div>
                         
                         <div class="mt-6 flex justify-end space-x-3">
@@ -316,6 +330,23 @@
                                 </div>
                                 @error('batchCriteria.min_down_payment_percent') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
                             </div>
+
+
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Interest Rate</label>
+                                <div class="relative rounded-md shadow-sm">
+                                    <input type="number" step="0.01" wire:model="batchCriteria.interestRate" class="focus:ring-green-500 focus:border-green-500 block w-full pl-3 pr-12 py-2 border-gray-300 rounded-md">
+                                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                        <span class="text-gray-500 sm:text-sm">%</span>
+                                    </div>
+                                </div>
+                                @error('batchCriteria.interestRate') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
+                            </div>
+
+
+
+
                         </div>
                         
                         <div class="mt-6 flex justify-end space-x-3">
@@ -430,6 +461,9 @@
                                                 @endif
                                             </dd>
                                         </div>
+
+
+                                        
                                     </dl>
                                 </div>
                                 

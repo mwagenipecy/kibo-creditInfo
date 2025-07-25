@@ -49,7 +49,7 @@ class DoculemtView extends Component
     public function render()
     {
         $search = $this->searchTerm;
-
+    
         // Search lenders separately (for dropdown, suggestions, etc.)
         $lenders = [];
         if (strlen($search) >= 2) {
@@ -58,9 +58,9 @@ class DoculemtView extends Component
                 ->limit(10)
                 ->get();
         }
-
+    
         // Search documents along with lender name
-        $documents = Document::query()->with('lender') // assuming a Document belongsTo Lender
+        $documents = Document::query()->with('lender')
             ->where(function ($query) use ($search) {
                 $query->where('resources.name', 'like', '%' . $search . '%')
                     ->orWhere('resources.descriptions', 'like', '%' . $search . '%')
@@ -68,20 +68,24 @@ class DoculemtView extends Component
                         $q->where('name', 'like', '%' . $search . '%');
                     });
             });
+    
+        // Restrict view based on department
+        if (auth()->user()->department == 2) {
+            $documents->where('lender_id', auth()->user()->institution_id);
+        }
+
+       // dd(auth()->user()->institution_id);
 
 
-            if(auth()->user()->department == 2) {
-                $documents = $documents->where('lender_id', auth()->user()->institution_id);
-            }
-
-            $documents ->orderBy('resources.id', 'desc')
-            ->get();
-
+    
+        $documents = $documents->orderBy('resources.id', 'desc')
+            ->paginate(10); // assuming pagination is needed
+    
         // Document stats
         $totalDocuments = Document::count();
         $activeDocuments = Document::where('status', 'Active')->count();
         $inactiveDocuments = Document::where('status', 'Inactive')->count();
-
+    
         return view('livewire.document.doculemt-view', [
             'documents' => $documents,
             'totalDocuments' => $totalDocuments,
@@ -90,6 +94,9 @@ class DoculemtView extends Component
             'lenders' => $lenders,
         ]);
     }
+
+    
+
 
 
     public function resetInputFields()

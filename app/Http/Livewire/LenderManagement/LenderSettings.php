@@ -29,6 +29,8 @@ class LenderSettings extends Component
     public $criteria = [];
     public $searchTerm = '';
     public $selectedMake = null;
+
+    public $interest_rate; // Default interest rate, can be set in the form if needed
     
     // Properties for batch form
     public $showBatchForm = false;
@@ -59,6 +61,7 @@ class LenderSettings extends Component
                 'max:' . (date('Y') + 5),
                 'gte:criteria.min_year' // Ensure max_year is greater than or equal to min_year
             ],
+            'criteria.interest_rate' => 'numeric|min:0|max:100', // Interest rate validation
             'criteria.max_mileage' => 'nullable|numeric|min:0',
             'criteria.max_price' => 'nullable|numeric|min:0',
             'criteria.min_down_payment_percent' => 'nullable|numeric|min:0|max:100',
@@ -144,6 +147,7 @@ public function addCriteria()
         $newCriteria->max_year = $this->criteria['max_year'];
         $newCriteria->max_mileage = $this->criteria['max_mileage'];
         $newCriteria->max_price = $this->criteria['max_price'];
+        $newCriteria->interest_rate =  $this->criteria['interest_rate']  ; // Set interest rate
         $newCriteria->min_down_payment_percent = $this->criteria['min_down_payment_percent'];
         $newCriteria->save();
         
@@ -188,6 +192,7 @@ public function updateCriteria()
         $existingCriteria->max_year = $this->criteria['max_year'];
         $existingCriteria->max_mileage = $this->criteria['max_mileage'];
         $existingCriteria->max_price = $this->criteria['max_price'];
+        $existingCriteria->interest_rate =  $this->criteria['interest_rate'] ;  // Set interest rate
         $existingCriteria->min_down_payment_percent = $this->criteria['min_down_payment_percent'];
         $existingCriteria->save();
         
@@ -309,6 +314,7 @@ public function addBatchCriteria()
             'max:' . (date('Y') + 5),
             'gte:batchCriteria.min_year'
         ],
+        'batchCriteria.interest_rate' => 'numeric|min:0|max:100', // Interest rate validation
         'batchCriteria.max_mileage' => 'nullable|numeric|min:0',
         'batchCriteria.max_price' => 'nullable|numeric|min:0',
         'batchCriteria.min_down_payment_percent' => 'nullable|numeric|min:0|max:100',
@@ -344,6 +350,7 @@ public function addBatchCriteria()
                 $existing->max_year = $this->batchCriteria['max_year'];
                 $existing->max_mileage = $this->batchCriteria['max_mileage'];
                 $existing->max_price = $this->batchCriteria['max_price'];
+                $existing->interest_rate = $this->batchCriteria['interest_rate']; // Set interest rate
                 $existing->min_down_payment_percent = $this->batchCriteria['min_down_payment_percent'];
                 $existing->save();
                 
@@ -358,6 +365,7 @@ public function addBatchCriteria()
                 $newCriteria->max_year = $this->batchCriteria['max_year'];
                 $newCriteria->max_mileage = $this->batchCriteria['max_mileage'];
                 $newCriteria->max_price = $this->batchCriteria['max_price'];
+                $newCriteria->interest_rate = $this->batchCriteria['interest_rate']; // Set interest rate
                 $newCriteria->min_down_payment_percent = $this->batchCriteria['min_down_payment_percent'];
                 $newCriteria->save();
                 

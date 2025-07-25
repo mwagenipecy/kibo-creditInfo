@@ -153,6 +153,67 @@ class User extends Authenticatable
         
         return $email;
     }
+
+
+
+    public function hasVerifiedEmail()
+{
+    return !is_null($this->email_verified_at);
+}
+
+/**
+ * Check if user is a client (department 10)
+ *
+ * @return bool
+ */
+public function isClient()
+{
+    return $this->department == 10;
+}
+
+/**
+ * Check if user is admin/staff (not department 10)
+ *
+ * @return bool
+ */
+public function isAdminOrStaff()
+{
+    return $this->department != 10;
+}
+
+/**
+ * Get the user's role name based on department
+ *
+ * @return string
+ */
+public function getRoleName()
+{
+    // You can expand this based on your department structure
+    switch ($this->department) {
+        case 10:
+            return 'Client';
+        case 1:
+            return 'Administrator';
+        case 2:
+            return 'Manager';
+        default:
+            return 'Staff';
+    }
+}
+
+/**
+ * Mark email as verified (for OTP verification)
+ *
+ * @return bool
+ */
+public function markEmailAsVerified()
+{
+    return $this->forceFill([
+        'email_verified_at' => $this->freshTimestamp(),
+    ])->save();
+}
+
+
     
 
     

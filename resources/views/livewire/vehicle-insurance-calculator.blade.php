@@ -1,17 +1,17 @@
 <div>
-<div class="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100">
+<div class="min-h-screen bg-white">
     <!-- Header -->
-    <div class="bg-white shadow-sm border-b-4 border-green-500">
+    <div class="bg-green-600 shadow-sm border-b-4 border-green-500">
         <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
             <div class="text-center">
-                <h1 class="text-3xl font-bold text-gray-900">Vehicle Insurance Calculator</h1>
-                <p class="mt-2 text-gray-600">Complete Insurance Calculator </p>
+                <h1 class="text-3xl font-bold text-white">Vehicle Insurance Calculator</h1>
+                <p class="mt-2 text-white">Complete Insurance Calculator </p>
                 <div class="mt-4 flex items-center justify-center space-x-6 text-sm text-gray-500">
-                    <span class="flex items-center">
+                    <span class="flex items-center text-white">
                         <div class="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
                         Instant Quotes
                     </span>
-                    <span class="flex items-center">
+                    <span class="flex text-white items-center">
                         <div class="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
                         Tanzania Compliant
                     </span>
