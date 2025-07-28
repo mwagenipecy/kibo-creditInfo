@@ -37,11 +37,11 @@ class Users extends LivewireDatatable
             })->label('Role'),
             Column::callback(['status'], function ($status) {
                 return view('livewire.settings.table-status', ['status' => $status, 'move' => false]);
-            })->label('status'),
+            })->label('status')->excludeFromExport(),
 
             Column::callback(['ID'], function ($id) {
                 return view('livewire.settings.users-list-action', ['id' => $id, 'move' => false]);
-            })->unsortable()->label('Action'),
+            })->unsortable()->label('Action')->excludeFromExport(),
         ];
     }
 
