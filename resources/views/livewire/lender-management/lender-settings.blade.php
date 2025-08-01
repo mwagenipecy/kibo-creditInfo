@@ -22,7 +22,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="p-6">
                 <!-- Alert Messages -->
                 @if (session()->has('success'))
@@ -39,7 +39,7 @@
                         </div>
                     </div>
                 @endif
-                
+
                 @if (session()->has('error'))
                     <div class="mb-4 bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded shadow-sm">
                         <div class="flex">
@@ -54,24 +54,24 @@
                         </div>
                     </div>
                 @endif
-                
-               
-                
+
+
+
                 <!-- Individual Criteria Form -->
                 @if($showForm)
                 <div class="bg-gray-50 border border-gray-200 rounded-lg shadow-sm mb-6 overflow-hidden">
                     <div class="bg-gradient-to-r from-gray-50 to-gray-100 px-6 py-3 border-b border-gray-200">
                         <h3 class="text-lg font-semibold text-gray-800">{{ $editMode ? 'Edit' : 'Add' }} Financing Criteria</h3>
                     </div>
-                    
+
                     <div class="p-6">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <!-- Make -->
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Vehicle Make *</label>
-                                <select 
-                                    wire:model="criteria.make_id" 
-                                   
+                                <select
+                                    wire:model="criteria.make_id"
+
                                     class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-green-500 focus:border-green-500 rounded-md shadow-sm"
                                 >
                                     <option value="">Select Make</option>
@@ -81,12 +81,12 @@
                                 </select>
                                 @error('criteria.make_id') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
                             </div>
-                            
+
                             <!-- Model (Single) -->
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Vehicle Model (Optional)</label>
-                                <select 
-                                    wire:model="criteria.model_id" 
+                                <select
+                                    wire:model="criteria.model_id"
                                     class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-green-500 focus:border-green-500 rounded-md shadow-sm"
                                 >
                                     <option value="">Any Model</option>
@@ -97,7 +97,7 @@
                                 <p class="mt-1 text-xs text-gray-500">Select "Any Model" to apply criteria to all models of this make</p>
                                 @error('criteria.model_id') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
                             </div>
-                            
+
                             <!-- Year Range -->
                             <div class="md:col-span-2">
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Year Range *</label>
@@ -122,7 +122,7 @@
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <!-- Max Mileage -->
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Max Mileage</label>
@@ -134,7 +134,7 @@
                                 </div>
                                 @error('criteria.max_mileage') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
                             </div>
-                            
+
                             <!-- Max Price -->
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Max Price</label>
@@ -146,7 +146,7 @@
                                 </div>
                                 @error('criteria.max_price') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
                             </div>
-                            
+
                             <!-- Min Down Payment % -->
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Min Down Payment</label>
@@ -173,7 +173,7 @@
 
 
                         </div>
-                        
+
                         <div class="mt-6 flex justify-end space-x-3">
                             <button wire:click="cancelForm" class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -200,26 +200,26 @@
                     </div>
                 </div>
                 @endif
-                
+
                 <!-- Batch Criteria Form -->
                 @if($showBatchForm ?? false)
                 <div class="bg-gray-50 border border-gray-200 rounded-lg shadow-sm mb-6 overflow-hidden">
                     <div class="bg-gradient-to-r from-purple-50 to-green-50 px-6 py-3 border-b border-gray-200">
                         <h3 class="text-lg font-semibold text-gray-800">Add Multiple Criteria for Same Make</h3>
                     </div>
-                    
+
                     <div class="p-6">
                         <p class="text-sm text-gray-600 mb-4">
                             This form lets you create financing criteria for multiple models of the same make at once.
                             All selected models will share the same financing terms.
                         </p>
-                        
+
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <!-- Make -->
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Vehicle Make *</label>
-                                <select 
-                                    wire:model="batchCriteria.make_id" 
+                                <select
+                                    wire:model="batchCriteria.make_id"
                                     wire:change="updateBatchModels($event.target.value)"
                                     class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-green-500 focus:border-green-500 rounded-md shadow-sm"
                                 >
@@ -230,30 +230,30 @@
                                 </select>
                                 @error('batchCriteria.make_id') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
                             </div>
-                            
+
                             <!-- Model Selection -->
                             <div class="md:col-span-2" x-data="{ selectAll: false }">
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Select Models *</label>
-                                
+
                                 @if(count($batchModels ?? []) > 0)
                                 <div class="flex items-center mb-2">
-                                    <input 
-                                        type="checkbox" 
-                                        id="select-all-models" 
+                                    <input
+                                        type="checkbox"
+                                        id="select-all-models"
                                         x-model="selectAll"
                                         @click="$event.preventDefault(); $wire.toggleAllBatchModels(selectAll = !selectAll)"
                                         class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
                                     >
                                     <label for="select-all-models" class="ml-2 text-sm text-gray-700">Select All Models</label>
                                 </div>
-                                
+
                                 <div class="grid grid-cols-1 md:grid-cols-3 gap-2 border border-gray-200 rounded-md p-3 max-h-60 overflow-y-auto">
                                     @foreach($batchModels as $model)
                                     <div class="flex items-center">
-                                        <input 
-                                            type="checkbox" 
-                                            id="model-{{ $model->id }}" 
-                                            value="{{ $model->id }}" 
+                                        <input
+                                            type="checkbox"
+                                            id="model-{{ $model->id }}"
+                                            value="{{ $model->id }}"
                                             wire:model="selectedBatchModels"
                                             class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
                                         >
@@ -266,10 +266,10 @@
                                     Please select a make to view available models
                                 </div>
                                 @endif
-                                
+
                                 @error('selectedBatchModels') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
                             </div>
-                            
+
                             <!-- Year Range -->
                             <div class="md:col-span-2">
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Year Range *</label>
@@ -294,7 +294,7 @@
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <!-- Max Mileage -->
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Max Mileage</label>
@@ -306,7 +306,7 @@
                                 </div>
                                 @error('batchCriteria.max_mileage') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
                             </div>
-                            
+
                             <!-- Max Price -->
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Max Price</label>
@@ -318,7 +318,7 @@
                                 </div>
                                 @error('batchCriteria.max_price') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
                             </div>
-                            
+
                             <!-- Min Down Payment % -->
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Min Down Payment</label>
@@ -348,7 +348,7 @@
 
 
                         </div>
-                        
+
                         <div class="mt-6 flex justify-end space-x-3">
                             <button wire:click="cancelBatchForm" class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -356,8 +356,8 @@
                                 </svg>
                                 Cancel
                             </button>
-                            <button 
-                                wire:click="addBatchCriteria" 
+                            <button
+                                wire:click="addBatchCriteria"
                                 class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
                             >
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -369,7 +369,7 @@
                     </div>
                 </div>
                 @endif
-                
+
               <!-- Criteria List as Card Layout -->
 <div class="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
     <!-- Search and Filter Bar -->
@@ -392,13 +392,13 @@
         @php
             $groupedCriteria = $criteriaList->groupBy('make_id');
         @endphp
-        
+
         @if($groupedCriteria->count() > 0)
             @foreach($groupedCriteria as $makeId => $items)
                 @php
                     $make = $items->first()->make;
                 @endphp
-                
+
                 <div class="mb-6 last:mb-0">
                     <!-- Make Header -->
                     <div class="bg-gradient-to-r from-indigo-50 to-blue-50 border border-indigo-100 rounded-t-lg px-4 py-2 flex items-center">
@@ -407,7 +407,7 @@
                             {{ $items->count() }} {{ Str::plural('criteria', $items->count()) }}
                         </span>
                     </div>
-                    
+
                     <!-- Models Grid -->
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4 bg-white border-l border-r border-b border-gray-200 rounded-b-lg">
                         @foreach($items as $item)
@@ -426,7 +426,7 @@
                                         </span>
                                     </div>
                                 </div>
-                                
+
                                 <div class="px-4 py-3">
                                     <dl class="space-y-2 text-sm">
                                         <div class="flex justify-between">
@@ -439,18 +439,18 @@
                                                 @endif
                                             </dd>
                                         </div>
-                                        
+
                                         <div class="flex justify-between">
                                             <dt class="text-gray-500">Max Price:</dt>
                                             <dd class="text-gray-900">
                                                 @if($item->max_price)
-                                                    ${{ number_format($item->max_price, 2) }}
+                                                     {{ number_format($item->max_price, 2) }} TZS
                                                 @else
                                                     <span class="text-gray-400 italic">No limit</span>
                                                 @endif
                                             </dd>
                                         </div>
-                                        
+
                                         <div class="flex justify-between">
                                             <dt class="text-gray-500">Min Down Payment:</dt>
                                             <dd class="text-gray-900">
@@ -463,18 +463,18 @@
                                         </div>
 
 
-                                        
+
                                     </dl>
                                 </div>
-                                
+
                                 <div class="bg-gray-50 px-4 py-2 border-t border-gray-100 flex justify-end space-x-2">
                                     <button wire:click="editCriteria({{ $item->id }})" class="inline-flex items-center p-1.5 border border-gray-300 rounded-md text-xs font-medium bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                         </svg>
                                     </button>
-                                    <button 
-                                        wire:click="deleteCriteria({{ $item->id }})" 
+                                    <button
+                                        wire:click="deleteCriteria({{ $item->id }})"
                                         class="inline-flex items-center p-1.5 border border-red-300 rounded-md text-xs font-medium bg-white hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
                                         onclick="return confirm('Are you sure you want to delete this criteria?')"
                                     >
@@ -505,7 +505,7 @@
             </div>
         @endif
     </div>
-    
+
     <!-- Pagination -->
     @if($criteriaList->hasPages())
         <div class="px-6 py-3 border-t border-gray-200 bg-gray-50">

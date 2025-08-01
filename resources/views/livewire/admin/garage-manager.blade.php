@@ -1,4 +1,4 @@
-
+                                 
 <div class="p-6 bg-gray-50 min-h-screen">
     <div class="max-w-7xl mx-auto">
         <!-- Header -->
@@ -21,9 +21,9 @@
         <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
             <h3 class="text-sm font-medium text-blue-800">Debug Information</h3>
             <p class="text-sm text-blue-700 mt-1">
-                Total Garages: {{ $garages->total() ?? 0 }} | 
-                Current Page: {{ $garages->currentPage() ?? 1 }} | 
-                Search: "{{ $search }}" | 
+                Total Garages: {{ $garages->total() ?? 0 }} |
+                Current Page: {{ $garages->currentPage() ?? 1 }} |
+                Search: "{{ $search }}" |
                 Sort: {{ $sortBy }} ({{ $sortDirection }})
             </p>
         </div>
@@ -32,7 +32,7 @@
         <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
             <div class="flex flex-col md:flex-row gap-4">
                 <div class="flex-1">
-                    <input wire:model.live.debounce.300ms="search" type="text" placeholder="Search garages..." 
+                    <input wire:model.live.debounce.300ms="search" type="text" placeholder="Search garages..."
                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
                 </div>
                 <div class="flex space-x-4">
@@ -142,17 +142,17 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="flex flex-col gap-1">
-                                        <button wire:click="toggleStatus({{ $garage->id }})" 
+                                        <button wire:click="toggleStatus({{ $garage->id }})"
                                                 class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium transition-colors {{ $garage->is_active ? 'bg-green-100 text-green-800 hover:bg-green-200' : 'bg-red-100 text-red-800 hover:bg-red-200' }}">
                                             {{ $garage->is_active ? 'Active' : 'Inactive' }}
                                         </button>
                                         @if($garage->featured ?? false)
-                                            <button wire:click="toggleFeatured({{ $garage->id }})" 
+                                            <button wire:click="toggleFeatured({{ $garage->id }})"
                                                     class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 hover:bg-yellow-200 transition-colors">
                                                 Featured
                                             </button>
                                         @else
-                                            <button wire:click="toggleFeatured({{ $garage->id }})" 
+                                            <button wire:click="toggleFeatured({{ $garage->id }})"
                                                     class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 hover:bg-gray-200 transition-colors">
                                                 Feature
                                             </button>
@@ -161,15 +161,15 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                     <div class="flex space-x-2">
-                                        <button wire:click="openModal({{ $garage->id }})" 
+                                        <button wire:click="openModal({{ $garage->id }})"
                                                 class="text-green-600 hover:text-green-900 transition-colors" title="Edit">
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                                             </svg>
                                         </button>
                                         @if($garage->latitude && $garage->longitude)
-                                            <a href="https://www.google.com/maps/place/@{{ $garage->latitude }},{{ $garage->longitude }}" 
-                                               target="_blank" 
+                                            <a href="https://www.google.com/maps/place/@{{ $garage->latitude }},{{ $garage->longitude }}"
+                                               target="_blank"
                                                class="text-green-600 hover:text-green-900 transition-colors" title="View on Map">
                                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
@@ -177,8 +177,8 @@
                                                 </svg>
                                             </a>
                                         @endif
-                                        <button wire:click="delete({{ $garage->id }})" 
-                                                onclick="return confirm('Are you sure you want to delete this garage?')" 
+                                        <button wire:click="delete({{ $garage->id }})"
+                                                onclick="return confirm('Are you sure you want to delete this garage?')"
                                                 class="text-red-600 hover:text-red-900 transition-colors" title="Delete">
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
@@ -191,7 +191,7 @@
                         </tbody>
                     </table>
                 </div>
-                
+
                 <!-- Pagination -->
                 <div class="px-6 py-4 border-t border-gray-200">
                     {{ $garages->links() }}
@@ -222,7 +222,7 @@
     <div class="fixed inset-0 z-50 overflow-y-auto">
         <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
             <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" wire:click="closeModal"></div>
-            
+
             <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full">
                 <form wire:submit.prevent="save">
                     <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
@@ -236,7 +236,7 @@
                                 </svg>
                             </button>
                         </div>
-                        
+
                         <div class="space-y-6">
                             <!-- Basic Information -->
                             <div class="bg-gray-50 p-4 rounded-lg">
@@ -247,43 +247,43 @@
                                         <input wire:model="name" type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500">
                                         @error('name') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                                     </div>
-                                    
+
                                     <div class="md:col-span-2">
                                         <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
                                         <textarea wire:model="description" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500"></textarea>
                                         @error('description') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                                     </div>
-                                    
+
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700 mb-1">Phone *</label>
                                         <input wire:model="phone" type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500">
                                         @error('phone') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                                     </div>
-                                    
+
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
                                         <input wire:model="email" type="email" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500">
                                         @error('email') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                                     </div>
-                                    
+
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700 mb-1">Website</label>
                                         <input wire:model="website" type="url" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500">
                                         @error('website') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                                     </div>
-                                    
+
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700 mb-1">Opening Hours</label>
                                         <input wire:model="opening_hours" type="text" placeholder="e.g., Mon-Fri 8AM-6PM" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500">
                                         @error('opening_hours') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                                     </div>
-                                    
+
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700 mb-1">Rating (0-5)</label>
                                         <input wire:model="rating" type="number" min="0" max="5" step="0.1" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500">
                                         @error('rating') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                                     </div>
-                                    
+
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700 mb-1">Image</label>
                                         <input wire:model="image" type="file" accept="image/*" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500">
@@ -295,7 +295,7 @@
                                         @endif
                                     </div>
                                 </div>
-                                
+
                                 <div class="flex items-center space-x-4 mt-4">
                                     <label class="flex items-center">
                                         <input wire:model="is_active" type="checkbox" class="rounded border-gray-300 text-green-600 shadow-sm focus:ring-green-500">
@@ -307,7 +307,7 @@
                                     </label>
                                 </div>
                             </div>
-                            
+
                             <!-- Location Information -->
                             <div class="bg-gray-50 p-4 rounded-lg">
                                 <h4 class="text-md font-medium text-gray-900 mb-4">Location Information</h4>
@@ -317,7 +317,7 @@
                                         <input wire:model="address" type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500">
                                         @error('address') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                                     </div>
-                                    
+
                                     <div class="grid grid-cols-2 gap-4">
                                         <div>
                                             <label class="block text-sm font-medium text-gray-700 mb-1">City *</label>
@@ -330,7 +330,7 @@
                                             @error('state') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                                         </div>
                                     </div>
-                                    
+
                                     <div class="grid grid-cols-2 gap-4">
                                         <div>
                                             <label class="block text-sm font-medium text-gray-700 mb-1">ZIP Code *</label>
@@ -347,7 +347,7 @@
                                             @error('country') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                                         </div>
                                     </div>
-                                    
+
                                     <div class="grid grid-cols-2 gap-4">
                                         <div>
                                             <label class="block text-sm font-medium text-gray-700 mb-1">Latitude</label>
@@ -360,10 +360,10 @@
                                             @error('longitude') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                                         </div>
                                     </div>
-                                    
+
                                     <div class="flex space-x-2">
-                                        <button type="button" 
-                                                wire:click="geocodeAddress" 
+                                        <button type="button"
+                                                wire:click="geocodeAddress"
                                                 class="flex-1 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md transition-colors flex items-center justify-center space-x-2 {{ $isGeocoding ? 'opacity-50 cursor-not-allowed' : '' }}"
                                                 {{ $isGeocoding ? 'disabled' : '' }}>
                                             @if($isGeocoding)
@@ -380,9 +380,9 @@
                                                 <span>Auto-detect Coordinates</span>
                                             @endif
                                         </button>
-                                        
-                                        <button type="button" 
-                                                wire:click="useCurrentLocation" 
+
+                                        <button type="button"
+                                                wire:click="useCurrentLocation"
                                                 class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition-colors flex items-center justify-center space-x-2">
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
@@ -391,14 +391,14 @@
                                             <span>Use My Location</span>
                                         </button>
                                     </div>
-                                    
+
                                     <div class="text-xs text-gray-500 bg-blue-50 p-3 rounded">
                                         <p><strong>Auto-detect:</strong> Uses address to find coordinates via OpenStreetMap (free)</p>
                                         <p><strong>My Location:</strong> Uses your device's GPS to get current coordinates</p>
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <!-- Services -->
                             <div class="bg-gray-50 p-4 rounded-lg">
                                 <h4 class="text-md font-medium text-gray-900 mb-4">Services Offered</h4>
@@ -413,7 +413,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
                         <button type="submit" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-600 text-base font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:ml-3 sm:w-auto sm:text-sm transition-colors">
                             {{ $editingGarage ? 'Update Garage' : 'Create Garage' }}
@@ -458,9 +458,9 @@
             const notification = document.getElementById('notification');
             const icon = document.getElementById('notification-icon');
             const messageEl = document.getElementById('notification-message');
-            
+
             messageEl.textContent = message;
-            
+
             // Set icon and color based on type
             switch(type) {
                 case 'success':
@@ -476,9 +476,9 @@
                     icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>';
                     break;
             }
-            
+
             notification.classList.remove('hidden');
-            
+
             // Auto hide after 5 seconds
             setTimeout(() => {
                 hideNotification();
@@ -495,13 +495,13 @@
             Livewire.on('notify', (event) => {
                 showNotification(event.type, event.message);
             });
-            
+
             Livewire.on('getCurrentLocation', () => {
                 if (navigator.geolocation) {
                     navigator.geolocation.getCurrentPosition(
                         function(position) {
-                            @this.call('setCurrentLocation', 
-                                position.coords.latitude, 
+                            @this.call('setCurrentLocation',
+                                position.coords.latitude,
                                 position.coords.longitude
                             );
                         },
