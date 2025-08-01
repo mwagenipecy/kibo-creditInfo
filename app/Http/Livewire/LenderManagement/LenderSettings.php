@@ -124,6 +124,8 @@ class LenderSettings extends Component
 // Add new criteria with duplicate check
 public function addCriteria()
 {
+
+
     $this->validate();
 
     try {
@@ -270,6 +272,7 @@ public function updateCriteria()
             'max_price' => null,
             'interest_rate' => null,
             'min_down_payment_percent' => null,
+            'interest_rate' => 0, // Default interest rate
         ];
 
         $this->batchModels = [];
@@ -304,6 +307,7 @@ public function updateCriteria()
     // Add criteria for multiple models// Add criteria for multiple models with duplicate handling
 public function addBatchCriteria()
 {
+
     // Validate batch criteria
     $this->validate([
         'batchCriteria.lender_id' => 'required|exists:lenders,id',
@@ -395,6 +399,8 @@ public function addBatchCriteria()
         $this->showBatchForm = false;
 
     } catch (\Exception $e) {
+
+       // dd($e->getMessage());
         DB::rollBack();
         session()->flash('error', 'Failed to add criteria. ' . $e->getMessage());
     }

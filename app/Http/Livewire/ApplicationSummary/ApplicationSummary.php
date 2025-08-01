@@ -206,6 +206,9 @@ Regards,
     public $statementData;
     public function selectApplication($id)
     {
+
+        dd($id)
+        ;
         $this->selectedApplication = Application::findOrFail($id);
 
         $this->applicationDocuments = Attachment::where('loan_id', $this->selectedApplication->loan_id)->get();
@@ -463,6 +466,7 @@ JSON;
 
             $query->whereIn('application_status',['pending'])
             ->where('car_dealer_id',auth()->user()->institution_id);
+
 
 
         }else{

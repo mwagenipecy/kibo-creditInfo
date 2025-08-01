@@ -243,6 +243,8 @@
                     </div>
                     <div class="bg-gray-50 p-4 rounded-lg border border-gray-100 hover:shadow-md transition duration-300">
                         <div class="text-gray-500 text-sm mb-1">Color</div>
+
+                         {{ $vehicle->id }}
                         <div class="font-semibold text-gray-900">{{ $vehicle->color }}</div>
                     </div>
                     <div class="bg-gray-50 p-4 rounded-lg border border-gray-100 hover:shadow-md transition duration-300">
@@ -562,7 +564,7 @@
                                 </div>
                             </div>
                         </div>
-                        <a href="{{ route('loan.pre-qualify',[$vehicle->id,$lender->id]) }}" 
+                        <a href="{{ route('loan.pre-qualify',[$this->updateVehicleId,$lender->id]) }}" 
                            class="bg-white hover:bg-green-50 text-green-600 border border-green-600 font-medium py-2 px-4 rounded-lg text-sm transition-colors duration-300">
                             Apply
                         </a>

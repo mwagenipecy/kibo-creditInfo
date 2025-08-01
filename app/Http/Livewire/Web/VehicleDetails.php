@@ -33,6 +33,8 @@ class VehicleDetails extends Component
 
     public $lenders=[];
 
+    public $updateVehicleId;
+
     public $simiralVehicles=[];
     public $monthly_payment=[];
     
@@ -46,6 +48,9 @@ class VehicleDetails extends Component
     
     public function mount($id)
     {
+
+
+        $this->updateVehicleId=$id;
       //  $this->vehicle = Vehicle::with(['dealer', 'make', 'model', 'bodyType', 'fuelType', 'transmission'])->findOrFail($id);
         
         $this->vehicle = Vehicle::with(['dealer', 'make', 'model', 'bodyType', 'fuelType', 'transmission'])->findOrFail($id);

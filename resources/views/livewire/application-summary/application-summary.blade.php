@@ -63,6 +63,7 @@
             <!-- Applications List -->
             <div class="w-1/3 h-[calc(100vh-12rem)] overflow-y-auto pr-2 space-y-3">
                 @forelse($applicationx as $application)
+
                     <div 
                         wire:click="selectApplication({{ $application->id }})" 
                         class="p-4 border rounded-xl cursor-pointer transition-all duration-200 hover:shadow-md

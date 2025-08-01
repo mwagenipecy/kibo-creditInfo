@@ -57,16 +57,17 @@
                 
                 <div class="flex flex-col md:flex-row gap-4 bg-gray-50 p-4 rounded-lg border border-gray-200">
                     <div class="md:w-1/4">
-
                     @php
                         $frontImage = $vehicle->frontView();
-                    @endphp
-
-                       
+                    @endphp                       
 
 
-                        <img src="{{ $frontImage ? asset('storage/' . $frontImage->image_url) : asset('/default/car1.jpg') }}" alt="{{ $vehicle->make }} {{ $vehicle->model }}" class="w-full h-32 object-cover rounded-lg">
+                        <img
+                         src="{{ $frontImage ? asset('storage/' . $frontImage->image_url) : asset('default/car1.jpg') }}" 
+
+                         alt="{{ $vehicle->make }} {{ $vehicle->model }}" class="w-full h-32 object-cover rounded-lg">
                     </div>
+
                     <div class="md:w-3/4">
                         <h3 class="text-lg font-bold text-gray-900 mb-2">
 
@@ -82,6 +83,7 @@
                             </div>
                             <div>
                                 <div class="text-xs text-gray-500">Color</div>
+
                                 <div class="text-sm font-medium">{{ $vehicle->color }}</div>
                             </div>
                             <div>
@@ -335,9 +337,9 @@
         <!-- Terms and Submission -->
         <div class="mb-6">
 
-        <div class="mt-4 p-4 mb-4 text-sm text-green-800 bg-green-100 border border-green-200 rounded-lg">
+        <!-- <div class="mt-4 p-4 mb-4 text-sm text-green-800 bg-green-100 border border-green-200 rounded-lg">
             After submission, please send your bank statement to <a href="mailto:kiboauto@gmail.com" class="font-semibold underline text-green-700">kiboauto@gmail.com</a>.
-        </div>
+        </div> -->
 
 
 
