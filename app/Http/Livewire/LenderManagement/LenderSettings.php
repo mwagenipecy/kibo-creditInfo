@@ -123,6 +123,8 @@ class LenderSettings extends Component
 // Add new criteria with duplicate check
 public function addCriteria()
 {
+
+
     $this->validate();
     
     try {
@@ -137,6 +139,7 @@ public function addCriteria()
             session()->flash('error', 'A criteria with this lender, make, and model combination already exists.');
             return;
         }
+
         
         // Create new criteria
         $newCriteria = new LenderFinancingCriteria();
@@ -268,6 +271,7 @@ public function updateCriteria()
             'max_mileage' => null,
             'max_price' => null,
             'min_down_payment_percent' => null,
+            'interest_rate' => 0, // Default interest rate
         ];
         
         $this->batchModels = [];
@@ -302,6 +306,7 @@ public function updateCriteria()
     // Add criteria for multiple models// Add criteria for multiple models with duplicate handling
 public function addBatchCriteria()
 {
+
     // Validate batch criteria
     $this->validate([
         'batchCriteria.lender_id' => 'required|exists:lenders,id',
@@ -391,6 +396,8 @@ public function addBatchCriteria()
         $this->showBatchForm = false;
         
     } catch (\Exception $e) {
+
+       // dd($e->getMessage());
         DB::rollBack();
         session()->flash('error', 'Failed to add criteria. ' . $e->getMessage());
     }

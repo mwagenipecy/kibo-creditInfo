@@ -341,7 +341,7 @@
                                         <span class="text-gray-500 sm:text-sm">%</span>
                                     </div>
                                 </div>
-                                @error('batchCriteria.interestRate') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
+                                @error('batchCriteria.interest_rate') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
                             </div>
 
 

@@ -68,7 +68,7 @@ class VehicleList extends Component
             'vehicle.fuel_type_id' => 'required|exists:fuel_types,id',
             'vehicle.transmission_id' => 'required|exists:transmissions,id',
             'vehicle.year' => 'required|integer|min:1900|max:' . (date('Y') + 1),
-            'vehicle.downPaymentPercent' => 'required|integer|max:99',
+           // 'vehicle.downPaymentPercent' => 'required|integer|max:99',
             'vehicle.price' => 'required|numeric|min:0',
             'vehicle.mileage' => 'required|numeric|min:0',
             'vehicle.color' => 'required|string|max:50',
@@ -603,7 +603,7 @@ private function validateImage($file)
             'owners' => 0,
             'location' => '',
             'is_featured' => false,
-            'downPaymentPercent' => ''
+           // 'downPaymentPercent' => ''
         ];
         
         $this->vehicleId = null;

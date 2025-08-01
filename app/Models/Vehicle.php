@@ -67,6 +67,14 @@ class Vehicle extends Model
     }
 
 
+    public function generalDisplayImage(){
+
+        return VehicleImage::where('vehicle_id', $this->id)
+        ->where('view', 'front')
+            ->first();
+    }
+
+
     public function make()
     {
         return $this->belongsTo(Make::class);

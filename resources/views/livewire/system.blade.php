@@ -24,7 +24,7 @@
           @break
 
           @case('7')
-            <livewire:application-summary.application-summary/>
+          <livewire:application-summary.application-summary/>
 
             @break
           @case('8')
