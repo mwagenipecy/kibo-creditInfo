@@ -388,7 +388,7 @@
                     </div>
 
                     <span class="sidebar-text text-sm font-medium truncate">
-                        {{ \App\Models\menus::where('ID', $item)->first()->menu_name ?? 'Menu Item' }}    {{ $item }}
+                        {{ \App\Models\menus::where('ID', $item)->first()->menu_name ?? 'Menu Item' }}  {{$item}}
                     </span>
                 </div>
             </div>

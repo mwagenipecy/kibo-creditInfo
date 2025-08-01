@@ -21,7 +21,7 @@ use App\Services\UserService;
 class PartnerOnboarding extends Component
 {
     use WithFileUploads;
-    
+
     // Tab and step control
     public $activeTab = 'lender'; // Options: 'lender', 'carDealer', 'pending'
     public $currentStep = 1;
@@ -30,7 +30,7 @@ class PartnerOnboarding extends Component
     // Modal control
     public $showLenderModal = false;
     public $showCarDealerModal = false;
-    
+
     // Common fields for both partner types
     public $name,$termsAccepted;
     public $businessRegistrationNumber;
@@ -43,7 +43,7 @@ class PartnerOnboarding extends Component
     public $setPageId=1;
 
 
-  
+
 
     public $postalCode;
     public $country = 'Tanzania';
@@ -51,13 +51,13 @@ class PartnerOnboarding extends Component
     public $email;
     public $website;
     public $logo;
-    
+
     // Contact person details
     public $contactPersonName;
     public $contactPersonPosition;
     public $contactPersonPhone;
     public $contactPersonEmail;
-    
+
     // Lender specific fields
     public $lenderId;
     public $lenderType; // Bank, Microfinance, Credit Union, etc.
@@ -72,7 +72,7 @@ class PartnerOnboarding extends Component
     public $additionalNotes;
     public $paymentMethods = [];
     public $settlementPeriod;
-    
+
     // Car Dealer specific fields
     public $carDealerId;
     public $dealerType; // New Cars, Used Cars, Both
@@ -82,24 +82,24 @@ class PartnerOnboarding extends Component
     public $showroomAddress;
     public $serviceCenter;
     public $inventorySize;
-    
+
     // Document uploads
     public $businessRegistrationDoc;
     public $taxClearanceDoc;
     public $financialLicenseDoc;
     public $additionalDoc;
-    
+
     // For editing mode
     public $isEditMode = false;
 
     // Regions list for dropdown
     public $regions = [];
     public $cities = [];
-    
+
     // Lists for display
     public $lenders = [];
     public $carDealers = [];
-    
+
     protected $listeners = [
         'refreshComponent' => '$refresh',
         'editLender',
@@ -113,7 +113,7 @@ class PartnerOnboarding extends Component
         'openCarDealerModal',
         'closeModal',
     ];
-    
+
     /**
      * Initialize component properties
      */
@@ -123,7 +123,7 @@ class PartnerOnboarding extends Component
         $this->loadPartners();
         $this->loadBrands();
     }
-    
+
 
     public function setPageId($id){
 
@@ -146,7 +146,7 @@ class PartnerOnboarding extends Component
         // Load regions from database
         $this->regions = Region::orderBy('name')->pluck('name')->toArray();
     }
-    
+
     /**
      * Update cities based on selected region
      */
@@ -159,7 +159,7 @@ class PartnerOnboarding extends Component
             $this->cities = [];
         }
     }
-    
+
     /**
      * Load existing lenders and car dealers
      */
@@ -168,7 +168,7 @@ class PartnerOnboarding extends Component
         $this->lenders = Lender::with('documents')->latest()->get();
         $this->carDealers = CarDealer::with('documents')->latest()->get();
     }
-    
+
 
     public $showPreviewModal = false;
 public $previewDocumentType = null;
@@ -177,7 +177,7 @@ public $previewDocumentPath = null;
 public function previewDocument($documentType)
 {
     $this->previewDocumentType = $documentType;
-    
+
     // Set the document path based on type
     switch($documentType) {
         case 'businessRegistrationDoc':
@@ -188,7 +188,7 @@ public function previewDocument($documentType)
             break;
         // Add other cases...
     }
-    
+
     $this->showPreviewModal = true;
 }
 
@@ -209,23 +209,23 @@ public function closePreview()
     {
         // In a real application, you would load this from a database
         $this->brandsList = [
-            'Toyota', 'Honda', 'Nissan', 'Mitsubishi', 'Mazda', 
-            'Suzuki', 'Subaru', 'Isuzu', 'Mercedes-Benz', 'BMW', 
-            'Audi', 'Volkswagen', 'Ford', 'Chevrolet', 'Hyundai', 
+            'Toyota', 'Honda', 'Nissan', 'Mitsubishi', 'Mazda',
+            'Suzuki', 'Subaru', 'Isuzu', 'Mercedes-Benz', 'BMW',
+            'Audi', 'Volkswagen', 'Ford', 'Chevrolet', 'Hyundai',
             'Kia', 'Volvo', 'Land Rover', 'Jeep', 'Lexus'
         ];
     }
-    
+
     /**
      * Set current step in multi-step form
      */
-  
- 
-    
+
+
+
     /**
      * Render the component view
      */
- 
+
 
 
      /**
@@ -236,7 +236,7 @@ public function selectPartnerType($type)
     $this->activeTab = $type;
     $this->showPartnerSelectionModal = false;
     $this->currentStep = 1;
-    
+
     if ($type === 'lender') {
         $this->openLenderModal();
     } else {
@@ -255,7 +255,7 @@ public function selectPartnerType($type)
 public function viewLenderSummary($id)
 {
     $lender = Lender::with('documents')->findOrFail($id);
-    
+
     $this->emit('openSummaryModal', [
         'type' => 'lender',
         'data' => $lender->toArray()
@@ -268,7 +268,7 @@ public function viewLenderSummary($id)
 public function viewCarDealerSummary($id)
 {
     $dealer = CarDealer::with('documents')->findOrFail($id);
-    
+
     $this->emit('openSummaryModal', [
         'type' => 'carDealer',
         'data' => $dealer->toArray()
@@ -281,7 +281,7 @@ public function viewCarDealerSummary($id)
 public function downloadDocument($documentId)
 {
     $document = PartnerDocument::findOrFail($documentId);
-    
+
     return Storage::disk('public')->download(
         $document->file_path,
         $document->file_name
@@ -295,19 +295,19 @@ public function downloadOnboardingReport()
 {
     $lenders = Lender::all();
     $carDealers = CarDealer::all();
-    
+
     $data = [
         'lenders' => $lenders,
         'carDealers' => $carDealers,
-        'pendingApprovals' => $lenders->where('status', 'PENDING')->count() + 
+        'pendingApprovals' => $lenders->where('status', 'PENDING')->count() +
                               $carDealers->where('status', 'PENDING')->count(),
         'generatedAt' => now()->format('Y-m-d H:i:s'),
         'generatedBy' => Auth::user()->name
     ];
-    
+
     // You could use a package like barryvdh/laravel-dompdf to generate PDFs
     $pdf = PDF::loadView('reports.onboarding-summary', $data);
-    
+
     return $pdf->download('partner-onboarding-report-' . now()->format('Y-m-d') . '.pdf');
 }
 
@@ -355,7 +355,7 @@ public function getFilteredData()
     } else { // Pending approvals
         $pendingLenders = Lender::where('status', 'PENDING')->get();
         $pendingDealers = CarDealer::where('status', 'PENDING')->get();
-        
+
         // Combine both types into a collection and paginate
         return collect($pendingLenders)
             ->merge($pendingDealers)
@@ -371,27 +371,27 @@ private function calculateProgress()
 {
     $lendersProgress = 0;
     $carDealersProgress = 0;
-    
+
     // Calculate lenders progress
     $totalLenders = $this->lenders->count();
     if ($totalLenders > 0) {
         $approved = $this->lenders->where('status', 'APPROVED')->count();
         $pending = $this->lenders->where('status', 'PENDING')->count();
-        
+
         // Weighted calculation: Approved = 100%, Pending = 75%, Rejected = 0%
         $lendersProgress = ($approved * 100 + $pending * 75) / $totalLenders;
     }
-    
+
     // Calculate car dealers progress
     $totalDealers = $this->carDealers->count();
     if ($totalDealers > 0) {
         $approved = $this->carDealers->where('status', 'APPROVED')->count();
         $pending = $this->carDealers->where('status', 'PENDING')->count();
-        
+
         // Weighted calculation: Approved = 100%, Pending = 75%, Rejected = 0%
         $carDealersProgress = ($approved * 100 + $pending * 75) / $totalDealers;
     }
-    
+
     return [
         'lendersProgress' => round($lendersProgress),
         'carDealersProgress' => round($carDealersProgress)
@@ -451,13 +451,13 @@ public function render()
     // Make sure all necessary properties are passed to the view
     $data = [
         // Filtered data with appropriate conditional loading
-        'filteredLenders' => ($this->activeTab === 'lender' || $this->setPageId === 1) 
-            ? $filteredLenders 
+        'filteredLenders' => ($this->activeTab === 'lender' || $this->setPageId === 1)
+            ? $filteredLenders
             : null,
-        'filteredCarDealers' => ($this->activeTab === 'carDealer' || $this->setPageId === 2) 
-            ? $filteredCarDealers 
+        'filteredCarDealers' => ($this->activeTab === 'carDealer' || $this->setPageId === 2)
+            ? $filteredCarDealers
             : null,
-        
+
         // Other data
         'statistics' => $this->getStatisticsData(),
         'regions' => $this->regions,
@@ -466,12 +466,12 @@ public function render()
         'carDealers' => $this->carDealers,
         'brandsList' => $this->brandsList ?? []
     ];
-    
+
     return view('livewire.settings.partner-onboarding', $data);
 }
 
 
-    
+
     /**
      * Get pending approvals count
      */
@@ -479,10 +479,10 @@ public function render()
     {
         $pendingLenders = $this->lenders->where('status', 'PENDING')->count();
         $pendingDealers = $this->carDealers->where('status', 'PENDING')->count();
-        
+
         return $pendingLenders + $pendingDealers;
     }
-    
+
     /**
      * Switch between tabs
      */
@@ -491,7 +491,7 @@ public function render()
         $this->activeTab = $tab;
         $this->resetPage();
     }
-    
+
     /**
      * Open lender registration modal
      */
@@ -502,7 +502,7 @@ public function render()
         $this->currentStep = 1;
         $this->showLenderModal = true;
     }
-    
+
     /**
      * Open car dealer registration modal
      */
@@ -513,7 +513,7 @@ public function render()
         $this->currentStep = 1;
         $this->showCarDealerModal = true;
     }
-    
+
     /**
      * Reset lender form fields
      */
@@ -559,7 +559,7 @@ public function render()
 
 
 
-    
+
     /**
      * Reset car dealer form fields
      */
@@ -593,7 +593,7 @@ public function render()
         $this->additionalDoc = null;
         $this->resetErrorBag();
     }
-    
+
     /**
      * Close all modals
      */
@@ -602,7 +602,7 @@ public function render()
         $this->showLenderModal = false;
         $this->showCarDealerModal = false;
     }
-    
+
     /**
      * Validate and register a new lender
      */
@@ -628,7 +628,7 @@ public function render()
                 ]);
                 $this->nextStep();
                 return;
-                
+
             case 2:
                 $this->validate([
                     'lenderType' => 'required|string|max:50',
@@ -640,7 +640,7 @@ public function render()
                 ]);
                 $this->nextStep();
                 return;
-                
+
             case 3:
                 $this->validate([
                     'businessRegistrationDoc' => 'required|file|max:5120|mimes:pdf,jpg,jpeg,png',
@@ -650,61 +650,61 @@ public function render()
                 ]);
                 $this->nextStep();
                 return;
-                
+
             case 4:
                 // Final step - submit the form
                 break;
         }
-        
+
         try {
             // Handle logo upload if provided
             $logoPath = null;
             if ($this->logo) {
                 $logoPath = $this->logo->store('lender-logos', 'public');
             }
-            
+
             if ($this->isEditMode && $this->lenderId) {
                 // Update existing lender
                 $lender = Lender::find($this->lenderId);
                 if (!$lender) {
                     throw new \Exception('Lender not found');
                 }
-                
+
                 // Prepare data for approval
                 $oldData = $lender->toArray();
                 $newData = $this->prepareLenderData($logoPath);
-                
-             
-                
+
+
+
                 Session::flash('message', 'Lender update request submitted for approval');
             } else {
                 // Create new lender
                 $data = $this->prepareLenderData($logoPath);
-                
+
                 // Save lender pending approval
                 $lender = new Lender($data);
                 $lender->status = 'PENDING';
                 $lender->save();
-                
-
-
-              
-              
 
 
 
 
-             
 
 
-                /// send email TODO 
+
+
+
+
+
+
+                /// send email TODO
 
 
                 // Save documents
                 $this->savePartnerDocuments($lender->id, 'lender');
-                
-             
-                
+
+
+
                 // Log activity
                 $this->logActivity(
                     'lender_created',
@@ -712,21 +712,21 @@ public function render()
                     $lender->id,
                     'Created new lender: ' . $this->name
                 );
-                
+
                 Session::flash('message', 'Lender registration submitted for approval');
             }
-            
+
             Session::flash('alert-class', 'alert-success');
             $this->closeModal();
             $this->loadPartners();
-            
+
         } catch (\Exception $e) {
 
             dd($e->getMessage());
             Session::flash('error', 'Error processing request: ' . $e->getMessage());
         }
     }
-    
+
     /**
      * Save partner documents
      */
@@ -746,7 +746,7 @@ public function render()
                 'status' => 'PENDING'
             ]);
         }
-        
+
         // Save tax clearance document
         if ($this->taxClearanceDoc) {
             $path = $this->taxClearanceDoc->store("documents/{$partnerType}/{$partnerId}", 'public');
@@ -761,7 +761,7 @@ public function render()
                 'status' => 'PENDING'
             ]);
         }
-        
+
         // Save financial license document (for lenders only)
         if ($partnerType === 'lender' && $this->financialLicenseDoc) {
             $path = $this->financialLicenseDoc->store("documents/{$partnerType}/{$partnerId}", 'public');
@@ -776,7 +776,7 @@ public function render()
                 'status' => 'PENDING'
             ]);
         }
-        
+
         // Save additional document if provided
         if ($this->additionalDoc) {
             $path = $this->additionalDoc->store("documents/{$partnerType}/{$partnerId}", 'public');
@@ -792,14 +792,14 @@ public function render()
             ]);
         }
     }
-    
+
     /**
      * Prepare lender data for saving
      */
     private function prepareLenderData($logoPath = null)
     {
 
-        
+
         return [
             'name' => $this->name,
             'business_registration_number' => $this->businessRegistrationNumber,
@@ -831,10 +831,10 @@ public function render()
             'settlement_period' => $this->settlementPeriod,
         ];
     }
-    
+
     /**
      * Valid
-     * 
+     *
      * ate and register a new car dealer
      */
 
@@ -857,9 +857,9 @@ public function render()
                     'contactPersonPhone' => 'required|string',
                     'contactPersonEmail' => 'required|email|max:255',
                 ]);
-              
+
                 return;
-                
+
             case 2:
                 $this->validate([
                     'dealerType' => 'required|string|max:50',
@@ -867,18 +867,18 @@ public function render()
                     'establishedYear' => 'required|integer|min:1900|max:' . date('Y'),
                     'inventorySize' => 'required|integer|min:1',
                 ]);
-                
+
                 return;
-                
+
             case 3:
                 $this->validate([
                     'businessRegistrationDoc' => 'nullable|file|max:5120|mimes:pdf,jpg,jpeg,png',
                     'taxClearanceDoc' => 'nullable|file|max:5120|mimes:pdf,jpg,jpeg,png',
                     'logo' => 'nullable|image|max:2048', // 2MB max
                 ]);
-               
+
                 return;
-                
+
             case 4:
                 // Final step - submit the form
                 break;
@@ -890,56 +890,56 @@ public function render()
     public function registerCarDealer()
     {
 
-     
+
         try {
             // Handle logo upload if provided
             $logoPath = null;
             if ($this->logo) {
                 $logoPath = $this->logo->store('dealer-logos', 'public');
             }
-            
+
             if ($this->isEditMode && $this->carDealerId) {
                 // Update existing car dealer
                 $dealer = CarDealer::find($this->carDealerId);
                 if (!$dealer) {
                     throw new \Exception('Car dealer not found');
                 }
-                
+
                 // Prepare data for approval
                 $oldData = $dealer->toArray();
                 $newData = $this->prepareCarDealerData($logoPath);
-                
-               
-                
+
+
+
                 Session::flash('message', 'Car dealer update request submitted for approval');
             } else {
                 // Create new car dealer
                 $data = $this->prepareCarDealerData($logoPath);
-                
 
-               
+
+
                 // Save car dealer pending approval
                 try{
                     $dealer = new CarDealer($data);
                     $dealer->status = 'PENDING';
                     $dealer->save();
 
-              
-   
+
+
                 }catch(\Exception $e){
 
                     dd("saved".$e->getMessage());
-                    
+
                 }
-          
+
 
                 try{
-                  
+
 
                     // Save documents
                     $this->savePartnerDocuments($dealer->id, 'car_dealer');
-                    
-                  
+
+
                     // Log activity
                     $this->logActivity(
                         'car_dealer_created',
@@ -950,28 +950,28 @@ public function render()
 
 
 
-                    
+
                 }catch(\Exception $e){
 
                     dd("saved".$e->getMessage());
-                    
+
 
                 }
 
-              
-                
+
+
                 Session::flash('message', 'Car dealer registration submitted for approval');
             }
-            
+
             Session::flash('alert-class', 'alert-success');
             $this->closeModal();
             $this->loadPartners();
-            
+
         } catch (\Exception $e) {
             Session::flash('error', 'Error processing request: ' . $e->getMessage());
         }
     }
-    
+
     /**
      * Prepare car dealer data for saving
      */
@@ -1005,7 +1005,7 @@ public function render()
             'servicesOffered'=> json_encode($this->servicesOffered),
         ];
     }
-    
+
     /**
      * Create an approval request
      */
@@ -1025,7 +1025,7 @@ public function render()
             'edit_package' => $editPackage,
         ]);
     }
-    
+
     /**
      * Log activity
      */
@@ -1041,7 +1041,7 @@ public function render()
             'user_agent' => request()->userAgent(),
         ]);
     }
-    
+
     /**
      * Load lender data for editing
      */
@@ -1052,7 +1052,7 @@ public function render()
             Session::flash('error', 'Lender not found');
             return;
         }
-        
+
         $this->lenderId = $lender->id;
         $this->name = $lender->name;
         $this->businessRegistrationNumber = $lender->business_registration_number;
@@ -1083,12 +1083,12 @@ public function render()
         $this->additionalNotes = $lender->additional_notes;
         $this->paymentMethods = json_decode($lender->payment_methods) ?: [];
         $this->settlementPeriod = $lender->settlement_period;
-        
+
         $this->isEditMode = true;
         $this->currentStep = 1;
         $this->showLenderModal = true;
     }
-    
+
     /**
      * View lender details
      */
@@ -1096,7 +1096,7 @@ public function render()
     {
         return redirect()->route('lender.view', $id);
     }
-    
+
     /**
      * Approve lender
      */
@@ -1106,14 +1106,13 @@ public function render()
             $lender = Lender::findOrFail($id);
             $lender->status = 'APPROVED';
             $lender->save();
-            
+
             // Update approval record
             $data=[
 
                 'name'=>$lender->contact_person_name,
                 'email'=>$lender->contact_person_email,
                 'phone_number'=>$lender->contact_person_phone,
-               
                 'department'=>2,
                 'status'=>'ACTIVE',
                 'institution_id'=>$lender->id,
@@ -1122,11 +1121,11 @@ public function render()
 
             $userService= new UserService();
             $user = $userService->createUser($data, true);
-            
 
 
 
-            
+
+
             // Log activity
             $this->logActivity(
                 'lender_approved',
@@ -1134,17 +1133,17 @@ public function render()
                 $id,
                 'Approved lender: ' . $lender->name
             );
-            
+
             Session::flash('message', 'Lender has been approved successfully');
             Session::flash('alert-class', 'alert-success');
-            
+
         } catch (\Exception $e) {
             Session::flash('error', 'Error approving lender: ' . $e->getMessage());
         }
-        
+
         $this->loadPartners();
     }
-    
+
     /**
      * Reject lender
      */
@@ -1154,19 +1153,19 @@ public function render()
             $lender = Lender::findOrFail($id);
             $lender->status = 'REJECTED';
             $lender->save();
-            
+
             // Update approval record
             $approval = Approvals::where('process_id', $id)
                 ->where('process_name', 'addLender')
                 ->where('approval_status', 'PENDING')
                 ->first();
-                
+
             if ($approval) {
                 $approval->process_status = 'REJECTED';
                 $approval->approval_status = 'REJECTED';
                 $approval->save();
             }
-            
+
             // Log activity
             $this->logActivity(
                 'lender_rejected',
@@ -1174,17 +1173,17 @@ public function render()
                 $id,
                 'Rejected lender: ' . $lender->name
             );
-            
+
             Session::flash('message', 'Lender has been rejected');
             Session::flash('alert-class', 'alert-danger');
-            
+
         } catch (\Exception $e) {
             Session::flash('error', 'Error rejecting lender: ' . $e->getMessage());
         }
-        
+
         $this->loadPartners();
     }
-    
+
     /**
      * Load car dealer data for editing
      */
@@ -1195,7 +1194,7 @@ public function render()
             Session::flash('error', 'Car dealer not found');
             return;
         }
-        
+
         $this->carDealerId = $dealer->id;
         $this->name = $dealer->name;
         $this->businessRegistrationNumber = $dealer->business_registration_number;
@@ -1220,12 +1219,12 @@ public function render()
         $this->showroomAddress = $dealer->showroom_address;
         $this->serviceCenter = $dealer->service_center;
         $this->inventorySize = $dealer->inventory_size;
-        
+
         $this->isEditMode = true;
         $this->currentStep = 1;
         $this->showCarDealerModal = true;
     }
-    
+
     /**
      * View car dealer details
      */
@@ -1233,7 +1232,7 @@ public function render()
     {
         return redirect()->route('car-dealer.view', $id);
     }
-    
+
     /**
      * Approve car dealer
      */
@@ -1248,8 +1247,8 @@ public function render()
 
 
             $dealer->save();
-            
-            
+
+
             $data=[
 
                 'name'=>$dealer->contact_person_name,
@@ -1264,9 +1263,9 @@ public function render()
 
             $userService= new UserService();
             $user = $userService->createUser($data, true);
-        
 
-            
+
+
             // Log activity
             $this->logActivity(
                 'car_dealer_approved',
@@ -1274,17 +1273,17 @@ public function render()
                 $id,
                 'Approved car dealer: ' . $dealer->name
             );
-            
+
             Session::flash('message', 'Car dealer has been approved successfully');
             Session::flash('alert-class', 'alert-success');
-            
+
         } catch (\Exception $e) {
             Session::flash('error', 'Error approving car dealer: ' . $e->getMessage());
         }
-        
+
         $this->loadPartners();
     }
-    
+
     /**
      * Reject car dealer
      */
@@ -1294,19 +1293,19 @@ public function render()
             $dealer = CarDealer::findOrFail($id);
             $dealer->status = 'REJECTED';
             $dealer->save();
-            
+
             // Update approval record
             $approval = Approvals::where('process_id', $id)
                 ->where('process_name', 'addCarDealer')
                 ->where('approval_status', 'PENDING')
                 ->first();
-                
+
             if ($approval) {
                 $approval->process_status = 'REJECTED';
                 $approval->approval_status = 'REJECTED';
                 $approval->save();
             }
-            
+
             // Log activity
             $this->logActivity(
                 'car_dealer_rejected',
@@ -1314,14 +1313,14 @@ public function render()
                 $id,
                 'Rejected car dealer: ' . $dealer->name
             );
-            
+
             Session::flash('message', 'Car dealer has been rejected');
             Session::flash('alert-class', 'alert-danger');
-            
+
         } catch (\Exception $e) {
             Session::flash('error', 'Error rejecting car dealer: ' . $e->getMessage());
         }
-        
+
         $this->loadPartners();
     }
 
@@ -1338,18 +1337,18 @@ public function exportData()
     // Generate and download the CSV/Excel file
     $lenders = Lender::all();
     $carDealers = CarDealer::all();
-    
+
     return response()->streamDownload(function() use ($lenders, $carDealers) {
         $output = fopen('php://output', 'w');
-        
+
         // Headers
         fputcsv($output, ['Type', 'Name', 'Business Registration', 'Tax ID', 'Contact Person', 'Status', 'Created At']);
-        
+
         // Lender data
         foreach ($lenders as $lender) {
             fputcsv($output, [
-                'Lender', 
-                $lender->name, 
+                'Lender',
+                $lender->name,
                 $lender->business_registration_number,
                 $lender->tax_identification_number,
                 $lender->contact_person_name,
@@ -1357,12 +1356,12 @@ public function exportData()
                 $lender->created_at
             ]);
         }
-        
+
         // Car dealer data
         foreach ($carDealers as $dealer) {
             fputcsv($output, [
-                'Car Dealer', 
-                $dealer->name, 
+                'Car Dealer',
+                $dealer->name,
                 $dealer->business_registration_number,
                 $dealer->tax_identification_number,
                 $dealer->contact_person_name,
@@ -1370,7 +1369,7 @@ public function exportData()
                 $dealer->created_at
             ]);
         }
-        
+
         fclose($output);
     }, 'partners-export-' . date('Y-m-d') . '.csv');
 }
@@ -1380,22 +1379,22 @@ public function getStatisticsData()
 {
     $totalLenders = $this->lenders->count();
     $totalDealers = $this->carDealers->count();
-    $pendingApprovals = $this->lenders->where('status', 'PENDING')->count() + 
+    $pendingApprovals = $this->lenders->where('status', 'PENDING')->count() +
                         $this->carDealers->where('status', 'PENDING')->count();
-                        
+
     // Calculate growth percentages (last 30 days)
     $thirtyDaysAgo = now()->subDays(30);
     $newLenders = $this->lenders->where('created_at', '>=', $thirtyDaysAgo)->count();
     $lenderGrowth = $totalLenders > 0 ? round(($newLenders / $totalLenders) * 100) : 0;
-    
+
     $newDealers = $this->carDealers->where('created_at', '>=', $thirtyDaysAgo)->count();
     $dealerGrowth = $totalDealers > 0 ? round(($newDealers / $totalDealers) * 100) : 0;
-    
+
     $newPendingApprovals = $this->lenders->where('status', 'PENDING')
                            ->where('created_at', '>=', $thirtyDaysAgo)->count() +
                            $this->carDealers->where('status', 'PENDING')
                            ->where('created_at', '>=', $thirtyDaysAgo)->count();
-    
+
     return [
         'totalLenders' => $totalLenders,
         'totalDealers' => $totalDealers,
@@ -1416,16 +1415,16 @@ public function setStep($step)
     if ($step > $this->currentStep) {
         $this->validateCurrentStep();
     }
-    
+
     $this->currentStep = $step;
 }
 
 public function nextStep()
 {
 
-    
+
     $this->validateCurrentStep();
-    
+
     if ($this->currentStep < $this->totalSteps) {
         $this->currentStep++;
     }
@@ -1435,7 +1434,7 @@ public function nextStep()
 public function nextStepCarDealer()
 {
    $this->validateCarDealerInputs();
-    
+
     if ($this->currentStep < $this->totalSteps) {
         $this->currentStep++;
     }
@@ -1469,7 +1468,7 @@ protected function validateCurrentStep()
                 'contactPersonEmail' => 'required|email',
             ]);
             break;
-            
+
         case 2:
             if ($this->activeTab == 'lender') {
                 $this->validate([
@@ -1489,7 +1488,7 @@ protected function validateCurrentStep()
                 ]);
             }
             break;
-            
+
         case 3:
             if ($this->activeTab == 'lender') {
                 $this->validate([
@@ -1513,7 +1512,7 @@ protected function validateCurrentStep()
 /**
  * Get filtered lenders for the current page
  * This is a computed property that Livewire can access directly in the template
- * 
+ *
  * @return \Illuminate\Pagination\LengthAwarePaginator
  */
 public function getFilteredLendersProperty()
@@ -1552,7 +1551,7 @@ public function getFilteredLendersProperty()
 /**
  * Get filtered car dealers for the current page
  * This is a computed property that Livewire can access directly in the template
- * 
+ *
  * @return \Illuminate\Pagination\LengthAwarePaginator
  */
 public function getFilteredCarDealersProperty()
@@ -1591,14 +1590,14 @@ public function getFilteredCarDealersProperty()
 /**
  * Get pending approvals for the current page
  * This is a computed property that Livewire can access directly in the template
- * 
+ *
  * @return \Illuminate\Pagination\LengthAwarePaginator
  */
 public function getPendingApprovalsProperty()
 {
     $lenders = Lender::where('status', 'PENDING')->get();
     $carDealers = CarDealer::where('status', 'PENDING')->get();
-    
+
     // Combine and paginate manually
     $combined = collect()
         ->concat($lenders->map(function($item) {
@@ -1610,14 +1609,14 @@ public function getPendingApprovalsProperty()
             return $item;
         }))
         ->sortByDesc('created_at');
-    
+
     // Manual pagination
     $page = request()->get('page', 1);
     $perPage = 10;
     $total = $combined->count();
-    
+
     $items = $combined->forPage($page, $perPage);
-    
+
     return new \Illuminate\Pagination\LengthAwarePaginator(
         $items,
         $total,
@@ -1631,7 +1630,7 @@ public function getPendingApprovalsProperty()
 
 
 /**
- * Get filtered car dealers 
+ * Get filtered car dealers
  * This is a computed property Livewire uses in the blade
  */
 
