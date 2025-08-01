@@ -38,7 +38,8 @@ class Vehicle extends Model
         'location',
         'is_featured',
         'vehicle_condition',
-        'downPaymentPercent'
+        'downPaymentPercent',
+        'status'
     ];
     
     protected $casts = [

@@ -30,7 +30,8 @@ class HomePage extends Component
     public function searchVehicles()
 {
     // Update the featured vehicles based on search criteria
-    $query = Vehicle::with('dealer')->where('is_featured', true);
+    $query = Vehicle::with('dealer')->where('is_featured', true)
+             ->where('status', 'active');
     
     // Apply search filters
     if ($this->selectedMake) {
@@ -59,11 +60,15 @@ class HomePage extends Component
 public function render()
 {
     $makes = Make::withCount('vehicles')->orderBy('name')->get();
-    $models = $this->selectedMake ? VehicleModel::where('make_id', $this->selectedMake)->withCount('vehicles')->orderBy('name')->get() : [];
+    $models = $this->selectedMake ? VehicleModel::where('make_id', $this->selectedMake)
+    ->where('status', 'active')
+    ->withCount('vehicles')->orderBy('name')->get() : [];
     
     // Only fetch featured vehicles if not already set by search
     if (!isset($this->featuredVehicles)) {
-        $this->featuredVehicles = Vehicle::with('dealer')->where('is_featured', true)->latest()->take(12)->get();
+        $this->featuredVehicles = Vehicle::with('dealer')->where('is_featured', true)
+        ->where('status', 'active')
+        ->latest()->take(12)->get();
     }
     
     $topDealers = CarDealer::withCount(['vehicles', 'reviews'])->orderByDesc('reviews_count')->take(8)->get();

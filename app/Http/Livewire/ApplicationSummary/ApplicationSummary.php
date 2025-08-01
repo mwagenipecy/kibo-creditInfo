@@ -3,6 +3,7 @@
 namespace App\Http\Livewire\ApplicationSummary;
 
 use App\Models\Attachment;
+use App\Models\Vehicle;
 use App\Models\VehicleImage;
 use Livewire\Component;
 use Illuminate\Support\Facades\DB;
@@ -88,6 +89,11 @@ Regards,
         
 
 
+        Vehicle::where('id', $application->vehicle_id)->update([
+            'status' => 'active',
+        ]);
+
+
     }
 
 
@@ -117,6 +123,10 @@ Regards,
             // Update application status
             $application->application_status = 'ACCEPTED';
             $application->save();
+
+            Vehicle::where('id', $application->vehicle_id)->update([
+                'status' => 'sold',
+            ]);
             
             // Update loan status
            // DB::table('loans')->where('id', $loanId)->update(['status' => 'ACTIVE']);
@@ -205,10 +215,7 @@ Regards,
 
     public $statementData;
     public function selectApplication($id)
-    {
-
-        dd($id)
-        ;
+    {        
         $this->selectedApplication = Application::findOrFail($id);
 
         $this->applicationDocuments = Attachment::where('loan_id', $this->selectedApplication->loan_id)->get();
@@ -429,6 +436,8 @@ JSON;
 
     public function actionFunction($status,$id){
 
+
+
         if($status=="REJECTED"){
 
             $stage="car_dealer";
@@ -438,59 +447,71 @@ JSON;
             $stage="statement_verification";
         }
 
+
+        $selectedApplication = Application::find($id);
+
+        Vehicle::find($selectedApplication->vehicle_id)->update([
+            'status' => 'on_hold',
+        ]);
+
+        
         Application::find($id)->update([
             'application_status'=>$status,
             'stage_name'=>$stage,
         
         ]);
+
+
+
+        
+
         session()->flash('message',"successfully status changed to {$status}");
     }
 
+   
     public function render()
-    {
-        $query = Application::query();
+{
+    $query = Application::query();
+    
 
-        // get user institution id 
+    // Get user institution ID and permission (department)
+    $user = auth()->user();
+    $userInstitutionId = $user->institution_id;
+    $userPermissionId = $user->department;
 
-        $this->show();
-
-        $userInstitutionid= auth()->user()->institution_id;
-
-        // user permission id 
-
-        $userPermissionId=auth()->user()->department;
-
-        // filter for lender is 2 and for car dealer is 3 
-
-        if($userPermissionId==3){
-
-            $query->whereIn('application_status',['pending'])
-            ->where('car_dealer_id',auth()->user()->institution_id);
-
-
-
-        }else{
-
-            $query->whereNotIn('application_status',['pending'])->where('lender_id', auth()->user()->institution_id);
-
-        }
-
-        if ($this->statusFilter !== 'ALL') {
-            $query->where('application_status', $this->statusFilter);
-        }
-
-        if (!empty($this->search)) {
-            $query->where(function ($q) {
-                $q->where('first_name', 'like', '%' . $this->search . '%')
-                  ->orWhere('last_name', 'like', '%' . $this->search . '%')
-                  ->orWhere('email', 'like', '%' . $this->search . '%');
-            });
-        }
-
-        return view('livewire.application-summary.application-summary', [
-            'applicationx' => $query->latest()->paginate(30),
-        ]);
+    // Apply filters based on user type
+    if ($userPermissionId == 3) {
+        // Car Dealer: Only see pending applications linked to their institution
+        $query->where('application_status', 'pending')
+              ->where('car_dealer_id', $userInstitutionId);
+    } else {
+        // Lender or Other: See non-pending applications linked to their institution
+        $query->where('application_status', '!=', 'pending')
+              ->where('lender_id', $userInstitutionId);
     }
+
+    // Status Filter
+    if ($this->statusFilter !== 'ALL') {
+        $query->where('application_status', $this->statusFilter);
+    }
+
+    // Search Filter
+    if (!empty($this->search)) {
+        $query->where(function ($q) {
+            $q->where('first_name', 'like', '%' . $this->search . '%')
+              ->orWhere('last_name', 'like', '%' . $this->search . '%')
+              ->orWhere('email', 'like', '%' . $this->search . '%');
+        });
+    }
+
+    return view('livewire.application-summary.application-summary', [
+        'applicationx' => $query->latest()->paginate(30),
+    ]);
+}
+
+
+
+
 }
 
 

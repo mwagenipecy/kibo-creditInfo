@@ -213,7 +213,9 @@ class VehicleListPage extends Component
         $minPrice = Vehicle::min('price') ?? 0;
         $maxPrice = Vehicle::max('price') ?? 100000000;
         
-        $query = Vehicle::with('dealer');
+        $query = Vehicle::with('dealer')
+        ->where('status', 'active')
+        ;
         
         // Apply filters
         if (count($this->selectedMakes) > 0) {
