@@ -73,7 +73,7 @@
         'pending' => 'bg-yellow-100 text-yellow-800',
         'approved' => 'bg-green-100 text-green-800',
         'ACCEPTED' => 'bg-green-100 text-green-800',
-        'rejected' => 'bg-red-100 text-red-800',
+        'REJECTED' => 'bg-red-100 text-red-800',
         'processing' => 'bg-blue-100 text-blue-800',
     ];
 
@@ -139,6 +139,23 @@
                         </div>
 
                         <!-- Step 2: Car Dealer Approval -->
+
+                        @if($application->application_status =="REJECTED")
+
+
+                        <div class="relative ml-12 z-10 mx-4 flex flex-col mb-8">
+                            <p class="text-gray-600 mt-1">
+                                Rejected {{ $application->updated_at->format('F d, Y') }}
+                            </p>
+
+                            <div class="mt-2 text-sm text-red-700">
+                                Your loan was not approved.
+                            </div>
+                        </div>
+
+
+
+                        @else 
                         <div class="relative z-10 flex mb-8">
                             <div
                                 class="flex-shrink-0 h-12 w-12 rounded-full
@@ -241,6 +258,7 @@
                             </div>
                         </div>
 
+                        @endif 
                         <!-- Step 4: Loan Disbursement -->
                         {{-- <div class="relative z-10 flex">
             <div class="flex-shrink-0 h-12 w-12 rounded-full
@@ -275,6 +293,9 @@
 
 
                     </div>
+
+
+                    
                 </div>
 
 

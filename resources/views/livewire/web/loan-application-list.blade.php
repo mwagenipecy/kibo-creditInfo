@@ -106,9 +106,14 @@
             $badgeClass = 'bg-green-100 text-green-800';
             $statusText = 'Approved';
             break;
-        case 'rejected':
-        case 'NEW CLIENT':
+        case 'REJECTED':
             $badgeClass = 'bg-red-100 text-red-800';
+            $statusText = 'Rejected';
+            break;
+
+              
+        case 'NEW CLIENT':
+            $badgeClass = 'bg-green-100 text-green-800';
             $statusText = 'Processing';
             break;
         case 'processing':
