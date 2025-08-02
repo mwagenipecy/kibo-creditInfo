@@ -30,7 +30,7 @@
 
     <div class="entity-info">
         <strong>Bill To:</strong><br>
-        {{ $bill->entity->name }}<br>
+        {{ optional($bill->entity)->name }}<br>
         {{ $bill->entity->address ?? '' }}<br>
         {{ $bill->entity->city ?? '' }}, {{ $bill->entity->region ?? '' }}<br>
         {{ $bill->entity->email ?? '' }}<br>
