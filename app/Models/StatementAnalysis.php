@@ -32,7 +32,7 @@ class StatementAnalysis extends Model
         'affordability_rank',
         'raw_response',
         'analysis_summary',
-        'user_id'
+        'user_id',
     ];
 
     /**

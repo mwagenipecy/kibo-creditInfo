@@ -2,11 +2,11 @@
 
 namespace App\Models;
 
-
 trait ClientsSearch
 {
-    private function buildWildCards($term) {
-        if ($term == "") {
+    private function buildWildCards($term)
+    {
+        if ($term == '') {
             return $term;
         }
 
@@ -15,16 +15,18 @@ trait ClientsSearch
         $term = str_replace($reservedSymbols, '', $term);
 
         $words = explode(' ', $term);
-        foreach($words as $idx => $word) {
+        foreach ($words as $idx => $word) {
             // Add operators so we can leverage the boolean mode of
             // fulltext indices.
-            $words[$idx] = "+" . $word . "*";
+            $words[$idx] = '+'.$word.'*';
         }
         $term = implode(' ', $words);
+
         return $term;
     }
 
-    protected function scopeSearch($query, $term) {
+    protected function scopeSearch($query, $term)
+    {
         $columns = implode(',', $this->searchable);
 
         // Boolean mode allows us to match john* for words starting with john
@@ -33,7 +35,7 @@ trait ClientsSearch
             "MATCH ({$columns}) AGAINST (? IN BOOLEAN MODE)",
             $this->buildWildCards($term)
         );
+
         return $query;
     }
 }
-

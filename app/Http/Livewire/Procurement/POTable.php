@@ -5,88 +5,79 @@ namespace App\Http\Livewire\Procurement;
 use App\Models\Department;
 use App\Models\Employee;
 use App\Models\PurchaseRequisition;
-use App\Models\Tender;
 use App\Models\Vendor;
-use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\DB;
-use Livewire\Component;
 use Mediconesystems\LivewireDatatables\Column;
 use Mediconesystems\LivewireDatatables\Http\Livewire\LivewireDatatable;
 
-
-
 class POTable extends LivewireDatatable
-{    public $exportable=true;
+{
+    public $exportable = true;
+
     public $statusId;
 
-
-    protected $listeners=[
-        'orderStatus'=>'filterByStatus',
-        'refreshComponent'=>'$refresh'
+    protected $listeners = [
+        'orderStatus' => 'filterByStatus',
+        'refreshComponent' => '$refresh',
     ];
 
-    public function filterByStatus($id){
-        $this->statusId=$id;
-
+    public function filterByStatus($id)
+    {
+        $this->statusId = $id;
 
     }
 
-
-
-
-    public function builder(){
-       if($this->statusId==2){
-            return PurchaseRequisition::query()->where('status','ACTIVE');
-        }elseif($this->statusId==3){
-            return PurchaseRequisition::query()->where('status',"COMPLETED");
+    public function builder()
+    {
+        if ($this->statusId == 2) {
+            return PurchaseRequisition::query()->where('status', 'ACTIVE');
+        } elseif ($this->statusId == 3) {
+            return PurchaseRequisition::query()->where('status', 'COMPLETED');
+        } else {
+            return PurchaseRequisition::query()->where('status', 'PENDING');
         }
-       else{
-           return PurchaseRequisition::query()->where('status','PENDING');
-       }
-
 
     }
 
-    public function columns():array{
+    public function columns(): array
+    {
 
         return [
-            Column::callback('employeeId',function($id){
-                return Employee::where('id',$id)->value('first_name').'   '.Employee::where('id',$id)->value('middle_name').'  '.Employee::where('id',$id)->value('last_name');
+            Column::callback('employeeId', function ($id) {
+                return Employee::where('id', $id)->value('first_name').'   '.Employee::where('id', $id)->value('middle_name').'  '.Employee::where('id', $id)->value('last_name');
             })->label('NAME')->sortable(),
 
             Column::name('requisition_description')->label('Description')->searchable(),
 
-            Column::callback(['employeeId','id'],function($employeeId,$id){
-                return  Department::where('id',Employee::where('id',$employeeId)->value('department'))->value('department_name') ;
+            Column::callback(['employeeId', 'id'], function ($employeeId, $id) {
+                return Department::where('id', Employee::where('id', $employeeId)->value('department'))->value('department_name');
             })->label('Department'),
             Column::name('quantity')->label('quantity')->searchable(),
 
-            Column::callback('created_at',function ($date){
+            Column::callback('created_at', function ($date) {
                 return $date;
             })->label('issue date')->sortable(),
 
             Column::callback('vendorId',
-            function ($vendorId){
-                if($vendorId){
-                    return Vendor::where('id',$vendorId)->value('organization_name');
-                }else{
-                    return "<div class='text-red-500'>  Not Assigned </div>";
-                }
-            })->label('vendor')->sortable(),
+                function ($vendorId) {
+                    if ($vendorId) {
+                        return Vendor::where('id', $vendorId)->value('organization_name');
+                    } else {
+                        return "<div class='text-red-500'>  Not Assigned </div>";
+                    }
+                })->label('vendor')->sortable(),
             Column::name('status')->label('status')->sortable(),
-            Column::callback('invoice',function($invoice){
-                if($invoice){
-                    return "YES";
-                }
-                else{
+            Column::callback('invoice', function ($invoice) {
+                if ($invoice) {
+                    return 'YES';
+                } else {
                     return "<div class='text-red-500'>  Not Found </div>";
                 }
             })->label('invoice'),
 
-            Column::callback(['id','status'],function($id,$status){
-                if($status=="PENDING"){
+            Column::callback(['id', 'status'], function ($id, $status) {
+                if ($status == 'PENDING') {
 
-                    $html=' <div class="flex gap-4">
+                    $html = ' <div class="flex gap-4">
 
 
         <button wire:click="view('.$id.')" type="button" class="hoverable text-white bg-gray-100 hover:bg-blue-100 hover:text-blue focus:ring-4 focus:outline-none focus:ring-blue-100 font-medium rounded-lg text-sm p-1 text-center inline-flex items-center mr-2 dark:bg-blue-200 dark:hover:bg-blue-200 dark:focus:ring-blue-200">
@@ -122,31 +113,28 @@ class POTable extends LivewireDatatable
     </div>';
 
                     return $html;
-                }
-                else{
+                } else {
                     return null;
                 }
 
-            })->label('action')
+            })->label('action'),
         ];
     }
 
-
-    public function approve($id){
-        $this->emit('approvePo',$id);
+    public function approve($id)
+    {
+        $this->emit('approvePo', $id);
     }
 
-    public function reject($id){
+    public function reject($id)
+    {
 
-        PurchaseRequisition::where('id',$id)->update(['status'=>"REJECTED"]);
+        PurchaseRequisition::where('id', $id)->update(['status' => 'REJECTED']);
     }
 
-    public function view($id){
+    public function view($id)
+    {
 
-      $this->emit('viewPo',$id);
+        $this->emit('viewPo',$id);
     }
-
-
-
 }
-

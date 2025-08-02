@@ -2,35 +2,40 @@
 
 namespace App\Http\Livewire\Savings;
 
-
-use Livewire\Component;
-use Illuminate\Support\Facades\Session;
-use Livewire\WithFileUploads;
-use App\Models\issured_shares;
+use App\Models\AccountsModel;
+use App\Models\approvals;
+use App\Models\Clients;
+use App\Models\general_ledger;
+use App\Models\TeamUser;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use App\Models\AccountsModel;
-use App\Models\general_ledger;
-use App\Models\Clients;
-
-
-use App\Models\approvals;
-use App\Models\TeamUser;
+use Illuminate\Support\Facades\Session;
+use Livewire\Component;
 
 class NewSavings extends Component
 {
-
     public $member;
+
     public $product;
+
     public $number_of_shares;
+
     public $linked_savings_account;
+
     public $account_number;
+
     public $balance;
+
     public $deposit_charge_min_value;
+
     public $accountSelected;
+
     public $amount;
+
     public $notes;
+
     public $bank;
+
     public $reference_number;
 
     protected $rules = [
@@ -43,140 +48,139 @@ class NewSavings extends Component
     public function save()
     {
 
-        $institution_id='';
+        $institution_id = '';
         $id = auth()->user()->id;
         $currentUser = DB::table('team_user')->where('user_id', $id)->get();
-        foreach ($currentUser as $User){
-            $institution_id=$User->team_id;
+        foreach ($currentUser as $User) {
+            $institution_id = $User->team_id;
         }
 
         $this->validate();
 
-        $mirror_account = AccountsModel::where('account_number',$this->bank)->value('mirror_account');
+        $mirror_account = AccountsModel::where('account_number', $this->bank)->value('mirror_account');
 
-        $savings_account_new_balance = (double)AccountsModel::where('account_number',$this->accountSelected)->value('balance') + (double)$this->amount;
+        $savings_account_new_balance = (float) AccountsModel::where('account_number', $this->accountSelected)->value('balance') + (float) $this->amount;
 
-        $savings_ledger_account_new_balance = (double)AccountsModel::where('account_number',$mirror_account)->value('balance') - (double)$this->amount;
+        $savings_ledger_account_new_balance = (float) AccountsModel::where('account_number', $mirror_account)->value('balance') - (float) $this->amount;
 
-        $partner_bank_account_new_balance = (double)AccountsModel::where('account_number',$this->bank)->value('balance') + (double)$this->amount;
+        $partner_bank_account_new_balance = (float) AccountsModel::where('account_number', $this->bank)->value('balance') + (float) $this->amount;
 
-        AccountsModel::where('account_number',$this->accountSelected)->update(['balance'=>$savings_account_new_balance]);
-        AccountsModel::where('account_number',$mirror_account)->update(['balance'=>$savings_ledger_account_new_balance]);
-        AccountsModel::where('account_number',$this->bank)->update(['balance'=>$partner_bank_account_new_balance]);
+        AccountsModel::where('account_number', $this->accountSelected)->update(['balance' => $savings_account_new_balance]);
+        AccountsModel::where('account_number', $mirror_account)->update(['balance' => $savings_ledger_account_new_balance]);
+        AccountsModel::where('account_number', $this->bank)->update(['balance' => $partner_bank_account_new_balance]);
 
         $reference_number = time();
 
-
-        //DEBIT RECORD MEMBER
+        // DEBIT RECORD MEMBER
         general_ledger::create([
-            'record_on_account_number'=> $this->accountSelected,
-            'record_on_account_number_balance'=> $savings_account_new_balance,
-            'sender_branch_id'=> $institution_id,
-            'beneficiary_branch_id'=> $institution_id,
-            'sender_product_id'=>  AccountsModel::where('account_number',$mirror_account)->value('product_number'),
-            'sender_sub_product_id'=> AccountsModel::where('account_number',$mirror_account)->value('sub_product_number'),
-            'beneficiary_product_id'=> AccountsModel::where('account_number',$this->accountSelected)->value('product_number'),
-            'beneficiary_sub_product_id'=> AccountsModel::where('account_number',$this->accountSelected)->value('sub_product_number'),
-            'sender_id'=> '999999',
-            'beneficiary_id'=> $this->member,
-            'sender_name'=> 'Organization',
-            'beneficiary_name'=> Clients::where('membership_number',$this->member)->value('first_name').' '.Clients::where('membership_number',$this->member)->value('middle_name').' '.Clients::where('membership_number',$this->member)->value('last_name'),
-            'sender_account_number'=> $mirror_account,
-            'beneficiary_account_number'=> $this->accountSelected,
-            'transaction_type'=> 'IFT',
-            'sender_account_currency_type'=> 'TZS',
-            'beneficiary_account_currency_type'=> 'TZS',
-            'narration'=> $this->notes,
-            'credit'=> (double)$this->amount,
-            'debit'=> 0,
-            'reference_number'=> $reference_number,
-            'trans_status'=> 'Successful',
-            'trans_status_description'=> 'Successful',
-            'swift_code'=> '',
-            'destination_bank_name'=> '',
-            'destination_bank_number'=> '',
-            'payment_status'=> 'Successful',
-            'recon_status'=> 'Pending',
-            'partner_bank'=> AccountsModel::where('account_number',$this->bank)->value('institution_number'),
-            'partner_bank_name'=> AccountsModel::where('account_number',$this->bank)->value('account_name'),
-            'partner_bank_account_number'=> $this->bank,
-            'partner_bank_transaction_reference_number'=> $this->reference_number,
+            'record_on_account_number' => $this->accountSelected,
+            'record_on_account_number_balance' => $savings_account_new_balance,
+            'sender_branch_id' => $institution_id,
+            'beneficiary_branch_id' => $institution_id,
+            'sender_product_id' => AccountsModel::where('account_number', $mirror_account)->value('product_number'),
+            'sender_sub_product_id' => AccountsModel::where('account_number', $mirror_account)->value('sub_product_number'),
+            'beneficiary_product_id' => AccountsModel::where('account_number', $this->accountSelected)->value('product_number'),
+            'beneficiary_sub_product_id' => AccountsModel::where('account_number', $this->accountSelected)->value('sub_product_number'),
+            'sender_id' => '999999',
+            'beneficiary_id' => $this->member,
+            'sender_name' => 'Organization',
+            'beneficiary_name' => Clients::where('membership_number', $this->member)->value('first_name').' '.Clients::where('membership_number', $this->member)->value('middle_name').' '.Clients::where('membership_number', $this->member)->value('last_name'),
+            'sender_account_number' => $mirror_account,
+            'beneficiary_account_number' => $this->accountSelected,
+            'transaction_type' => 'IFT',
+            'sender_account_currency_type' => 'TZS',
+            'beneficiary_account_currency_type' => 'TZS',
+            'narration' => $this->notes,
+            'credit' => (float) $this->amount,
+            'debit' => 0,
+            'reference_number' => $reference_number,
+            'trans_status' => 'Successful',
+            'trans_status_description' => 'Successful',
+            'swift_code' => '',
+            'destination_bank_name' => '',
+            'destination_bank_number' => '',
+            'payment_status' => 'Successful',
+            'recon_status' => 'Pending',
+            'partner_bank' => AccountsModel::where('account_number', $this->bank)->value('institution_number'),
+            'partner_bank_name' => AccountsModel::where('account_number', $this->bank)->value('account_name'),
+            'partner_bank_account_number' => $this->bank,
+            'partner_bank_transaction_reference_number' => $this->reference_number,
         ]);
 
-        //CREDIT RECORD SHARE ACCOUNT
+        // CREDIT RECORD SHARE ACCOUNT
         general_ledger::create([
-            'record_on_account_number'=> $this->bank,
-            'record_on_account_number_balance'=> $partner_bank_account_new_balance,
-            'sender_branch_id'=> $institution_id,
-            'beneficiary_branch_id'=> $institution_id,
-            'sender_product_id'=>  AccountsModel::where('account_number',$this->accountSelected)->value('product_number'),
-            'sender_sub_product_id'=> AccountsModel::where('account_number',$this->accountSelected)->value('sub_product_number'),
-            'beneficiary_product_id'=> AccountsModel::where('account_number',$this->bank)->value('product_number'),
-            'beneficiary_sub_product_id'=> AccountsModel::where('account_number',$this->bank)->value('sub_product_number'),
-            'sender_id'=> $this->member,
-            'beneficiary_id'=> AccountsModel::where('account_number',$this->bank)->value('institution_number'),
-            'sender_name'=> Clients::where('membership_number',$this->member)->value('first_name').' '.Clients::where('membership_number',$this->member)->value('middle_name').' '.Clients::where('membership_number',$this->member)->value('last_name'),
-            'beneficiary_name'=> AccountsModel::where('account_number',$this->bank)->value('account_name'),
-            'sender_account_number'=> $this->accountSelected,
-            'beneficiary_account_number'=> $this->bank,
-            'transaction_type'=> 'IFT',
-            'sender_account_currency_type'=> 'TZS',
-            'beneficiary_account_currency_type'=> 'TZS',
-            'narration'=> $this->notes,
-            'credit'=> (double)$this->amount,
-            'debit'=> 0,
-            'reference_number'=> $reference_number,
-            'trans_status'=> 'Successful',
-            'trans_status_description'=> 'Successful',
-            'swift_code'=> '',
-            'destination_bank_name'=> '',
-            'destination_bank_number'=> '',
-            'payment_status'=> 'Successful',
-            'recon_status'=> 'Pending',
-            'partner_bank'=> AccountsModel::where('account_number',$this->bank)->value('institution_number'),
-            'partner_bank_name'=> AccountsModel::where('account_number',$this->bank)->value('account_name'),
-            'partner_bank_account_number'=> $this->bank,
-            'partner_bank_transaction_reference_number'=> $this->reference_number,
+            'record_on_account_number' => $this->bank,
+            'record_on_account_number_balance' => $partner_bank_account_new_balance,
+            'sender_branch_id' => $institution_id,
+            'beneficiary_branch_id' => $institution_id,
+            'sender_product_id' => AccountsModel::where('account_number', $this->accountSelected)->value('product_number'),
+            'sender_sub_product_id' => AccountsModel::where('account_number', $this->accountSelected)->value('sub_product_number'),
+            'beneficiary_product_id' => AccountsModel::where('account_number', $this->bank)->value('product_number'),
+            'beneficiary_sub_product_id' => AccountsModel::where('account_number', $this->bank)->value('sub_product_number'),
+            'sender_id' => $this->member,
+            'beneficiary_id' => AccountsModel::where('account_number', $this->bank)->value('institution_number'),
+            'sender_name' => Clients::where('membership_number', $this->member)->value('first_name').' '.Clients::where('membership_number', $this->member)->value('middle_name').' '.Clients::where('membership_number', $this->member)->value('last_name'),
+            'beneficiary_name' => AccountsModel::where('account_number', $this->bank)->value('account_name'),
+            'sender_account_number' => $this->accountSelected,
+            'beneficiary_account_number' => $this->bank,
+            'transaction_type' => 'IFT',
+            'sender_account_currency_type' => 'TZS',
+            'beneficiary_account_currency_type' => 'TZS',
+            'narration' => $this->notes,
+            'credit' => (float) $this->amount,
+            'debit' => 0,
+            'reference_number' => $reference_number,
+            'trans_status' => 'Successful',
+            'trans_status_description' => 'Successful',
+            'swift_code' => '',
+            'destination_bank_name' => '',
+            'destination_bank_number' => '',
+            'payment_status' => 'Successful',
+            'recon_status' => 'Pending',
+            'partner_bank' => AccountsModel::where('account_number', $this->bank)->value('institution_number'),
+            'partner_bank_name' => AccountsModel::where('account_number', $this->bank)->value('account_name'),
+            'partner_bank_account_number' => $this->bank,
+            'partner_bank_transaction_reference_number' => $this->reference_number,
         ]);
 
-        //CREDIT RECORD GL
+        // CREDIT RECORD GL
         general_ledger::create([
-            'record_on_account_number'=> $mirror_account,
-            'record_on_account_number_balance'=> $savings_ledger_account_new_balance ,
-            'sender_branch_id'=> $institution_id,
-            'beneficiary_branch_id'=> $institution_id,
-            'sender_product_id'=>  AccountsModel::where('account_number',$mirror_account)->value('product_number'),
-            'sender_sub_product_id'=> AccountsModel::where('account_number',$mirror_account)->value('sub_product_number'),
-            'beneficiary_product_id'=> AccountsModel::where('account_number',$this->accountSelected)->value('product_number'),
-            'beneficiary_sub_product_id'=> AccountsModel::where('account_number',$this->accountSelected)->value('sub_product_number'),
-            'sender_id'=> '999999',
-            'beneficiary_id'=> $this->member,
-            'sender_name'=> AccountsModel::where('account_number',$mirror_account)->value('account_name'),
+            'record_on_account_number' => $mirror_account,
+            'record_on_account_number_balance' => $savings_ledger_account_new_balance,
+            'sender_branch_id' => $institution_id,
+            'beneficiary_branch_id' => $institution_id,
+            'sender_product_id' => AccountsModel::where('account_number', $mirror_account)->value('product_number'),
+            'sender_sub_product_id' => AccountsModel::where('account_number', $mirror_account)->value('sub_product_number'),
+            'beneficiary_product_id' => AccountsModel::where('account_number', $this->accountSelected)->value('product_number'),
+            'beneficiary_sub_product_id' => AccountsModel::where('account_number', $this->accountSelected)->value('sub_product_number'),
+            'sender_id' => '999999',
+            'beneficiary_id' => $this->member,
+            'sender_name' => AccountsModel::where('account_number', $mirror_account)->value('account_name'),
 
-            'beneficiary_name'=>  Clients::where('membership_number',$this->member)->value('first_name').' '.Clients::where('membership_number',$this->member)->value('middle_name').' '.Clients::where('membership_number',$this->member)->value('last_name'),
-            'sender_account_number'=> $mirror_account,
-            'beneficiary_account_number'=> $this->accountSelected,
-            'transaction_type'=> 'IFT',
-            'sender_account_currency_type'=> 'TZS',
-            'beneficiary_account_currency_type'=> 'TZS',
-            'narration'=> $this->notes,
-            'credit'=> 0,
-            'debit'=> (double)$this->amount,
-            'reference_number'=> $reference_number,
-            'trans_status'=> 'Successful',
-            'trans_status_description'=> 'Successful',
-            'swift_code'=> '',
-            'destination_bank_name'=> '',
-            'destination_bank_number'=> '',
-            'payment_status'=> 'Successful',
-            'recon_status'=> 'Pending',
-            'partner_bank'=> AccountsModel::where('account_number',$this->bank)->value('institution_number'),
-            'partner_bank_name'=> AccountsModel::where('account_number',$this->bank)->value('account_name'),
-            'partner_bank_account_number'=> $this->bank,
-            'partner_bank_transaction_reference_number'=> $this->reference_number,
+            'beneficiary_name' => Clients::where('membership_number', $this->member)->value('first_name').' '.Clients::where('membership_number', $this->member)->value('middle_name').' '.Clients::where('membership_number', $this->member)->value('last_name'),
+            'sender_account_number' => $mirror_account,
+            'beneficiary_account_number' => $this->accountSelected,
+            'transaction_type' => 'IFT',
+            'sender_account_currency_type' => 'TZS',
+            'beneficiary_account_currency_type' => 'TZS',
+            'narration' => $this->notes,
+            'credit' => 0,
+            'debit' => (float) $this->amount,
+            'reference_number' => $reference_number,
+            'trans_status' => 'Successful',
+            'trans_status_description' => 'Successful',
+            'swift_code' => '',
+            'destination_bank_name' => '',
+            'destination_bank_number' => '',
+            'payment_status' => 'Successful',
+            'recon_status' => 'Pending',
+            'partner_bank' => AccountsModel::where('account_number', $this->bank)->value('institution_number'),
+            'partner_bank_name' => AccountsModel::where('account_number', $this->bank)->value('account_name'),
+            'partner_bank_account_number' => $this->bank,
+            'partner_bank_transaction_reference_number' => $this->reference_number,
         ]);
 
-        $this->sendApproval($reference_number,'New savings transaction','07');
+        $this->sendApproval($reference_number, 'New savings transaction', '07');
         $this->resetData();
 
         Session::flash('message', 'Shares has been successfully issued!');
@@ -184,13 +188,14 @@ class NewSavings extends Component
 
     }
 
-    public function sendApproval($id,$msg,$code){
+    public function sendApproval($id, $msg, $code)
+    {
 
         $user = auth()->user();
 
         $team = $user->currentTeam;
 
-        $institution = TeamUser::where('user_id',Auth::user()->id)->value('institution');
+        $institution = TeamUser::where('user_id', Auth::user()->id)->value('institution');
 
         approvals::create([
             'institution' => $institution,
@@ -200,8 +205,8 @@ class NewSavings extends Component
             'process_code' => $code,
             'process_id' => $id,
             'process_status' => 'Pending',
-            'user_id'  => Auth::user()->id,
-            'team_id'  => ""
+            'user_id' => Auth::user()->id,
+            'team_id' => '',
         ]);
 
     }
@@ -217,7 +222,6 @@ class NewSavings extends Component
         $this->bank = '';
         $this->reference_number = '';
 
-
     }
 
     public function back()
@@ -229,7 +233,8 @@ class NewSavings extends Component
         $this->emit('refreshClientsListComponent');
     }
 
-    public function setAccount($account){
+    public function setAccount($account)
+    {
         $this->accountSelected = $account;
     }
 

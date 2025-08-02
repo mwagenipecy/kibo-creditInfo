@@ -11,5 +11,6 @@ class BranchesModel extends Model
     use Search;
 
     protected $guarded = [];
+
     protected $table = 'branches';
 }

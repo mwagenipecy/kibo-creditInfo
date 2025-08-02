@@ -2,26 +2,28 @@
 
 namespace App\Http\Livewire\Clients;
 
-use App\Models\LoansModel;
-use Livewire\Component;
 use App\Models\Clients;
+use App\Models\LoansModel;
 use Illuminate\Support\Facades\Session;
+use Livewire\Component;
 
 class ClientView extends Component
 {
-
     public $member;
+
     public $loanStatus;
 
-
     public $member_number = '';
+
     public $item = 100;
+
     public $product_number;
 
-    public function boot(){
+    public function boot()
+    {
 
         $this->member = Clients::where('id', Session::get('memberToViewId'))->first();
-        $this->loanStatus=LoansModel::where('client_number',Session::get('memberToViewId'))->get();
+        $this->loanStatus = LoansModel::where('client_number', Session::get('memberToViewId'))->get();
 
         $this->variables = [
             // Individual & Company
@@ -382,7 +384,8 @@ class ClientView extends Component
         return view('livewire.clients.member-view');
     }
 
-    public function back(){
+    public function back()
+    {
         Session::put('memberToViewId', false);
         $this->emit('refreshClientsListComponent');
     }

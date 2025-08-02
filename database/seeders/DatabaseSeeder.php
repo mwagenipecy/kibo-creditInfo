@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -19,11 +18,9 @@ class DatabaseSeeder extends Seeder
         //     DashboardTableSeeder::class,
         // ]);
 
+        //  $this->call( CarSeeder::class );
 
-      //  $this->call( CarSeeder::class );
-
-      $this->call(GarageSeeder::class);
-
+        $this->call(GarageSeeder::class);
 
     }
 }

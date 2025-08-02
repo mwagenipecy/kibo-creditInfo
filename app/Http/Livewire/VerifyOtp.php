@@ -3,16 +3,16 @@
 namespace App\Http\Livewire;
 
 use App\Http\Traits\MailSender;
+use App\Mail\OTP;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Log;
 use Livewire\Component;
-use App\Mail\OTP;
-use Carbon\Carbon;
 
 class VerifyOtp extends Component
 {
@@ -21,19 +21,24 @@ class VerifyOtp extends Component
     protected $listeners = ['submitOTP'];
 
     public bool $error = false;
+
     public string $errorMessage = '';
+
     public $remainingSeconds = 120;
+
     public bool $isResending = false;
+
     public int $maxAttempts = 5;
+
     public int $attemptCount = 0;
 
     protected $rules = [
-        'otp' => 'required|numeric|digits:6'
+        'otp' => 'required|numeric|digits:6',
     ];
 
     public function boot(): void
     {
-        if (!Auth::check()) {
+        if (! Auth::check()) {
             redirect()->route('login')->send();
         }
 
@@ -41,6 +46,7 @@ class VerifyOtp extends Component
 
         if ($this->attemptCount >= $this->maxAttempts) {
             $this->handleLockout();
+
             return;
         }
 
@@ -52,7 +58,7 @@ class VerifyOtp extends Component
     {
         $user = Auth::user();
 
-        if (!$user) {
+        if (! $user) {
             redirect()->route('login')->send();
         }
 
@@ -70,12 +76,12 @@ class VerifyOtp extends Component
             Cache::put($this->getOTPKey($user->id), [
                 'otp' => $otp,
                 'created_at' => now(),
-                'expires_at' => now()->addMinutes(5)
+                'expires_at' => now()->addMinutes(5),
             ], now()->addMinutes(5));
 
             $user->update([
                 'email_verified_at' => null,
-                'otp' => $otp
+                'otp' => $otp,
             ]);
 
             $this->sendOTPEmail($user, $otp);
@@ -83,7 +89,7 @@ class VerifyOtp extends Component
         } catch (\Exception $e) {
             Log::error('Failed to generate/send OTP', [
                 'user_id' => $user->id,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
 
             $this->error = true;
@@ -104,6 +110,7 @@ class VerifyOtp extends Component
         if (Cache::has($resendKey)) {
             $this->error = true;
             $this->errorMessage = 'Please wait before requesting another OTP.';
+
             return;
         }
 
@@ -153,19 +160,22 @@ class VerifyOtp extends Component
 
         if ($this->attemptCount >= $this->maxAttempts) {
             $this->handleLockout();
+
             return;
         }
 
-        if (!is_numeric($value) || strlen($value) !== 6) {
+        if (! is_numeric($value) || strlen($value) !== 6) {
             $this->handleInvalidOTP();
+
             return;
         }
 
         $otpData = Cache::get($this->getOTPKey($userId));
 
-        if (!$otpData) {
+        if (! $otpData) {
             $this->error = true;
             $this->errorMessage = 'OTP expired. Please request a new one.';
+
             return;
         }
 
@@ -173,13 +183,15 @@ class VerifyOtp extends Component
             Cache::forget($this->getOTPKey($userId));
             $this->error = true;
             $this->errorMessage = 'OTP expired. Please request a new one.';
+
             return;
         }
 
-        if ((int)$otpData['otp'] === (int)$value) {
+        if ((int) $otpData['otp'] === (int) $value) {
             return $this->handleValidOTP($userId);
         } else {
             $this->handleInvalidOTP();
+
             return;
         }
     }
@@ -195,7 +207,7 @@ class VerifyOtp extends Component
                 ->update([
                     'verification_status' => 1,
                     'email_verified_at' => Carbon::now(),
-                    'otp' => null
+                    'otp' => null,
                 ]);
 
             Cache::forget($this->getOTPKey($userId));
@@ -211,11 +223,12 @@ class VerifyOtp extends Component
             DB::rollBack();
             Log::error('Failed to update user verification status', [
                 'user_id' => $userId,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
 
             $this->error = true;
             $this->errorMessage = 'Verification failed. Please try again.';
+
             return;
         }
     }
@@ -230,7 +243,7 @@ class VerifyOtp extends Component
         $this->error = true;
         $this->errorMessage = $remainingAttempts > 0
             ? "Invalid OTP. You have {$remainingAttempts} attempts remaining."
-            : "Too many invalid attempts. Please try again later.";
+            : 'Too many invalid attempts. Please try again later.';
 
         if ($remainingAttempts <= 0) {
             $this->handleLockout();
@@ -242,7 +255,7 @@ class VerifyOtp extends Component
         Cache::put($this->getLockoutKey(), true, now()->addMinutes(15));
 
         Log::warning('User locked out due to too many OTP attempts', [
-            'user_id' => $this->getUserId()
+            'user_id' => $this->getUserId(),
         ]);
 
         $this->error = true;
@@ -273,7 +286,7 @@ class VerifyOtp extends Component
     {
         return view('livewire.verify-otp', [
             'isLockedOut' => Cache::has($this->getLockoutKey()),
-            'attemptsRemaining' => max(0, $this->maxAttempts - $this->attemptCount)
+            'attemptsRemaining' => max(0, $this->maxAttempts - $this->attemptCount),
         ]);
     }
 }

@@ -2,12 +2,9 @@
 
 namespace App\Http\Livewire\Cb;
 
-use App\Models\Cashbook;
 use App\Models\CashBookNonMatching;
-use DB;
-use Livewire\Component;
 use Illuminate\Database\Eloquent\Builder;
-
+use Rappasoft\LaravelLivewireTables\DataTableComponent;
 use Rappasoft\LaravelLivewireTables\Exceptions\DataTableConfigurationException;
 use Rappasoft\LaravelLivewireTables\Traits\ComponentUtilities;
 use Rappasoft\LaravelLivewireTables\Traits\WithBulkActions;
@@ -24,18 +21,11 @@ use Rappasoft\LaravelLivewireTables\Traits\WithReordering;
 use Rappasoft\LaravelLivewireTables\Traits\WithSearch;
 use Rappasoft\LaravelLivewireTables\Traits\WithSecondaryHeader;
 use Rappasoft\LaravelLivewireTables\Traits\WithSorting;
-use Rappasoft\LaravelLivewireTables\DataTableComponent;
 use Rappasoft\LaravelLivewireTables\Views\Column;
 use Session;
 
 class Test extends DataTableComponent
 {
-
-
-
-
-
-
     use ComponentUtilities,
         WithBulkActions,
         WithColumns,
@@ -45,22 +35,22 @@ class Test extends DataTableComponent
         WithEvents,
         WithFilters,
         WithFooter,
-        WithSecondaryHeader,
         WithPagination,
         WithRefresh,
         WithReordering,
         WithSearch,
+        WithSecondaryHeader,
         WithSorting;
 
-
     public $defaultView = true;
-    public $showOrderDetails = false;
-    public $orderToView = '';
 
+    public $showOrderDetails = false;
+
+    public $orderToView = '';
 
     public function boot(): void
     {
-        //$this->builder =$this->Builder();
+        // $this->builder =$this->Builder();
         $this->setBuilder($this->builder());
 
         $this->{$this->tableName} = [
@@ -83,12 +73,8 @@ class Test extends DataTableComponent
 
     }
 
-
-
-
     public function render(): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Contracts\Foundation\Application
     {
-
 
         return view('livewire.cb.test')->with([
             'columns' => $this->getColumns(),
@@ -96,44 +82,42 @@ class Test extends DataTableComponent
         ]);
     }
 
-
     public function builder(): \Illuminate\Database\Eloquent\Builder
     {
 
         $this->ordernumber = Session::get('orderNumber');
 
-        $transactions = CashBookNonMatching::where('order_number',$this->ordernumber );
-        if($transactions->first())
-        {
+        $transactions = CashBookNonMatching::where('order_number', $this->ordernumber);
+        if ($transactions->first()) {
             $this->showSendButton = true;
         }
+
         return $transactions;
 
     }
 
-
     public function configure(): void
     {
         $this->setPrimaryKey('id')
-            //->setReorderEnabled()
+            // ->setReorderEnabled()
             ->setSingleSortingDisabled()
             ->setHideReorderColumnUnlessReorderingEnabled()
             ->setFilterLayoutSlideDown()
-            //->setRememberColumnSelectionDisabled()
-            ->setSecondaryHeaderTrAttributes(function($rows) {
+            // ->setRememberColumnSelectionDisabled()
+            ->setSecondaryHeaderTrAttributes(function ($rows) {
                 return ['class' => 'bg-gray-100'];
             })
-            ->setSecondaryHeaderTdAttributes(function(Column $column, $rows) {
+            ->setSecondaryHeaderTdAttributes(function (Column $column, $rows) {
                 if ($column->isField('id')) {
                     return ['class' => 'text-red-500'];
                 }
 
                 return ['default' => true];
             })
-            ->setFooterTrAttributes(function($rows) {
+            ->setFooterTrAttributes(function ($rows) {
                 return ['class' => 'bg-gray-100'];
             })
-            ->setFooterTdAttributes(function(Column $column, $rows) {
+            ->setFooterTdAttributes(function (Column $column, $rows) {
                 if ($column->isField('name')) {
                     return ['class' => 'text-green-500'];
                 }
@@ -142,10 +126,8 @@ class Test extends DataTableComponent
             })
             ->setUseHeaderAsFooterEnabled()
             ->setHideBulkActionsWhenEmptyEnabled()
-        ->setColumnSelectEnabled();
+            ->setColumnSelectEnabled();
     }
-
-
 
     public function columns(): array
     {
@@ -167,9 +149,7 @@ class Test extends DataTableComponent
                 ->sortable(),
             Column::make('recon date', 'created_at')
                 ->sortable()
-                ->searchable()
+                ->searchable(),
         ];
     }
-
-
 }

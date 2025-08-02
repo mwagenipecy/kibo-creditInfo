@@ -2,19 +2,17 @@
 
 namespace App\Http\Livewire\Web;
 
-use App\Models\LenderFinancingCriteria;
-use App\Models\Loan_sub_products;
-use Livewire\Component;
-use App\Models\Vehicle;
-use App\Models\Lender;
-use App\Models\LoanProduct;
-use App\Models\Region;
-use App\Models\District;
+use App\Mail\EmploymentVerification;
 use App\Models\Application;
 use App\Models\Attachment;
+use App\Models\Lender;
+use App\Models\LenderFinancingCriteria;
+use App\Models\LoanProduct;
+use App\Models\Region;
+use App\Models\Vehicle;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
-use App\Mail\EmploymentVerification;
+use Livewire\Component;
 use Livewire\WithFileUploads;
 
 class LoanApplication extends Component
@@ -22,21 +20,34 @@ class LoanApplication extends Component
     use WithFileUploads;
 
     public $vehicle;
+
     public $lender;
+
     public $regions;
+
     public $districts = [];
+
     public $loanProducts = [];
 
     // Form inputs
     public $first_name;
-    public $index=1;
+
+    public $index = 1;
+
     public $middle_name;
+
     public $last_name;
+
     public $email;
+
     public $phone_number;
+
     public $national_id;
+
     public $region;
+
     public $district;
+
     public $street;
 
     // Employment Status
@@ -44,18 +55,28 @@ class LoanApplication extends Component
 
     // Employment Information - only required if employed
     public $employer_name;
+
     public $hrEmail;
+
     public $is_employee = false;
+
     public $employee_id;
+
     public $monthly_income;
 
     // Loan Details
     public $downPaymentPercent;
+
     public $purchase_price;
+
     public $down_payment = 0;
+
     public $loan_amount;
+
     public $loanProductId;
+
     public $tenure;
+
     public $terms = false;
 
     // Calculated values
@@ -63,8 +84,11 @@ class LoanApplication extends Component
 
     // File uploads
     public $id_document;
+
     public $bank_statement;
+
     public $payslip;
+
     public $application_document;
 
     protected function rules()
@@ -110,10 +134,10 @@ class LoanApplication extends Component
     {
         // Assuming loan_terms_range is a string like "1-32"
         $range = $lender->loan_terms_range;
-         $range = "2-36"; // Remove any spaces
-       // dd($range);
+        $range = '2-36'; // Remove any spaces
+        // dd($range);
         // Split the string by the dash
-   [$start, $end] = explode('-', $range);
+        [$start, $end] = explode('-', $range);
 
         // Convert to integers
         $start = (int) $start;
@@ -125,29 +149,24 @@ class LoanApplication extends Component
         return $terms;
     }
 
-    public function mount($vehicleId=null, $lenderId=null)
+    public function mount($vehicleId = null, $lenderId = null)
     {
-
 
         $vehicle_id = $vehicleId;
         $lender_id = $lenderId;
-
-
 
         $this->vehicle = Vehicle::findOrFail($vehicle_id);
         $this->lender = Lender::findOrFail($lender_id);
         $this->loanProducts = $this->getLoanTeam($this->lender);
 
-
-       // dd($this->vehicle->make_id, $this->vehicle->model_id, $lender_id);
+        // dd($this->vehicle->make_id, $this->vehicle->model_id, $lender_id);
 
         $this->downPaymentPercent = LenderFinancingCriteria::where('lender_id', $lender_id)
-                                    ->where('make_id', $this->vehicle->make_id)
-                                    ->where('model_id', $this->vehicle->model_id)
-                                    ->first()->min_down_payment_percent ?? 0;
+            ->where('make_id', $this->vehicle->make_id)
+            ->where('model_id', $this->vehicle->model_id)
+            ->first()->min_down_payment_percent ?? 0;
 
         $this->regions = Region::all();
-
 
         $this->down_payment = $this->downPaymentPercent / 100 * $this->vehicle->price;
 
@@ -164,8 +183,6 @@ class LoanApplication extends Component
         $this->calculateLoanAmount();
     }
 
-
-
     // When down payment changes, recalculate loan amount
     public function updatedDownPayment()
     {
@@ -181,7 +198,7 @@ class LoanApplication extends Component
     protected function calculateLoanAmount()
     {
         // Validate down payment is a number
-        if (!is_numeric($this->down_payment)) {
+        if (! is_numeric($this->down_payment)) {
             $this->down_payment = 0;
         }
 
@@ -196,14 +213,16 @@ class LoanApplication extends Component
 
     protected function calculateEstimatedPayment()
     {
-        if (!$this->loanProductId || !$this->loan_amount) {
+        if (! $this->loanProductId || ! $this->loan_amount) {
             $this->estimated_payment = null;
+
             return;
         }
 
         $loanProduct = LoanProduct::find($this->loanProductId);
-        if (!$loanProduct) {
+        if (! $loanProduct) {
             $this->estimated_payment = null;
+
             return;
         }
 
@@ -239,12 +258,12 @@ class LoanApplication extends Component
             $extension = strtolower($file->getClientOriginalExtension());
 
             // Check if the extension is allowed
-            if (!in_array($extension, $allowedExtensions)) {
+            if (! in_array($extension, $allowedExtensions)) {
                 throw new \Exception("Unsupported file type: .$extension");
             }
 
             // Generate a unique filename
-            $filename = uniqid() . '.' . $extension;
+            $filename = uniqid().'.'.$extension;
 
             // Store the file in public storage under assets/attachment
             $storedPath = $file->storeAs('assets/attachment', $filename, 'public');
@@ -259,7 +278,8 @@ class LoanApplication extends Component
             return true;
         } catch (\Exception $e) {
             // Log error
-            \Log::error('File upload error: ' . $e->getMessage());
+            \Log::error('File upload error: '.$e->getMessage());
+
             return false;
         }
     }
@@ -269,7 +289,7 @@ class LoanApplication extends Component
         $this->validate();
 
         // Create application record
-        $application = new Application();
+        $application = new Application;
         $application->first_name = $this->first_name;
         $application->middle_name = $this->middle_name;
         $application->last_name = $this->last_name;
@@ -280,7 +300,7 @@ class LoanApplication extends Component
         $application->street = $this->street;
         $application->email = $this->email;
         $application->application_status = 'pending';
-        $application->make_and_model = optional($this->vehicle->make)->name . ' ' . optional($this->vehicle->model)->name;
+        $application->make_and_model = optional($this->vehicle->make)->name.' '.optional($this->vehicle->model)->name;
         $application->year_of_manufacture = $this->vehicle->year;
         $application->vin = $this->vehicle->vin;
         $application->color = $this->vehicle->color;
@@ -293,22 +313,22 @@ class LoanApplication extends Component
         $application->lender_id = $this->lender->id;
         $application->client_id = auth()->user()->id;
         $application->car_dealer_id = $this->vehicle->dealer_id;
-        $application->stage_name='car_dealer';
-        $application->vehicle_id=$this->vehicle->id;
+        $application->stage_name = 'car_dealer';
+        $application->vehicle_id = $this->vehicle->id;
 
         // Only set employment related fields if employed
         if ($this->is_employed) {
-           $application->is_employee =$this->is_employed;
+            $application->is_employee = $this->is_employed;
             $application->employer_name = $this->employer_name;
             $application->hrEmail = $this->hrEmail;
             $application->monthly_income = $this->monthly_income;
-          // $application->is_employee = $this->is_employee;
+            // $application->is_employee = $this->is_employee;
             $application->employee_id = $this->employee_id;
             $application->employer_verification_sent = false;
             $application->employer_verified = false;
             $application->employer_verification_status = 'pending';
         } else {
-            $application->is_employee =false;
+            $application->is_employee = false;
         }
 
         // Save the application
@@ -336,15 +356,15 @@ class LoanApplication extends Component
         // Send employment verification email if employed
         if ($this->is_employed) {
             try {
-               // Mail::to($this->hrEmail)->send(new EmploymentVerification($application));
+                // Mail::to($this->hrEmail)->send(new EmploymentVerification($application));
 
                 // Update application status
-               // $application->employer_verification_sent = true;
-              //  $application->employer_verification_sent_at = now();
-               // $application->save();
+                // $application->employer_verification_sent = true;
+                //  $application->employer_verification_sent_at = now();
+                // $application->save();
             } catch (\Exception $e) {
                 // Log email sending failure
-                \Log::error('Failed to send employment verification email: ' . $e->getMessage());
+                \Log::error('Failed to send employment verification email: '.$e->getMessage());
             }
         }
 
@@ -363,5 +383,4 @@ class LoanApplication extends Component
             'loanProducts' => $this->loanProducts,
         ]);
     }
-
 }

@@ -4,40 +4,42 @@ namespace App\Http\Livewire\Channels;
 
 use App\Models\approvals;
 use App\Models\ChannelsModel;
-use App\Models\servicesModel;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Livewire\Component;
 
 class EditChannel extends Component
 {
-
     public $channelsList;
+
     public $channels;
+
     public $channelData;
+
     public $channelId;
+
     public $channelName;
 
     public $servicesList;
+
     public $serviceIds = [];
 
     public $channelToEdit;
 
     public $NewService;
+
     public $serviceData;
+
     public $channelList;
-
-
 
     public function updatedNewServiceX(): void
     {
 
+        $this->servicesList[] = [
+            'service_id' => $this->NewService,
+        ];
 
-        $this->servicesList[] = array(
-            "service_id" => $this->NewService,
-        );
-
-        //$this->NewService = null;
+        // $this->NewService = null;
 
     }
 
@@ -46,14 +48,15 @@ class EditChannel extends Component
         $serviceIds = array_column($this->servicesList, 'service_id');
         if (in_array($this->NewService, $serviceIds)) {
             $this->NewService = null;
+
             return;
         }
 
-        $this->servicesList[] = array(
-            "service_id" => $this->NewService
-        );
+        $this->servicesList[] = [
+            'service_id' => $this->NewService,
+        ];
 
-        //$this->NewService = null;
+        // $this->NewService = null;
     }
 
     public function removeService($serviceId): void
@@ -61,17 +64,17 @@ class EditChannel extends Component
 
         foreach ($this->servicesList as $index => $service) {
 
-
             if ($service['service_id'] == $serviceId) {
-                //dd($node['node_id']);
+                // dd($node['node_id']);
                 unset($this->servicesList[$index]);
 
                 break; // Exit the loop after removing the node
             }
         }
 
-        //dd($this->nodesList);
+        // dd($this->nodesList);
     }
+
     public function updatedChannelToEdit($value): void
     {
         $this->channelData = ChannelsModel::where('ID', $value)->get();
@@ -80,8 +83,6 @@ class EditChannel extends Component
             $this->channelName = $channel->NAME;
             $this->channelId = $channel->ID;
             $this->servicesList = $channel->SERVICES;
-
-
 
             // Decode the JSON string into an array
             $this->servicesList = json_decode($this->servicesList, true);
@@ -104,20 +105,16 @@ class EditChannel extends Component
             'servicesList' => 'required',
         ]);
 
-
-
         $data = [
             'NAME' => $this->channelName,
             'SERVICES' => json_encode($this->servicesList),
             'STATUS' => 'ACTIVE',
         ];
 
-
-
         $update_value = approvals::updateOrCreate(
             [
                 'process_id' => $this->channelId,
-                'user_id' => Auth::user()->id
+                'user_id' => Auth::user()->id,
 
             ],
             [
@@ -129,9 +126,9 @@ class EditChannel extends Component
                 'process_id' => $this->channelId,
                 'process_status' => 'PENDING',
                 'approval_status' => 'PENDING',
-                'user_id'  => Auth::user()->id,
-                'team_id'  => '',
-                'edit_package'=> json_encode($data),
+                'user_id' => Auth::user()->id,
+                'team_id' => '',
+                'edit_package' => json_encode($data),
 
             ]
         );
@@ -141,9 +138,6 @@ class EditChannel extends Component
 
         $this->resetVars();
     }
-
-
-
 
     public function render(): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Contracts\Foundation\Application
     {

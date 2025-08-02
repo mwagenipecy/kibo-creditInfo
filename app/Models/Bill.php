@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Bill extends Model
@@ -23,7 +22,7 @@ class Bill extends Model
         'paid_date',
         'payment_method',
         'payment_reference',
-        'notes'
+        'notes',
     ];
 
     protected $casts = [
@@ -34,7 +33,7 @@ class Bill extends Model
         'billing_period_end' => 'date',
         'due_date' => 'date',
         'issued_date' => 'date',
-        'paid_date' => 'date'
+        'paid_date' => 'date',
     ];
 
     public function billItems()
@@ -52,6 +51,7 @@ class Bill extends Model
         if ($this->entity_type === 'lender') {
             return $this->belongsTo(Lender::class, 'entity_id');
         }
+
         return $this->belongsTo(CarDealer::class, 'entity_id');
     }
 
@@ -73,12 +73,12 @@ class Bill extends Model
     protected static function boot()
     {
         parent::boot();
-        
+
         static::creating(function ($bill) {
-            $bill->bill_number = 'BILL-' . date('Y') . '-' . str_pad(
-                static::whereYear('created_at', date('Y'))->count() + 1, 
-                4, 
-                '0', 
+            $bill->bill_number = 'BILL-'.date('Y').'-'.str_pad(
+                static::whereYear('created_at', date('Y'))->count() + 1,
+                4,
+                '0',
                 STR_PAD_LEFT
             );
         });

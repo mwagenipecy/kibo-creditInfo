@@ -2,28 +2,31 @@
 
 namespace App\Http\Livewire\Modals;
 
-use Livewire\Component;
 use App\Models\LenderFinancingCriteria;
+use Livewire\Component;
 
 class ViewModelsModal extends Component
 {
     public $showModal = false;
+
     public $criteriaId = null;
+
     public $criteria = null;
+
     public $models = [];
-    
+
     protected $listeners = [
         'openModal' => 'openModal',
-        'closeModal' => 'closeModal'
+        'closeModal' => 'closeModal',
     ];
-    
+
     public function openModal($criteriaId)
     {
         $this->showModal = true;
         $this->criteriaId = $criteriaId;
         $this->loadCriteria();
     }
-    
+
     public function closeModal()
     {
         $this->showModal = false;
@@ -31,7 +34,7 @@ class ViewModelsModal extends Component
         $this->criteria = null;
         $this->models = [];
     }
-    
+
     private function loadCriteria()
     {
         if ($this->criteriaId) {
@@ -39,7 +42,7 @@ class ViewModelsModal extends Component
             $this->models = $this->criteria->models;
         }
     }
-    
+
     public function render()
     {
         return view('livewire.modals.view-models-modal');

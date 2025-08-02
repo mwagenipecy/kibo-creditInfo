@@ -11,8 +11,9 @@ class Clients extends Model
     use Search;
 
     protected $guarded = [];
+
     protected $searchable = [
-        'membership_number', 'first_name',  'last_name', 'mobile_phone_number'
+        'membership_number', 'first_name',  'last_name', 'mobile_phone_number',
 
     ];
 }

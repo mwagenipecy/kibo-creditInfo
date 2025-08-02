@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class Employeefiles extends Model
 {
     use HasFactory;
+
     protected $table = 'employeefiles';
-    protected $fillable = ['employeeN','empName','docName','path'];
+
+    protected $fillable = ['employeeN', 'empName', 'docName', 'path'];
 }

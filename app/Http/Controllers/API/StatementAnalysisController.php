@@ -21,7 +21,6 @@ class StatementAnalysisController extends Controller
     /**
      * Create a new controller instance.
      *
-     * @param \App\Services\StatementAnalysisService $statementService
      * @return void
      */
     public function __construct(StatementAnalysisService $statementService)
@@ -32,7 +31,6 @@ class StatementAnalysisController extends Controller
     /**
      * Store a newly received statement analysis.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
@@ -50,7 +48,7 @@ class StatementAnalysisController extends Controller
                 return response()->json([
                     'success' => false,
                     'message' => 'Validation failed',
-                    'errors' => $validator->errors()
+                    'errors' => $validator->errors(),
                 ], 422);
             }
 
@@ -81,8 +79,7 @@ class StatementAnalysisController extends Controller
             // Verify the statement based on default criteria
             $isVerified = $this->statementService->verifyStatement($analysis);
 
-            
-            Log::info( $isVerified );
+            Log::info($isVerified);
 
             return response()->json([
                 'success' => true,
@@ -92,12 +89,12 @@ class StatementAnalysisController extends Controller
                     'account_number' => $analysis->account_number,
                     'provider' => $analysis->provider,
                     'is_verified' => $analysis->is_verified,
-                    'affordability_scores' => $analysis->affordabilityScores
-                ]
+                    'affordability_scores' => $analysis->affordabilityScores,
+                ],
             ], 201);
 
         } catch (\Exception $e) {
-            Log::error('Failed to process statement analysis: ' . $e->getMessage(), [
+            Log::error('Failed to process statement analysis: '.$e->getMessage(), [
                 'exception' => $e,
                 'request' => $request->except(['response']),
             ]);
@@ -105,7 +102,7 @@ class StatementAnalysisController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to process statement analysis',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -137,15 +134,15 @@ class StatementAnalysisController extends Controller
                     'wallet_balance' => $analysis->wallet_balance,
                     'affordability_scores' => $analysis->affordabilityScores,
                     'analysis_summary' => $analysis->analysis_summary,
-                    'created_at' => $analysis->created_at
-                ]
+                    'created_at' => $analysis->created_at,
+                ],
             ]);
 
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Statement analysis not found',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 404);
         }
     }
@@ -153,21 +150,20 @@ class StatementAnalysisController extends Controller
     /**
      * Get statement analysis by account number.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function getByAccount(Request $request)
     {
         try {
             $validator = Validator::make($request->all(), [
-                'account_number' => 'required|string'
+                'account_number' => 'required|string',
             ]);
 
             if ($validator->fails()) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Validation failed',
-                    'errors' => $validator->errors()
+                    'errors' => $validator->errors(),
                 ], 422);
             }
 
@@ -176,10 +172,10 @@ class StatementAnalysisController extends Controller
                 ->latest()
                 ->first();
 
-            if (!$analysis) {
+            if (! $analysis) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'No statement analysis found for this account number'
+                    'message' => 'No statement analysis found for this account number',
                 ], 404);
             }
 
@@ -195,15 +191,15 @@ class StatementAnalysisController extends Controller
                     'statement_start_date' => $analysis->statement_start_date,
                     'statement_end_date' => $analysis->statement_end_date,
                     'affordability_scores' => $analysis->affordabilityScores,
-                    'created_at' => $analysis->created_at
-                ]
+                    'created_at' => $analysis->created_at,
+                ],
             ]);
 
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to retrieve statement analysis',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -211,21 +207,20 @@ class StatementAnalysisController extends Controller
     /**
      * Get statement analysis by special ID.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function getBySpecialId(Request $request)
     {
         try {
             $validator = Validator::make($request->all(), [
-                'special_id' => 'required|string'
+                'special_id' => 'required|string',
             ]);
 
             if ($validator->fails()) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Validation failed',
-                    'errors' => $validator->errors()
+                    'errors' => $validator->errors(),
                 ], 422);
             }
 
@@ -234,10 +229,10 @@ class StatementAnalysisController extends Controller
                 ->latest()
                 ->first();
 
-            if (!$analysis) {
+            if (! $analysis) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'No statement analysis found for this special ID'
+                    'message' => 'No statement analysis found for this special ID',
                 ], 404);
             }
 
@@ -253,15 +248,15 @@ class StatementAnalysisController extends Controller
                     'statement_start_date' => $analysis->statement_start_date,
                     'statement_end_date' => $analysis->statement_end_date,
                     'affordability_scores' => $analysis->affordabilityScores,
-                    'created_at' => $analysis->created_at
-                ]
+                    'created_at' => $analysis->created_at,
+                ],
             ]);
 
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to retrieve statement analysis',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -282,7 +277,7 @@ class StatementAnalysisController extends Controller
             if ($analyses->isEmpty()) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'No statement analyses found for this user'
+                    'message' => 'No statement analyses found for this user',
                 ], 404);
             }
 
@@ -295,20 +290,20 @@ class StatementAnalysisController extends Controller
                     'statement_start_date' => $analysis->statement_start_date,
                     'statement_end_date' => $analysis->statement_end_date,
                     'affordability_scores' => $analysis->affordabilityScores,
-                    'created_at' => $analysis->created_at
+                    'created_at' => $analysis->created_at,
                 ];
             });
 
             return response()->json([
                 'success' => true,
-                'data' => $data
+                'data' => $data,
             ]);
 
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to retrieve statement analyses',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }

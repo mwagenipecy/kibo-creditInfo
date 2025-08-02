@@ -2,31 +2,23 @@
 
 namespace App\Http\Livewire\Dashboard;
 
-use App\Models\AccountsModel;
+use App\Exports\LoanRepayment;
+use App\Mail\LoanProgress;
 use App\Models\Application;
 use App\Models\Attachment;
 use App\Models\ClientsModel;
 use App\Models\Employee;
-use App\Models\general_ledger;
+use App\Models\Image;
 use App\Models\Lender;
 use App\Models\Loan_sub_products;
 use App\Models\LoanProduct;
-use App\Models\loans_schedules;
-use App\Exports\LoanRepayment;
-use App\Mail\LoanProgress; 
 use App\Models\LoansModel;
-use App\Models\Image;
-use App\Models\Teller;
 use Carbon\Carbon;
-use App\Http\Livewire\Document\StatementReport;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
-use Livewire\Attributes\Rule;
 use Livewire\Component;
-use Illuminate\Support\Facades\Session;
 use Livewire\WithFileUploads;
 use Maatwebsite\Excel\Facades\Excel;
-use PDF;
 
 class FrontDesk extends Component
 {
@@ -34,12 +26,21 @@ class FrontDesk extends Component
 
     // Personal Information
     public $firstname;
+
     public $middlename;
+
     public $lastname;
+
     public $nidanumber;
+
     public $phonenumber;
+
     public $region;
-    public $district,$applicationStep=0;
+
+    public $district;
+
+    public $applicationStep = 0;
+
     public $ward;
 
     public $down_payment_percent;
@@ -47,95 +48,132 @@ class FrontDesk extends Component
     public $payslip;
 
     public $bankStatement;
+
     public $email;
+
     public $isEmployee = false;
+
     public $employeeId;
+
     public $employmentDate;
+
     public $employmentPosition;
+
     public $employerName;
+
     public $monthlyIncome;
+
     public $otherLoans = false;
+
     public $otherLoanDetails;
-    
+
     // Application & Loan Info
     public $accountSelected;
+
     public $loanProduct = [];
+
     public $loanProductId;
 
-    public $lenderList=[];
+    public $lenderList = [];
+
     public $loan_product;
+
     public $amount2;
+
     public $referenceNumber;
 
     // Car Details
     public $make_and_model;
+
     public $year_of_manufacture;
+
     public $vin;
+
     public $color;
+
     public $mileage;
 
     // Purchase Information
     public $purchase_price;
+
     public $down_payment;
+
     public $loan_amount;
+
     public $selectedApplication;
 
-    public $isModalOpen=false;
+    public $isModalOpen = false;
+
     public $loan_term;
 
     // Vehicle Ownership
     public $currentVehicleOwner;
+
     public $dealerName;
+
     public $dealerContactInfo;
-    
+
     // Loan Calculator Variables
     public $calculatorPrincipal = 0;
+
     public $calculatorInterestRate = 0;
+
     public $calculatorTenure = 12;
+
     public $calculatorInterestMethod = 'reducing';
+
     public $calculatorGracePeriod = 0;
+
     public $calculatorPaymentFrequency = 'monthly';
+
     public $calculatorStartDate;
+
     public $calculatorScheduleData = null;
-    
+
     // Additional fields
-    public $amount3,$hrEmail;
+    public $amount3;
+
+    public $hrEmail;
+
     public $lender;
+
     public $applicationForm;
 
     public $step = 1; // For multi-step form
+
     public $totalSteps = 4;
 
     // Image upload fields
     public $images = [];
+
     public $uploadedImages = [];
+
     public $imagePreviews = []; // Stores temporary image previews
 
     public $principal = 0;
-public $interestRate = 0;
-public $tenure = 12;
-public $interestMethod = 'reducing';
-public $startDate;
-public $gracePeriod = 0;
-public $paymentFrequency = 'monthly';
-public $scheduleData = null;
 
-public $qualifiedLenders=[];
+    public $interestRate = 0;
 
+    public $tenure = 12;
 
+    public $interestMethod = 'reducing';
 
+    public $startDate;
 
+    public $gracePeriod = 0;
 
+    public $paymentFrequency = 'monthly';
 
+    public $scheduleData = null;
 
-// Add properties for application steps
-public $activeTab = 'application';
+    public $qualifiedLenders = [];
 
-
+    // Add properties for application steps
+    public $activeTab = 'application';
 
     public function boot()
     {
-      //  $this->loanProduct = LoanProduct::where('sub_product_status', 'active')->get();
+        //  $this->loanProduct = LoanProduct::where('sub_product_status', 'active')->get();
         $this->calculatorStartDate = Carbon::today()->format('Y-m-d');
     }
 
@@ -144,28 +182,34 @@ public $activeTab = 'application';
     {
         // Validate current step before proceeding
         $this->validateStep($this->step);
-        
+
         if ($this->step < $this->totalSteps) {
             $this->step++;
         }
     }
 
-
     public function updatedNidanumber($value)
-{
-    // Remove any non-digit characters
-    $digits = preg_replace('/\D/', '', $value);
+    {
+        // Remove any non-digit characters
+        $digits = preg_replace('/\D/', '', $value);
 
-    // Format as 20060329-14129-00001-27
-    $formatted = '';
-    if (strlen($digits) > 0) $formatted .= substr($digits, 0, 8);
-    if (strlen($digits) > 8) $formatted .= '-' . substr($digits, 8, 5);
-    if (strlen($digits) > 13) $formatted .= '-' . substr($digits, 13, 5);
-    if (strlen($digits) > 18) $formatted .= '-' . substr($digits, 18, 2);
+        // Format as 20060329-14129-00001-27
+        $formatted = '';
+        if (strlen($digits) > 0) {
+            $formatted .= substr($digits, 0, 8);
+        }
+        if (strlen($digits) > 8) {
+            $formatted .= '-'.substr($digits, 8, 5);
+        }
+        if (strlen($digits) > 13) {
+            $formatted .= '-'.substr($digits, 13, 5);
+        }
+        if (strlen($digits) > 18) {
+            $formatted .= '-'.substr($digits, 18, 2);
+        }
 
-    $this->nidanumber = $formatted;
-}
-
+        $this->nidanumber = $formatted;
+    }
 
     public function prevStep()
     {
@@ -174,155 +218,139 @@ public $activeTab = 'application';
         }
     }
 
-
     public function downloadRepaymentSchedule()
-{
-    // Check if schedule data exists
-    if (!$this->scheduleData) {
-        session()->flash('message_fail', 'No repayment schedule to download.');
-        return;
-    }
+    {
+        // Check if schedule data exists
+        if (! $this->scheduleData) {
+            session()->flash('message_fail', 'No repayment schedule to download.');
 
-    try {
-        // Create a filename with timestamp
-        $filename = 'loan_repayment_schedule_' . time() . '.xlsx';
-        
-        // Use your existing export class if available
-        return Excel::download(new LoanRepayment([$this->scheduleData]), $filename);
-        
-        // If you don't have an export class set up, you might want to create a simple one
-        // or use a different download approach based on your application's setup
-    } catch (\Exception $e) {
-        session()->flash('message_fail', 'Failed to download repayment schedule: ' . $e->getMessage());
-    }
-}
+            return;
+        }
 
+        try {
+            // Create a filename with timestamp
+            $filename = 'loan_repayment_schedule_'.time().'.xlsx';
+
+            // Use your existing export class if available
+            return Excel::download(new LoanRepayment([$this->scheduleData]), $filename);
+
+            // If you don't have an export class set up, you might want to create a simple one
+            // or use a different download approach based on your application's setup
+        } catch (\Exception $e) {
+            session()->flash('message_fail', 'Failed to download repayment schedule: '.$e->getMessage());
+        }
+    }
 
     public function calculateSchedule()
-{
-    
-    
-    $this->validate([
-        'calculatorPrincipal' => 'required|numeric|min:1',
-        'calculatorInterestRate' => 'required|numeric|min:0',
-        'calculatorTenure' => 'required|integer|min:1',
-        'calculatorInterestMethod' => 'required|in:reducing,flat',
-        'calculatorStartDate' => 'required|date',
-        'calculatorGracePeriod' => 'integer|min:0',
-        'calculatorPaymentFrequency' => 'required|in:monthly,daily,quarterly,semi_annual,annual',
-    ]);
-    
-    // Map calculator variables to the ones used by your service
-    $this->principal = $this->calculatorPrincipal;
-    $this->interestRate = $this->calculatorInterestRate;
-    $this->tenure = $this->calculatorTenure;
-    $this->interestMethod = $this->calculatorInterestMethod;
-    $this->startDate = $this->calculatorStartDate;
-    $this->gracePeriod = $this->calculatorGracePeriod;
-    $this->paymentFrequency = $this->calculatorPaymentFrequency;
-    
-    $service = new \App\Services\LoanScheduleService();
-    $this->scheduleData = $service->generateLoanRepaymentSchedule(
-        $this->principal,
-        $this->interestRate,
-        $this->tenure,
-        $this->startDate,
-        $this->interestMethod,
-        $this->gracePeriod,
-        $this->paymentFrequency
-    );
-    
-    // Also assign to calculatorScheduleData for the template to use
-    $this->calculatorScheduleData = $this->scheduleData;
-}
+    {
 
+        $this->validate([
+            'calculatorPrincipal' => 'required|numeric|min:1',
+            'calculatorInterestRate' => 'required|numeric|min:0',
+            'calculatorTenure' => 'required|integer|min:1',
+            'calculatorInterestMethod' => 'required|in:reducing,flat',
+            'calculatorStartDate' => 'required|date',
+            'calculatorGracePeriod' => 'integer|min:0',
+            'calculatorPaymentFrequency' => 'required|in:monthly,daily,quarterly,semi_annual,annual',
+        ]);
 
+        // Map calculator variables to the ones used by your service
+        $this->principal = $this->calculatorPrincipal;
+        $this->interestRate = $this->calculatorInterestRate;
+        $this->tenure = $this->calculatorTenure;
+        $this->interestMethod = $this->calculatorInterestMethod;
+        $this->startDate = $this->calculatorStartDate;
+        $this->gracePeriod = $this->calculatorGracePeriod;
+        $this->paymentFrequency = $this->calculatorPaymentFrequency;
 
-public function setPreviewModal(){
+        $service = new \App\Services\LoanScheduleService;
+        $this->scheduleData = $service->generateLoanRepaymentSchedule(
+            $this->principal,
+            $this->interestRate,
+            $this->tenure,
+            $this->startDate,
+            $this->interestMethod,
+            $this->gracePeriod,
+            $this->paymentFrequency
+        );
 
-
-    $this->principal=$this->loan_amount;
-    $this->interestRate= $this->interestRate ?? 3.5*12;
-    $this->tenure=$this->tenure ?? 12;
-    $this->startDate= $this->startDate ?? Carbon::today()->format('Y-m-d');
-    $this->interestMethod=$this->interestMethod ?? 'reducing';
-    $this->gracePeriod=$this->gracePeriod ?? 0;
-    $this->paymentFrequency=$this->paymentFrequency ?? 'monthly';
-
-
-    $service = new \App\Services\LoanScheduleService();
-    $this->scheduleData = $service->generateLoanRepaymentSchedule(
-        $this->principal ,
-        $this->interestRate,
-        $this->tenure,
-        $this->startDate,
-        $this->interestMethod,
-        $this->gracePeriod,
-        $this->paymentFrequency
-    );
-    
-    // Also assign to calculatorScheduleData for the template to use
-    $this->calculatorScheduleData = $this->scheduleData;
-
-
-    $this->isModalOpen=true;
-}
-
-
-public function updatedTenure($tenure)
-{
-    $tenure = is_null($tenure) ? 0 : max(0, $tenure); // convert null to 0, disallow less than 0
-    $this->tenure = $tenure;
-    $this->setPreviewModal();
-}
-
-public function updatedInterestRate($interestRate)
-{
-    $interestRate = is_null($interestRate) ? 0 : max(0, $interestRate); // convert null to 0, disallow less than 0
-    $this->interestRate = $interestRate;
-    $this->setPreviewModal();
-}
-
-
-public function updatedInterestMethod($interestMethod)
-{
-    $this->interestMethod = $interestMethod ?? 'reducing'; // default to 'reducing' if null
-    $this->setPreviewModal();
-}
-
-
-
-
-
-
-public function nextApplicationStep()
-{
-   $this->validateStep($this->applicationStep+1);
-    
-    // Increment step
-    $this->applicationStep++;
-}
-
-public function prevApplicationStep()
-{
-    // Decrement step but not below 0
-    if ($this->applicationStep > 0) {
-        $this->applicationStep--;
+        // Also assign to calculatorScheduleData for the template to use
+        $this->calculatorScheduleData = $this->scheduleData;
     }
-}
 
-private function validateApplicationStep()
-{
-    // Add your validation logic for each step
-    // Similar to what I provided before
-}
+    public function setPreviewModal()
+    {
 
+        $this->principal = $this->loan_amount;
+        $this->interestRate = $this->interestRate ?? 3.5 * 12;
+        $this->tenure = $this->tenure ?? 12;
+        $this->startDate = $this->startDate ?? Carbon::today()->format('Y-m-d');
+        $this->interestMethod = $this->interestMethod ?? 'reducing';
+        $this->gracePeriod = $this->gracePeriod ?? 0;
+        $this->paymentFrequency = $this->paymentFrequency ?? 'monthly';
 
+        $service = new \App\Services\LoanScheduleService;
+        $this->scheduleData = $service->generateLoanRepaymentSchedule(
+            $this->principal,
+            $this->interestRate,
+            $this->tenure,
+            $this->startDate,
+            $this->interestMethod,
+            $this->gracePeriod,
+            $this->paymentFrequency
+        );
+
+        // Also assign to calculatorScheduleData for the template to use
+        $this->calculatorScheduleData = $this->scheduleData;
+
+        $this->isModalOpen = true;
+    }
+
+    public function updatedTenure($tenure)
+    {
+        $tenure = is_null($tenure) ? 0 : max(0, $tenure); // convert null to 0, disallow less than 0
+        $this->tenure = $tenure;
+        $this->setPreviewModal();
+    }
+
+    public function updatedInterestRate($interestRate)
+    {
+        $interestRate = is_null($interestRate) ? 0 : max(0, $interestRate); // convert null to 0, disallow less than 0
+        $this->interestRate = $interestRate;
+        $this->setPreviewModal();
+    }
+
+    public function updatedInterestMethod($interestMethod)
+    {
+        $this->interestMethod = $interestMethod ?? 'reducing'; // default to 'reducing' if null
+        $this->setPreviewModal();
+    }
+
+    public function nextApplicationStep()
+    {
+        $this->validateStep($this->applicationStep + 1);
+
+        // Increment step
+        $this->applicationStep++;
+    }
+
+    public function prevApplicationStep()
+    {
+        // Decrement step but not below 0
+        if ($this->applicationStep > 0) {
+            $this->applicationStep--;
+        }
+    }
+
+    private function validateApplicationStep()
+    {
+        // Add your validation logic for each step
+        // Similar to what I provided before
+    }
 
     public function validateStep($step)
     {
 
-        
         switch ($step) {
             case 1: // Personal Information
                 $this->validate([
@@ -339,10 +367,8 @@ private function validateApplicationStep()
                     'monthlyIncome' => 'required|numeric|min:0',
                 ]);
 
-
-
                 break;
-                
+
             case 2: // Vehicle Information
                 $this->validate([
                     'make_and_model' => 'required|string|max:255',
@@ -353,10 +379,8 @@ private function validateApplicationStep()
                     'currentVehicleOwner' => 'required|string',
                 ]);
 
-            
-
                 break;
-                
+
             case 3: // Loan Information
                 $this->validate([
                     'purchase_price' => 'required|numeric|min:0',
@@ -364,15 +388,15 @@ private function validateApplicationStep()
                     'loan_amount' => 'required|numeric|min:0',
                     'loanProductId' => 'required|exists:loan_sub_products,id',
                 ]);
-                
+
                 break;
-                
+
             case 4: // Document Upload
                 $this->validate([
                     'images' => 'array',
                     'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
-                    'payslip'=>'nullable|mimes:pdf|max:2048',
-                    'bankStatement'=>'required'
+                    'payslip' => 'nullable|mimes:pdf|max:2048',
+                    'bankStatement' => 'required',
 
                 ]);
                 break;
@@ -382,7 +406,7 @@ private function validateApplicationStep()
     // Method to check if user is an employee
     public function updatedIsEmployee()
     {
-        if (!$this->isEmployee) {
+        if (! $this->isEmployee) {
             $this->employeeId = null;
             $this->employmentDate = null;
             $this->employmentPosition = null;
@@ -402,7 +426,7 @@ private function validateApplicationStep()
     //         'calculatorGracePeriod' => 'integer|min:0',
     //         'calculatorPaymentFrequency' => 'required|in:monthly,daily,quarterly,semi_annual,annual',
     //     ]);
-        
+
     //     $service = new \App\Services\LoanScheduleService();
     //     $this->calculatorScheduleData = $service->generateLoanRepaymentSchedule(
     //         $this->calculatorPrincipal,
@@ -440,7 +464,7 @@ private function validateApplicationStep()
             try {
                 $this->imagePreviews[$key] = [
                     'url' => $image->temporaryUrl(),
-                    'name' => $image->getClientOriginalName()
+                    'name' => $image->getClientOriginalName(),
                 ];
             } catch (\Exception $e) {
                 // Handle the exception
@@ -462,270 +486,248 @@ private function validateApplicationStep()
                 'image',
                 'mimes:jpeg,png,jpg',
                 'max:2048', // 2MB max
-            ]
+            ],
         ], [
             'images.*.max' => 'Each image must be less than 2MB.',
-            'images.*.mimes' => 'Only JPEG, PNG, and JPG files are allowed.'
+            'images.*.mimes' => 'Only JPEG, PNG, and JPG files are allowed.',
         ]);
-    
+
         try {
             // Clear previous uploaded images
             $this->uploadedImages = [];
-    
+
             // Generate a unique reference number
             $this->referenceNumber = time();
-    
+
             foreach ($this->images as $image) {
                 // Validate each image
-                if (!$image->isValid()) {
-                    throw new \Exception("Invalid file upload");
+                if (! $image->isValid()) {
+                    throw new \Exception('Invalid file upload');
                 }
-    
+
                 // Generate a unique filename
-                $filename = uniqid() . '.' . $image->getClientOriginalExtension();
-    
+                $filename = uniqid().'.'.$image->getClientOriginalExtension();
+
                 // Define the storage path (using storage_path for better Laravel practices)
                 $destinationPath = storage_path('app/public/assets/img/cars');
-    
+
                 // Ensure the directory exists
-                if (!file_exists($destinationPath)) {
+                if (! file_exists($destinationPath)) {
                     mkdir($destinationPath, 0755, true);
                 }
-    
+
                 // Store the image
                 $storedPath = $image->storeAs('assets/img/cars', $filename, 'public');
-    
+
                 // Save to database
                 $imageRecord = Image::create([
                     'url' => $storedPath,
                     'loan_id' => $loan_id,
                 ]);
-    
+
                 // Store the path in the uploadedImages array
                 $this->uploadedImages[] = $storedPath;
             }
-    
+
             // Reset images after upload
             $this->images = [];
-    
+
             // Flash success message
             session()->flash('success', 'Images uploaded successfully.');
-    
+
             // Optional: return uploaded image IDs or paths
             return $this->uploadedImages;
-    
+
         } catch (\Exception $e) {
             // Log the full error for debugging
-            \Log::error('Image upload error: ' . $e->getMessage());
-    
+            \Log::error('Image upload error: '.$e->getMessage());
+
             // Flash error message
-            session()->flash('error', 'An error occurred while uploading images: ' . $e->getMessage());
+            session()->flash('error', 'An error occurred while uploading images: '.$e->getMessage());
         }
     }
 
-
-
-
-
-
-    public function saveAttachment($loan_id, $type,$file)
+    public function saveAttachment($loan_id, $type, $file)
     {
         try {
             // Define allowed file extensions
             $allowedExtensions = ['jpg', 'jpeg', 'png', 'pdf', 'docx'];
-    
-    
+
             // Generate a unique reference number
             $this->referenceNumber = time();
-    
-            
-    
-                // Get file extension
-                $extension = strtolower($file->getClientOriginalExtension());
-    
-                // Check if the extension is allowed
-                if (!in_array($extension, $allowedExtensions)) {
-                    throw new \Exception("Unsupported file type: .$extension");
-                }
-    
-                // Generate a unique filename
-                $filename = uniqid() . '.' . $extension;
-    
-                // Store the file in public storage under assets/attachment
-                $storedPath = $file->storeAs('assets/attachment', $filename, 'public');
-    
-                // Save to database
-                Attachment::create([
-                    'url' => $storedPath,
-                    'loan_id' => $loan_id,
-                    'type' => $type,
-                ]);
-        
-    
+
+            // Get file extension
+            $extension = strtolower($file->getClientOriginalExtension());
+
+            // Check if the extension is allowed
+            if (! in_array($extension, $allowedExtensions)) {
+                throw new \Exception("Unsupported file type: .$extension");
+            }
+
+            // Generate a unique filename
+            $filename = uniqid().'.'.$extension;
+
+            // Store the file in public storage under assets/attachment
+            $storedPath = $file->storeAs('assets/attachment', $filename, 'public');
+
+            // Save to database
+            Attachment::create([
+                'url' => $storedPath,
+                'loan_id' => $loan_id,
+                'type' => $type,
+            ]);
+
             // Flash success message
             session()->flash('success', 'Files uploaded successfully.');
-    
+
         } catch (\Exception $e) {
             // Log error and flash error message
-            \Log::error('File upload error: ' . $e->getMessage());
-            session()->flash('error', 'Error uploading files: ' . $e->getMessage());
+            \Log::error('File upload error: '.$e->getMessage());
+            session()->flash('error', 'Error uploading files: '.$e->getMessage());
         }
     }
-    
-
-
-    
 
     // Main method to process loan application
     public function submitApplication()
     {
 
-        
         // Validate all steps
         for ($i = 1; $i <= $this->totalSteps; $i++) {
-           $this->validateStep($i);
+            $this->validateStep($i);
         }
 
         // Create client record
-        try{
+        try {
 
-   
-        $clientId = ClientsModel::create([
-            'first_name' => $this->firstname,
-            'middle_name' => $this->middlename,
-            'last_name' => $this->lastname,
-            'phone_number' => $this->phonenumber,
-            'national_id' => $this->nidanumber,
-            'region' => $this->region,
-            'district' => $this->district,
-            'street' => $this->ward,
-            'amount' => $this->loan_amount,
-            'lender_id'=>auth()->user()->institution_id,
+            $clientId = ClientsModel::create([
+                'first_name' => $this->firstname,
+                'middle_name' => $this->middlename,
+                'last_name' => $this->lastname,
+                'phone_number' => $this->phonenumber,
+                'national_id' => $this->nidanumber,
+                'region' => $this->region,
+                'district' => $this->district,
+                'street' => $this->ward,
+                'amount' => $this->loan_amount,
+                'lender_id' => auth()->user()->institution_id,
 
-            'email' => $this->email,
-            'is_employee' => $this->isEmployee,
-            'employee_id' => $this->employeeId,
-            'monthly_income' => $this->monthlyIncome,
-            'employer_name' => $this->employerName,
-            'client_status' => "NEW CLIENT"
-        ])->id;
+                'email' => $this->email,
+                'is_employee' => $this->isEmployee,
+                'employee_id' => $this->employeeId,
+                'monthly_income' => $this->monthlyIncome,
+                'employer_name' => $this->employerName,
+                'client_status' => 'NEW CLIENT',
+            ])->id;
 
-        // Create item record
-        $itemId = DB::table('items')->insertGetId([
-            'make_and_model' => $this->make_and_model,
-            'year_of_manufacture' => $this->year_of_manufacture,
-            'vin' => $this->vin,
-            'color' => $this->color,
-            'mileage' => $this->mileage,
-            'purchase_price' => $this->purchase_price,
-            'down_payment' => $this->down_payment,
-            'current_owner' => $this->currentVehicleOwner,
-            'dealer_name' => $this->dealerName,
-            'lender_id'=>auth()->user()->institution_id,
+            // Create item record
+            $itemId = DB::table('items')->insertGetId([
+                'make_and_model' => $this->make_and_model,
+                'year_of_manufacture' => $this->year_of_manufacture,
+                'vin' => $this->vin,
+                'color' => $this->color,
+                'mileage' => $this->mileage,
+                'purchase_price' => $this->purchase_price,
+                'down_payment' => $this->down_payment,
+                'current_owner' => $this->currentVehicleOwner,
+                'dealer_name' => $this->dealerName,
+                'lender_id' => auth()->user()->institution_id,
 
-            'dealer_contact' => $this->dealerContactInfo,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+                'dealer_contact' => $this->dealerContactInfo,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
 
-        // Create loan record
-        $loan_id = LoansModel::create([
-            'principle' => $this->loan_amount,
-            'client_id' => $clientId,
-            'client_number' => DB::table('clients')->where('id', $clientId)->value('client_number'),
-            'loan_sub_product' => $this->loan_product,
-            'pay_method' => '',
-            'bank' => '',
-            'bank_account_number' => '',
-            'LoanPhoneNo' => $this->phonenumber,
-            'status' => 'NEW LOAN',
-            'interest' => DB::table('loan_sub_products')->where('id', $this->loanProductId)->value('interest_value'),
-            'tenure' => DB::table('loan_sub_products')->where('id', $this->loanProductId)->value('interest_tenure'),
-            'supervisor_id' => 1,
-            'item_id' => $itemId,
-            'lender_id'=>auth()->user()->institution_id,
+            // Create loan record
+            $loan_id = LoansModel::create([
+                'principle' => $this->loan_amount,
+                'client_id' => $clientId,
+                'client_number' => DB::table('clients')->where('id', $clientId)->value('client_number'),
+                'loan_sub_product' => $this->loan_product,
+                'pay_method' => '',
+                'bank' => '',
+                'bank_account_number' => '',
+                'LoanPhoneNo' => $this->phonenumber,
+                'status' => 'NEW LOAN',
+                'interest' => DB::table('loan_sub_products')->where('id', $this->loanProductId)->value('interest_value'),
+                'tenure' => DB::table('loan_sub_products')->where('id', $this->loanProductId)->value('interest_tenure'),
+                'supervisor_id' => 1,
+                'item_id' => $itemId,
+                'lender_id' => auth()->user()->institution_id,
 
-            'monthly_income' => $this->monthlyIncome,
-            'other_loans' => $this->otherLoans,
-            'other_loan_details' => $this->otherLoanDetails,
-        ])->id;
+                'monthly_income' => $this->monthlyIncome,
+                'other_loans' => $this->otherLoans,
+                'other_loan_details' => $this->otherLoanDetails,
+            ])->id;
 
-        // Create application record
-        $applicationId = DB::table('applications')->insertGetId([
-            'first_name' => $this->firstname,
-            'middle_name' => $this->middlename,
-            'last_name' => $this->lastname,
-            'phone_number' => $this->phonenumber,
-            'national_id' => $this->nidanumber,
-            'region' => $this->region,
-            'district' => $this->district,
-            'street' => $this->ward,
-            'amount' => $this->loan_amount,
-            'email' => $this->email,
-            'application_status' => "NEW CLIENT",
-            'make_and_model' => $this->make_and_model,
-            'year_of_manufacture' => $this->year_of_manufacture,
-            'vin' => $this->vin,
-            'color' => $this->color,
-            'mileage' => $this->mileage,
-            'purchase_price' => $this->purchase_price,
-            'down_payment' => $this->down_payment,
-            'loan_amount' => $this->loan_amount,
-            'loan_id' => $loan_id,
-            'loanProductId' => $this->loanProductId,
-            'is_employee' => $this->isEmployee,
-            'employee_id' => $this->employeeId,
-            'monthly_income' => $this->monthlyIncome,
-            'employer_name' => $this->employerName,
-            'lender_id'=>$this->lender,
-            'hrEmail'=>$this->hrEmail,
-            'car_dealer_id'=>auth()->user()->institution_id,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+            // Create application record
+            $applicationId = DB::table('applications')->insertGetId([
+                'first_name' => $this->firstname,
+                'middle_name' => $this->middlename,
+                'last_name' => $this->lastname,
+                'phone_number' => $this->phonenumber,
+                'national_id' => $this->nidanumber,
+                'region' => $this->region,
+                'district' => $this->district,
+                'street' => $this->ward,
+                'amount' => $this->loan_amount,
+                'email' => $this->email,
+                'application_status' => 'NEW CLIENT',
+                'make_and_model' => $this->make_and_model,
+                'year_of_manufacture' => $this->year_of_manufacture,
+                'vin' => $this->vin,
+                'color' => $this->color,
+                'mileage' => $this->mileage,
+                'purchase_price' => $this->purchase_price,
+                'down_payment' => $this->down_payment,
+                'loan_amount' => $this->loan_amount,
+                'loan_id' => $loan_id,
+                'loanProductId' => $this->loanProductId,
+                'is_employee' => $this->isEmployee,
+                'employee_id' => $this->employeeId,
+                'monthly_income' => $this->monthlyIncome,
+                'employer_name' => $this->employerName,
+                'lender_id' => $this->lender,
+                'hrEmail' => $this->hrEmail,
+                'car_dealer_id' => auth()->user()->institution_id,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
 
-    }catch(\Exception $e){
+        } catch (\Exception $e) {
 
+            dd($e->getMessage());
 
-    dd($e->getMessage());
-
-
-    }
+        }
 
         // Update image references
-       
-           $this->saveImages($loan_id);
 
+        $this->saveImages($loan_id);
 
-           if($this->payslip){
-            $this->saveAttachment($loan_id, 'payslip',$this->payslip);
+        if ($this->payslip) {
+            $this->saveAttachment($loan_id, 'payslip', $this->payslip);
 
-           }
+        }
 
+        if ($this->bankStatement) {
+            $this->saveAttachment($loan_id, 'bankStatement', $this->bankStatement);
 
-           if($this->bankStatement){
-            $this->saveAttachment($loan_id, 'bankStatement',$this->bankStatement);
+        }
 
+        if ($this->applicationForm) {
+            $this->saveAttachment($loan_id, 'application_form', $this->applicationForm);
 
-           }
+        }
 
-
-
-           if($this->applicationForm){
-            $this->saveAttachment($loan_id, 'application_form',$this->applicationForm);
-
-           }
-                
         // Send email notification
         try {
             Mail::to($this->email)->send(new LoanProgress(
-                $this->phonenumber, 
+                $this->phonenumber,
                 $this->firstname,
                 'We acknowledge the successful receipt of your loan application. Our team is now processing it and will be in touch shortly regarding further stages.'
             ));
         } catch (\Exception $e) {
             // Log email error but continue with the process
-            \Log::error('Failed to send email: ' . $e->getMessage());
+            \Log::error('Failed to send email: '.$e->getMessage());
         }
 
         // Reset form and show success message
@@ -749,9 +751,9 @@ private function validateApplicationStep()
             'make_and_model', 'year_of_manufacture', 'vin', 'color', 'mileage',
             'purchase_price', 'down_payment', 'loan_amount', 'loan_term',
             'currentVehicleOwner', 'dealerName', 'dealerContactInfo', 'step',
-            'images', 'imagePreviews', 'uploadedImages', 'referenceNumber'
+            'images', 'imagePreviews', 'uploadedImages', 'referenceNumber',
         ]);
-        
+
         $this->step = 1;
     }
 
@@ -760,20 +762,14 @@ private function validateApplicationStep()
         $this->amount3 = 600;
         $this->amount3 = $this->amount3 ?: null;
 
-
-        // for testing 
+        // for testing
         $this->selectedApplication = Application::findOrFail(23);
 
         $this->qualifiedLenders = Loan_sub_products::take(9)->get();
 
+        $this->lenderList = Lender::get();
 
-        $this->lenderList=Lender::get();
-
-
-
-       
-
-        if($this->lender){
+        if ($this->lender) {
 
             $this->loanProduct = LoanProduct::where('institution_id', $this->lender)->get();
         }

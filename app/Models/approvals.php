@@ -7,15 +7,16 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 
 class approvals extends Model
-     {
+{
     use HasFactory;
+
     protected $guarded = [];
-    protected $table='approvals';
 
+    protected $table = 'approvals';
 
-    public function sendApproval($id,$description,$msg,$aprroval_process_description,$code,$edit_package){
+    public function sendApproval($id, $description, $msg, $aprroval_process_description, $code, $edit_package)
+    {
 
-       
         approvals::create([
             'institution' => auth()->user()->institution_id,
             'process_name' => $description,
@@ -24,12 +25,10 @@ class approvals extends Model
             'process_code' => $code,
             'process_id' => $id,
             'process_status' => 'PENDING',
-            'user_id'  => Auth::user()->id,
-            'team_id'  => "",
-             'edit_package'=>$edit_package,
+            'user_id' => Auth::user()->id,
+            'team_id' => '',
+            'edit_package' => $edit_package,
         ]);
 
     }
-
-
 }

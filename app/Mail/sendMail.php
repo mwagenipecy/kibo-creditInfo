@@ -1,8 +1,8 @@
 <?php
+
 namespace App\Mail;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
@@ -15,7 +15,6 @@ class sendMail extends Mailable
     /**
      * Create a new message instance.
      *
-     * @param array $details
      * @return void
      */
     public function __construct(array $details)
@@ -31,7 +30,7 @@ class sendMail extends Mailable
     public function build()
     {
         return $this->subject('CYBERPOINT PRO')
-                    ->view('emails.sendMail')
-                    ->with('details', $this->details);
+            ->view('emails.sendMail')
+            ->with('details', $this->details);
     }
 }

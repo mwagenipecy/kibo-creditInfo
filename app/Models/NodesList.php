@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class NodesList extends Model
 {
     use HasFactory;
+
     protected $table = 'nodes';
+
     protected $guarded = [];
 }

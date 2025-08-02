@@ -11,12 +11,11 @@ class Application extends Model
 
     protected $guarded = [];
 
+    public function lender()
+    {
 
-    public function lender(){
-
-        return $this->belongsTo(Lender::class,'lender_id');
+        return $this->belongsTo(Lender::class, 'lender_id');
     }
-
 
     public function billItems()
     {
@@ -27,7 +26,6 @@ class Application extends Model
     {
         return $this->belongsTo(CarDealer::class, 'car_dealer_id');
     }
-
 
     // Check if application has been billed
     public function isBilled(): bool
@@ -45,9 +43,8 @@ class Application extends Model
     public function scopeBillable($query)
     {
         return $query->whereIn('application_status', ['APPROVED', 'COMPLETED', 'DISBURSED'])
-                    ->whereDoesntHave('billItems');
+            ->whereDoesntHave('billItems');
     }
-
 
     public function scopeApproved($query)
     {
@@ -63,7 +60,7 @@ class Application extends Model
     // Get full applicant name
     public function getFullNameAttribute(): string
     {
-        return trim(($this->first_name ?? '') . ' ' . ($this->middle_name ?? '') . ' ' . ($this->last_name ?? ''));
+        return trim(($this->first_name ?? '').' '.($this->middle_name ?? '').' '.($this->last_name ?? ''));
     }
 
     // Check if application is approved/completed
@@ -71,6 +68,4 @@ class Application extends Model
     {
         return in_array($this->application_status, ['APPROVED', 'COMPLETED', 'DISBURSED']);
     }
-
-
 }

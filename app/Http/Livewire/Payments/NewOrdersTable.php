@@ -2,33 +2,22 @@
 
 namespace App\Http\Livewire\Payments;
 
-use Livewire\Component;
-
-
 use App\Models\Transactions;
-use App\Models\Clients;
-use Illuminate\Support\Str;
-use Mediconesystems\LivewireDatatables\Column;
-use Mediconesystems\LivewireDatatables\NumberColumn;
-use Mediconesystems\LivewireDatatables\DateColumn;
-use Mediconesystems\LivewireDatatables\Http\Livewire\LivewireDatatable;
 use Illuminate\Support\Facades\Session;
-use App\Models\search;
+use Mediconesystems\LivewireDatatables\Column;
+use Mediconesystems\LivewireDatatables\Http\Livewire\LivewireDatatable;
 
 class NewOrdersTable extends LivewireDatatable
 {
-
     protected $listeners = ['orderAdded' => '$refresh'];
-    public $exportable = true;
 
+    public $exportable = true;
 
     public function builder()
     {
-        //dd(Session::get('unCommitedOrderNumber'));
+        // dd(Session::get('unCommitedOrderNumber'));
 
         return Transactions::query()->where('order_number', Session::get('unCommitedOrderNumber'));
-
-
 
     }
 
@@ -73,9 +62,7 @@ class NewOrdersTable extends LivewireDatatable
                 ->label('Amount'),
 
             Column::name('description')
-                ->label('Description')
+                ->label('Description'),
         ];
     }
-
-
 }

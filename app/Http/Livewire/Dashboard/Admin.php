@@ -9,28 +9,33 @@ use Livewire\Component;
 
 class Admin extends Component
 {
+    public $user = [];
 
+    public $carDealer = [];
 
-    public $user=[],$carDealer=[],$lender=[],$application=[];
+    public $lender = [];
 
-    public function loadData(){
+    public $application = [];
 
-        $this->user=User::count();
-        $this->carDealer=CarDealer::count();
-        $this->lender=DB::table('lenders')->count();
-        $this->application=DB::table('applications')->where('application_status','ACCEPTED')->count();
+    public function loadData()
+    {
+
+        $this->user = User::count();
+        $this->carDealer = CarDealer::count();
+        $this->lender = DB::table('lenders')->count();
+        $this->application = DB::table('applications')->where('application_status', 'ACCEPTED')->count();
 
     }
-
 
     public function render()
     {
 
         $this->loadData();
-        return view('livewire.dashboard.admin',
-        [
-            'notificationDummyData'=>DB::table('activity_logs')->paginate(6),
 
-        ]);
+        return view('livewire.dashboard.admin',
+            [
+                'notificationDummyData' => DB::table('activity_logs')->paginate(6),
+
+            ]);
     }
 }

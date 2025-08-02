@@ -4,23 +4,20 @@ namespace App\Exports;
 
 use App\Models\ClientsModel;
 use App\Models\general_ledger;
-use App\Models\loans_schedules;
 use App\Models\LoansModel;
 use Maatwebsite\Excel\Concerns\FromArray;
-use Maatwebsite\Excel\Concerns\FromCollection;
-use Maatwebsite\Excel\Events\AfterSheet;
-use PhpOffice\PhpSpreadsheet\Writer\Xlsx\Worksheet;
-use Maatwebsite\Excel\Concerns\WithHeadings;
-use Maatwebsite\Excel\Concerns\WithStyles;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithEvents;
+use Maatwebsite\Excel\Concerns\WithHeadings;
+use Maatwebsite\Excel\Concerns\WithStyles;
+use Maatwebsite\Excel\Events\AfterSheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx\Worksheet;
 
-class LoanRepayment implements FromArray,WithHeadings, WithStyles, ShouldAutoSize, WithEvents
+class LoanRepayment implements FromArray, ShouldAutoSize, WithEvents, WithHeadings, WithStyles
 {
     /**
-    * @return \Illuminate\Support\Collection
-    */
-
+     * @return \Illuminate\Support\Collection
+     */
     public $value;
 
     public function __construct($value)
@@ -28,44 +25,40 @@ class LoanRepayment implements FromArray,WithHeadings, WithStyles, ShouldAutoSiz
         $this->value = $value;
     }
 
-    public function array():array
+    public function array(): array
     {
         // create an array to return
         // get client name
-        $client_name=LoansModel::whereIn('loan_account_number',$this->value)->value('client_number');
+        $client_name = LoansModel::whereIn('loan_account_number', $this->value)->value('client_number');
 
-        $client_full_name=ClientsModel::where('client_number',$client_name)->first();
-        $client_full_name=$client_full_name->first_name.' '.$client_full_name->middle_name.' '.$client_full_name->last_name;
+        $client_full_name = ClientsModel::where('client_number', $client_name)->first();
+        $client_full_name = $client_full_name->first_name.' '.$client_full_name->middle_name.' '.$client_full_name->last_name;
 
-        $data=array();
-        $transaction_records=[];
-        foreach ( $this->value as $value){
+        $data = [];
+        $transaction_records = [];
+        foreach ($this->value as $value) {
 
-            $transaction_records[]= general_ledger::where('record_on_account_number', $value)->get();
+            $transaction_records[] = general_ledger::where('record_on_account_number', $value)->get();
 
         }
 
+        foreach ($transaction_records as $values) {
 
+            foreach ($values as $value) {
+                $data[] = [
+                    'created_at' => $value->created_at->format('Y-m-d'),
+                    'client_full_name' => $client_full_name,
+                    'loan_id' => $value->loan_id,
+                    'debit' => $value->debit ?: '00',
+                    'credit' => $value->credit ?: '00',
+                    'narration' => $value->narration,
+                    'record_on_account_number' => $value->record_on_account_number,
+                    'record_on_account_number_balance' => $value->record_on_account_number_balance ?: '00',
 
-       foreach ($transaction_records as $values){
+                ];
+            }
 
-           foreach ($values as $value) {
-               $data[] = [
-                   'created_at' => $value->created_at->format('Y-m-d'),
-                   'client_full_name' => $client_full_name,
-                   'loan_id' => $value->loan_id,
-                   'debit' => $value->debit ?:"00",
-                   'credit' => $value->credit ?:"00",
-                   'narration' => $value->narration,
-                   'record_on_account_number' => $value->record_on_account_number,
-                   'record_on_account_number_balance' => $value->record_on_account_number_balance ? :"00",
-
-
-
-               ];
-           }
-
-       }
+        }
 
         return $data;
 

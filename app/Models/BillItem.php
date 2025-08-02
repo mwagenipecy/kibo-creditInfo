@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class BillItem extends Model
@@ -14,14 +13,14 @@ class BillItem extends Model
         'quantity',
         'unit_price',
         'total_price',
-        'item_date'
+        'item_date',
     ];
 
     protected $casts = [
         'quantity' => 'integer',
         'unit_price' => 'decimal:2',
         'total_price' => 'decimal:2',
-        'item_date' => 'date'
+        'item_date' => 'date',
     ];
 
     public function bill()

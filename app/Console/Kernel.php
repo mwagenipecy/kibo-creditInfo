@@ -11,13 +11,12 @@ class Kernel extends ConsoleKernel
     /**
      * Define the application's command schedule.
      *
-     * @param  \Illuminate\Console\Scheduling\Schedule  $schedule
      * @return void
      */
     protected function schedule(Schedule $schedule)
     {
         $schedule->command('stethoscope:monitor')->everySeconds(30)->withoutOverlapping();
-        $schedule->command(new EndOfDay())->dailyAt('16:56');
+        $schedule->command(new EndOfDay)->dailyAt('16:56');
     }
 
     /**

@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class ChequeBookModel extends Model
 {
     use HasFactory;
+
     protected $table = 'cheques';
+
     protected $guarded = [];
 }

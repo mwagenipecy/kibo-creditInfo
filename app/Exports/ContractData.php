@@ -10,7 +10,6 @@ use App\Models\User;
 use Carbon\Carbon;
 use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\FromArray;
-use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\WithHeadings;
@@ -19,94 +18,80 @@ use Maatwebsite\Excel\Concerns\WithTitle;
 use Maatwebsite\Excel\Events\AfterSheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx\Worksheet;
 
-class ContractData implements FromArray,WithHeadings, WithStyles, ShouldAutoSize, WithEvents,WithTitle
+class ContractData implements FromArray, ShouldAutoSize, WithEvents, WithHeadings, WithStyles, WithTitle
 {
     /**
-    * @return \Illuminate\Support\Collection
-    */
+     * @return \Illuminate\Support\Collection
+     */
     use Exportable;
 
     public $value;
 
-
     public function __construct($value)
     {
-        $this->value=$value;
+        $this->value = $value;
     }
 
-
-    public function array():array
+    public function array(): array
     {
 
-        $array=[];
-        $users=User::get();
+        $array = [];
+        $users = User::get();
 
-        $client_numbers=$this->value;
+        $client_numbers = $this->value;
 
+        foreach ($client_numbers as $number) {
 
-
-        foreach ($client_numbers as $number){
-
-            $loanData=  LoansModel::where('id',$number)->first();
+            $loanData = LoansModel::where('id', $number)->first();
             $startDate = Carbon::now()->startOfMonth(); // Get the first day of the current month
             $endDate = Carbon::now()->endOfMonth();
 
-
-            $array[]=[
-                'report_date'=>$loanData->created_at->format('Y-m-d'),
-                'contract_code'=>$loanData->loan_id,
-                'customer_code'=>$loanData->client_number,
-                'Branch'=>BranchesModel::where('id',$loanData->branch_id)->value('name'),
-                'phase_of_contract'=>null,
-                'TransferStatus'=>'NO',
-                'TypeofContract'=>'Individual',
-                'PurposeofFinancing'=>Loan_sub_products::where('sub_product_id',$loanData->loan_sub_product)->value('sub_product_name'),
-                'InterestRate'=>$loanData->interest,
-                'TotalAmount'=>$loanData->principle,
-                'TotalTakenAmount'=>(double)$loanData->principle -(double)$loanData->total_principle-(double)$loanData->future_interest,
-                'InstallmentAmount'=>loans_schedules::where('loan_id',$loanData->loan_id)->sum('installment'),
-                'NumberofInstallments'=>loans_schedules::where('loan_id',$loanData->loan_id)->count(),
-                'NumberofOutstandingInstallments'=>(loans_schedules::where('loan_id',$loanData->loan_id)->count()) - (loans_schedules::where('loan_id',$loanData->loan_id) ->where('completion_status','CLOSED')->count()),
-                'OutstandingAmount'=>loans_schedules::where('loan_id',$loanData->loan_id) ->where('completion_status','CLOSED')->sum('installment'),
-                'Past Due Amount'=>null,
-                'PastDueDays'=>$loanData->days_in_arrears,
-                'NumberOfDueInstallments'=>null,
-                'AdditionalFeesSum'=>loans_schedules::where('loan_id',$loanData->loan_id)->sum('penaties'),
-                'AdditionalFeesPaid'=>loans_schedules::where('loan_id',$loanData->loan_id)->where('completion_status','CLOSED')->sum('penaties'),
-                'DateofLastPayment'=>loans_schedules::where('loan_id',$loanData->loan_id)->where('completion_status','CLOSED')->max('updated_at'),
-                'TotalMonthlyPayment'=>loans_schedules::where('loan_id', $loanData->loan_id)
-                                            ->where('completion_status', 'CLOSED')
-                                            ->whereBetween('updated_at', [$startDate, $endDate])->sum('payment'),
-                'PaymentPeriodicity'=>null,
-                'CreditUsageinLast30Days'=>null,
-                'StartDate'=>loans_schedules::where('loan_id',$loanData->loan_id)->min('installment_date'),
-                'ExpectedEndDate'=>loans_schedules::where('loan_id',$loanData->loan_id)->max('installment_date'),
-                'RealEndDate'=>loans_schedules::where('loan_id',$loanData->loan_id)->max('installment_date') < loans_schedules::where('loan_id',$loanData->loan_id)->max('updated_at')  ? : null,
-                'NegativeStatusoftheContract'=>'constant',
-                'CollateralType'=>$loanData->collateral_type,
-                'CollateralValue'=>$loanData->collateral_value,
-                'RoleofCustomer'=>null,
-                'CurrencyofContract'=>'TZS'
-
-
-
-
-
-
+            $array[] = [
+                'report_date' => $loanData->created_at->format('Y-m-d'),
+                'contract_code' => $loanData->loan_id,
+                'customer_code' => $loanData->client_number,
+                'Branch' => BranchesModel::where('id', $loanData->branch_id)->value('name'),
+                'phase_of_contract' => null,
+                'TransferStatus' => 'NO',
+                'TypeofContract' => 'Individual',
+                'PurposeofFinancing' => Loan_sub_products::where('sub_product_id', $loanData->loan_sub_product)->value('sub_product_name'),
+                'InterestRate' => $loanData->interest,
+                'TotalAmount' => $loanData->principle,
+                'TotalTakenAmount' => (float) $loanData->principle - (float) $loanData->total_principle - (float) $loanData->future_interest,
+                'InstallmentAmount' => loans_schedules::where('loan_id', $loanData->loan_id)->sum('installment'),
+                'NumberofInstallments' => loans_schedules::where('loan_id', $loanData->loan_id)->count(),
+                'NumberofOutstandingInstallments' => (loans_schedules::where('loan_id', $loanData->loan_id)->count()) - (loans_schedules::where('loan_id', $loanData->loan_id)->where('completion_status', 'CLOSED')->count()),
+                'OutstandingAmount' => loans_schedules::where('loan_id', $loanData->loan_id)->where('completion_status', 'CLOSED')->sum('installment'),
+                'Past Due Amount' => null,
+                'PastDueDays' => $loanData->days_in_arrears,
+                'NumberOfDueInstallments' => null,
+                'AdditionalFeesSum' => loans_schedules::where('loan_id', $loanData->loan_id)->sum('penaties'),
+                'AdditionalFeesPaid' => loans_schedules::where('loan_id', $loanData->loan_id)->where('completion_status', 'CLOSED')->sum('penaties'),
+                'DateofLastPayment' => loans_schedules::where('loan_id', $loanData->loan_id)->where('completion_status', 'CLOSED')->max('updated_at'),
+                'TotalMonthlyPayment' => loans_schedules::where('loan_id', $loanData->loan_id)
+                    ->where('completion_status', 'CLOSED')
+                    ->whereBetween('updated_at', [$startDate, $endDate])->sum('payment'),
+                'PaymentPeriodicity' => null,
+                'CreditUsageinLast30Days' => null,
+                'StartDate' => loans_schedules::where('loan_id', $loanData->loan_id)->min('installment_date'),
+                'ExpectedEndDate' => loans_schedules::where('loan_id', $loanData->loan_id)->max('installment_date'),
+                'RealEndDate' => loans_schedules::where('loan_id', $loanData->loan_id)->max('installment_date') < loans_schedules::where('loan_id', $loanData->loan_id)->max('updated_at') ?: null,
+                'NegativeStatusoftheContract' => 'constant',
+                'CollateralType' => $loanData->collateral_type,
+                'CollateralValue' => $loanData->collateral_value,
+                'RoleofCustomer' => null,
+                'CurrencyofContract' => 'TZS',
 
             ];
         }
 
-
         return $array;
     }
 
-
     public function title(): string
     {
-        return "CONTRACT";
+        return 'CONTRACT';
     }
-
 
     public function headings(): array
     {
@@ -120,11 +105,11 @@ class ContractData implements FromArray,WithHeadings, WithStyles, ShouldAutoSize
             'Type of Contract',
             'Purpose of Financing',
             'Interest Rate',
-             'Total Amount',
+            'Total Amount',
             'Total Taken Amount',
             'Installment Amount',
-             'Number of Installments',
-             'Number of Outstanding Installments',
+            'Number of Installments',
+            'Number of Outstanding Installments',
             'Outstanding Amount',
             'Past Due Amount',
             'Past Due Days',
@@ -143,7 +128,6 @@ class ContractData implements FromArray,WithHeadings, WithStyles, ShouldAutoSize
             'Collateral Value',
             'Role of Customer',
             'Currency of Contract',
-
 
         ];
     }
@@ -170,5 +154,4 @@ class ContractData implements FromArray,WithHeadings, WithStyles, ShouldAutoSize
             },
         ];
     }
-
 }

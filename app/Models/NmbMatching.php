@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class NmbMatching extends Model
 {
     use HasFactory;
+
     protected $table = 'nmb_transactions_matching';
+
     protected $guarded = [];
 }

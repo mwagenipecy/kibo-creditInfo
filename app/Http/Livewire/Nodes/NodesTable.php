@@ -2,20 +2,20 @@
 
 namespace App\Http\Livewire\Nodes;
 
-
-use Livewire\WithFileUploads;
 use App\Models\NodesList;
+use Livewire\WithFileUploads;
 use Mediconesystems\LivewireDatatables\Column;
 use Mediconesystems\LivewireDatatables\Http\Livewire\LivewireDatatable;
-
 
 class NodesTable extends LivewireDatatable
 {
     use WithFileUploads;
 
     public $selectedOption;
+
     public $exportable = true;
-    public $searchable="NODE_NAME
+
+    public $searchable = 'NODE_NAME
       ,NODE_DB_HOST
       ,NODE_DB_PORT
       ,NODE_DB_DATABASE
@@ -35,16 +35,14 @@ class NodesTable extends LivewireDatatable
       ,DB_TABLE_SECONDARY_REFERENCE
       ,DB_TABLE_NAME
       ,NODE_TYPE
-      ,NODE_STATUS";
+      ,NODE_STATUS';
 
     public function builder(): \Illuminate\Database\Eloquent\Builder
     {
 
-        return NodesList::query()->whereIn('NODE_STATUS',['ACTIVE', 'INACTIVE','PENDING']);
-
+        return NodesList::query()->whereIn('NODE_STATUS', ['ACTIVE', 'INACTIVE', 'PENDING']);
 
     }
-
 
     public function columns(): array
     {
@@ -62,35 +60,28 @@ class NodesTable extends LivewireDatatable
             Column::name('NODE_TYPE')
                 ->label('Type Of Node'),
 
-
             Column::name('QUERY')
                 ->label('Query String'),
 
+            Column::callback(['ID'], function ($id) {
+                $node = NodesList::where('ID', $id)->get()->first();
 
-
-                Column::callback(['ID'], function ($id) {
-                    $node = NodesList::where('ID',$id)->get()->first();
-                    return view('livewire.nodes.table-source-buttons', [
-                        'dataSource' => $node->NODE_DATA_SOURCE,
-                        'id' => $id,
-                        'move' => false,
-                    ]);
-                })->label('Data Source'),
-
+                return view('livewire.nodes.table-source-buttons', [
+                    'dataSource' => $node->NODE_DATA_SOURCE,
+                    'id' => $id,
+                    'move' => false,
+                ]);
+            })->label('Data Source'),
 
             Column::callback(['NODE_STATUS'], function ($status) {
                 return view('livewire.nodes.table-action-buttons', ['status' => $status, 'move' => false]);
             })->label('Node Status'),
 
-
-
-
         ];
     }
 
-    public function selectedOption($dataSource,$id){
+    public function selectedOption($dataSource, $id)
+    {
         NodesList::where('ID', $id)->update(['NODE_DATA_SOURCE' => $dataSource]);
     }
-
-
 }

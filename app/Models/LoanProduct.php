@@ -11,20 +11,18 @@ class LoanProduct extends Model
 
     protected $guarded = [];
 
-    protected $table="loan_sub_products";
+    protected $table = 'loan_sub_products';
 
+    public function range($id)
+    {
 
+        $amount_range = LoanProduct::where('id', $id)->first();
 
-    public function range($id){
-
-        $amount_range = LoanProduct::where('id',$id)->first();
-
-        return $amount_range->principle_min_value ."-". $amount_range->principle_max_value;
+        return $amount_range->principle_min_value.'-'.$amount_range->principle_max_value;
     }
 
-
-    public function lender(){
+    public function lender()
+    {
         return $this->belongsTo(Lender::class, 'institution_id');
-    }   
-
+    }
 }

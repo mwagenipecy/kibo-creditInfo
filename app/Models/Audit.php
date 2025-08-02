@@ -8,5 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class Audit extends Model
 {
     use HasFactory;
+
     protected $table = 'system_audit';
 }

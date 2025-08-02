@@ -3,18 +3,16 @@
 namespace App\Http\Livewire\Settings;
 
 use App\Http\Traits\MailSender;
-use App\Models\approvals;
 use App\Models\Department;
 use App\Models\departmentsList;
 use App\Models\User;
 use App\Models\UserSubMenu;
+use App\Services\UserService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Validation\Rules\Password;
 use Livewire\Component;
-use App\Services\UserService;
-
 use Livewire\WithFileUploads;
 
 class Settings extends Component
@@ -23,57 +21,88 @@ class Settings extends Component
 
     // Tab navigation
     public $tab_id = 6;
+
     public $selected;
 
     // User statistics
     public $activeUsers;
+
     public $inActiveUsers;
 
     // Modal control
     public $showCreateNewUser = false;
+
     public $showDeleteUser = false;
+
     public $showEditUser = false;
+
     public bool $showRoles = false;
 
     // User lists
     public $usersList;
+
     public $pendingUsers;
+
     public $user_sub_menus;
 
     // User information
     public $name;
+
     public $email;
+
     public $phone_number;
+
     public $password;
+
     public $password_confirmation;
+
     public $role;
+
     public $status = 'ACTIVE';
+
     public $department;
+
     public $profile_photo;
+
     public $newuser;
-    
+
     // User actions
     public $userSelected;
+
     public $permission = 'BLOCKED';
+
     public $pendinguser;
-    
+
     // Department/Role info
     public $departmentList;
+
     public $departmentName;
+
     public $userrole;
+
     public $department_name;
-    
+
     // Other variables
     public $nodesList;
+
     public string $NODE_NAME = '';
+
     public string $userName = '';
+
     public $menusArray;
+
     public $menuItems;
+
     public $sub_menus;
+
     public $team;
+
     public $accounts;
+
     public $user;
+
     protected $userService;
+
     protected $rules = [
         'name' => 'required|string|max:255',
         'email' => 'required|string|email|max:255|unique:users,email',
@@ -81,9 +110,9 @@ class Settings extends Component
             'required',
             'string',
             'regex:/^(\+255|0)[1-9]\d{8}$/',
-            'unique:users,phone_number'
+            'unique:users,phone_number',
         ],
-        'department' => 'nullable'
+        'department' => 'nullable',
     ];
 
     protected $listeners = [
@@ -104,7 +133,7 @@ class Settings extends Component
         $this->user_sub_menus = UserSubMenu::where('menu_id', 8)
             ->where('user_id', Auth::user()->id)
             ->get();
-        $this->password = "";
+        $this->password = '';
 
     }
 
@@ -138,7 +167,7 @@ class Settings extends Component
             ->get();
         $this->usersList = User::get();
         $this->pendingUsers = User::get();
-        $this->departments=Department::get();
+        $this->departments = Department::get();
 
         return view('livewire.settings.settings', [
             'totalUsers' => User::count(),
@@ -146,6 +175,7 @@ class Settings extends Component
             'inactiveUsers' => $this->inActiveUsers,
         ]);
     }
+
     /**
      * Change active tab view
      */
@@ -153,6 +183,7 @@ class Settings extends Component
     {
         $this->tab_id = $id;
     }
+
     /**
      * Set users tab as active
      */
@@ -160,6 +191,7 @@ class Settings extends Component
     {
         $this->tab_id = 6;
     }
+
     /**
      * Open user creation modal
      */
@@ -168,6 +200,7 @@ class Settings extends Component
         $this->resetRegistrationFields();
         $this->showCreateNewUser = true;
     }
+
     /**
      * Reset user registration form fields
      */
@@ -194,57 +227,46 @@ class Settings extends Component
         // Validate form data
         $this->validate();
 
+        try {
 
+            // Create new user
+            $user = new User;
+            $user->name = $this->name;
+            $user->email = $this->email;
+            $user->phone_number = $this->phone_number;
+            $user->status = 'ACTIVE';
+            $user->department = $this->department;
+            $user->password = bcrypt($this->password);
+            $user->otp_time = now();
+            $user->verification_status = '0';
 
-        try{
+            // $user->department=1;
 
+            if ($user->save()) {
+                // Create approval request
 
+                $this->newuser = $user->id;
+                $this->showRoles = true;
+                Session::put('newuser', $user->id);
+            }
 
-      
+            // Set success message
+            session()->flash('message', 'User created, awaiting approval');
+            session()->flash('alert-class', 'alert-success');
 
-        // Create new user
-        $user = new User();
-        $user->name = $this->name;
-        $user->email = $this->email;
-        $user->phone_number = $this->phone_number;
-        $user->status = 'ACTIVE';
-        $user->department = $this->department;
-        $user->password = bcrypt($this->password);
-        $user->otp_time = now();
-        $user->verification_status = '0';
+            // Reset form fields
+            $this->resetRegistrationFields();
+            $this->closeModal();
+            $this->render();
 
-        //$user->department=1;
-        
-        if ($user->save()) {
-            // Create approval request
-           
-
-            $this->newuser = $user->id;
-            $this->showRoles = true;
-            Session::put('newuser', $user->id);
-        }
-
-
-         // Set success message
-         session()->flash('message', 'User created, awaiting approval');
-         session()->flash('alert-class', 'alert-success');
- 
-         // Reset form fields
-         $this->resetRegistrationFields();
-         $this->closeModal();
-         $this->render();
-
-
-
-    }
-        catch (\Exception $e) {
-            session()->flash('error', 'Error creating user: ' . $e->getMessage());
+        } catch (\Exception $e) {
+            session()->flash('error', 'Error creating user: '.$e->getMessage());
 
             dd($e->getMessage());
+
             return;
         }
 
-       
     }
 
     /**
@@ -259,22 +281,22 @@ class Settings extends Component
                 'required',
                 'string',
                 'regex:/^(\+255|0)[1-9]\d{8}$/',
-                'unique:users,phone_number'
+                'unique:users,phone_number',
             ],
             'password' => ['required', 'confirmed', 'min:8'],
             'department' => 'nullable',
             'profile_photo' => 'nullable|image|max:1024', // 1MB Max
         ]);
-        
+
         try {
             // Handle profile photo if uploaded
             $profile_photo_path = null;
             if ($this->profile_photo) {
                 $profile_photo_path = $this->profile_photo->store('profile-photos', 'public');
             }
-            
+
             // Create user
-            $user = new User();
+            $user = new User;
             $user->name = $this->name;
             $user->email = $this->email;
             $user->phone_number = $this->phone_number;
@@ -283,47 +305,42 @@ class Settings extends Component
             $user->password = bcrypt($this->password);
             $user->profile_photo_path = $profile_photo_path;
             $user->otp_time = now();
-            $user->department=1;
+            $user->department = 1;
 
             $user->verification_status = '0';
 
-         //   $user->save();
+            //   $user->save();
 
-
-            $data=[
-                'name'=>$this->name,
-                'email'=>$this->email,
-                'password'=>$this->password,
-                'phone_number'=>$this->phone_number,
+            $data = [
+                'name' => $this->name,
+                'email' => $this->email,
+                'password' => $this->password,
+                'phone_number' => $this->phone_number,
                 // 'department'=>$this->department,
-                'profile_photo_path'=>$profile_photo_path,
-                'status'=>'ACTIVE',
-                'otp_time'=>now(),
-                'verification_status'=>'0',
-                'department'=>1,
+                'profile_photo_path' => $profile_photo_path,
+                'status' => 'ACTIVE',
+                'otp_time' => now(),
+                'verification_status' => '0',
+                'department' => 1,
                 $user->verification_status = '0',
 
-
             ];
-            $userService= new UserService();
+            $userService = new UserService;
             $user = $userService->createUser($data, true);
-            
-            
-         
-            
+
             // Reset form and close modal
             $this->resetRegistrationFields();
             $this->showCreateNewUser = false;
-            
+
             // Show success message
             session()->flash('message', 'User registered successfully! Awaiting approval.');
             session()->flash('alert-class', 'alert-success');
-            
+
             // Refresh user list component
             $this->emit('refreshUsersList');
-            
+
         } catch (\Exception $e) {
-            session()->flash('error', 'Error registering user: ' . $e->getMessage());
+            session()->flash('error', 'Error registering user: '.$e->getMessage());
         }
     }
 
@@ -363,7 +380,7 @@ class Settings extends Component
     {
         $user = User::where('id', $this->userSelected)->first();
         $action = '';
-        
+
         if ($user) {
             if ($this->permission == 'BLOCKED') {
                 $action = 'blockUser';
@@ -374,8 +391,6 @@ class Settings extends Component
             if ($this->permission == 'DELETED') {
                 $action = 'deleteUser';
             }
-
-           
 
             Session::flash('message', 'Status change request submitted. Awaiting approval.');
             Session::flash('alert-class', 'alert-success');
@@ -421,7 +436,6 @@ class Settings extends Component
         ];
 
         // Create approval request
-      
 
         // Reset fields
         $this->pendinguser = null;

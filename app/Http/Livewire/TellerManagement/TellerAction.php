@@ -1,13 +1,14 @@
 <?php
+
 //
-//namespace App\Http\Livewire\TellerManagement;
+// namespace App\Http\Livewire\TellerManagement;
 //
-//use Illuminate\Support\Facades\Config;
-//use Illuminate\Support\Facades\DB;
-//use Livewire\Component;
+// use Illuminate\Support\Facades\Config;
+// use Illuminate\Support\Facades\DB;
+// use Livewire\Component;
 //
-//class TellerAction extends Component
-//{
+// class TellerAction extends Component
+// {
 //
 //
 //
@@ -15,8 +16,7 @@
 //    {
 //        return view('livewire.teller-management.teller-action');
 //    }
-//}
-
+// }
 
 namespace App\Http\Livewire\TellerManagement;
 
@@ -26,17 +26,15 @@ use Livewire\Component;
 
 class TellerAction extends Component
 {
-
     public function boot()
     {
-
 
         $user = auth()->user();
         $institution_id = $user->institution_id;
         // Set the database connection based on the selected SACCO
         if ($institution_id) {
             $institution = \App\Models\institutions::find($institution_id);
-            //dd($institution);
+            // dd($institution);
             if ($institution) {
                 // Set the database connection
                 Config::set('database.connections.institution', [
@@ -52,9 +50,7 @@ class TellerAction extends Component
             }
         }
 
-
     }
-
 
     public function render()
     {

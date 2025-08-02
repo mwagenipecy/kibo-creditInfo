@@ -2,40 +2,32 @@
 
 namespace App\Http\Livewire\Procurement;
 
-use App\Models\ContractManagement;
 use App\Models\Employee;
 use App\Models\Inventory;
-use App\Models\Vendor;
-use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\DB;
-use Livewire\Component;
 use Mediconesystems\LivewireDatatables\Column;
 use Mediconesystems\LivewireDatatables\Http\Livewire\LivewireDatatable;
 
 class AssetTable extends LivewireDatatable
 {
-
-
-
     public function builder()
     {
         return Inventory::query();
     }
 
-
-    public function columns():array{
+    public function columns(): array
+    {
         return [
             Column::name('item_name')->label('Iterm name')->searchable(),
             Column::name('item_id')->label('item number'),
-            Column::callback('employee_id',function($employee_id){
-                if($employee_id){
-                    return  Employee::where('id',$employee_id)->raw("CONCAT('first_name','middle_name','last_name') as name")->value('name');
-                }else{
+            Column::callback('employee_id', function ($employee_id) {
+                if ($employee_id) {
+                    return Employee::where('id', $employee_id)->raw("CONCAT('first_name','middle_name','last_name') as name")->value('name');
+                } else {
                     return '<div class="text-red-400"  >Not Assigned </div>';
                 }
             })->label('current owner'),
             Column::name('status')->label(' status'),
-            Column::callback('id',function($id){
+            Column::callback('id', function ($id) {
                 return '
                 <div class="flex w-full">
 <bottom  class="w-1/2 space-x-2 " wire:click="view('.$id.')">
@@ -54,20 +46,20 @@ class AssetTable extends LivewireDatatable
 </button>
 </div>
 ';
-            })->label('action')
+            })->label('action'),
         ];
     }
 
-
-    public function view($id){
-        $this->emit('viewEmployeeList',$id);
+    public function view($id)
+    {
+        $this->emit('viewEmployeeList', $id);
 
         // emit the  functions
 
     }
 
-    public function assign($id){
+    public function assign($id)
+    {
         dd($id);
     }
-
 }

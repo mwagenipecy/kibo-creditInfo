@@ -3,31 +3,24 @@
 namespace App\Http\Livewire\Services;
 
 use App\Models\ServicesList;
-use Livewire\Component;
-
-
 use Livewire\WithFileUploads;
 use Mediconesystems\LivewireDatatables\Column;
 use Mediconesystems\LivewireDatatables\Http\Livewire\LivewireDatatable;
 
-
 class ServicesTable extends LivewireDatatable
 {
-
     use WithFileUploads;
+
     public $exportable = true;
 
-    public $searchable="NAME,STATUS";
-
+    public $searchable = 'NAME,STATUS';
 
     public function builder(): \Illuminate\Database\Eloquent\Builder
     {
 
-        return ServicesList::query()->whereNot('STATUS','DELETED');
-
+        return ServicesList::query()->whereNot('STATUS', 'DELETED');
 
     }
-
 
     public function columns(): array
     {
@@ -36,9 +29,7 @@ class ServicesTable extends LivewireDatatable
             Column::name('NAME')
                 ->label('Service Name'),
 
-
             Column::callback(['NODES'], function ($nodes) {
-
 
                 $json = $nodes;
 
@@ -52,21 +43,15 @@ class ServicesTable extends LivewireDatatable
                 }
 
                 // Output the node_id values
-                $nodeslisting = implode(", ", $nodeIds);
+                $nodeslisting = implode(', ', $nodeIds);
 
                 return view('livewire.services.list-of-nodes', ['nodeslisting' => $nodeIds, 'move' => true]);
             })->unsortable()->label('Service Nodes'),
-
 
             Column::callback(['STATUS'], function ($status) {
                 return view('livewire.settings.table-status', ['status' => $status, 'move' => false]);
             })->label('Service Status'),
 
-
-
-
         ];
     }
-
-
 }

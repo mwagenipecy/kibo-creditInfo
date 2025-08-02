@@ -12,8 +12,7 @@ class departmentsList extends Model
     /**
      * @var mixed|null
      */
-
     protected $table = 'departments';
-    protected $guarded = [];
 
+    protected $guarded = [];
 }

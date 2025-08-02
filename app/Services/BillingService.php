@@ -2,16 +2,16 @@
 
 namespace App\Services;
 
-use App\Models\Bill;
-use App\Models\BillItem;
 use App\Models\Application;
+use App\Models\Bill;
 use App\Models\BillingConfiguration;
-use App\Models\Lender;
+use App\Models\BillItem;
 use App\Models\CarDealer;
+use App\Models\Lender;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Exception;
 
 class BillingService
 {
@@ -22,7 +22,7 @@ class BillingService
     {
         $month = $month ?: Carbon::now()->month;
         $year = $year ?: Carbon::now()->year;
-        
+
         $periodStart = Carbon::create($year, $month, 1);
         $periodEnd = $periodStart->copy()->endOfMonth();
 
@@ -47,9 +47,9 @@ class BillingService
                 $errors[] = [
                     'entity_type' => $config->entity_type,
                     'entity_id' => $config->entity_id,
-                    'error' => $e->getMessage()
+                    'error' => $e->getMessage(),
                 ];
-                Log::error("Failed to generate bill for {$config->entity_type} ID: {$config->entity_id} - " . $e->getMessage());
+                Log::error("Failed to generate bill for {$config->entity_type} ID: {$config->entity_id} - ".$e->getMessage());
             }
         }
 
@@ -57,7 +57,7 @@ class BillingService
             'generated_bills' => $generatedBills,
             'errors' => $errors,
             'total_generated' => count($generatedBills),
-            'total_errors' => count($errors)
+            'total_errors' => count($errors),
         ];
     }
 
@@ -67,14 +67,15 @@ class BillingService
     public function generateBillForEntity($config, $periodStart, $periodEnd)
     {
         // Validate entity exists and is active
-        if (!$this->validateEntity($config)) {
-            throw new Exception("Entity not found or inactive");
+        if (! $this->validateEntity($config)) {
+            throw new Exception('Entity not found or inactive');
         }
 
         // Check if bill already exists for this period
         $existingBill = $this->checkExistingBill($config, $periodStart, $periodEnd);
         if ($existingBill) {
             Log::info("Bill already exists for period: {$existingBill->bill_number}");
+
             return $existingBill;
         }
 
@@ -83,6 +84,7 @@ class BillingService
 
         if ($applications->isEmpty()) {
             Log::info("No billable applications found for {$config->entity_type} ID: {$config->entity_id}");
+
             return null;
         }
 
@@ -98,9 +100,11 @@ class BillingService
     {
         if ($config->entity_type === 'lender') {
             $entity = Lender::find($config->entity_id);
+
             return $entity && $entity->status === 'APPROVED';
         } else {
             $entity = CarDealer::find($config->entity_id);
+
             return $entity && $entity->status === 'APPROVED';
         }
     }
@@ -134,7 +138,7 @@ class BillingService
         // Filter by billing period
         $query->whereBetween('created_at', [
             $periodStart->startOfDay(),
-            $periodEnd->endOfDay()
+            $periodEnd->endOfDay(),
         ]);
 
         // Only bill applications that are processed/approved
@@ -178,7 +182,7 @@ class BillingService
         // Create bill items for each application
         foreach ($applications as $application) {
             $itemTotal = $this->calculateItemAmount($config, $application);
-            
+
             BillItem::create([
                 'bill_id' => $bill->id,
                 'application_id' => $application->id,
@@ -218,21 +222,24 @@ class BillingService
             case 'per_application':
                 // Fixed rate per application
                 return $config->rate;
-                
+
             case 'commission_based':
                 // Percentage of loan amount
                 $loanAmount = $this->getLoanAmount($application);
                 if ($loanAmount <= 0) {
                     Log::warning("Zero loan amount for application {$application->id}, using minimum rate");
+
                     return $config->rate; // Use rate as minimum fee
                 }
+
                 return ($loanAmount * $config->rate) / 100;
-                
+
             case 'monthly_subscription':
                 // Fixed monthly subscription divided by number of applications
                 $monthlyApps = $this->getMonthlyApplicationCount($config, $application);
+
                 return $monthlyApps > 0 ? $config->rate / $monthlyApps : $config->rate;
-                
+
             default:
                 return $config->rate;
         }
@@ -243,9 +250,9 @@ class BillingService
      */
     private function getLoanAmount($application)
     {
-        return $application->loan_amount 
-            ?? $application->amount 
-            ?? $application->purchase_price 
+        return $application->loan_amount
+            ?? $application->amount
+            ?? $application->purchase_price
             ?? 0;
     }
 
@@ -274,32 +281,32 @@ class BillingService
      */
     private function generateItemDescription($config, $application)
     {
-        $applicantName = trim(($application->first_name ?? '') . ' ' . ($application->last_name ?? ''));
+        $applicantName = trim(($application->first_name ?? '').' '.($application->last_name ?? ''));
         $vehicle = $application->make_and_model ?? 'Vehicle';
         $loanAmount = $this->getLoanAmount($application);
 
         $baseDescription = '';
-        
+
         if ($config->entity_type === 'lender') {
-            $baseDescription = "Loan Processing Service";
+            $baseDescription = 'Loan Processing Service';
             $serviceType = "for {$applicantName}";
         } else {
-            $baseDescription = "Vehicle Financing Facilitation";
+            $baseDescription = 'Vehicle Financing Facilitation';
             $serviceType = "for {$applicantName}";
         }
 
         $details = [];
-        if (!empty($vehicle)) {
+        if (! empty($vehicle)) {
             $details[] = "Vehicle: {$vehicle}";
         }
         if ($loanAmount > 0) {
-            $details[] = "Amount: " . number_format($loanAmount, 0) . " TZS";
+            $details[] = 'Amount: '.number_format($loanAmount, 0).' TZS';
         }
         $details[] = "App ID: {$application->id}";
 
         $description = "{$baseDescription} {$serviceType}";
-        if (!empty($details)) {
-            $description .= " - " . implode(', ', $details);
+        if (! empty($details)) {
+            $description .= ' - '.implode(', ', $details);
         }
 
         return $description;
@@ -311,7 +318,7 @@ class BillingService
     public function markOverdueBills()
     {
         $today = Carbon::now()->format('Y-m-d');
-        
+
         $overdueBills = Bill::where('status', 'pending')
             ->where('due_date', '<', $today)
             ->get();
@@ -334,19 +341,19 @@ class BillingService
         $query = Bill::with(['entity', 'billItems', 'payments']);
 
         // Apply filters
-        if (!empty($filters['entity_type'])) {
+        if (! empty($filters['entity_type'])) {
             $query->where('entity_type', $filters['entity_type']);
         }
 
-        if (!empty($filters['entity_id'])) {
+        if (! empty($filters['entity_id'])) {
             $query->where('entity_id', $filters['entity_id']);
         }
 
-        if (!empty($filters['status'])) {
+        if (! empty($filters['status'])) {
             $query->where('status', $filters['status']);
         }
 
-        if (!empty($filters['start_date']) && !empty($filters['end_date'])) {
+        if (! empty($filters['start_date']) && ! empty($filters['end_date'])) {
             $query->whereBetween('issued_date', [$filters['start_date'], $filters['end_date']]);
         }
 
@@ -380,16 +387,16 @@ class BillingService
             'financial' => [
                 'subtotal' => $bills->sum('subtotal'),
                 'tax_amount' => $bills->sum('tax_amount'),
-                'total_applications_billed' => $bills->sum(function($bill) {
+                'total_applications_billed' => $bills->sum(function ($bill) {
                     return $bill->billItems->count();
                 }),
-            ]
+            ],
         ];
 
         return [
             'bills' => $bills,
             'statistics' => $stats,
-            'filters_applied' => $filters
+            'filters_applied' => $filters,
         ];
     }
 
@@ -414,19 +421,19 @@ class BillingService
             'period' => [
                 'start' => $startDate->format('Y-m-d'),
                 'end' => $endDate->format('Y-m-d'),
-                'months' => $months
+                'months' => $months,
             ],
             'summary' => [
                 'total_bills' => $bills->count(),
                 'total_billed' => $bills->sum('total_amount'),
                 'total_paid' => $bills->sum('total_paid'),
                 'outstanding_balance' => $bills->sum('remaining_balance'),
-                'applications_processed' => $bills->sum(function($bill) {
+                'applications_processed' => $bills->sum(function ($bill) {
                     return $bill->billItems->count();
                 }),
             ],
             'recent_bills' => $bills->take(10),
-            'monthly_breakdown' => $this->getMonthlyBreakdown($bills)
+            'monthly_breakdown' => $this->getMonthlyBreakdown($bills),
         ];
     }
 
@@ -435,13 +442,13 @@ class BillingService
      */
     private function getMonthlyBreakdown($bills)
     {
-        return $bills->groupBy(function($bill) {
+        return $bills->groupBy(function ($bill) {
             return $bill->issued_date->format('Y-m');
-        })->map(function($monthlyBills) {
+        })->map(function ($monthlyBills) {
             return [
                 'bills_count' => $monthlyBills->count(),
                 'total_amount' => $monthlyBills->sum('total_amount'),
-                'applications_count' => $monthlyBills->sum(function($bill) {
+                'applications_count' => $monthlyBills->sum(function ($bill) {
                     return $bill->billItems->count();
                 }),
             ];
@@ -458,24 +465,24 @@ class BillingService
             ->where('is_active', true)
             ->first();
 
-        if (!$config) {
+        if (! $config) {
             return [
                 'valid' => false,
-                'message' => 'No active billing configuration found'
+                'message' => 'No active billing configuration found',
             ];
         }
 
         if ($config->rate <= 0) {
             return [
                 'valid' => false,
-                'message' => 'Invalid billing rate'
+                'message' => 'Invalid billing rate',
             ];
         }
 
         return [
             'valid' => true,
             'config' => $config,
-            'message' => 'Billing configuration is valid'
+            'message' => 'Billing configuration is valid',
         ];
     }
 }

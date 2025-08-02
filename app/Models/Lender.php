@@ -38,7 +38,7 @@ class Lender extends Model
         'services_offered',
         'additional_notes',
         'logo',
-        'status'
+        'status',
     ];
 
     /**
@@ -88,7 +88,7 @@ class Lender extends Model
      */
     public function getStatusBadgeAttribute()
     {
-        return match($this->status) {
+        return match ($this->status) {
             'APPROVED' => '<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Approved</span>',
             'PENDING' => '<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">Pending</span>',
             'REJECTED' => '<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Rejected</span>',
@@ -129,8 +129,6 @@ class Lender extends Model
         return $query->where('status', 'REJECTED');
     }
 
-
-
     public function bills()
     {
         return $this->hasMany(Bill::class, 'entity_id')->where('entity_type', 'lender');
@@ -141,12 +139,8 @@ class Lender extends Model
         return $this->hasOne(BillingConfiguration::class, 'entity_id')->where('entity_type', 'lender');
     }
 
-
     public function financingCriteria()
     {
         return $this->hasMany(LenderFinancingCriteria::class);
     }
-
-    
-    
 }

@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class Leave extends Model
 {
     use HasFactory;
-    protected $table='leaves';
-    protected $guarded=[];
+
+    protected $table = 'leaves';
+
+    protected $guarded = [];
 }

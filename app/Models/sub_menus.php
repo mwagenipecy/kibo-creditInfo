@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class sub_menus extends Model
 {
     use HasFactory;
+
     protected $table = 'sub_menus';
+
     protected $guarded = [];
 }

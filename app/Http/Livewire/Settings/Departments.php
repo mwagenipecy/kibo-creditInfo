@@ -2,40 +2,45 @@
 
 namespace App\Http\Livewire\Settings;
 
-use Livewire\Component;
 use App\Models\departmentsList;
 use App\Models\menu_list;
 use App\Models\TeamUser;
 use Illuminate\Support\Facades\Auth;
-
+use Livewire\Component;
 
 class Departments extends Component
 {
     public $departments = [];
+
     public $existingDepartments;
+
     public $departmentsList;
+
     public $department_name;
+
     public $department;
 
     protected $rules = [
         'department_name' => 'required|min:4',
     ];
 
-    public function setnew(){
+    public function setnew()
+    {
         $this->departments = [];
     }
 
-    public function setexisting(){
+    public function setexisting()
+    {
         $this->existingDepartments = departmentsList::get();
     }
 
-
-    public function save(){
+    public function save()
+    {
 
         $this->validate();
 
         departmentsList::create([
-            'institution' => TeamUser::where('user_id',Auth::user()->id)->value('institution'),
+            'institution' => TeamUser::where('user_id', Auth::user()->id)->value('institution'),
             'department_name' => $this->department_name,
             'modules' => json_encode($this->departments),
 
@@ -50,7 +55,8 @@ class Departments extends Component
     {
         $this->departmentsList = menu_list::get();
         $this->existingDepartments = departmentsList::get();
-        //dd($this->existingDepartments);
+
+        // dd($this->existingDepartments);
         return view('livewire.settings.departments');
     }
 }

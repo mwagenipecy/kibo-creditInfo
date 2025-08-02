@@ -2,40 +2,46 @@
 
 namespace App\Http\Livewire\ApplicationSummary;
 
-use App\Models\Attachment;
-use App\Models\VehicleImage;
-use Livewire\Component;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Response;
-use App\Models\Application;
-use App\Models\Image;
-use App\Models\EmployerVerification;
 use App\Mail\EmployerVerificationRequest;
-use Illuminate\Support\Str;
+use App\Models\Application;
+use App\Models\Attachment;
+use App\Models\EmployerVerification;
+use App\Models\Image;
+use App\Models\VehicleImage;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
-use Symfony\Component\HttpFoundation\StreamedResponse;
-use function PHPUnit\Framework\isEmpty;
+use Illuminate\Support\Str;
+use Livewire\Component;
+
 class ApplicationSummary extends Component
 {
     public $showEmployerMessageForm = false;
+
     public $employerMessageSent = false;
+
     public $employerMessageSentDate = null;
 
     public $statusFilter = 'ALL';
+
     public $isModalOpen = false;
+
     public $isImageModalOpen = false;
 
     public $isApplicationModalOpen = false;
 
-    public $applicationDocuments=[];
+    public $applicationDocuments = [];
 
     public $search;
+
     public $selectedApplication = null;
+
     public $images = [];
+
     public $selectedImageIndex = null;
+
     public $messageToEmployer;
 
     protected $rules = [
@@ -53,9 +59,9 @@ class ApplicationSummary extends Component
     {
         $app = $this->selectedApplication;
 
-        return "Dear " . ($app->employer_name ?? 'Employer') . ",
+        return 'Dear '.($app->employer_name ?? 'Employer').',
 
-We are currently reviewing an application submitted by " . ($app->full_name ?? 'your employee') . ". Kindly help us confirm the following:
+We are currently reviewing an application submitted by '.($app->full_name ?? 'your employee').'. Kindly help us confirm the following:
 
 - Do you know this employee?
 - What is their position and employment status?
@@ -65,86 +71,73 @@ We are currently reviewing an application submitted by " . ($app->full_name ?? '
 Thank you for your support.
 
 Regards,
-" . config('app.name');
+'.config('app.name');
     }
 
-
-
-
-
-    public function rejectApplication(){
+    public function rejectApplication()
+    {
 
         $applicationId = session('applicationId');
         $application = Application::find($applicationId);
 
         $loanId = $application->loan_id;
 
-
         $application->application_status = 'REJECTED';
         $application->save();
-        
+
         // Update loan status
         DB::table('loans')->where('id', $loanId)->update(['status' => 'REJECTED']);
-        
-
 
     }
-
 
     public function acceptApplication()
     {
         $applicationId = session('applicationId');
         $application = Application::find($applicationId);
-        
+
         // Check if application exists
-        if (!$application) {
-          session()->flash('error' , 'Application not found' );
+        if (! $application) {
+            session()->flash('error', 'Application not found');
         }
         // Don't do anything if loan is already ACTIVE or REJECTED
         if (in_array($application->application_status, ['ACCEPTED', 'REJECTED'])) {
-            session()->flash('message' ,'No action needed. Application is ' . $application->application_status );
+            session()->flash('message', 'No action needed. Application is '.$application->application_status);
         }
-        
+
         $loanId = $application->loan_id;
 
-
-        
         // Use transaction to handle errors and prevent partial operations
         try {
 
             DB::beginTransaction();
-            
+
             // Update application status
             $application->application_status = 'ACCEPTED';
             $application->save();
-            
+
             // Update loan status
-           // DB::table('loans')->where('id', $loanId)->update(['status' => 'ACTIVE']);
-            
+            // DB::table('loans')->where('id', $loanId)->update(['status' => 'ACTIVE']);
+
             // Commit transaction if everything succeeded
             DB::commit();
-            
-            return session()->flash('message' , 'Application accepted successfully');
+
+            return session()->flash('message', 'Application accepted successfully');
         } catch (\Exception $e) {
             // Rollback transaction if any operation fails
             DB::rollBack();
 
-
             dd($e->getMessage());
-            
+
             // Log the error for debugging
-            \Log::error('Error accepting application: ' . $e->getMessage());
-            
-            session()->flash('error' , 'Failed to accept application' );
+            \Log::error('Error accepting application: '.$e->getMessage());
+
+            session()->flash('error', 'Failed to accept application');
         }
     }
 
-
-
-
     public function toggleEmployerMessageForm()
     {
-        $this->showEmployerMessageForm = !$this->showEmployerMessageForm;
+        $this->showEmployerMessageForm = ! $this->showEmployerMessageForm;
 
         if ($this->showEmployerMessageForm && empty($this->messageToEmployer)) {
             $this->messageToEmployer = $this->getDefaultMessage();
@@ -155,7 +148,6 @@ Regards,
     {
         $this->validate();
 
-      
         try {
             $token = Str::random(64);
 
@@ -188,12 +180,12 @@ Regards,
                 'message' => 'Verification request sent successfully!',
             ]);
         } catch (\Exception $e) {
-            Log::error("Employer verification error: " . $e->getMessage());
+            Log::error('Employer verification error: '.$e->getMessage());
 
             dd($e->getMessage());
             $this->dispatchBrowserEvent('notify', [
                 'type' => 'error',
-                'message' => 'Failed to send verification: ' . $e->getMessage(),
+                'message' => 'Failed to send verification: '.$e->getMessage(),
             ]);
         }
     }
@@ -204,11 +196,11 @@ Regards,
     }
 
     public $statementData;
+
     public function selectApplication($id)
     {
 
-        dd($id)
-        ;
+        dd($id);
         $this->selectedApplication = Application::findOrFail($id);
 
         $this->applicationDocuments = Attachment::where('loan_id', $this->selectedApplication->loan_id)->get();
@@ -216,18 +208,15 @@ Regards,
         if ($this->applicationDocuments->isEmpty()) {
             $this->applicationDocuments = Attachment::where('loan_id', $id)->get();
         }
-        
 
         session()->put('applicationId', $id);
-
-
 
         if ($this->selectedApplication->loan_id) {
             $this->images = Image::where('loan_id', $this->selectedApplication->loan_id)
                 ->pluck('url')
                 ->toArray();
         }
-        
+
         // If no images found for the loan, try fetching from vehicle images
         if (empty($this->images) && $this->selectedApplication->vehicle_id) {
             $this->images = VehicleImage::where('vehicle_id', $this->selectedApplication->vehicle_id)
@@ -247,10 +236,9 @@ Regards,
         $this->messageToEmployer = $this->getDefaultMessage();
     }
 
-
     public function show()
     {
-        
+
         // Option 1: Use a proper JSON string with correct formatting
         $jsonString = <<<'JSON'
 {
@@ -314,14 +302,11 @@ JSON;
 
         // Parse the JSON string
         $this->statementData = json_decode($jsonString, true);
-        
+
         // If you already have the data as an array, you can skip the json_decode step
-        
+
         // Pass the data to the view
     }
-
-
-
 
     public function download($filePath)
     {
@@ -332,27 +317,28 @@ JSON;
         session()->flash('error', 'File not found.');
     }
 
-
     public function downloadImage($imagePath)
     {
         try {
             $sanitizedPath = basename($imagePath);
-            $fullPath = storage_path('app/public/' . $imagePath);
+            $fullPath = storage_path('app/public/'.$imagePath);
 
             if (
                 empty($sanitizedPath) ||
-                !str_starts_with($imagePath, 'assets/img/cars/') ||
-                !file_exists($fullPath)
+                ! str_starts_with($imagePath, 'assets/img/cars/') ||
+                ! file_exists($fullPath)
             ) {
                 Log::warning("Invalid image download attempt: {$imagePath}");
                 session()->flash('error', 'Image cannot be downloaded.');
+
                 return redirect()->back();
             }
 
             $image = Image::where('url', $imagePath)->first();
-            if (!$image) {
+            if (! $image) {
                 Log::warning("Image not found in DB: {$imagePath}");
                 session()->flash('error', 'Image not found.');
+
                 return redirect()->back();
             }
 
@@ -362,8 +348,9 @@ JSON;
                 ['Content-Type' => mime_content_type($fullPath)]
             );
         } catch (\Exception $e) {
-            Log::error("Download error: " . $e->getMessage());
+            Log::error('Download error: '.$e->getMessage());
             session()->flash('error', 'Error while downloading image.');
+
             return redirect()->back();
         }
     }
@@ -425,53 +412,50 @@ JSON;
         $this->selectedApplication = null;
     }
 
+    public function actionFunction($status, $id)
+    {
 
+        if ($status == 'REJECTED') {
 
-    public function actionFunction($status,$id){
+            $stage = 'car_dealer';
 
-        if($status=="REJECTED"){
+        } else {
 
-            $stage="car_dealer";
-
-        }else{
-
-            $stage="statement_verification";
+            $stage = 'statement_verification';
         }
 
         Application::find($id)->update([
-            'application_status'=>$status,
-            'stage_name'=>$stage,
-        
+            'application_status' => $status,
+            'stage_name' => $stage,
+
         ]);
-        session()->flash('message',"successfully status changed to {$status}");
+        session()->flash('message', "successfully status changed to {$status}");
     }
 
     public function render()
     {
         $query = Application::query();
 
-        // get user institution id 
+        // get user institution id
 
         $this->show();
 
-        $userInstitutionid= auth()->user()->institution_id;
+        $userInstitutionid = auth()->user()->institution_id;
 
-        // user permission id 
+        // user permission id
 
-        $userPermissionId=auth()->user()->department;
+        $userPermissionId = auth()->user()->department;
 
-        // filter for lender is 2 and for car dealer is 3 
+        // filter for lender is 2 and for car dealer is 3
 
-        if($userPermissionId==3){
+        if ($userPermissionId == 3) {
 
-            $query->whereIn('application_status',['pending'])
-            ->where('car_dealer_id',auth()->user()->institution_id);
+            $query->whereIn('application_status', ['pending'])
+                ->where('car_dealer_id', auth()->user()->institution_id);
 
+        } else {
 
-
-        }else{
-
-            $query->whereNotIn('application_status',['pending'])->where('lender_id', auth()->user()->institution_id);
+            $query->whereNotIn('application_status', ['pending'])->where('lender_id', auth()->user()->institution_id);
 
         }
 
@@ -479,11 +463,11 @@ JSON;
             $query->where('application_status', $this->statusFilter);
         }
 
-        if (!empty($this->search)) {
+        if (! empty($this->search)) {
             $query->where(function ($q) {
-                $q->where('first_name', 'like', '%' . $this->search . '%')
-                  ->orWhere('last_name', 'like', '%' . $this->search . '%')
-                  ->orWhere('email', 'like', '%' . $this->search . '%');
+                $q->where('first_name', 'like', '%'.$this->search.'%')
+                    ->orWhere('last_name', 'like', '%'.$this->search.'%')
+                    ->orWhere('email', 'like', '%'.$this->search.'%');
             });
         }
 
@@ -493,16 +477,9 @@ JSON;
     }
 }
 
-
-
-
-
-
 // <div class="bg-gray-50 rounded-lg p-4">
 // <h4 class="text-sm font-semibold text-gray-700 mb-3">Credit Score </h4>
 // <div class="space-y-2">
-  
-
 
 // <livewire:credit-score />
 // </div>

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\BillingController;
+use App\Http\Controllers\EmployerVerificationController;
 use App\Http\Controllers\GarageManagementController;
 use App\Http\Controllers\InsuranceController;
 use App\Http\Controllers\WebsiteController;
@@ -9,7 +10,6 @@ use App\Http\Middleware\OTPMiddleware;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Session;
-use App\Http\Controllers\EmployerVerificationController;
 
 // =================================================================
 // PUBLIC ROUTES (No middleware - completely public)
@@ -32,7 +32,8 @@ Route::get('insurance', [InsuranceController::class, 'index'])->name('insurance.
 // Password reset
 Route::post('/password-reset', function (Illuminate\Http\Request $request) {
     $email = $request->input('email');
-    Session::put('status', "This password is not registered");
+    Session::put('status', 'This password is not registered');
+
     return redirect()->route('password.request');
 })->name('password-reset');
 
@@ -55,8 +56,7 @@ Route::get('/employer/verification-completed', [EmployerVerificationController::
 Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     // OTP verification page - CRITICAL: No OTPMiddleware here to prevent loops
     Route::get('/otp-page', [WebsiteController::class, 'Otp'])->name('otp-page');
-    
-  
+
 });
 
 // =================================================================
@@ -64,16 +64,16 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 // =================================================================
 
 Route::middleware(['auth:sanctum', OTPMiddleware::class])->group(function () {
-    
+
     // Account settings - Available to all verified users
     Route::get('account', [WebsiteController::class, 'accountPage'])->name('account.setting');
 
     // Loan application routes - Available to all verified users
-    Route::get('loan/application/{id}', function($id) {
+    Route::get('loan/application/{id}', function ($id) {
         // Add your controller method here
         return view('loan.application', compact('id'));
     })->name('loan.application');
-    
+
     Route::get('loan/list', [WebsiteController::class, 'applicationList'])->name('application.list');
     Route::get('application/status/{id}', [WebsiteController::class, 'applicationStatus'])->name('application.status');
     Route::get('loan/pre-qualify/{vehicleId}/{lenderId}', [WebsiteController::class, 'loanApplication'])->name('loan.pre-qualify');
@@ -84,7 +84,7 @@ Route::middleware(['auth:sanctum', OTPMiddleware::class])->group(function () {
 // =================================================================
 
 Route::middleware(['auth:sanctum', 'verified', OTPMiddleware::class, ClientMiddleware::class])->group(function () {
-    
+
     // Main system/dashboard routes
     Route::get('/System', \App\Http\Livewire\System::class)->name('System');
     Route::get('/CyberPoint-Pro', \App\Http\Livewire\System::class)->name('CyberPoint-Pro');
@@ -99,24 +99,24 @@ Route::middleware(['auth:sanctum', 'verified', OTPMiddleware::class, ClientMiddl
 // FALLBACK ROUTE
 // =================================================================
 
-Route::fallback(function() {
+Route::fallback(function () {
     if (Auth::check()) {
         $user = Auth::user();
-        
+
         // If email not verified, go to OTP page
         if (is_null($user->email_verified_at)) {
             return redirect()->route('otp-page');
         }
-        
+
         // If department 10 (client), go to application list
         if ($user->department == 10) {
             return redirect()->route('application.list');
         }
-        
+
         // Otherwise go to main dashboard
         return redirect()->route('CyberPoint-Pro');
     }
-    
+
     // Not authenticated - show 404
     return view('pages/utility/404');
 });

@@ -13,13 +13,13 @@ class ConfirmModal extends Component
         return view('livewire.payments.confirm-modal');
     }
 
-    public function deleteEntryConfirmed(){
-//Session::get('deleteTransactionID')
-        //Session::put('deleteTransactionID', $value);
-        $res=Transactions::where('id',Session::get('deleteTransactionID'))->delete();
-        $this->deleteEntryModal=false;
+    public function deleteEntryConfirmed()
+    {
+        // Session::get('deleteTransactionID')
+        // Session::put('deleteTransactionID', $value);
+        $res = Transactions::where('id', Session::get('deleteTransactionID'))->delete();
+        $this->deleteEntryModal = false;
 
         $this->emit('closeDeleteEntryModal');
     }
-
 }

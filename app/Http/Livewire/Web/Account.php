@@ -2,12 +2,12 @@
 
 namespace App\Http\Livewire\Web;
 
-use Livewire\Component;
-use Livewire\WithFileUploads;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rules\Password;
+use Livewire\Component;
+use Livewire\WithFileUploads;
 
 class Account extends Component
 {
@@ -15,20 +15,27 @@ class Account extends Component
 
     // Personal Information
     public $name;
+
     public $email;
+
     public $phone;
+
     public $address;
+
     public $photo;
+
     public $currentPhoto;
 
     // Security
     public $current_password;
+
     public $password;
+
     public $password_confirmation;
 
     // Active tab
     public $activeTab = 'profile';
-    
+
     // Delete account modal
     public $showDeleteModal = false;
 
@@ -37,7 +44,7 @@ class Account extends Component
     public function mount()
     {
         $user = Auth::user();
-        if(!$user){
+        if (! $user) {
 
             return redirect()->route('client.registration');
         }
@@ -55,7 +62,7 @@ class Account extends Component
     {
         $validatedData = $this->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email|max:255|unique:users,email,' . Auth::id(),
+            'email' => 'required|email|max:255|unique:users,email,'.Auth::id(),
             'phone' => 'nullable|string|max:20',
             'address' => 'nullable|string|max:255',
             'photo' => 'nullable|image|max:2048',
@@ -69,10 +76,10 @@ class Account extends Component
 
         if ($this->photo) {
             // Delete old photo if exists
-            if ($user->profile_photo_path && Storage::exists('public/' . $user->profile_photo_path)) {
-                Storage::delete('public/' . $user->profile_photo_path);
+            if ($user->profile_photo_path && Storage::exists('public/'.$user->profile_photo_path)) {
+                Storage::delete('public/'.$user->profile_photo_path);
             }
-            
+
             // Store new photo
             $photoPath = $this->photo->store('profile-photos', 'public');
             $user->profile_photo_path = $photoPath;
@@ -95,7 +102,7 @@ class Account extends Component
             'password' => ['required', 'confirmed', Password::min(8)
                 ->mixedCase()
                 ->numbers()
-                ->symbols()
+                ->symbols(),
             ],
         ]);
 
@@ -131,18 +138,18 @@ class Account extends Component
     public function confirmDeleteAccount()
     {
         $user = Auth::user();
-        
+
         // Delete profile photo if exists
-        if ($user->profile_photo_path && Storage::exists('public/' . $user->profile_photo_path)) {
-            Storage::delete('public/' . $user->profile_photo_path);
+        if ($user->profile_photo_path && Storage::exists('public/'.$user->profile_photo_path)) {
+            Storage::delete('public/'.$user->profile_photo_path);
         }
-        
+
         // Logout and delete account
         Auth::logout();
         $user->update([
-            'status'=>'DELETED'
+            'status' => 'DELETED',
         ]);
-        
+
         return redirect()->route('home.page')->with('success', 'Your account has been permanently deleted.');
     }
 

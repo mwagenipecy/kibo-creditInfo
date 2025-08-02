@@ -13,14 +13,14 @@ class UserCredentials extends Mailable implements ShouldQueue
     use Queueable, SerializesModels;
 
     public $user;
+
     public $password;
+
     public $loginUrl;
 
     /**
      * Create a new message instance.
      *
-     * @param User $user
-     * @param string $password
      * @return void
      */
     public function __construct(User $user, string $password)
@@ -37,7 +37,7 @@ class UserCredentials extends Mailable implements ShouldQueue
      */
     public function build()
     {
-        return $this->subject('Your Account Credentials - ' . config('app.name'))
-                   ->markdown('emails.user-credentials');
+        return $this->subject('Your Account Credentials - '.config('app.name'))
+            ->markdown('emails.user-credentials');
     }
 }

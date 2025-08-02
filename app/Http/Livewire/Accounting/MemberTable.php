@@ -5,39 +5,35 @@ namespace App\Http\Livewire\Accounting;
 use App\Models\approvals;
 use App\Models\BranchesModel;
 use App\Models\ClientsModel;
-use App\Models\institutions;
 use App\Models\Members;
 use App\Models\MembersModel;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
-use Livewire\Component;
 use Mediconesystems\LivewireDatatables\Column;
 use Mediconesystems\LivewireDatatables\Http\Livewire\LivewireDatatable;
-use function PHPUnit\Framework\isEmpty;
 
 class MemberTable extends LivewireDatatable
 {
     protected $listeners = ['refreshMembersTable' => '$refresh'];
+
     public $exportable = true;
-
-    
-
 
     public function builder()
     {
-        return ClientsModel::query()->where('client_status','ONPROGRESS')->orWhere('client_status','NEW LOAN APPLICATION');
-        //->leftJoin('branches', 'branches.id', 'members.branch')
+        return ClientsModel::query()->where('client_status', 'ONPROGRESS')->orWhere('client_status', 'NEW LOAN APPLICATION');
+        // ->leftJoin('branches', 'branches.id', 'members.branch')
     }
 
-    public function viewMember($memberId){
-        Session::put('memberToViewId',$memberId);
+    public function viewMember($memberId)
+    {
+        Session::put('memberToViewId', $memberId);
         $this->emit('refreshMembersListComponent');
     }
-    public function editMember($memberId,$name){
-        Session::put('memberToEditId',$memberId);
-        Session::put('memberToEditName',$name);
+
+    public function editMember($memberId, $name)
+    {
+        Session::put('memberToEditId', $memberId);
+        Session::put('memberToEditName', $name);
         $this->emit('refreshMembersListComponent');
     }
 
@@ -51,8 +47,8 @@ class MemberTable extends LivewireDatatable
             Column::name('middle_name')
                 ->label('middle name'),
 
-            Column::callback('branch',function($id){
-                return BranchesModel::where('id',$id)->value('name');
+            Column::callback('branch', function ($id) {
+                return BranchesModel::where('id', $id)->value('name');
             })
                 ->label('branch'),
 
@@ -65,27 +61,30 @@ class MemberTable extends LivewireDatatable
             Column::callback(['client_status'], function ($status) {
                 return view('livewire.branches.table-status', ['status' => $status, 'move' => false]);
             })->label('status'),
-            Column::callback('id',function($id){
-                return view('livewire.accounting.member-action',['id'=>$id]);
-            })->label('action')
+            Column::callback('id', function ($id) {
+                return view('livewire.accounting.member-action', ['id' => $id]);
+            })->label('action'),
 
         ];
     }
-    public function  financeViewMemberes($id){
 
-        $this->emitTo('accounting.accounting','financeViewMember',$id);
+    public function financeViewMemberes($id)
+    {
+
+        $this->emitTo('accounting.accounting', 'financeViewMember', $id);
 
     }
 
-    public function   financeAccept ($id){
+    public function financeAccept($id)
+    {
         // member name
-        $full_name= MembersModel::where('id',$id)->value('first_name').' '.MembersModel::where('id',$id)->value('middle_name').' '.MembersModel::where('id',$id)->value('last_name');
+        $full_name = MembersModel::where('id', $id)->value('first_name').' '.MembersModel::where('id', $id)->value('middle_name').' '.MembersModel::where('id', $id)->value('last_name');
         // get status
-        $member_status=MembersModel::where('id',$id)->value('member_status');
-        if($member_status=="SAVING WITHDRAW REQUEST"){
-            MembersModel::where('id',$id)->update([
-                'member_status'=>"ACTIVE",
-                'allow_deposit_withdraw'=>true,
+        $member_status = MembersModel::where('id', $id)->value('member_status');
+        if ($member_status == 'SAVING WITHDRAW REQUEST') {
+            MembersModel::where('id', $id)->update([
+                'member_status' => 'ACTIVE',
+                'allow_deposit_withdraw' => true,
             ]);
             approvals::create([
                 'approver_id' => Auth::user()->id,
@@ -93,11 +92,10 @@ class MemberTable extends LivewireDatatable
                 'approval_status' => 'APPROVED',
                 'approval_process_description' => 'allow savings withdraw  to '.$full_name,
             ]);
-        }
-        elseif($member_status=="SAVING WITHDRAW END"){
-            MembersModel::where('id',$id)->update([
-                'member_status'=>"ACTIVE",
-                'allow_deposit_withdraw'=>false,
+        } elseif ($member_status == 'SAVING WITHDRAW END') {
+            MembersModel::where('id', $id)->update([
+                'member_status' => 'ACTIVE',
+                'allow_deposit_withdraw' => false,
             ]);
 
             approvals::create([
@@ -110,12 +108,13 @@ class MemberTable extends LivewireDatatable
 
     }
 
-    public function financeReject($id){
+    public function financeReject($id)
+    {
         // member name
-        $full_name= MembersModel::where('id',$id)->value('first_name').' '.MembersModel::where('id',$id)->value('middle_name').' '.MembersModel::where('id',$id)->value('last_name');
+        $full_name = MembersModel::where('id', $id)->value('first_name').' '.MembersModel::where('id', $id)->value('middle_name').' '.MembersModel::where('id', $id)->value('last_name');
 
-        MembersModel::where('id',$id)->update([
-            'member_status'=>"ACTIVE",
+        MembersModel::where('id', $id)->update([
+            'member_status' => 'ACTIVE',
         ]);
         approvals::create([
             'approver_id' => session()->get('currentUser')->id,
@@ -124,7 +123,4 @@ class MemberTable extends LivewireDatatable
             'approval_process_description' => 'reject savings withdraw '.$full_name,
         ]);
     }
-
-
-
 }

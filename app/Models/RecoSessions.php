@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class RecoSessions extends Model
 {
     use HasFactory;
+
     protected $table = 'reco_sessions';
+
     protected $guarded = [];
 }

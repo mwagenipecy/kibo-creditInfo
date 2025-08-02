@@ -2,7 +2,7 @@
 
 return [
 
-       /*
+    /*
     |--------------------------------------------------------------------------
     | Monitorable Resources
     |--------------------------------------------------------------------------
@@ -85,7 +85,7 @@ return [
     */
 
     'drivers' => [
-        'log_record' => env('STETHOSCOPE_LOG_DRIVER'  ,'file')
+        'log_record' => env('STETHOSCOPE_LOG_DRIVER', 'file'),
     ],
 
     /*
@@ -107,5 +107,5 @@ return [
     |
     */
 
-    'cleanup_resource_logs' => 7
+    'cleanup_resource_logs' => 7,
 ];

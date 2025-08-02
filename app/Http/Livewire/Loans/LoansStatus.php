@@ -2,30 +2,25 @@
 
 namespace App\Http\Livewire\Loans;
 
-use App\Models\LoansModel;
-use Illuminate\Support\Facades\DB;
-use Livewire\Component;
-use Illuminate\Support\Facades\Session;
-
 use App\Models\approvals;
+use App\Models\LoansModel;
 use App\Models\TeamUser;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Session;
+use Livewire\Component;
 
 class LoansStatus extends Component
 {
-
     public $showLoanDetails;
-    public bool $account_delete_modal=false;
 
-
-
+    public bool $account_delete_modal = false;
 
     protected $listeners = ['currentloanID' => '$refresh',
-        'deleteLoan'=>'deleteLoanModalDisplay',
-        'refreshClientInfoPage'=>'$refresh',
+        'deleteLoan' => 'deleteLoanModalDisplay',
+        'refreshClientInfoPage' => '$refresh',
 
     ];
-
 
     public $activeTab = 'client';
 
@@ -34,41 +29,46 @@ class LoansStatus extends Component
         $this->activeTab = $tab;
     }
 
-
     public function render()
     {
         return view('livewire.loans.loans-status');
     }
-    public function close(){
-        Session::put('currentloanID',null);
-        Session::put('currentloanClient',null);
+
+    public function close()
+    {
+        Session::put('currentloanID', null);
+        Session::put('currentloanClient', null);
     }
 
-
-    public function delete($id){
-        LoansModel::where('id',$id)->delete();
+    public function delete($id)
+    {
+        LoansModel::where('id', $id)->delete();
     }
 
-    public function commit($id){
-        LoansModel::where('id',$id)->update(['status'=>'ONPROGRESS']);
+    public function commit($id)
+    {
+        LoansModel::where('id', $id)->update(['status' => 'ONPROGRESS']);
     }
 
-    public function approve($id){
-        LoansModel::where('id',$id)->update(['status'=>'PENDING']);
-        $this->sendApproval($id,'has requested for approval of a new loan','11');
+    public function approve($id)
+    {
+        LoansModel::where('id', $id)->update(['status' => 'PENDING']);
+        $this->sendApproval($id, 'has requested for approval of a new loan', '11');
     }
 
-    public function reject($id){
-        LoansModel::where('id',$id)->update(['status'=>'REJECTED']);
+    public function reject($id)
+    {
+        LoansModel::where('id', $id)->update(['status' => 'REJECTED']);
     }
 
-    public function sendApproval($id,$msg,$code){
+    public function sendApproval($id, $msg, $code)
+    {
 
         $user = auth()->user();
 
         $team = $user->currentTeam;
 
-        $institution = TeamUser::where('user_id',Auth::user()->id)->value('institution');
+        $institution = TeamUser::where('user_id', Auth::user()->id)->value('institution');
 
         approvals::create([
             'institution' => $institution,
@@ -78,35 +78,31 @@ class LoansStatus extends Component
             'process_code' => $code,
             'process_id' => $id,
             'process_status' => 'PENDING',
-            'user_id'  => Auth::user()->id,
-            'team_id'  => ""
+            'user_id' => Auth::user()->id,
+            'team_id' => '',
         ]);
 
     }
 
-
-    public function deleteLoanModalDisplay(){
-        if($this->account_delete_modal==false){
-            $this->account_delete_modal=True;
-        }
-        else{
+    public function deleteLoanModalDisplay()
+    {
+        if ($this->account_delete_modal == false) {
+            $this->account_delete_modal = true;
+        } else {
             session()->forget('loanAccountID');
-            $this->account_delete_modal=false;
+            $this->account_delete_modal = false;
 
         }
-//        LoansModel::where('id',$id)->delete();
-//        session::flash('message',"The loan has been deleted successfully ");
+        //        LoansModel::where('id',$id)->delete();
+        //        session::flash('message',"The loan has been deleted successfully ");
     }
 
+    public function deleteLoan()
+    {
 
-    public  function deleteLoan(){
-
-         DB::table('loans')->where('id',session()->get('loanAccountID'))->update(['status'=>'DELETE']);
+        DB::table('loans')->where('id', session()->get('loanAccountID'))->update(['status' => 'DELETE']);
         $this->emit('deleteLoan');
         session::flash('message','Has been deleted successfully');
 
     }
-
-
-
 }

@@ -3,9 +3,6 @@
 namespace App\Http\Livewire\TellerManagement;
 
 use App\Models\Employee;
-use Illuminate\Support\Facades\DB;
-use App\Models\TellerEndOfDayPositions;
-use Livewire\Component;
 use Mediconesystems\LivewireDatatables\Column;
 use Mediconesystems\LivewireDatatables\Http\Livewire\LivewireDatatable;
 
@@ -13,38 +10,39 @@ class TellerPositionTable extends LivewireDatatable
 {
     public $selectedDate;
 
-    public $exportable=true;
-    public $searchable=['id','til_account','til_balance',
-                        'tiller_cash_at_hand','business_date',
-                          'message','status','updated_at'];
+    public $exportable = true;
 
-    protected $listeners=['updateDate'=>'getDate',
-                          'refreshTellerPosition'=>'$refresh'
-        ];
+    public $searchable = ['id', 'til_account', 'til_balance',
+        'tiller_cash_at_hand', 'business_date',
+        'message', 'status', 'updated_at'];
 
+    protected $listeners = ['updateDate' => 'getDate',
+        'refreshTellerPosition' => '$refresh',
+    ];
 
-    public function getDate($date){
-        $this->selectedDate=$date;
+    public function getDate($date)
+    {
+        $this->selectedDate = $date;
         $this->emit('refreshTellerPosition');
     }
 
-    public function builder(){
+    public function builder()
+    {
 
-        if($this->selectedDate){
+        if ($this->selectedDate) {
 
-            return \App\Models\TellerEndOfDayPositions::query()->where('business_date',$this->selectedDate);
+            return \App\Models\TellerEndOfDayPositions::query()->where('business_date', $this->selectedDate);
 
-        }
-        else{
+        } else {
             return \App\Models\TellerEndOfDayPositions::query();
         }
     }
 
-    public function columns():array
+    public function columns(): array
     {
         return [
             Column::name('id')->label('id'),
-            Column::callback('employee_id',function($employeeId){
+            Column::callback('employee_id', function ($employeeId) {
                 return Employee::where('id', $employeeId)
                     ->selectRaw("CONCAT(first_name, ' ', middle_name, ' ', last_name) as name")
                     ->value('name');
@@ -56,10 +54,9 @@ class TellerPositionTable extends LivewireDatatable
             Column::name('message')->label('message'),
             Column::name('status')->label('status'),
             Column::name('updated_at')->label('last update'),
-            Column::callback(['status','id'],function ($status,$id){
+            Column::callback(['status', 'id'], function ($status, $id) {
 
-
-                $html='  <style>
+                $html = '  <style>
             .hoverable:hover .hidden {
                 display: block;
             }
@@ -71,10 +68,9 @@ class TellerPositionTable extends LivewireDatatable
             </svg>
             <span class="hidden text-blue-800 m-1">CLOSE</span>
         </button>';
-                if($status!="BALANCED"){
+                if ($status != 'BALANCED') {
                     return $html;
-                }
-                else{
+                } else {
                     return null;
                 }
 
@@ -82,9 +78,9 @@ class TellerPositionTable extends LivewireDatatable
         ];
     }
 
-
-    public function approveCloseTill($id){
-        //get id of the till
-        $this->emit('approveCloseTill',$id);
+    public function approveCloseTill($id)
+    {
+        // get id of the till
+        $this->emit('approveCloseTill', $id);
     }
 }

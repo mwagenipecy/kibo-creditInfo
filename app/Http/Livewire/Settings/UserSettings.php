@@ -2,7 +2,10 @@
 
 namespace App\Http\Livewire\Settings;
 
-
+use App\Models\AccountsModel;
+use App\Models\departmentsList;
+use App\Models\TeamUser;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Jetstream\Actions\UpdateTeamClientRole;
 use Laravel\Jetstream\Contracts\AddsTeamClients;
@@ -11,13 +14,8 @@ use Laravel\Jetstream\Contracts\RemovesTeamClients;
 use Laravel\Jetstream\Features;
 use Laravel\Jetstream\Jetstream;
 use Laravel\Jetstream\Role;
-use Livewire\Component;
-use App\Models\AccountsModel;
 use Laravel\Jetstream\Team;
-use App\Models\User;
-use App\Models\TeamUser;
-use App\Models\departmentsList;
-
+use Livewire\Component;
 
 class UserSettings extends Component
 {
@@ -70,7 +68,6 @@ class UserSettings extends Component
      */
     public $teamClientIdBeingRemoved = null;
 
-
     public $accounts;
 
     public $user;
@@ -98,8 +95,7 @@ class UserSettings extends Component
     /**
      * Mount the component.
      *
-     * @param mixed $team
-     * @return void
+     * @param  mixed  $team
      */
     public function mount(): void
     {
@@ -108,10 +104,9 @@ class UserSettings extends Component
         $this->team = $this->user->currentTeam;
 
         $this->pendingUsers = User::get();
-        $institution = TeamUser::where('user_id',Auth::user()->id)->value('institution');
-        $this->departmentList = departmentsList::where('institution',$institution )->get();
+        $institution = TeamUser::where('user_id', Auth::user()->id)->value('institution');
+        $this->departmentList = departmentsList::where('institution', $institution)->get();
     }
-
 
     protected $rules = [
         'pendinguser' => 'required|min:4',
@@ -119,22 +114,23 @@ class UserSettings extends Component
         'userrole' => 'required|min:4',
     ];
 
-    public function save(){
+    public function save()
+    {
 
-        //dd('kk');
+        // dd('kk');
 
-        //$this->validate();
+        // $this->validate();
 
-        TeamUser::where('user_id',$this->pendinguser)->update([
-            'role'=>$this->userrole,
-            'institution'=>TeamUser::where('user_id',Auth::user()->id)->value('institution'),
-            'team_id'=>TeamUser::where('user_id',Auth::user()->id)->value('team_id'),
-            'department'=>$this->department
+        TeamUser::where('user_id', $this->pendinguser)->update([
+            'role' => $this->userrole,
+            'institution' => TeamUser::where('user_id', Auth::user()->id)->value('institution'),
+            'team_id' => TeamUser::where('user_id', Auth::user()->id)->value('team_id'),
+            'department' => $this->department,
         ]);
 
-        User::where('id',$this->pendinguser)->update([
-            'branch_id'=>'OFFICER',
-            'current_team_id'=>TeamUser::where('user_id',Auth::user()->id)->value('team_id'),
+        User::where('id', $this->pendinguser)->update([
+            'branch_id' => 'OFFICER',
+            'current_team_id' => TeamUser::where('user_id', Auth::user()->id)->value('team_id'),
         ]);
 
         $this->pendinguser = null;
@@ -142,7 +138,6 @@ class UserSettings extends Component
         $this->userrole = null;
 
     }
-
 
     /**
      * Add a new team member to a team.
@@ -182,12 +177,12 @@ class UserSettings extends Component
     /**
      * Cancel a pending team member invitation.
      *
-     * @param int $invitationId
+     * @param  int  $invitationId
      * @return void
      */
     public function cancelTeamInvitation($invitationId)
     {
-        if (!empty($invitationId)) {
+        if (! empty($invitationId)) {
             $model = Jetstream::teamInvitationModel();
 
             $model::whereKey($invitationId)->delete();
@@ -199,7 +194,7 @@ class UserSettings extends Component
     /**
      * Allow the given user's role to be managed.
      *
-     * @param int $userId
+     * @param  int  $userId
      * @return void
      */
     public function manageRole($userId)
@@ -212,7 +207,6 @@ class UserSettings extends Component
     /**
      * Save the role for the user being managed.
      *
-     * @param \Laravel\Jetstream\Actions\UpdateTeamClientRole $updater
      * @return void
      */
     public function updateRole(UpdateTeamClientRole $updater)
@@ -242,7 +236,6 @@ class UserSettings extends Component
     /**
      * Remove the currently authenticated user from the team.
      *
-     * @param \Laravel\Jetstream\Contracts\RemovesTeamClients $remover
      * @return void
      */
     public function leaveTeam(RemovesTeamClients $remover)
@@ -263,7 +256,7 @@ class UserSettings extends Component
     /**
      * Confirm that the given team member should be removed.
      *
-     * @param int $userId
+     * @param  int  $userId
      * @return void
      */
     public function confirmTeamClientRemoval($userId)
@@ -276,7 +269,6 @@ class UserSettings extends Component
     /**
      * Remove a team member from the team.
      *
-     * @param \Laravel\Jetstream\Contracts\RemovesTeamClients $remover
      * @return void
      */
     public function removeTeamClient(RemovesTeamClients $remover)
@@ -330,6 +322,7 @@ class UserSettings extends Component
     public function render()
     {
         $this->accounts = AccountsModel::where('sub_product_number', '19')->get();
+
         return view('livewire.settings.user-settings');
     }
 }

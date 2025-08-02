@@ -1,26 +1,19 @@
 <?php
 
-
 namespace App\Http\Controllers;
 
 use App\Models\Branches;
 use App\Models\Employee;
-use App\Models\grants;
-use App\Models\ExpensesModel;
-use App\Models\Bonus;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class Employees extends Controller
 {
-
     public $employees;
-
 
     public function render()
     {
-        $this->branches = Branches::where('institution_id',Auth::user()->institution_id)->get();
-
+        $this->branches = Branches::where('institution_id', Auth::user()->institution_id)->get();
 
         return view('livewire.h-r.employees');
     }
@@ -58,13 +51,17 @@ class Employees extends Controller
     public function update(Request $request, Employee $employee)
     {
         $employee->update($request->all());
+
         return redirect()->route('employees.show', $employee->id);
     }
+
     public function destroy(Employee $employee)
     {
         $employee->delete();
+
         return redirect()->route('employees.index');
     }
+
     public function addAbsence(Request $request, Employee $employee)
     {
         $employee->absences()->create($request->all());

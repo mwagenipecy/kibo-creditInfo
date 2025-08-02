@@ -3,7 +3,6 @@
 namespace App\Http\Livewire\Sidebar;
 
 use App\Models\departmentsList;
-use App\Models\sub_menus;
 use App\Models\User;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Facades\Auth;
@@ -14,8 +13,11 @@ class Sidebar extends Component
 {
     // Public properties for the component
     public $tab_id;
+
     public $currentUserId;
+
     public $currentUserDepartment;
+
     public $menuItems = [];
 
     // Method to handle when a menu item is clicked
@@ -23,8 +25,6 @@ class Sidebar extends Component
     {
         $this->tab_id = $item;
         $this->emit('menuItemClicked', $item);
-
-
 
     }
 
@@ -49,11 +49,10 @@ class Sidebar extends Component
         if ($this->menuItems) {
             // Clean up the menu items and sort them
             $str_json = json_encode($this->menuItems);
-            $this->menuItems = json_decode($str_json, TRUE);
-            $this->menuItems = str_replace(array('[', ']', '"', ' '), '', $this->menuItems);
-            $permissions = explode(",", $this->menuItems);
+            $this->menuItems = json_decode($str_json, true);
+            $this->menuItems = str_replace(['[', ']', '"', ' '], '', $this->menuItems);
+            $permissions = explode(',', $this->menuItems);
             sort($permissions);
-
 
             // Store the permissions in the session
             session()->put('permissions', $permissions);
@@ -61,16 +60,15 @@ class Sidebar extends Component
             // If there are no menu items, store a null value in the session
             session()->put('permissions', null);
         }
-//        dd($permissions);
+        //        dd($permissions);
 
         // Get the IDs of the menus that the user has access to
         $menuIds = [];
         foreach ($permissions as $permission) {
             $rows = DB::table('sub_menus')->select('id', 'menu_id')->where('id', $permission)->get();
 
-
             foreach ($rows as $row) {
-                if (!in_array($row->menu_id, $menuIds)) {
+                if (! in_array($row->menu_id, $menuIds)) {
                     $menuIds[] = $row->menu_id;
                 }
             }
@@ -78,20 +76,18 @@ class Sidebar extends Component
         }
         $this->menuItems = $menuIds;
 
-        $permission_items =[];
-        foreach ($permissions as $permission){
+        $permission_items = [];
+        foreach ($permissions as $permission) {
             $rows = DB::table('sub_menus')->select('user_action')->where('id', $permission)->first();
 
-            if($rows){
+            if ($rows) {
                 $permission_items[] = $rows->user_action;
             }
-
-
 
         }
 
         session()->put('permission_items', $permission_items);
-//        dd($permission_items);
+        //        dd($permission_items);
         // Check the user's status and return the appropriate view
         $userStatus = User::where('id', Auth::user()->id)->value('status');
         if ($userStatus == 'PENDING' || $userStatus == 'BLOCKED' || $userStatus == 'DELETED') {

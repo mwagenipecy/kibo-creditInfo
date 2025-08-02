@@ -3,21 +3,30 @@
 namespace App\Http\Livewire;
 
 use App\Models\Garage;
-use Livewire\Component;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Livewire\Component;
 
 class GarageFinder extends Component
 {
     public $userLocation = '';
+
     public $userLatitude = null;
+
     public $userLongitude = null;
+
     public $searchRadius = 10;
+
     public $selectedServices = [];
+
     public $sortBy = 'distance';
+
     public $garages = [];
+
     public $selectedGarage = null;
+
     public $isLoading = false;
+
     public $searchPerformed = false;
 
     public $availableServices = [
@@ -30,7 +39,7 @@ class GarageFinder extends Component
         'Battery Service',
         'Alignment',
         'Inspection',
-        'Towing'
+        'Towing',
     ];
 
     public function mount()
@@ -72,21 +81,21 @@ class GarageFinder extends Component
         try {
             // Using Google Geocoding API
             $googleApiKey = config('services.google.maps_api_key');
-            
+
             if ($googleApiKey) {
                 $response = Http::get('https://maps.googleapis.com/maps/api/geocode/json', [
                     'address' => $this->userLocation,
-                    'key' => $googleApiKey
+                    'key' => $googleApiKey,
                 ]);
 
                 if ($response->successful() && $response->json()['status'] === 'OK') {
                     $result = $response->json()['results'][0];
                     $this->userLatitude = $result['geometry']['location']['lat'];
                     $this->userLongitude = $result['geometry']['location']['lng'];
-                    
+
                     // Update location display with formatted address
                     $this->userLocation = $result['formatted_address'];
-                    
+
                     $this->loadNearbyGarages();
                     $this->showNotification('success', 'Location found! Showing nearby garages.');
                 }
@@ -95,20 +104,20 @@ class GarageFinder extends Component
                 $response = Http::get('https://nominatim.openstreetmap.org/search', [
                     'q' => $this->userLocation,
                     'format' => 'json',
-                    'limit' => 1
+                    'limit' => 1,
                 ]);
 
                 if ($response->successful() && count($response->json()) > 0) {
                     $result = $response->json()[0];
                     $this->userLatitude = $result['lat'];
                     $this->userLongitude = $result['lon'];
-                    
+
                     $this->loadNearbyGarages();
                     $this->showNotification('success', 'Location found! Showing nearby garages.');
                 }
             }
         } catch (\Exception $e) {
-            Log::error('Geocoding error: ' . $e->getMessage());
+            Log::error('Geocoding error: '.$e->getMessage());
             $this->showNotification('error', 'Could not find location. Please try again.');
         } finally {
             $this->isLoading = false;
@@ -126,10 +135,10 @@ class GarageFinder extends Component
         $this->userLatitude = $latitude;
         $this->userLongitude = $longitude;
         $this->isLoading = false;
-        
+
         // Reverse geocode to get address
         $this->reverseGeocode($latitude, $longitude);
-        
+
         $this->loadNearbyGarages();
         $this->showNotification('success', 'Using your current location!');
     }
@@ -138,11 +147,11 @@ class GarageFinder extends Component
     {
         try {
             $googleApiKey = config('services.google.maps_api_key');
-            
+
             if ($googleApiKey) {
                 $response = Http::get('https://maps.googleapis.com/maps/api/geocode/json', [
                     'latlng' => "$lat,$lng",
-                    'key' => $googleApiKey
+                    'key' => $googleApiKey,
                 ]);
 
                 if ($response->successful() && $response->json()['status'] === 'OK') {
@@ -151,27 +160,27 @@ class GarageFinder extends Component
                 }
             }
         } catch (\Exception $e) {
-            Log::error('Reverse geocoding error: ' . $e->getMessage());
+            Log::error('Reverse geocoding error: '.$e->getMessage());
         }
     }
 
     public function loadNearbyGarages()
     {
         $this->isLoading = true;
-        
+
         try {
             $query = Garage::where('is_active', true);
 
             if ($this->userLatitude && $this->userLongitude) {
                 // Add distance calculation
-                $query = $query->selectRaw("
+                $query = $query->selectRaw('
                     *,
                     (6371 * acos(cos(radians(?)) * cos(radians(latitude)) * cos(radians(longitude) - radians(?)) + sin(radians(?)) * sin(radians(latitude)))) AS distance
-                ", [$this->userLatitude, $this->userLongitude, $this->userLatitude])
-                ->having('distance', '<=', $this->searchRadius);
+                ', [$this->userLatitude, $this->userLongitude, $this->userLatitude])
+                    ->having('distance', '<=', $this->searchRadius);
             }
 
-            if (!empty($this->selectedServices)) {
+            if (! empty($this->selectedServices)) {
                 $query = $query->where(function ($q) {
                     foreach ($this->selectedServices as $service) {
                         $q->orWhereJsonContains('services', $service);
@@ -196,9 +205,9 @@ class GarageFinder extends Component
 
             $this->garages = $query->get()->toArray();
             $this->searchPerformed = true;
-            
+
         } catch (\Exception $e) {
-            Log::error('Error loading garages: ' . $e->getMessage());
+            Log::error('Error loading garages: '.$e->getMessage());
             $this->showNotification('error', 'Error loading garages. Please try again.');
             $this->garages = [];
         } finally {
@@ -219,12 +228,11 @@ class GarageFinder extends Component
     public function getDirections($garageId)
     {
         $garage = Garage::findOrFail($garageId);
-        
+
         // Use Google Maps with coordinates (no API key needed for this URL format)
         $url = "https://www.google.com/maps/place/@{$garage->latitude},{$garage->longitude}";
-        
 
-      return redirect()->to($url);
+        return redirect()->to($url);
     }
 
     public function clearFilters()
@@ -240,7 +248,7 @@ class GarageFinder extends Component
     {
         $this->dispatchBrowserEvent('notify', [
             'type' => $type,
-            'message' => $message
+            'message' => $message,
         ]);
     }
 

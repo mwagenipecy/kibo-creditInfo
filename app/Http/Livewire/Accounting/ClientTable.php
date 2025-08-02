@@ -3,34 +3,34 @@
 namespace App\Http\Livewire\Accounting;
 
 use App\Models\BranchesModel;
-use App\Models\institutions;
 use App\Models\Clients;
 use App\Models\ClientsModel;
 use Illuminate\Support\Facades\Session;
-use Livewire\Component;
 use Mediconesystems\LivewireDatatables\Column;
 use Mediconesystems\LivewireDatatables\Http\Livewire\LivewireDatatable;
-use function PHPUnit\Framework\isEmpty;
 
 class ClientTable extends LivewireDatatable
 {
     protected $listeners = ['refreshClientsTable' => '$refresh'];
-    public $exportable = true;
 
+    public $exportable = true;
 
     public function builder()
     {
-        return ClientsModel::query()->where('institution_id',auth()->user()->institution_id);
-        //->leftJoin('branches', 'branches.id', 'clients.branch')
+        return ClientsModel::query()->where('institution_id', auth()->user()->institution_id);
+        // ->leftJoin('branches', 'branches.id', 'clients.branch')
     }
 
-    public function viewClient($memberId){
-        Session::put('memberToViewId',$memberId);
+    public function viewClient($memberId)
+    {
+        Session::put('memberToViewId', $memberId);
         $this->emit('refreshClientsListComponent');
     }
-    public function editClient($memberId,$name){
-        Session::put('memberToEditId',$memberId);
-        Session::put('memberToEditName',$name);
+
+    public function editClient($memberId, $name)
+    {
+        Session::put('memberToEditId', $memberId);
+        Session::put('memberToEditName', $name);
         $this->emit('refreshClientsListComponent');
     }
 
@@ -44,8 +44,8 @@ class ClientTable extends LivewireDatatable
             Column::name('middle_name')
                 ->label('middle name'),
 
-            Column::callback('branch',function($id){
-                return BranchesModel::where('id',$id)->value('name');
+            Column::callback('branch', function ($id) {
+                return BranchesModel::where('id', $id)->value('name');
             })
                 ->label('branch'),
 
@@ -58,24 +58,22 @@ class ClientTable extends LivewireDatatable
             Column::callback(['member_status'], function ($status) {
                 return view('livewire.branches.table-status', ['status' => $status, 'move' => false]);
             })->label('status'),
-            Column::callback('id',function($id){
-                return view('livewire.accounting.client-action',['id'=>$id]);
-            })->label('action')
+            Column::callback('id', function ($id) {
+                return view('livewire.accounting.client-action', ['id' => $id]);
+            })->label('action'),
 
-            ];
-}
+        ];
+    }
 
+    public function financeViewClientes($id)
+    {
 
-public function  financeViewClientes($id){
-
-        $this->emitTo('accounting.accounting','financeViewClient',$id);
+        $this->emitTo('accounting.accounting', 'financeViewClient', $id);
 
     }
 
-public function   financeReject ($id){
-        dd("reject member");
-}
-
-
-
+    public function financeReject($id)
+    {
+        dd('reject member');
+    }
 }

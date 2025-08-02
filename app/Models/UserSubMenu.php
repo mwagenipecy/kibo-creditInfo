@@ -10,7 +10,6 @@ class UserSubMenu extends Model
     use HasFactory;
 
     protected $table = 'user_sub_menus'; // table name in the database
+
     protected $fillable = ['user_id', 'menu_id', 'sub_menu_id', 'permission'];
-
-
 }

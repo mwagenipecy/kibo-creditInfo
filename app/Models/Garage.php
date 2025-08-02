@@ -52,7 +52,7 @@ class Garage extends Model
             $this->city,
             $this->state,
             $this->zip_code,
-            $this->country
+            $this->country,
         ]);
 
         return implode(', ', $parts);
@@ -79,12 +79,12 @@ class Garage extends Model
      */
     public function scopeNearby($query, $latitude, $longitude, $radius = 10)
     {
-        return $query->selectRaw("
+        return $query->selectRaw('
             *,
             (6371 * acos(cos(radians(?)) * cos(radians(latitude)) * cos(radians(longitude) - radians(?)) + sin(radians(?)) * sin(radians(latitude)))) AS distance
-        ", [$latitude, $longitude, $latitude])
-        ->having('distance', '<=', $radius)
-        ->orderBy('distance');
+        ', [$latitude, $longitude, $latitude])
+            ->having('distance', '<=', $radius)
+            ->orderBy('distance');
     }
 
     /**
@@ -112,7 +112,7 @@ class Garage extends Model
      */
     public function getDistanceTo($latitude, $longitude)
     {
-        if (!$this->latitude || !$this->longitude) {
+        if (! $this->latitude || ! $this->longitude) {
             return null;
         }
 
@@ -135,7 +135,7 @@ class Garage extends Model
      */
     public function hasService($service)
     {
-        if (!$this->services) {
+        if (! $this->services) {
             return false;
         }
 
@@ -147,7 +147,7 @@ class Garage extends Model
      */
     public function getFormattedHoursAttribute()
     {
-        if (!$this->opening_hours) {
+        if (! $this->opening_hours) {
             return 'Hours not available';
         }
 
@@ -162,7 +162,7 @@ class Garage extends Model
     {
         $rating = $this->rating ?? 0;
         $stars = '';
-        
+
         for ($i = 1; $i <= 5; $i++) {
             if ($i <= $rating) {
                 $stars .= '★';
@@ -170,7 +170,7 @@ class Garage extends Model
                 $stars .= '☆';
             }
         }
-        
+
         return $stars;
     }
 
@@ -183,7 +183,7 @@ class Garage extends Model
             return "https://www.google.com/maps/search/?api=1&query={$this->latitude},{$this->longitude}";
         }
 
-        return "https://www.google.com/maps/search/?api=1&query=" . urlencode($this->full_address);
+        return 'https://www.google.com/maps/search/?api=1&query='.urlencode($this->full_address);
     }
 
     /**
@@ -195,7 +195,8 @@ class Garage extends Model
             if ($this->latitude && $this->longitude) {
                 return "https://www.google.com/maps/dir/{$fromLatitude},{$fromLongitude}/{$this->latitude},{$this->longitude}";
             }
-            return "https://www.google.com/maps/dir/{$fromLatitude},{$fromLongitude}/" . urlencode($this->full_address);
+
+            return "https://www.google.com/maps/dir/{$fromLatitude},{$fromLongitude}/".urlencode($this->full_address);
         }
 
         return $this->google_maps_url;
@@ -206,20 +207,20 @@ class Garage extends Model
      */
     public function geocodeAddress()
     {
-        if (!$this->full_address) {
+        if (! $this->full_address) {
             return false;
         }
 
         try {
             $googleApiKey = config('services.google.maps_api_key');
-            
-            if (!$googleApiKey) {
+
+            if (! $googleApiKey) {
                 return false;
             }
 
             $response = \Illuminate\Support\Facades\Http::get('https://maps.googleapis.com/maps/api/geocode/json', [
                 'address' => $this->full_address,
-                'key' => $googleApiKey
+                'key' => $googleApiKey,
             ]);
 
             if ($response->successful() && $response->json()['status'] === 'OK') {
@@ -227,11 +228,11 @@ class Garage extends Model
                 $this->latitude = $result['geometry']['location']['lat'];
                 $this->longitude = $result['geometry']['location']['lng'];
                 $this->save();
-                
+
                 return true;
             }
         } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::error('Geocoding error for garage ' . $this->id . ': ' . $e->getMessage());
+            \Illuminate\Support\Facades\Log::error('Geocoding error for garage '.$this->id.': '.$e->getMessage());
         }
 
         return false;
@@ -244,10 +245,10 @@ class Garage extends Model
     {
         return static::where(function ($query) use ($searchTerm) {
             $query->where('name', 'like', "%{$searchTerm}%")
-                  ->orWhere('description', 'like', "%{$searchTerm}%")
-                  ->orWhere('address', 'like', "%{$searchTerm}%")
-                  ->orWhere('city', 'like', "%{$searchTerm}%")
-                  ->orWhereJsonContains('services', $searchTerm);
+                ->orWhere('description', 'like', "%{$searchTerm}%")
+                ->orWhere('address', 'like', "%{$searchTerm}%")
+                ->orWhere('city', 'like', "%{$searchTerm}%")
+                ->orWhereJsonContains('services', $searchTerm);
         });
     }
 
@@ -268,6 +269,7 @@ class Garage extends Model
         }
 
         arsort($services);
+
         return array_slice(array_keys($services), 0, $limit);
     }
 
@@ -281,7 +283,7 @@ class Garage extends Model
             'active_garages' => static::active()->count(),
             'featured_garages' => static::featured()->count(),
             'average_rating' => static::avg('rating'),
-            'total_services' => count(static::getPopularServices(100))
+            'total_services' => count(static::getPopularServices(100)),
         ];
     }
 
@@ -295,7 +297,7 @@ class Garage extends Model
         // Auto-geocode when address changes
         static::saving(function ($garage) {
             if ($garage->isDirty(['address', 'city', 'state', 'zip_code', 'country'])) {
-                if (!$garage->latitude || !$garage->longitude) {
+                if (! $garage->latitude || ! $garage->longitude) {
                     $garage->geocodeAddress();
                 }
             }

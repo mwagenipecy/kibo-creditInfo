@@ -3,9 +3,6 @@
 namespace App\Http\Livewire\Reports;
 
 use App\Models\general_ledger;
-use App\Models\ClientsModel;
-use App\Models\LoansModel;
-use Livewire\Component;
 use Illuminate\Support\Facades\DB;
 use Mediconesystems\LivewireDatatables\Column;
 use Mediconesystems\LivewireDatatables\Http\Livewire\LivewireDatatable;
@@ -13,21 +10,23 @@ use Mediconesystems\LivewireDatatables\Http\Livewire\LivewireDatatable;
 class GeneralReport extends LivewireDatatable
 {
     public $exportable = true;
+
     public $start_date_value;
+
     public $title;
+
     public $value;
 
-    public $listeners=[
-        'category'=>'reportCategory',
-        'get-start-date'=>'builder',
-        'sortByBranchChanged'=>'sortByBranchChanged'
+    public $listeners = [
+        'category' => 'reportCategory',
+        'get-start-date' => 'builder',
+        'sortByBranchChanged' => 'sortByBranchChanged',
     ];
 
-//    public function startDate($startDate){
-//      $this->start_date_value= $startDate;
-//    }
+    //    public function startDate($startDate){
+    //      $this->start_date_value= $startDate;
+    //    }
     public $sortByBranch;
-
 
     public function sortByBranchChanged($value)
     {
@@ -36,35 +35,33 @@ class GeneralReport extends LivewireDatatable
 
     }
 
-
-  public function reportCategory($selectedNumber){
-    $this->value=$selectedNumber;
-  }
+    public function reportCategory($selectedNumber)
+    {
+        $this->value = $selectedNumber;
+    }
 
     public function builder()
     {
 
-       $query=array();
+        $query = [];
 
-
-            if(DB::table('branches')->where('id', auth()->user()->branch)->value('name') == 'HQ'){
-                $query= general_ledger::query()->where('branch_id', $this->sortByBranch);
-            }else{
-                $query= general_ledger::query()->where('branch_id', auth()->user()->branch);
-            }
+        if (DB::table('branches')->where('id', auth()->user()->branch)->value('name') == 'HQ') {
+            $query = general_ledger::query()->where('branch_id', $this->sortByBranch);
+        } else {
+            $query = general_ledger::query()->where('branch_id', auth()->user()->branch);
+        }
 
         return $query;
 
     }
 
-
     public function columns(): array
     {
 
-        $table_data=[
+        $table_data = [
             Column::name('record_on_account_number')
                 ->label('Record on account')->searchable(),
-            Column::callback('record_on_account_number_balance',function ($balance){
+            Column::callback('record_on_account_number_balance', function ($balance) {
                 return number_format($balance);
             })
                 ->label('balance')->searchable(),
@@ -82,11 +79,11 @@ class GeneralReport extends LivewireDatatable
                 ->label('transaction type'),
             Column::name('narration')
                 ->label('description'),
-            Column::callback('credit',function ($credit){
+            Column::callback('credit', function ($credit) {
                 return number_format($credit);
             })
                 ->label('credit'),
-            Column::callback('debit',function ($debit){
+            Column::callback('debit', function ($debit) {
                 return number_format($debit);
             })
                 ->label('debit'),
@@ -98,8 +95,5 @@ class GeneralReport extends LivewireDatatable
 
         return $table_data;
 
-
-
     }
-
 }

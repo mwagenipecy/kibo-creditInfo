@@ -1,18 +1,19 @@
 <?php
+
 //
-//namespace App\Http\Livewire\TellerManagement;
+// namespace App\Http\Livewire\TellerManagement;
 //
-//use App\Models\Branches;
-//use App\Models\Employee;
-//use Illuminate\Support\Facades\Config;
-//use Illuminate\Support\Facades\DB;
-//use Kdion4891\LaravelLivewireTables\Column;
-//use Livewire\Component;
-//use Mediconesystems\LivewireDatatables\Http\Livewire\LivewireDatatable;
-//use function PHPUnit\Framework\isEmpty;
+// use App\Models\Branches;
+// use App\Models\Employee;
+// use Illuminate\Support\Facades\Config;
+// use Illuminate\Support\Facades\DB;
+// use Kdion4891\LaravelLivewireTables\Column;
+// use Livewire\Component;
+// use Mediconesystems\LivewireDatatables\Http\Livewire\LivewireDatatable;
+// use function PHPUnit\Framework\isEmpty;
 //
-//class TellerTable extends LivewireDatatable
-//{
+// class TellerTable extends LivewireDatatable
+// {
 //    public $exportable=true;
 //
 //
@@ -33,7 +34,7 @@
 //
 //            \Mediconesystems\LivewireDatatables\Column::callback(['employee_id','progress_status'],function($empleyeeId,$progress_status){
 //                $assigned_to="<div class='text-indigo-400'>Not available...</div>";
-////                dd($assigned_to);
+// //                dd($assigned_to);
 //
 //                if(!$assigned_to==null ){
 //                    $assigned_to= Employee::where('id',$empleyeeId)->value('first_name').'   '.Employee::where('id',$empleyeeId)->value('middle_name').'   '.Employee::where('id',$empleyeeId)->value('last_name');
@@ -93,19 +94,14 @@
 //    public function assignToTeller($id){
 //        $this->emitTo('teller-management.teller-register','assignTeller',$id);
 //    }
-//}
-
+// }
 
 namespace App\Http\Livewire\TellerManagement;
 
 use App\Models\Branches;
 use App\Models\Employee;
-use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
-use Kdion4891\LaravelLivewireTables\Column;
-use Livewire\Component;
 use Mediconesystems\LivewireDatatables\Http\Livewire\LivewireDatatable;
-use function PHPUnit\Framework\isEmpty;
 
 class TellerTable extends LivewireDatatable
 {
@@ -129,23 +125,23 @@ class TellerTable extends LivewireDatatable
 
             \Mediconesystems\LivewireDatatables\Column::callback(['employee_id', 'progress_status'], function ($empleyeeId, $progress_status) {
                 $assigned_to = "<div class='text-indigo-400'>Not available...</div>";
-//                dd($assigned_to);
+                //                dd($assigned_to);
 
-                if (!$assigned_to == null) {
-                    $assigned_to = Employee::where('id', $empleyeeId)->value('first_name') . '   ' . Employee::where('id', $empleyeeId)->value('middle_name') . '   ' . Employee::where('id', $empleyeeId)->value('last_name');
+                if (! $assigned_to == null) {
+                    $assigned_to = Employee::where('id', $empleyeeId)->value('first_name').'   '.Employee::where('id', $empleyeeId)->value('middle_name').'   '.Employee::where('id', $empleyeeId)->value('last_name');
                 }
-                if ($progress_status == "PENDING" && $assigned_to == null) {
+                if ($progress_status == 'PENDING' && $assigned_to == null) {
                     $assigned_to = "<div class='text-indigo-400'>onprogress...</div>";
                 }
 
                 return $assigned_to;
             })->label('Assigned to'),
             \Mediconesystems\LivewireDatatables\Column::callback('branch_id', function ($branchId) {
-                return Branches::where('id', $branchId)->value('name') . '    ' . '(' . Branches::where('id', $branchId)->value('region') . ',' . Branches::where('id', $branchId)->value('wilaya') . ')';
+                return Branches::where('id', $branchId)->value('name').'    '.'('.Branches::where('id', $branchId)->value('region').','.Branches::where('id', $branchId)->value('wilaya').')';
             })->label('Branch')->searchable(),
 
             \Mediconesystems\LivewireDatatables\Column::callback('max_amount', function ($amount) {
-                return number_format($amount, 2, '.', ',') . 'TZS';
+                return number_format($amount, 2, '.', ',').'TZS';
             })->label('maximum amount')->searchable(),
 
             \Mediconesystems\LivewireDatatables\Column::name('status')->label('status')->searchable(),
@@ -157,13 +153,14 @@ class TellerTable extends LivewireDatatable
                 display: block;
             }
         </style>
-         <button wire:click="assignToTeller(' . $id . ')" type="button" class="hoverable text-white bg-gray-100 hover:bg-blue-100 hover:text-blue focus:ring-4 focus:outline-none focus:ring-blue-100 font-medium rounded-lg text-sm p-1 text-center inline-flex items-center mr-2 dark:bg-blue-200 dark:hover:bg-blue-200 dark:focus:ring-blue-200">
+         <button wire:click="assignToTeller('.$id.')" type="button" class="hoverable text-white bg-gray-100 hover:bg-blue-100 hover:text-blue focus:ring-4 focus:outline-none focus:ring-blue-100 font-medium rounded-lg text-sm p-1 text-center inline-flex items-center mr-2 dark:bg-blue-200 dark:hover:bg-blue-200 dark:focus:ring-blue-200">
 
             <svg xmlns="http://www.w3.org/2000/svg" fill="blue" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
             <span class="hidden text-blue-800 m-2">Assign</span>
         </button>';
+
                 return $html;
             })->label('assign')->searchable(),
 
@@ -185,7 +182,6 @@ class TellerTable extends LivewireDatatable
         session()->put('editTellerId', $id);
         $this->emitTo('teller-management.teller-register', 'deleteTeller');
     }
-
 
     public function assignToTeller($id)
     {

@@ -8,5 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class issured_shares extends Model
 {
     use HasFactory;
+
     protected $guarded = [];
 }

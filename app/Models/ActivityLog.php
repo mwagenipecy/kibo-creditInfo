@@ -9,7 +9,6 @@ class ActivityLog extends Model
 {
     use HasFactory;
 
-
     public $timestamps = false;
 
     /**
@@ -24,7 +23,7 @@ class ActivityLog extends Model
         'entity_id',
         'description',
         'ip_address',
-        'user_agent'
+        'user_agent',
     ];
 
     /**
@@ -42,7 +41,7 @@ class ActivityLog extends Model
     public function user()
     {
         return $this->belongsTo(User::class)->withDefault([
-            'name' => 'System'
+            'name' => 'System',
         ]);
     }
 }

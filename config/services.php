@@ -36,7 +36,6 @@ return [
         'sender' => env('SMS_SENDER_ID', 'YourCompany'),
     ],
 
-
     'google' => [
         'maps_api_key' => env('GOOGLE_MAPS_API_KEY'),
         'client_id' => env('GOOGLE_CLIENT_ID'),
@@ -44,11 +43,9 @@ return [
         'redirect' => env('GOOGLE_REDIRECT_URL'),
     ],
 
+    // / to the .env
 
-
-    /// to the .env
-
-//     SMS_API_KEY=your_api_key_here
-// SMS_SENDER_ID=YourCompany
+    //     SMS_API_KEY=your_api_key_here
+    // SMS_SENDER_ID=YourCompany
 
 ];

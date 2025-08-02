@@ -2,175 +2,271 @@
 
 namespace App\Http\Livewire\Clients;
 
+use App\Mail\LoanProgress;
+use App\Models\AccountsModel;
+use App\Models\approvals;
 use App\Models\ClientsModel;
 use App\Models\Employee;
 use App\Models\LoansModel;
 use App\Models\PendingRegistration;
 use App\Models\TeamUser;
 use App\Models\User;
-use App\Mail\LoanProgress;
-use Exception;
-use Illuminate\Support\Facades\Mail;
-use Livewire\Component;
-use App\Models\MembersModel;
-use App\Models\approvals;
-use App\Models\AccountsModel;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Session;
+use Livewire\Component;
 use Livewire\WithFileUploads;
-
 
 class Clients extends Component
 {
     use WithFileUploads;
 
     public $tab_id = '1';
+
     public $title = 'Members list';
+
     public $selected;
+
     public $activeClientsCount;
+
     public $inactiveClientsCount;
+
     public $showCreateNewMember;
+
     public $membershipNumber;
+
     public $parentMember;
+
     public $showDeleteClient;
+
     public $clientSelected;
+
     public $showEditClient;
+
     public $pendingMember;
+
     public $MembersList;
+
     public $pendingClientname;
+
     public $client;
+
     public $showAddClient;
+
     public $nationarity;
 
-
     public $email;
+
     public $Member_status;
+
     public $permission = 'BLOCKED';
+
     public $password;
 
     public $photo;
+
     public $first_name;
+
     public $middle_name;
+
     public $last_name;
+
     public $branch;
+
     public $registering_officer;
+
     public $supervising_officer;
+
     public $approving_officer;
+
     public $membership_type;
+
     public $incorporation_number;
+
     public $phone_number;
+
     public $mobile_phone_number;
+
     public $date_of_birth;
+
     public $gender;
+
     public $marital_status;
+
     public $membership_number;
+
     public $registration_date;
+
     public $street;
+
     public $address;
+
     public $notes;
+
     public $current_team_id;
+
     public $profile_photo_path;
+
     public $branch_id;
+
     public $business_name;
+
     public $name;
+
     public $member;
 
     public $confirmingUserDeletion = false;
+
     public $branches;
 
+    public $sub_product_number_shares = '1199';
 
-    public $sub_product_number_shares ='1199';
-    public $sub_product_number_savings='1279';
-    public $sub_product_number_deposits='1321';
+    public $sub_product_number_savings = '1279';
+
+    public $sub_product_number_deposits = '1321';
+
     public $place_of_birth;
+
     public $next_of_kin_name;
+
     public $next_of_kin_phone;
+
     public $tin_number;
+
     public $nida_number;
+
     public $ref_number;
+
     public $shares_ref_number;
+
     public $member_exit_document;
 
     // vie members modal
-    public $viewClientDetails=false;
+    public $viewClientDetails = false;
+
     public $loanStatus;
 
-
     public $account_number;
+
     public $institution_id;
 
     public $client_number;
 
-
     public $created_at;
+
     public $updated_at;
 
     public $end_membership_description;
+
     public $amount;
+
     public $national_id;
+
     public $client_id;
+
     public $customer_code;
+
     public $present_surname;
+
     public $birth_surname;
+
     public $number_of_spouse;
+
     public $number_of_children;
+
     public $classification_of_individual;
 
     public $country_of_birth;
+
     public $fate_status;
+
     public $social_status;
+
     public $residency;
+
     public $citizenship;
+
     public $nationality;
+
     public $employment;
+
     public $employer_name;
+
     public $education;
+
     public $income_available;
+
     public $monthly_expenses;
+
     public $negative_status_of_individual;
+
     public $tax_identification_number;
+
     public $passport_number;
+
     public $passport_issuer_country;
+
     public $driving_license_number;
+
     public $voters_id;
+
     public $foreign_unique_id;
+
     public $custom_id_number_1;
+
     public $custom_id_number_2;
+
     public $main_address;
+
     public $number_of_building;
+
     public $postal_code;
+
     public $region;
+
     public $district;
+
     public $country;
+
     public $viewpaid = false;
+
     public $viewnotpaid = false;
+
     public $allMembers = true;
+
     public $mobile_phone;
+
     public $fixed_line;
+
     public $web_page;
+
     public $trade_name;
+
     public $legal_form;
+
     public $establishment_date;
+
     public $registration_country;
+
     public $industry_sector;
+
     public $registration_number;
+
     public $variables;
+
     public $middle_names;
-    public $viewClientLoanData=false;
 
-
-
+    public $viewClientLoanData = false;
 
     protected $listeners = [
         'showUsersList' => 'showUsersList',
         'blockClient' => 'blockClientModal',
         'editClient' => 'editClientModal',
-        'viewClientDetails'=>'viewClientDetails',
-        'viewClientLoans'=>'viewClientLoan'
+        'viewClientDetails' => 'viewClientDetails',
+        'viewClientLoans' => 'viewClientLoan',
     ];
-
 
     protected $rules = [
         'account_number' => 'nullable|integer',
@@ -256,79 +352,75 @@ class Clients extends Component
         'registration_number' => 'nullable|string|max:255',
     ];
 
-    public function viewPaidClients(){
+    public function viewPaidClients()
+    {
         $this->viewpaid = true;
-        $this->viewnotpaid =false;
-        $this->allMembers =false;
+        $this->viewnotpaid = false;
+        $this->allMembers = false;
 
     }
 
-    public function viewNotPaidClients(){
-        $this->viewnotpaid =true;
+    public function viewNotPaidClients()
+    {
+        $this->viewnotpaid = true;
         $this->viewpaid = false;
         $this->allMembers = false;
     }
 
-    public function viewAllClients(){
+    public function viewAllClients()
+    {
         $this->allMembers = true;
-        $this->viewnotpaid =false;
+        $this->viewnotpaid = false;
         $this->viewpaid = false;
     }
 
+    public function viewClientLoan($client_number)
+    {
 
-
-    public function viewClientLoan($client_number){
-
-        $this->viewClientDetails=true;
-        $this->viewClientLoanData=true;
-        session()->put('viewMemberLoan',$client_number);
+        $this->viewClientDetails = true;
+        $this->viewClientLoanData = true;
+        session()->put('viewMemberLoan', $client_number);
     }
 
-    public function closeLoanData(){
-        $this->viewClientDetails=false;
-        $this->viewClientLoanData=false;
+    public function closeLoanData()
+    {
+        $this->viewClientDetails = false;
+        $this->viewClientLoanData = false;
     }
 
+    public function viewClientDetails($id)
+    {
+        session()->put('viewClientId', $id);
+        $client_number = DB::table('clients')->where('id', $id)->value('client_number');
+        $this->loanStatus = DB::table('loans')->where('client_number', $client_number)->get();
 
-    public function viewClientDetails($id){
-        session()->put('viewClientId',$id);
-        $client_number=DB::table('clients')->where('id',$id)->value('client_number');
-        $this->loanStatus=DB::table('loans')->where('client_number',$client_number)->get();
-
-        if($this->viewClientDetails==true){
-            $this->viewClientDetails=false;
-        } else if($this->viewClientDetails==false){
-            $this->viewClientDetails=true;
+        if ($this->viewClientDetails == true) {
+            $this->viewClientDetails = false;
+        } elseif ($this->viewClientDetails == false) {
+            $this->viewClientDetails = true;
         }
     }
-
 
     public function updatedPhoto()
     {
         $this->validate([
-            'photo' => 'image|mimes:png,jpg,jpeg|max:1024',// 1MB Max
+            'photo' => 'image|mimes:png,jpg,jpeg|max:1024', // 1MB Max
         ]);
-
 
         $filename = time().'_'.$this->photo->getClientOriginalName();
 
-        $this->photo->storeAs('clientPhotos',$filename,'public');
-        $this->profile_photo_path = 'clientPhotos/' . $filename;
-
+        $this->photo->storeAs('clientPhotos', $filename, 'public');
+        $this->profile_photo_path = 'clientPhotos/'.$filename;
 
     }
 
-
-
-    public function showAddClientModal($selected){
+    public function showAddClientModal($selected)
+    {
         $randomNumber = rand(9000, 9999);
-        $this->membershipNumber= str_pad($randomNumber, 4, '0', STR_PAD_LEFT);
+        $this->membershipNumber = str_pad($randomNumber, 4, '0', STR_PAD_LEFT);
         $this->selected = $selected;
         $this->showAddClient = true;
     }
-
-
-
 
     public function updatedMember()
     {
@@ -421,28 +513,23 @@ class Clients extends Component
         }
     }
 
-
     public function updateClient()
     {
 
         $id = auth()->user()->id;
 
-
         $this->validate();
 
-        if (ClientsModel::where('id', $this->client)->value('client_status') == "NEW CLIENT") {
-            $ClientId=[];
-              $last_member = ClientsModel::where("client_status",'!=',"NEW CLIENT")->latest()->first();
+        if (ClientsModel::where('id', $this->client)->value('client_status') == 'NEW CLIENT') {
+            $ClientId = [];
+            $last_member = ClientsModel::where('client_status', '!=', 'NEW CLIENT')->latest()->first();
 
+            if ($last_member) {
 
-            if($last_member) {
-
-                $last_member_id = (int)$last_member->client_number;
+                $last_member_id = (int) $last_member->client_number;
                 $last_member_id = $last_member_id + 1;
 
-                $ClientId =  str_pad($last_member_id, 4, '0', STR_PAD_LEFT);
-
-
+                $ClientId = str_pad($last_member_id, 4, '0', STR_PAD_LEFT);
 
             } else {
                 $last_member_id = 0;
@@ -450,15 +537,14 @@ class Clients extends Component
                 $ClientId = str_pad($last_member_id, 4, '0', STR_PAD_LEFT);
             }
 
-
             // create new client loan Account and account ID
-            $accountNumber=str_pad(auth()->user()->institution_id,4,0,STR_PAD_RIGHT).substr(time(),6).$ClientId;
+            $accountNumber = str_pad(auth()->user()->institution_id, 4, 0, STR_PAD_RIGHT).substr(time(), 6).$ClientId;
 
-            $loan_id=time();
+            $loan_id = time();
 
-            LoansModel::where('client_id',$this->client)->update([
-                 'loan_account_number'=> $accountNumber,
-                  'loan_id'=>$loan_id,
+            LoansModel::where('client_id', $this->client)->update([
+                'loan_account_number' => $accountNumber,
+                'loan_id' => $loan_id,
             ]);
 
             $id2 = AccountsModel::create([
@@ -466,33 +552,29 @@ class Clients extends Component
                 'institution_number' => auth()->user()->institution_id,
                 'branch_number' => auth()->user()->branch,
                 'client_number' => $ClientId,
-                'product_number' =>  LoansModel::where('client_id',$this->client)->where('loan_id',$loan_id)->value('loan_sub_product'),
+                'product_number' => LoansModel::where('client_id', $this->client)->where('loan_id', $loan_id)->value('loan_sub_product'),
                 'sub_product_number' => '',
                 'major_category_code' => 1000,
                 'category_code' => 1200,
                 'sub_category_code' => 1210,
                 'account_name' => $this->first_name.' '.$this->middle_name.' '.$this->last_name,
                 'account_number' => $accountNumber,
-                'notes' => "  ",
+                'notes' => '  ',
 
             ])->id;
 
+            $client_email = $this->email;
+            $officer_phone_number = Employee::where('id', ClientsModel::where('id', $this->client)->value('loan_officer'))->value('email');
+            $client_name = $this->first_name.' '.$this->middle_name.' '.$this->last_name;
 
-            $client_email=$this->email ;
-            $officer_phone_number=Employee::where('id',ClientsModel::where('id',$this->client)->value('loan_officer'))->value('email');
-            $client_name=$this->first_name.' '. $this->middle_name.' '.$this->last_name;
+            Mail::to($client_email)->send(new LoanProgress($officer_phone_number, $client_name, 'We acknowledge the successful receipt of your loan application. Our team is now processing it and will be in touch shortly regarding further stages '));
 
-            Mail::to($client_email)->send(new LoanProgress($officer_phone_number,$client_name,'We acknowledge the successful receipt of your loan application. Our team is now processing it and will be in touch shortly regarding further stages '));
+            ClientsModel::where('id', $this->client)->update(['client_number' => $ClientId, 'client_status' => 'ONPROGRESS']);
 
-
-            ClientsModel::where('id',$this->client)->update(['client_number'=>$ClientId,'client_status'=>"ONPROGRESS" ]);
-
-            LoansModel::where('client_id',$this->client)->where('loan_id',$loan_id)->update(['status'=>"ONPROGRESS",'client_number'=>$ClientId ]);
+            LoansModel::where('client_id', $this->client)->where('loan_id', $loan_id)->update(['status' => 'ONPROGRESS', 'client_number' => $ClientId]);
         }
 
-
-
-        //$this->validate(['first_name'=>'required','middle_name'=>'required','last_name'=>'required','branch'=>'required','membership_type'=>'required','phone_number'=>'required','email'=>'required','date_of_birth'=>'required','gender'=>'required','marital_status'=>'required','street'=>'required','address'=>'required','next_of_kin_name'=>'required','next_of_kin_phone'=>'required']);
+        // $this->validate(['first_name'=>'required','middle_name'=>'required','last_name'=>'required','branch'=>'required','membership_type'=>'required','phone_number'=>'required','email'=>'required','date_of_birth'=>'required','gender'=>'required','marital_status'=>'required','street'=>'required','address'=>'required','next_of_kin_name'=>'required','next_of_kin_phone'=>'required']);
 
         ClientsModel::where('id', $this->client)->update([
             'updated_at' => now(),
@@ -573,16 +655,10 @@ class Clients extends Component
             'establishment_date' => $this->establishment_date,
             'registration_country' => $this->registration_country,
             'industry_sector' => $this->industry_sector,
-            'registration_number' => $this->registration_number
+            'registration_number' => $this->registration_number,
         ]);
 
-
-
-
-
-
-
-        $this->sendApproval($id,'has edited member information','12');
+        $this->sendApproval($id, 'has edited member information', '12');
 
         $this->resetData();
 
@@ -594,59 +670,56 @@ class Clients extends Component
 
     }
 
-
     public function addClient()
     {
-        if($this->membership_type == "Individual"){
+        if ($this->membership_type == 'Individual') {
             $this->validate([
-                'first_name'=> 'required|min:3',
-                'last_name'=> 'required|min:3',
-                'membership_type'=> 'required|min:3',
-                'phone_number'=>'required',
+                'first_name' => 'required|min:3',
+                'last_name' => 'required|min:3',
+                'membership_type' => 'required|min:3',
+                'phone_number' => 'required',
             ]);
-        }else{
+        } else {
             $this->validate([
 
-                'membership_type'=> 'required|min:3',
-                'incorporation_number'=> 'required|min:3|unique:members',
-                'street'=> 'required|min:3',
+                'membership_type' => 'required|min:3',
+                'incorporation_number' => 'required|min:3|unique:members',
+                'street' => 'required|min:3',
                 'address' => 'required|min:3',
                 'notes' => 'required|min:3',
                 'business_name' => 'required|min:3',
                 'branch' => 'required|min:1',
-                'phone_number'=>'required',
+                'phone_number' => 'required',
             ]);
         }
 
-        //dd("bb");
+        // dd("bb");
 
-// check if reference number exist in table pending registration
-        $pending_registration=PendingRegistration::where('phone_number',$this->phone_number)->where('status','ACTIVE')->first();
-        if($pending_registration){
+        // check if reference number exist in table pending registration
+        $pending_registration = PendingRegistration::where('phone_number', $this->phone_number)->where('status', 'ACTIVE')->first();
+        if ($pending_registration) {
 
-            $institution_id='';
+            $institution_id = '';
             $id = auth()->user()->id;
             $currentUser = DB::table('team_user')->where('user_id', $id)->get();
-            foreach ($currentUser as $User){
-                $institution_id=$User->team_id;
+            foreach ($currentUser as $User) {
+                $institution_id = $User->team_id;
             }
 
-
-            $last_member= ClientsModel::latest()->first();
-            if($last_member){
+            $last_member = ClientsModel::latest()->first();
+            if ($last_member) {
                 $last_member_id = $last_member->id;
-                $last_member_id = $last_member_id  + 1;
+                $last_member_id = $last_member_id + 1;
                 $newMemberId = Session::get('branchIdInView').str_pad($last_member_id, 4, '0', STR_PAD_LEFT);
 
-            }else{
+            } else {
                 $last_member_id = 0;
-                $last_member_id = $last_member_id  + 1;
+                $last_member_id = $last_member_id + 1;
                 $newMemberId = Session::get('branchIdInView').str_pad($last_member_id, 4, '0', STR_PAD_LEFT);
 
             }
 
-
-            $id =  ClientsModel::create([
+            $id = ClientsModel::create([
                 'account_number' => $this->account_number,
                 'institution_id' => $this->institution_id,
                 'first_name' => $this->first_name,
@@ -726,20 +799,18 @@ class Clients extends Component
                 'establishment_date' => $this->establishment_date,
                 'registration_country' => $this->registration_country,
                 'industry_sector' => $this->industry_sector,
-                'registration_number' => $this->registration_number
+                'registration_number' => $this->registration_number,
             ])->id;
 
-//        $this->sendApproval($id,'has registered a new member','12');
-
+            //        $this->sendApproval($id,'has registered a new member','12');
 
             $this->resetData();
 
             Session::flash('message', 'A new user has been successfully created!');
             Session::flash('alert-class', 'alert-success');
-//        $this->showAddMember = false;
-        }
-        else{
-            session()->flash('message_fail','please check your reference number or complete registration fees');
+            //        $this->showAddMember = false;
+        } else {
+            session()->flash('message_fail', 'please check your reference number or complete registration fees');
         }
 
     }
@@ -828,11 +899,10 @@ class Clients extends Component
         $this->registration_number = '';
     }
 
-
-    public function sendApproval($id,$msg,$code){
+    public function sendApproval($id, $msg, $code)
+    {
 
         $user = auth()->user();
-
 
         approvals::create([
             'institution' => $id,
@@ -842,42 +912,41 @@ class Clients extends Component
             'process_code' => $code,
             'process_id' => $id,
             'process_status' => 'Pending',
-            'user_id'  => Auth::user()->id,
-            'team_id'  => $id
+            'user_id' => Auth::user()->id,
+            'team_id' => $id,
         ]);
 
     }
 
-
     public function submit()
     {
 
-        $institution_id='';
+        $institution_id = '';
         $id = auth()->user()->id;
         $currentUser = DB::table('team_user')->where('user_id', $id)->get();
-        foreach ($currentUser as $User){
-            $institution_id=$User->team_id;
+        foreach ($currentUser as $User) {
+            $institution_id = $User->team_id;
         }
 
         $this->validate();
 
         // Execution doesn't reach here if validation fails.
 
-        $id =  ClientsModel::create([
+        $id = ClientsModel::create([
             'name' => $this->name,
             'region' => $this->region,
             'wilaya' => $this->wilaya,
             'membershipNumber' => $this->membershipNumber,
             'parentMember' => $this->parentMember,
             'institution_id' => $institution_id,
-            'Member_status'  => 'Pending'
+            'Member_status' => 'Pending',
         ])->id;
 
         $user = auth()->user();
 
         $team = $user->currentTeam;
 
-        $institution = TeamUser::where('user_id',Auth::user()->id)->value('institution');
+        $institution = TeamUser::where('user_id', Auth::user()->id)->value('institution');
 
         approvals::create([
             'institution' => $institution,
@@ -887,11 +956,9 @@ class Clients extends Component
             'process_code' => '01',
             'process_id' => $id,
             'process_status' => 'Pending',
-            'user_id'  => Auth::user()->id,
-            'team_id'  => ""
+            'user_id' => Auth::user()->id,
+            'team_id' => '',
         ]);
-
-
 
         $this->resetData();
 
@@ -899,23 +966,19 @@ class Clients extends Component
         Session::flash('alert-class', 'alert-success');
     }
 
-
-
-
-    public function menuItemClicked($tabId){
+    public function menuItemClicked($tabId)
+    {
         $this->tab_id = $tabId;
-        if($tabId == '1'){
+        if ($tabId == '1') {
             $this->title = 'Members list';
         }
-        if($tabId == '2'){
+        if ($tabId == '2') {
             $this->title = 'Enter new Member details';
         }
     }
 
-
     public function createNewMember()
     {
-
 
         $this->showCreateNewMember = true;
     }
@@ -933,13 +996,13 @@ class Clients extends Component
         $this->showEditClient = true;
         $this->pendingClient = $id;
         $this->client = $id;
-        $this->pendingClientname = ClientsModel::where('id',$id)->value('first_name');
+        $this->pendingClientname = ClientsModel::where('id', $id)->value('first_name');
         $this->updatedMember();
 
     }
 
-
-    public function closeModal(){
+    public function closeModal()
+    {
         $this->showCreateNewMember = false;
         $this->showDeleteMember = false;
         $this->showEditClient = false;
@@ -949,15 +1012,14 @@ class Clients extends Component
     {
         // Check if password matches for logged-in user
         if (Hash::check($this->password, auth()->user()->password)) {
-            //dd('password matches');
+            // dd('password matches');
             $this->delete();
         } else {
-            //dd('password does not match');
+            // dd('password does not match');
             Session::flash('message', 'This password does not match our records');
             Session::flash('alert-class', 'alert-warning');
         }
         $this->resetPassword();
-
 
     }
 
@@ -968,22 +1030,18 @@ class Clients extends Component
 
     public function delete(): void
     {
-        $user = ClientsModel::where('id',$this->clientSelected)->first();
-
-
-
-
+        $user = ClientsModel::where('id', $this->clientSelected)->first();
 
         $action = '';
 
         if ($user) {
-            if($this->permission == 'BLOCKED'){
+            if ($this->permission == 'BLOCKED') {
                 $action = 'blockUser';
             }
-            if($this->permission == 'ACTIVE'){
+            if ($this->permission == 'ACTIVE') {
                 $action = 'activateUser';
             }
-            if($this->permission == 'DELETED'){
+            if ($this->permission == 'DELETED') {
                 // get file path
                 $filename = time().'_'.$this->member_exit_document->getClientOriginalName();
 
@@ -991,8 +1049,8 @@ class Clients extends Component
                 $this->member_exit_document->storeAs('member_exit_form', $filename, 'public');
 
                 // Save the file path
-                $file1Path = 'member_exit_form/' . $filename;
-                DB::table('members')->where('id',$this->clientSelected)->update(['member_exit_document'=>$file1Path,'member_status'=>"EXIT MEMBER"]);
+                $file1Path = 'member_exit_form/'.$filename;
+                DB::table('members')->where('id', $this->clientSelected)->update(['member_exit_document' => $file1Path, 'member_status' => 'EXIT MEMBER']);
 
                 $action = 'End membership';
             }
@@ -1000,7 +1058,7 @@ class Clients extends Component
             $update_value = approvals::updateOrCreate(
                 [
                     'process_id' => $this->clientSelected,
-                    'user_id' => Auth::user()->id
+                    'user_id' => Auth::user()->id,
 
                 ],
                 [
@@ -1012,22 +1070,20 @@ class Clients extends Component
                     'process_id' => $this->clientSelected,
                     'process_status' => $this->permission,
                     'approval_status' => 'PENDING',
-                    'user_id'  => Auth::user()->id,
-                    'team_id'  => '',
-                    'edit_package'=> null
+                    'user_id' => Auth::user()->id,
+                    'team_id' => '',
+                    'edit_package' => null,
                 ]
             );
 
-
             // Delete the record
-            //$node->delete();
+            // $node->delete();
             // Add your logic here for successful deletion
             Session::flash('message', 'Awaiting approval');
             Session::flash('alert-class', 'alert-success');
 
-//            $this->closeModal();
+            //            $this->closeModal();
             $this->render();
-
 
         } else {
             // Handle case where record was not found
@@ -1113,13 +1169,13 @@ class Clients extends Component
                 'type' => 'text',
                 'for' => 'individual',
             ],
-//            // Individual
-//            [
-//                'name' => 'gender',
-//                'label' => 'Gender',
-//                'type' => 'text',
-//                'for' => 'individual',
-//            ],
+            //            // Individual
+            //            [
+            //                'name' => 'gender',
+            //                'label' => 'Gender',
+            //                'type' => 'text',
+            //                'for' => 'individual',
+            //            ],
             // Individual
             [
                 'name' => 'date_of_birth',
@@ -1250,7 +1306,7 @@ class Clients extends Component
             // Both
             [
                 'name' => 'voters_id',
-                'label' => "Voters ID",
+                'label' => 'Voters ID',
                 'type' => 'text',
                 'for' => 'both',
             ],
@@ -1397,6 +1453,4 @@ class Clients extends Component
         ];
 
     }
-
-
 }

@@ -34,7 +34,7 @@ class CarDealer extends Model
         'additional_notes',
         'logo',
         'status',
-        'servicesOffered'
+        'servicesOffered',
     ];
 
     /**
@@ -68,7 +68,6 @@ class CarDealer extends Model
         return $this->logo ? Storage::url($this->logo) : null;
     }
 
-
     public function bills()
     {
         return $this->hasMany(Bill::class, 'entity_id')->where('entity_type', 'car_dealer');
@@ -79,7 +78,6 @@ class CarDealer extends Model
         return $this->hasOne(BillingConfiguration::class, 'entity_id')->where('entity_type', 'car_dealer');
     }
 
-
     /**
      * Get the status badge HTML.
      *
@@ -87,7 +85,7 @@ class CarDealer extends Model
      */
     public function getStatusBadgeAttribute()
     {
-        return match($this->status) {
+        return match ($this->status) {
             'APPROVED' => '<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Approved</span>',
             'PENDING' => '<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">Pending</span>',
             'REJECTED' => '<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Rejected</span>',
@@ -128,43 +126,35 @@ class CarDealer extends Model
         return $query->where('status', 'REJECTED');
     }
 
-
-
     public function vehicles()
     {
         return $this->hasMany(Vehicle::class);
     }
 
-
-    public function dealerCarCount(){
+    public function dealerCarCount()
+    {
 
         return Vehicle::where('dealer_id', $this->id)
            // ->where('status', 'ACTIVE')
             ->count();
     }
 
-
     public function rateCarDealer()
     {
         return rand(7, 9);
     }
+
     /**
      * Get the reviews for the car dealer.
      */
-
-
-    
     public function reviews()
     {
         return $this->hasMany(DealerReview::class);
     }
-    
+
     // Accessors
     public function getRatingAttribute()
     {
         return $this->reviews()->avg('rating') ?? 0;
     }
-
-    
-    
 }

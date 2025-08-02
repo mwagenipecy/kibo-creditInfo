@@ -9,14 +9,13 @@ class LenderFinancingCriteria extends Model
 {
     use HasFactory;
 
-    protected $guarded=[];
-
+    protected $guarded = [];
 
     public function lender()
     {
         return $this->belongsTo(Lender::class);
     }
-    
+
     /**
      * Get the make associated with the criteria
      */
@@ -24,7 +23,7 @@ class LenderFinancingCriteria extends Model
     {
         return $this->belongsTo(Make::class);
     }
-    
+
     /**
      * Get the model associated with the criteria
      */
@@ -32,6 +31,4 @@ class LenderFinancingCriteria extends Model
     {
         return $this->belongsTo(VehicleModel::class, 'model_id');
     }
-
-
 }

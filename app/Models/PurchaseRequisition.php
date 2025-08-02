@@ -8,5 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class PurchaseRequisition extends Model
 {
     use HasFactory;
-    protected $table='purchases';
+
+    protected $table = 'purchases';
 }

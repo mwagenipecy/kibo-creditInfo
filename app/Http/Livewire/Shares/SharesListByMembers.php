@@ -2,38 +2,39 @@
 
 namespace App\Http\Livewire\Shares;
 
-use Livewire\Component;
 use Illuminate\Support\Facades\Session;
+use Livewire\Component;
 
 class SharesListByClients extends Component
 {
+    public $term = '';
 
-
-    public $term = "";
     public $showAddUser = false;
+
     public $memberStatus = 'All';
+
     protected $listeners = ['refreshClientsListComponent' => '$refresh'];
 
-    public function resetSearch(){
+    public function resetSearch()
+    {
         $this->term = '';
-        Session::put('memberSearchTerm','');
+        Session::put('memberSearchTerm', '');
         $this->emit('refreshClientsTable');
     }
-
-
 
     public function render()
     {
 
-        if($this->term == ''){
-            Session::put('memberStatus',$this->memberStatus);
-            Session::put('memberSearchTerm','');
+        if ($this->term == '') {
+            Session::put('memberStatus', $this->memberStatus);
+            Session::put('memberSearchTerm', '');
             $this->emit('refreshClientsTable');
-        }else{
-            Session::put('memberStatus',$this->memberStatus);
-            Session::put('memberSearchTerm',$this->term);
+        } else {
+            Session::put('memberStatus', $this->memberStatus);
+            Session::put('memberSearchTerm', $this->term);
             $this->emit('refreshClientsTable');
         }
+
         return view('livewire.shares.shares-list-by-clients');
     }
 }

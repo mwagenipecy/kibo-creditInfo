@@ -11,12 +11,12 @@ class Branches extends Model
     use Search;
 
     protected $guarded = [];
+
     protected $searchable = [
         'name',
         'region',
         'wilaya',
         'membershipNumber',
-
 
     ];
 }

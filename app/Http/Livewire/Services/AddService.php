@@ -3,33 +3,29 @@
 namespace App\Http\Livewire\Services;
 
 use App\Models\approvals;
+use App\Models\NodesList;
+use App\Models\servicesModel;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Livewire\Component;
-use App\Models\NodesList;
-use App\Models\servicesModel;
-use JetBrains\PhpStorm\NoReturn;
-use Psr\Container\ContainerExceptionInterface;
-use Psr\Container\NotFoundExceptionInterface;
 
 class AddService extends Component
 {
-
-
-
     public $identifier;
 
-    public $nodes = array();
-    public $nodesList = array();
+    public $nodes = [];
+
+    public $nodesList = [];
+
     public $NewNode;
+
     public $DB_TABLE_SERVICE_IDENTIFIER_VALUE;
+
     public $DB_TABLE_SERVICE_IDENTIFIER_NAME;
-    public $tempArray= [];
+
+    public $tempArray = [];
+
     public $name;
-
-
-
-
 
     public function updatedNewNode(): void
     {
@@ -43,14 +39,14 @@ class AddService extends Component
             }
         }
 
-        if (!$found) {
-            $this->nodesList[] = array(
-                "node_id" => $nodeId,
-                "service_identifier" => array(
-                    "table_name" => null,
-                    "table_value" => null
-                )
-            );
+        if (! $found) {
+            $this->nodesList[] = [
+                'node_id' => $nodeId,
+                'service_identifier' => [
+                    'table_name' => null,
+                    'table_value' => null,
+                ],
+            ];
         }
 
         $this->NewNode = null;
@@ -61,7 +57,6 @@ class AddService extends Component
 
         foreach ($this->nodesList as $index => $node) {
 
-
             if ($node['node_id'] == $nodeId) {
 
                 unset($this->nodesList[$index]);
@@ -70,7 +65,7 @@ class AddService extends Component
             }
         }
 
-        //dd($this->nodesList);
+        // dd($this->nodesList);
     }
 
     public function save(): void
@@ -90,7 +85,7 @@ class AddService extends Component
             $value = approvals::updateOrCreate(
                 [
                     'process_id' => $Service->ID,
-                    'user_id' => Auth::user()->id
+                    'user_id' => Auth::user()->id,
 
                 ],
                 [
@@ -102,20 +97,16 @@ class AddService extends Component
                     'process_id' => $Service->ID,
                     'process_status' => 'PENDING',
                     'approval_status' => 'PENDING',
-                    'user_id'  => Auth::user()->id,
-                    'team_id'  => ''
+                    'user_id' => Auth::user()->id,
+                    'team_id' => '',
 
                 ]
             );
-
 
             Session::flash('message', 'Service has been successfully saved, awaiting approval for activation!');
             Session::flash('alert-class', 'alert-success');
             $this->resetVar();
         }
-
-
-
 
     }
 
@@ -124,19 +115,18 @@ class AddService extends Component
 
         $this->identifier = null;
 
-        $this->nodes = array();
-        $this->nodesList = array();
+        $this->nodes = [];
+        $this->nodesList = [];
         $this->NewNode = null;
         $this->name = null;
         $this->DB_TABLE_SERVICE_IDENTIFIER_VALUE = null;
         $this->DB_TABLE_SERVICE_IDENTIFIER_NAME = null;
-        $this->tempArray= [];
+        $this->tempArray = [];
     }
-
 
     public function render(): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Contracts\Foundation\Application
     {
-        //$this->nodesList = \App\Models\NodesList::get();
+        // $this->nodesList = \App\Models\NodesList::get();
         return view('livewire.services.add-service');
     }
 }

@@ -8,16 +8,15 @@ use Livewire\Component;
 
 class PO extends Component
 {
-
     public function boot()
     {
 
         $user = auth()->user();
-        $institution_id = $user->institution_id ;
+        $institution_id = $user->institution_id;
         // Set the database connection based on the selected SACCO
         if ($institution_id) {
             $institution = \App\Models\institutions::find($institution_id);
-            //dd($institution);
+            // dd($institution);
             if ($institution) {
                 // Set the database connection
                 Config::set('database.connections.institution', [
@@ -32,7 +31,6 @@ class PO extends Component
 
             }
         }
-
 
     }
 

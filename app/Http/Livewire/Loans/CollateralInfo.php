@@ -2,33 +2,27 @@
 
 namespace App\Http\Livewire\Loans;
 
-use Livewire\Component;
-
-
-use Illuminate\Support\Facades\Session;
-use Livewire\WithFileUploads;
-use App\Models\Clients;
-use App\Models\AccountsModel;
-use App\Models\Branches;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use App\Models\loan_images;
 use App\Models\LoansModel;
+use Illuminate\Support\Facades\Session;
+use Livewire\Component;
+use Livewire\WithFileUploads;
 
 class CollateralInfo extends Component
 {
-
-
     use WithFileUploads;
 
     public $photo;
 
     public $collateral_type;
-    public $collateral_description;
-    public $collateral_location;
-    public $loan;
-    public $collateral_value;
 
+    public $collateral_description;
+
+    public $collateral_location;
+
+    public $loan;
+
+    public $collateral_value;
 
     public function boot()
     {
@@ -43,16 +37,14 @@ class CollateralInfo extends Component
 
         }
 
-
     }
 
     public function updatedPhoto()
     {
         $this->validate([
-            'photo' => 'image|max:1024',// 1MB Max
+            'photo' => 'image|max:1024', // 1MB Max
         ]);
     }
-
 
     public function render()
     {
@@ -61,23 +53,24 @@ class CollateralInfo extends Component
             'collateral_value' => $this->collateral_value,
             'collateral_location' => $this->collateral_location,
             'collateral_description' => $this->collateral_description,
-            'collateral_type' => $this->collateral_type
+            'collateral_type' => $this->collateral_type,
         ]);
 
         return view('livewire.loans.collateral-info');
     }
 
-    public function close($loanID){
+    public function close($loanID)
+    {
         loan_images::find($loanID)->delete();
     }
 
     public function saveImage()
     {
         $loan_id = LoansModel::where('id', Session::get('currentloanID'))->value('loan_id');
-        //$imageUrl = $this->photo->store('avatars', 'public');
+        // $imageUrl = $this->photo->store('avatars', 'public');
         $path = $this->photo->store('photos', 'local');
-        $path = str_replace("photos/", "", $path);
-        $imageUrl = 'storage/' . $path;
+        $path = str_replace('photos/', '', $path);
+        $imageUrl = 'storage/'.$path;
         loan_images::create([
             'loan_id' => $loan_id,
             'category' => 'collateral',
@@ -87,4 +80,3 @@ class CollateralInfo extends Component
         $this->photo = null;
     }
 }
-

@@ -12,12 +12,17 @@ use Livewire\Component;
 class EditService extends Component
 {
     public $servicesList;
+
     public $service;
+
     public $serviceData;
+
     public $serviceId;
+
     public $serviceName;
 
     public $nodesList;
+
     public $nodeIds = [];
 
     public $serviceToEdit;
@@ -27,14 +32,13 @@ class EditService extends Component
     public function updatedNewNodeX(): void
     {
 
-
-        $this->nodesList[] = array(
-            "node_id" => $this->NewNode,
-            "service_identifier" => array(
-                "table_name" => null,
-                "table_value" => null
-            )
-        );
+        $this->nodesList[] = [
+            'node_id' => $this->NewNode,
+            'service_identifier' => [
+                'table_name' => null,
+                'table_value' => null,
+            ],
+        ];
 
         $this->NewNode = null;
 
@@ -52,36 +56,35 @@ class EditService extends Component
             }
         }
 
-        if (!$found) {
-            $this->nodesList[] = array(
-                "node_id" => $nodeId,
-                "service_identifier" => array(
-                    "table_name" => null,
-                    "table_value" => null
-                )
-            );
+        if (! $found) {
+            $this->nodesList[] = [
+                'node_id' => $nodeId,
+                'service_identifier' => [
+                    'table_name' => null,
+                    'table_value' => null,
+                ],
+            ];
         }
 
         $this->NewNode = null;
     }
-
 
     public function removeNode($nodeId): void
     {
 
         foreach ($this->nodesList as $index => $node) {
 
-
             if ($node['node_id'] == $nodeId) {
-                //dd($node['node_id']);
+                // dd($node['node_id']);
                 unset($this->nodesList[$index]);
 
                 break; // Exit the loop after removing the node
             }
         }
 
-        //dd($this->nodesList);
+        // dd($this->nodesList);
     }
+
     public function updatedServiceToEdit($value): void
     {
         $this->serviceData = servicesModel::where('id', $value)->get();
@@ -111,20 +114,16 @@ class EditService extends Component
             'nodesList' => 'required',
         ]);
 
-
-
         $data = [
             'NAME' => $this->serviceName,
             'NODES' => json_encode($this->nodesList),
             'STATUS' => 'ACTIVE',
-            ];
-
-
+        ];
 
         $update_value = approvals::updateOrCreate(
             [
                 'process_id' => $this->serviceId,
-                'user_id' => Auth::user()->id
+                'user_id' => Auth::user()->id,
 
             ],
             [
@@ -136,9 +135,9 @@ class EditService extends Component
                 'process_id' => $this->serviceId,
                 'process_status' => 'PENDING',
                 'approval_status' => 'PENDING',
-                'user_id'  => Auth::user()->id,
-                'team_id'  => '',
-                'edit_package'=> json_encode($data),
+                'user_id' => Auth::user()->id,
+                'team_id' => '',
+                'edit_package' => json_encode($data),
 
             ]
         );
@@ -149,11 +148,10 @@ class EditService extends Component
         $this->resetVars();
     }
 
-
-
     public function render(): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Contracts\Foundation\Application
     {
         $this->servicesList = servicesModel::get();
+
         return view('livewire.services.edit-service');
     }
 

@@ -2,12 +2,11 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\DataFeed;
+use Illuminate\Database\Seeder;
 
 class DashboardTableSeeder extends Seeder
 {
-
     protected $data = [
         [
             'type' => 1,
@@ -28,7 +27,7 @@ class DashboardTableSeeder extends Seeder
                 154, 273, 191, 191, 126, 263, 349,
                 252, 423, 622, 470, 532,
             ],
-            'dataset_name' => 1
+            'dataset_name' => 1,
         ],
         [
             'type' => 1,
@@ -39,7 +38,7 @@ class DashboardTableSeeder extends Seeder
                 314, 314, 314, 388, 314, 202, 202,
                 202, 202, 314, 720, 642,
             ],
-            'dataset_name' => 2
+            'dataset_name' => 2,
         ],
         [
             'type' => 2,
@@ -60,7 +59,7 @@ class DashboardTableSeeder extends Seeder
                 409, 273, 232, 273, 500, 570, 767,
                 808, 685, 767, 685, 685,
             ],
-            'dataset_name' => 1
+            'dataset_name' => 1,
         ],
         [
             'type' => 2,
@@ -71,7 +70,7 @@ class DashboardTableSeeder extends Seeder
                 154, 273, 191, 191, 126, 263, 349,
                 252, 423, 622, 470, 532,
             ],
-            'dataset_name' => 2
+            'dataset_name' => 2,
         ],
         [
             'type' => 3,
@@ -92,7 +91,7 @@ class DashboardTableSeeder extends Seeder
                 289, 403, 554, 304, 289, 270, 134,
                 270, 829, 344, 388, 364,
             ],
-            'dataset_name' => 1
+            'dataset_name' => 1,
         ],
         [
             'type' => 3,
@@ -103,8 +102,8 @@ class DashboardTableSeeder extends Seeder
                 145, 145, 354, 260, 188, 188, 300,
                 300, 282, 364, 660, 554,
             ],
-            'dataset_name' => 2
-        ],                                
+            'dataset_name' => 2,
+        ],
         [
             'type' => 4,
             'labels' => [
@@ -114,7 +113,7 @@ class DashboardTableSeeder extends Seeder
             'data' => [
                 800, 1600, 900, 1300, 1950, 1700,
             ],
-            'dataset_name' => 1
+            'dataset_name' => 1,
         ],
         [
             'type' => 4,
@@ -122,7 +121,7 @@ class DashboardTableSeeder extends Seeder
             'data' => [
                 4900, 2600, 5350, 4800, 5200, 4800,
             ],
-            'dataset_name' => 2
+            'dataset_name' => 2,
         ],
         [
             'type' => 5,
@@ -151,16 +150,16 @@ class DashboardTableSeeder extends Seeder
                 50.91, 58.52, 53.37, 57.58, 59.09, 59.36, 58.71, 59.42, 55.93, 57.71,
                 50.62, 56.28, 57.37, 53.08, 55.94, 55.82, 53.94, 52.65, 50.25,
             ],
-            'dataset_name' => 1
+            'dataset_name' => 1,
         ],
         [
             'type' => 6,
             'labels' => [
-                'United States', 'Italy', 'Other'
+                'United States', 'Italy', 'Other',
             ],
             'data' => [
                 35, 30, 35,
-            ]
+            ],
         ],
         [
             'type' => 8,
@@ -181,7 +180,7 @@ class DashboardTableSeeder extends Seeder
                 122, 110, 104, 152, 166, 233, 268,
                 252, 284, 284, 333, 323,
             ],
-            'dataset_name' => 1
+            'dataset_name' => 1,
         ],
         [
             'type' => 8,
@@ -192,7 +191,7 @@ class DashboardTableSeeder extends Seeder
                 276, 0, 124, 42, 124, 88, 88,
                 215, 156, 88, 124, 64,
             ],
-            'dataset_name' => 2
+            'dataset_name' => 2,
         ],
         [
             'type' => 8,
@@ -203,7 +202,7 @@ class DashboardTableSeeder extends Seeder
                 223, 188, 114, 162, 200, 150, 118,
                 118, 76, 122, 230, 268,
             ],
-            'dataset_name' => 3
+            'dataset_name' => 3,
         ],
         [
             'type' => 9,
@@ -214,7 +213,7 @@ class DashboardTableSeeder extends Seeder
             'data' => [
                 6200, 9200, 6600, 8800, 5200, 9200,
             ],
-            'dataset_name' => 1
+            'dataset_name' => 1,
         ],
         [
             'type' => 9,
@@ -222,38 +221,38 @@ class DashboardTableSeeder extends Seeder
             'data' => [
                 -4000, -2600, -5350, -4000, -7500, -2000,
             ],
-            'dataset_name' => 2
+            'dataset_name' => 2,
         ],
         [
             'type' => 10,
             'labels' => ['Reasons'],
             'data' => [131],
-            'dataset_name' => 1
+            'dataset_name' => 1,
         ],
         [
             'type' => 10,
             'labels' => null,
             'data' => [100],
-            'dataset_name' => 2
+            'dataset_name' => 2,
         ],
         [
             'type' => 10,
             'labels' => null,
             'data' => [91],
-            'dataset_name' => 3
+            'dataset_name' => 3,
         ],
         [
             'type' => 10,
             'labels' => null,
             'data' => [65],
-            'dataset_name' => 4
+            'dataset_name' => 4,
         ],
         [
             'type' => 10,
             'labels' => null,
             'data' => [72],
-            'dataset_name' => 5
-        ],                
+            'dataset_name' => 5,
+        ],
     ];
 
     /**
@@ -264,8 +263,8 @@ class DashboardTableSeeder extends Seeder
     public function run()
     {
 
-        foreach($this->data as $d) {
-            for($i=0; $i<count($d['data']); $i++) {
+        foreach ($this->data as $d) {
+            for ($i = 0; $i < count($d['data']); $i++) {
                 DataFeed::create([
                     'data_type' => $d['type'],
                     'label' => (isset($d['labels'][$i]) ? $d['labels'][$i] : null),

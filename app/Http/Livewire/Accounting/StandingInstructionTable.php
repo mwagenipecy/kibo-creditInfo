@@ -3,16 +3,13 @@
 namespace App\Http\Livewire\Accounting;
 
 use App\Models\StandingInstruction;
-use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\DB;
-use Livewire\Component;
 use Mediconesystems\LivewireDatatables\Column;
 use Mediconesystems\LivewireDatatables\Http\Livewire\LivewireDatatable;
 
 class StandingInstructionTable extends LivewireDatatable
 {
-    
-    public function builder(){
+    public function builder()
+    {
         return StandingInstruction::query();
     }
 
@@ -33,5 +30,4 @@ class StandingInstructionTable extends LivewireDatatable
                 ->label('destination account number'),
         ];
     }
-
 }

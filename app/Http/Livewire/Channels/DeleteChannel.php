@@ -4,7 +4,6 @@ namespace App\Http\Livewire\Channels;
 
 use App\Models\approvals;
 use App\Models\ChannelsModel;
-use App\Models\servicesModel;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
@@ -13,6 +12,7 @@ use Livewire\Component;
 class DeleteChannel extends Component
 {
     public $channelsList;
+
     public $channelSelected;
 
     public $password = null;
@@ -20,23 +20,22 @@ class DeleteChannel extends Component
     public function render(): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Contracts\Foundation\Application
     {
         $this->channelsList = channelsModel::get();
+
         return view('livewire.channels.delete-channel');
     }
-
 
     public function confirmPassword(): void
     {
         // Check if password matches for logged-in user
         if (Hash::check($this->password, auth()->user()->password)) {
-            //dd('password matches');
+            // dd('password matches');
             $this->delete();
         } else {
-            //dd('password does not match');
+            // dd('password does not match');
             Session::flash('message', 'This password does not match our records');
             Session::flash('alert-class', 'alert-warning');
         }
         $this->resetPassword();
-
 
     }
 
@@ -45,18 +44,16 @@ class DeleteChannel extends Component
         $this->password = null;
     }
 
-
-
     public function delete(): void
     {
-        $channel = channelsModel::where('ID',$this->channelSelected)->first();
+        $channel = channelsModel::where('ID', $this->channelSelected)->first();
 
         if ($channel) {
 
             $update_value = approvals::updateOrCreate(
                 [
                     'process_id' => $this->channelSelected,
-                    'user_id' => Auth::user()->id
+                    'user_id' => Auth::user()->id,
 
                 ],
                 [
@@ -68,13 +65,11 @@ class DeleteChannel extends Component
                     'process_id' => $this->channelSelected,
                     'process_status' => 'PENDING',
                     'approval_status' => 'PENDING',
-                    'user_id'  => Auth::user()->id,
-                    'team_id'  => '',
-                    'edit_package'=> null
+                    'user_id' => Auth::user()->id,
+                    'team_id' => '',
+                    'edit_package' => null,
                 ]
             );
-
-
 
             Session::flash('message', 'Awaiting approval');
             Session::flash('alert-class', 'alert-success');
@@ -95,6 +90,4 @@ class DeleteChannel extends Component
         $this->password = null;
 
     }
-
-
 }

@@ -2,30 +2,20 @@
 
 namespace App\Http\Livewire\Accounting;
 
-use App\Models\ExpensesModel;
-use App\Models\LoansModel;
 use App\Models\ClientsModel;
-use App\Models\MembersModel;
-use App\Models\PaymentMethod;
-use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Session;
-use Livewire\Component;
+use App\Models\ExpensesModel;
 use Mediconesystems\LivewireDatatables\Column;
 use Mediconesystems\LivewireDatatables\Http\Livewire\LivewireDatatable;
 
 class ExpensesTable extends LivewireDatatable
 {
-    public $exportable=true;
-
-
-
+    public $exportable = true;
 
     public function builder()
     {
 
-        return ExpensesModel::query()->where('status',"PENDING");
-        //->leftJoin('branches', 'branches.id', 'members.branch')
+        return ExpensesModel::query()->where('status', 'PENDING');
+        // ->leftJoin('branches', 'branches.id', 'members.branch')
     }
 
     /**
@@ -37,26 +27,20 @@ class ExpensesTable extends LivewireDatatable
     {
         return [
 
-
-
             Column::name('id')->label('id')->searchable(),
             Column::name('amount')->label('amount')->searchable(),
             Column::name('notes')->label('description ')->searchable(),
-            Column::callback('client_number',function ($member_number){
-                return ClientsModel::where('client_number',$member_number)->
+            Column::callback('client_number', function ($member_number) {
+                return ClientsModel::where('client_number', $member_number)->
                 selectRaw("CONCAT( first_name,'  ',middle_name,'  ', last_name) as name")->value('name');
             })->label('client name')->searchable(),
 
             Column::name('created_at')->label('submission date'),
             Column::name('status')->label('Status'),
 
-            Column::callback('id', function ($id)  {
-                //$status = 1;
-                $status = ExpensesModel::where('id',$id)->value('status');
-
-
-
-
+            Column::callback('id', function ($id) {
+                // $status = 1;
+                $status = ExpensesModel::where('id', $id)->value('status');
 
                 $html = '<div class="flex items-center space-x-4 flex-lg-row">
 
@@ -68,10 +52,8 @@ class ExpensesTable extends LivewireDatatable
                     <span class="hidden text-blue-800 m-2">Pay</span>
                     </button>
                             </div> ';
-                $html2='        <span class="bg-green-400 text-green-800 text-sm font-medium mr-2 p-2 rounded dark:bg-green-900 dark:text-green-300">"APPROVED"</span>
+                $html2 = '        <span class="bg-green-400 text-green-800 text-sm font-medium mr-2 p-2 rounded dark:bg-green-900 dark:text-green-300">"APPROVED"</span>
 ';
-
-
 
                 $html3 = '<div class="flex items-center space-x-4 flex-lg-row">
 
@@ -83,29 +65,25 @@ class ExpensesTable extends LivewireDatatable
         </button>
                                     </div> ';
 
-                if($status=='PENDING'){
+                if ($status == 'PENDING') {
 
                     return $html;
-                }
-                else if($status=="APPROVED"){
-                    return $html2 ;
-                }
-                else if($status=="REJECTED"){
+                } elseif ($status == 'APPROVED') {
+                    return $html2;
+                } elseif ($status == 'REJECTED') {
                     return $html3;
                 }
+
                 return $html;
             })->label('Action'),
-
 
         ];
     }
 
-    public function approve($id){
+    public function approve($id)
+    {
 
-        $this->emit('approveExpenses',$id);
+        $this->emit('approveExpenses', $id);
 
     }
-
-
-
 }

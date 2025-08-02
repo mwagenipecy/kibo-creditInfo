@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class PendingRegistration extends Model
 {
     use HasFactory;
-    protected $table='pending_registrations';
+
+    protected $table = 'pending_registrations';
+
     protected $guarded;
 }

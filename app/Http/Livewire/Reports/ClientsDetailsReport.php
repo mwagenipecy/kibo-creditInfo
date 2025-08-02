@@ -2,28 +2,20 @@
 
 namespace App\Http\Livewire\Reports;
 
-use Livewire\Component;
-use App\Models\approvals;
-use App\Models\LoansModel;
-use App\Models\Transactions;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Session;
-use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\MainReport;
-use App\Exports\LoanSchedule;
-use App\Exports\ContractData;
+use App\Models\LoansModel;
+use Livewire\Component;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ClientsDetailsReport extends Component
 {
+    public $client_type = 'ALL';
 
-    public $client_type="ALL";
     public $custome_client_number;
-
-
 
     public function downloadExcelFile()
     {
-        if ($this->client_type == "MULTIPLE") {
+        if ($this->client_type == 'MULTIPLE') {
 
             $input = $this->custome_client_number;
             // Remove the trailing comma if it exists
@@ -40,7 +32,6 @@ class ClientsDetailsReport extends Component
                 // Convert the number to an integer (optional, depending on your use case)
                 $number = intval($number);
 
-
                 // Do something with the individual number, for example, print it
                 if (LoansModel::where('client_number', $number)->exists()) {
                     $array[] = ['number' => str_pad($number, 4, 0, STR_PAD_LEFT)];
@@ -48,10 +39,9 @@ class ClientsDetailsReport extends Component
 
                 }
 
-
             }
 
-           // $LoanId = LoansModel::whereBetween('created_at', [$this->reportStartDate, $this->reportEndDate])->whereIn('client_number', $array)->pluck('id');
+            // $LoanId = LoansModel::whereBetween('created_at', [$this->reportStartDate, $this->reportEndDate])->whereIn('client_number', $array)->pluck('id');
 
             $LoanId = LoansModel::whereIn('client_number', $array)->pluck('id');
 
@@ -59,16 +49,13 @@ class ClientsDetailsReport extends Component
 
         } else {
 
-
-            $loanId=LoansModel::get()->pluck('id')->toArray();
-
+            $loanId = LoansModel::get()->pluck('id')->toArray();
 
             return Excel::download(new MainReport($loanId), 'generalReport.xlsx');
 
-              }
+        }
 
     }
-
 
     public function render()
     {

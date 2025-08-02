@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class TempPermissions extends Model
 {
     use HasFactory;
+
     protected $table = 'temp_permissions';
+
     protected $guarded = [];
 }

@@ -12,44 +12,47 @@ use Livewire\Component;
 
 class DeleteUser extends Component
 {
-
-
     public $password = null;
+
     public $userSelected;
+
     public $nodesList;
+
     public string $NODE_NAME;
+
     public string $userName;
+
     public $usersList;
+
     public $permission = 'BLOCKED';
 
     public function boot(): void
     {
         $this->nodesList = User::get();
         $this->userName = '';
-        //dd($this->nodesList);
+        // dd($this->nodesList);
     }
-
 
     public function delete(): void
     {
-        $user = User::where('id',$this->userSelected)->first();
+        $user = User::where('id', $this->userSelected)->first();
         $action = '';
         if ($user) {
 
-            if($this->permission == 'BLOCKED'){
+            if ($this->permission == 'BLOCKED') {
                 $action = 'blockUser';
             }
-            if($this->permission == 'ACTIVE'){
+            if ($this->permission == 'ACTIVE') {
                 $action = 'activateUser';
             }
-            if($this->permission == 'DELETED'){
+            if ($this->permission == 'DELETED') {
                 $action = 'deleteUser';
             }
 
             $update_value = approvals::updateOrCreate(
                 [
                     'process_id' => $this->userSelected,
-                    'user_id' => Auth::user()->id
+                    'user_id' => Auth::user()->id,
 
                 ],
                 [
@@ -61,15 +64,14 @@ class DeleteUser extends Component
                     'process_id' => $this->userSelected,
                     'process_status' => $this->permission,
                     'approval_status' => 'PENDING',
-                    'user_id'  => Auth::user()->id,
-                    'team_id'  => '',
-                    'edit_package'=> null
+                    'user_id' => Auth::user()->id,
+                    'team_id' => '',
+                    'edit_package' => null,
                 ]
             );
 
-
             // Delete the record
-            //$node->delete();
+            // $node->delete();
             // Add your logic here for successful deletion
             Session::flash('message', 'Awaiting approval');
             Session::flash('alert-class', 'alert-success');
@@ -88,23 +90,22 @@ class DeleteUser extends Component
     public function render(): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Contracts\Foundation\Application
     {
         $this->usersList = User::get();
+
         return view('livewire.settings.delete-user');
     }
-
 
     public function confirmPassword(): void
     {
         // Check if password matches for logged-in user
         if (Hash::check($this->password, auth()->user()->password)) {
-            //dd('password matches');
+            // dd('password matches');
             $this->delete();
         } else {
-            //dd('password does not match');
+            // dd('password does not match');
             Session::flash('message', 'This password does not match our records');
             Session::flash('alert-class', 'alert-warning');
         }
         $this->resetPassword();
-
 
     }
 
@@ -112,6 +113,4 @@ class DeleteUser extends Component
     {
         $this->password = null;
     }
-
-
 }

@@ -4,10 +4,8 @@ namespace App\Exports;
 
 use App\Models\ClientsModel;
 use App\Models\LoansModel;
-use App\Models\User;
 use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\FromArray;
-use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\WithHeadings;
@@ -16,59 +14,53 @@ use Maatwebsite\Excel\Concerns\WithTitle;
 use Maatwebsite\Excel\Events\AfterSheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx\Worksheet;
 
-class SubjectRelation implements FromArray,WithHeadings, WithStyles, ShouldAutoSize, WithEvents,WithTitle
+class SubjectRelation implements FromArray, ShouldAutoSize, WithEvents, WithHeadings, WithStyles, WithTitle
 {
     /**
-    * @return \Illuminate\Support\Collection
-    */
+     * @return \Illuminate\Support\Collection
+     */
     use Exportable;
 
     public $values;
 
-
     public function __construct($values)
     {
-        $this->values=$values;
+        $this->values = $values;
     }
 
-
-    public function array():array
+    public function array(): array
     {
 
-        $array=[];
+        $array = [];
 
-     //  $clientId=LoansModel::whereIn('id',$this->values)->pluck('client_number');
+        //  $clientId=LoansModel::whereIn('id',$this->values)->pluck('client_number');
 
+        $client_numbers = $this->values;
 
+        foreach ($client_numbers as $number) {
 
+            // $guarantor=LoansModel::where('id',)->where('guarantor','!=',null)->pluck('guarantor');
 
-        $client_numbers=$this->values;
+            $clientId = LoansModel::where('id', $number)->first();
 
+            $clientData = ClientsModel::where('client_number', $clientId->client_number)->first();
 
-        foreach ($client_numbers as $number){
-
-           // $guarantor=LoansModel::where('id',)->where('guarantor','!=',null)->pluck('guarantor');
-
-            $clientId=LoansModel::where('id',$number)->first();
-
-            $clientData=ClientsModel::where('client_number',$clientId->client_number)->first();
-
-            $array[]=[
-                'CustomerCodeofPrimarySubject'=>$clientId->client_number,
-                'RelationType'=>$clientId->relationship ? : null,
-                'CustomerCodeofSecondarySubject'=>null,
-                'TaxIdentificationNumber'=>$clientData->tax_identification_number,
-                'NationalID'=>$clientData->national_id,
-                'RegistrationNumber'=>$clientData->registration_number,
-                'FullName'=>$clientData->first_name.' '.$clientData->middle_name.' '.$clientData->last_name,
-                'Phone'=>$clientData->phone_number,
-                'AdditionalInformation'=>null,
-                'Street'=>$clientData->street,
-                'NumberofBuilding'=>$clientData->number_of_building,
-                'PostalCode'=>$clientData->postal_code,
-                'Region'=>$clientData->region,
-                'District'=>$clientData->district,
-                'Country'=>$clientData->country,
+            $array[] = [
+                'CustomerCodeofPrimarySubject' => $clientId->client_number,
+                'RelationType' => $clientId->relationship ?: null,
+                'CustomerCodeofSecondarySubject' => null,
+                'TaxIdentificationNumber' => $clientData->tax_identification_number,
+                'NationalID' => $clientData->national_id,
+                'RegistrationNumber' => $clientData->registration_number,
+                'FullName' => $clientData->first_name.' '.$clientData->middle_name.' '.$clientData->last_name,
+                'Phone' => $clientData->phone_number,
+                'AdditionalInformation' => null,
+                'Street' => $clientData->street,
+                'NumberofBuilding' => $clientData->number_of_building,
+                'PostalCode' => $clientData->postal_code,
+                'Region' => $clientData->region,
+                'District' => $clientData->district,
+                'Country' => $clientData->country,
             ];
         }
 
@@ -92,7 +84,7 @@ class SubjectRelation implements FromArray,WithHeadings, WithStyles, ShouldAutoS
             'Postal Code',
             'Region',
             'District',
-            'Country'
+            'Country',
         ];
     }
 
@@ -108,11 +100,11 @@ class SubjectRelation implements FromArray,WithHeadings, WithStyles, ShouldAutoS
 
     public function title(): string
     {
-        return "SUBJECTRELATION";
+        return 'SUBJECTRELATION';
     }
 
     public function registerEvents(): array
-      {
+    {
         return [
             AfterSheet::class => function (AfterSheet $event) {
                 $event->sheet->getStyle('A1:F1')->applyFromArray([
@@ -122,5 +114,5 @@ class SubjectRelation implements FromArray,WithHeadings, WithStyles, ShouldAutoS
                 ]);
             },
         ];
-      }
+    }
 }

@@ -14,5 +14,4 @@ class Attachment extends Model
         'type',
         'loan_id',
     ];
-
 }

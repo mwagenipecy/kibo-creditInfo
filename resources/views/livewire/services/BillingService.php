@@ -2,10 +2,10 @@
 
 namespace App\Services;
 
-use App\Models\Bill;
-use App\Models\BillItem;
 use App\Models\Application;
+use App\Models\Bill;
 use App\Models\BillingConfiguration;
+use App\Models\BillItem;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
@@ -15,7 +15,7 @@ class BillingService
     {
         $month = $month ?: Carbon::now()->month;
         $year = $year ?: Carbon::now()->year;
-        
+
         $periodStart = Carbon::create($year, $month, 1);
         $periodEnd = $periodStart->copy()->endOfMonth();
 
@@ -42,9 +42,9 @@ class BillingService
 
         // Get applications for this entity in the billing period
         $applications = $this->getApplicationsForPeriod(
-            $config->entity_type, 
-            $config->entity_id, 
-            $periodStart, 
+            $config->entity_type,
+            $config->entity_id,
+            $periodStart,
             $periodEnd
         );
 
@@ -73,7 +73,7 @@ class BillingService
             // Create bill items
             foreach ($applications as $application) {
                 $itemTotal = $this->calculateItemTotal($config, $application);
-                
+
                 BillItem::create([
                     'bill_id' => $bill->id,
                     'application_id' => $application->id,
@@ -105,11 +105,11 @@ class BillingService
     private function getApplicationsForPeriod($entityType, $entityId, $periodStart, $periodEnd)
     {
         $column = $entityType === 'lender' ? 'lender_id' : 'car_dealer_id';
-        
+
         return Application::where($column, $entityId)
             ->whereBetween('created_at', [
                 $periodStart->startOfDay(),
-                $periodEnd->endOfDay()
+                $periodEnd->endOfDay(),
             ])
             ->get();
     }
@@ -119,16 +119,17 @@ class BillingService
         switch ($config->billing_type) {
             case 'per_application':
                 return $config->rate;
-                
+
             case 'commission_based':
                 // Calculate percentage of loan amount
                 $loanAmount = $application->loan_amount ?? $application->amount ?? 0;
+
                 return ($loanAmount * $config->rate) / 100;
-                
+
             case 'monthly_subscription':
                 // Fixed monthly rate regardless of applications
                 return $config->rate;
-                
+
             default:
                 return $config->rate;
         }
@@ -137,18 +138,18 @@ class BillingService
     private function generateItemDescription($config, $application)
     {
         $entityType = ucfirst(str_replace('_', ' ', $config->entity_type));
-        $applicantName = trim($application->first_name . ' ' . $application->last_name);
-        
+        $applicantName = trim($application->first_name.' '.$application->last_name);
+
         switch ($config->billing_type) {
             case 'per_application':
                 return "Application processing fee for {$applicantName} (ID: {$application->id})";
-                
+
             case 'commission_based':
                 return "Commission for loan facilitation - {$applicantName} (ID: {$application->id})";
-                
+
             case 'monthly_subscription':
                 return "Monthly subscription fee for {$entityType} services";
-                
+
             default:
                 return "Service fee for {$applicantName} (ID: {$application->id})";
         }

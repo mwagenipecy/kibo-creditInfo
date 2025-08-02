@@ -2,36 +2,23 @@
 
 namespace App\Http\Livewire\HR;
 
-
 use App\Models\Branches;
 use App\Models\Department;
-use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\DB;
-use Livewire\Component;
-
-
 use App\Models\Employee;
-use Illuminate\Support\Str;
-use Mediconesystems\LivewireDatatables\Column;
-use Mediconesystems\LivewireDatatables\NumberColumn;
-use Mediconesystems\LivewireDatatables\DateColumn;
-use Mediconesystems\LivewireDatatables\Http\Livewire\LivewireDatatable;
 use Illuminate\Support\Facades\Session;
-use App\Models\search;
+use Mediconesystems\LivewireDatatables\Column;
+use Mediconesystems\LivewireDatatables\Http\Livewire\LivewireDatatable;
 
 class EmployeesTable extends LivewireDatatable
 {
-
     protected $listeners = ['refreshMembersTable' => '$refresh'];
+
     public $exportable = true;
 
     public function boot(): void
     {
 
-        Session::put('memberStatus',null);
-
-
-
+        Session::put('memberStatus', null);
 
     }
 
@@ -43,8 +30,9 @@ class EmployeesTable extends LivewireDatatable
 
     }
 
-    public function delete($id){
-        $this->emitTo('h-r.h-r','deleteEmployee',$id);
+    public function delete($id)
+    {
+        $this->emitTo('h-r.h-r', 'deleteEmployee', $id);
 
     }
 
@@ -60,9 +48,10 @@ class EmployeesTable extends LivewireDatatable
     {
         Session::put('employeeIdForEdit', $memberId);
 
-        $this->emit('editEmployeeModal',$memberId);
+        $this->emit('editEmployeeModal', $memberId);
         $this->emit('refreshMembersListComponent');
     }
+
     /**
      * Write code on Method
      *
@@ -73,16 +62,17 @@ class EmployeesTable extends LivewireDatatable
         return [
             Column::name('id')
                 ->label('Employee Number')->searchable(),
-            Column::callback(['first_name','middle_name','last_name'], function($first_name,$middle_name,$last_name){
+            Column::callback(['first_name', 'middle_name', 'last_name'], function ($first_name, $middle_name, $last_name) {
 
-                return $first_name.' '.$middle_name.' '.$last_name;})
+                return $first_name.' '.$middle_name.' '.$last_name;
+            })
                 ->label('Name')->searchable(),
-            Column::callback('branch',function ($branchId){
-                return Branches::where('id',$branchId)->value('name');
+            Column::callback('branch', function ($branchId) {
+                return Branches::where('id', $branchId)->value('name');
             })
                 ->label('Branch')->searchable(),
-            Column::callback('department',function($departmentId){
-                return Department::where('id',$departmentId)->value('department_name');
+            Column::callback('department', function ($departmentId) {
+                return Department::where('id', $departmentId)->value('department_name');
             })
                 ->label('Department')->searchable(),
             Column::name('job_title')
@@ -95,7 +85,7 @@ class EmployeesTable extends LivewireDatatable
                 ->label('Status'),
             Column::callback(['id', 'first_name'], function ($id, $name) {
                 return view('livewire.clients.table-actions', ['id' => $id, 'name' => $name]);
-            })->unsortable()
+            })->unsortable(),
         ];
     }
 }

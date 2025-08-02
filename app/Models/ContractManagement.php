@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class ContractManagement extends Model
 {
     use HasFactory;
-    protected $table='contract_managements';
-    protected $fillable=['contract_file_path'];
+
+    protected $table = 'contract_managements';
+
+    protected $fillable = ['contract_file_path'];
 }

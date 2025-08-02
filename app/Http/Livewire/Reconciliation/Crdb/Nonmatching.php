@@ -2,14 +2,11 @@
 
 namespace App\Http\Livewire\Reconciliation\Crdb;
 
+use App\Models\CrdbNonMatching;
 use App\Models\NmbNonMatching;
 use App\Models\UchumiNonMatching;
-use App\Models\Cashbook;
-use App\Models\CrdbNonMatching;
-use DB;
-use Livewire\Component;
 use Illuminate\Database\Eloquent\Builder;
-
+use Rappasoft\LaravelLivewireTables\DataTableComponent;
 use Rappasoft\LaravelLivewireTables\Exceptions\DataTableConfigurationException;
 use Rappasoft\LaravelLivewireTables\Traits\ComponentUtilities;
 use Rappasoft\LaravelLivewireTables\Traits\WithBulkActions;
@@ -26,19 +23,11 @@ use Rappasoft\LaravelLivewireTables\Traits\WithReordering;
 use Rappasoft\LaravelLivewireTables\Traits\WithSearch;
 use Rappasoft\LaravelLivewireTables\Traits\WithSecondaryHeader;
 use Rappasoft\LaravelLivewireTables\Traits\WithSorting;
-use Rappasoft\LaravelLivewireTables\DataTableComponent;
 use Rappasoft\LaravelLivewireTables\Views\Column;
 use Session;
 
-
-
-
 class Nonmatching extends DataTableComponent
 {
-
-
-
-
     use ComponentUtilities,
         WithBulkActions,
         WithColumns,
@@ -48,23 +37,24 @@ class Nonmatching extends DataTableComponent
         WithEvents,
         WithFilters,
         WithFooter,
-        WithSecondaryHeader,
         WithPagination,
         WithRefresh,
         WithReordering,
         WithSearch,
+        WithSecondaryHeader,
         WithSorting;
 
-
     public $defaultView = true;
+
     public $showOrderDetails = false;
+
     public $orderToView = '';
 
     protected $listeners = ['refreshTables' => '$refresh'];
 
     public function boot(): void
     {
-        //$this->builder =$this->Builder();
+        // $this->builder =$this->Builder();
         $this->setBuilder($this->builder());
 
         $this->{$this->tableName} = [
@@ -87,12 +77,8 @@ class Nonmatching extends DataTableComponent
 
     }
 
-
-
-
     public function render(): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Contracts\Foundation\Application
     {
-
 
         return view('livewire.reconciliation.cb.test')->with([
             'columns' => $this->getColumns(),
@@ -100,52 +86,50 @@ class Nonmatching extends DataTableComponent
         ]);
     }
 
-
     public function builder(): \Illuminate\Database\Eloquent\Builder
     {
 
         $this->ordernumber = Session::get('orderNumber');
-        if(Session::get('typeOfTransfer') =='CRDB') {
+        if (Session::get('typeOfTransfer') == 'CRDB') {
             $transactions = CrdbNonMatching::where('order_number', $this->ordernumber);
-        }elseif (Session::get('typeOfTransfer') =='NMB'){
+        } elseif (Session::get('typeOfTransfer') == 'NMB') {
             $transactions = NmbNonMatching::where('order_number', $this->ordernumber);
-        }elseif (Session::get('typeOfTransfer') =='UCHUMI'){
-            $transactions = UchumiNonMatching::where('order_number',$this->ordernumber );
-        }else{
-            $transactions = CrdbNonMatching::where('order_number',$this->ordernumber );
+        } elseif (Session::get('typeOfTransfer') == 'UCHUMI') {
+            $transactions = UchumiNonMatching::where('order_number', $this->ordernumber);
+        } else {
+            $transactions = CrdbNonMatching::where('order_number', $this->ordernumber);
         }
 
-        if($transactions->first())
-        {
+        if ($transactions->first()) {
             $this->showSendButton = true;
         }
+
         return $transactions;
 
     }
 
-
     public function configure(): void
     {
         $this->setPrimaryKey('id')
-            //->setReorderEnabled()
+            // ->setReorderEnabled()
             ->setSingleSortingDisabled()
             ->setHideReorderColumnUnlessReorderingEnabled()
             ->setFilterLayoutSlideDown()
-            //->setRememberColumnSelectionDisabled()
-            ->setSecondaryHeaderTrAttributes(function($rows) {
+            // ->setRememberColumnSelectionDisabled()
+            ->setSecondaryHeaderTrAttributes(function ($rows) {
                 return ['class' => 'bg-gray-100'];
             })
-            ->setSecondaryHeaderTdAttributes(function(Column $column, $rows) {
+            ->setSecondaryHeaderTdAttributes(function (Column $column, $rows) {
                 if ($column->isField('id')) {
                     return ['class' => 'text-red-500'];
                 }
 
                 return ['default' => true];
             })
-            ->setFooterTrAttributes(function($rows) {
+            ->setFooterTrAttributes(function ($rows) {
                 return ['class' => 'bg-gray-100'];
             })
-            ->setFooterTdAttributes(function(Column $column, $rows) {
+            ->setFooterTdAttributes(function (Column $column, $rows) {
                 if ($column->isField('name')) {
                     return ['class' => 'text-green-500'];
                 }
@@ -156,8 +140,6 @@ class Nonmatching extends DataTableComponent
             ->setHideBulkActionsWhenEmptyEnabled()
             ->setColumnSelectEnabled();
     }
-
-
 
     public function columns(): array
     {
@@ -182,9 +164,7 @@ class Nonmatching extends DataTableComponent
                 ->sortable(),
             Column::make('recon date', 'created_at')
                 ->sortable()
-                ->searchable()
+                ->searchable(),
         ];
     }
-
-
 }

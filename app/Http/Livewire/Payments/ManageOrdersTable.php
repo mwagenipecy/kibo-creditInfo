@@ -2,26 +2,16 @@
 
 namespace App\Http\Livewire\Payments;
 
-use Livewire\Component;
-
-
-
 use App\Models\Transactions;
-use App\Models\Clients;
-use Illuminate\Support\Str;
-use Mediconesystems\LivewireDatatables\Column;
-use Mediconesystems\LivewireDatatables\NumberColumn;
-use Mediconesystems\LivewireDatatables\DateColumn;
-use Mediconesystems\LivewireDatatables\Http\Livewire\LivewireDatatable;
 use Illuminate\Support\Facades\Session;
-use App\Models\search;
+use Mediconesystems\LivewireDatatables\Column;
+use Mediconesystems\LivewireDatatables\Http\Livewire\LivewireDatatable;
 
 class ManageOrdersTable extends LivewireDatatable
 {
-
     protected $listeners = ['viewOrder' => '$refresh'];
-    public $exportable = true;
 
+    public $exportable = true;
 
     public function builder()
     {
@@ -79,9 +69,7 @@ class ManageOrdersTable extends LivewireDatatable
                 ->label('Progress'),
 
             Column::name('payment_status')
-                ->label('Status')
+                ->label('Status'),
         ];
     }
-
-
 }

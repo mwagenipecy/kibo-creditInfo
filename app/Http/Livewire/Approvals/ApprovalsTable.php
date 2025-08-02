@@ -8,13 +8,12 @@ use App\Models\approvals;
 use App\Models\Branches;
 use App\Models\BranchesModel;
 use App\Models\ChannelsModel;
+use App\Models\Clients;
 use App\Models\departmentsList;
-use App\Models\Employee;
 use App\Models\general_ledger;
 use App\Models\Investment;
 use App\Models\Loan_sub_products;
 use App\Models\loans_schedules;
-use App\Models\Clients;
 use App\Models\Nodes;
 use App\Models\NodesList;
 use App\Models\servicesModel;
@@ -24,30 +23,25 @@ use App\Models\User;
 use App\Models\UserSubMenu;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
-use Livewire\Component;
-use App\Models\ServicesList;
 use Livewire\WithFileUploads;
 use Mediconesystems\LivewireDatatables\Column;
 use Mediconesystems\LivewireDatatables\Http\Livewire\LivewireDatatable;
 
-
 class ApprovalsTable extends LivewireDatatable
 {
-
-    use WithFileUploads;
     use MailSender;
+    use WithFileUploads;
+
     public $exportable = true;
-    public $searchable="process_name, process_description,process_status,process_type,process_status,approval_status";
+
+    public $searchable = 'process_name, process_description,process_status,process_type,process_status,approval_status';
 
     public function builder(): \Illuminate\Database\Eloquent\Builder
     {
 
-        return approvals::query()->orderBy('id','DESC');
-
+        return approvals::query()->orderBy('id', 'DESC');
 
     }
-
 
     public function columns(): array
     {
@@ -63,11 +57,11 @@ class ApprovalsTable extends LivewireDatatable
                 ->label('Details'),
 
             Column::callback(['user_id'], function ($id) {
-                if($id){
+                if ($id) {
 
                     return User::find($id)->name;
 
-                }else{
+                } else {
                     return '';
                 }
 
@@ -75,36 +69,33 @@ class ApprovalsTable extends LivewireDatatable
 
             Column::callback(['approver_id'], function ($id) {
                 $user = User::find($id);
-                if($user){
+                if ($user) {
                     return $user->name;
                 } else {
                     return 'Pending';
                 }
             })->unsortable()->label('Approver'),
 
-
-
             Column::callback(['process_id'], function ($process_id) {
 
-                $editPackage = approvals::where('process_id',$process_id)->value('edit_package');
-                $processName = approvals::where('process_id',$process_id)->value('process_name');
-                if($editPackage){
-                    return view('livewire.approvals.changes-list', ['process_id' => $process_id, 'process_name' => $processName, 'edit_package' =>$editPackage]);
+                $editPackage = approvals::where('process_id', $process_id)->value('edit_package');
+                $processName = approvals::where('process_id', $process_id)->value('process_name');
+                if ($editPackage) {
+                    return view('livewire.approvals.changes-list', ['process_id' => $process_id, 'process_name' => $processName, 'edit_package' => $editPackage]);
                 }
 
                 return null;
             })->unsortable()->label('Edit Changes'),
 
-
             Column::callback(['approval_status'], function ($status) {
                 return view('livewire.settings.table-status', ['status' => $status, 'move' => false]);
             })->label('Approval Status'),
 
-
             Column::callback(['id'], function ($id) {
-                if(approvals::find($id)->approval_status =='PENDING'){
+                if (approvals::find($id)->approval_status == 'PENDING') {
                     return view('livewire.approvals.action', ['id' => $id, 'move' => false]);
                 }
+
                 return null;
             })->unsortable()->label('Decision'),
         ];
@@ -114,172 +105,147 @@ class ApprovalsTable extends LivewireDatatable
     {
         $approval = approvals::find($id);
 
+        // ///////////Loan Products ////////////////////
 
-
-
-        /////////////Loan Products ////////////////////
-
-        if($approval->process_name =='createLoanProduct'){
-            $this->approveCreateLoanProduct($approval->process_id,$id);
+        if ($approval->process_name == 'createLoanProduct') {
+            $this->approveCreateLoanProduct($approval->process_id, $id);
         }
 
+        // ///////////PASSWORD POLICY////////////////////
 
-        /////////////PASSWORD POLICY////////////////////
-
-        if($approval->process_name =='passwordPolicy'){
-            $this->approvePasswordPolicy($approval->process_id,$id);
+        if ($approval->process_name == 'passwordPolicy') {
+            $this->approvePasswordPolicy($approval->process_id, $id);
         }
 
-
-
-        if($approval->process_name =='strongRoomDeposition'){
-            $this->approveStrongRoomDeposition($approval->process_id,$id);
+        if ($approval->process_name == 'strongRoomDeposition') {
+            $this->approveStrongRoomDeposition($approval->process_id, $id);
         }
 
+        // /////////////////////////////////INVESTMENT//////////////////////////////////////////
 
-        ///////////////////////////////////INVESTMENT//////////////////////////////////////////
-
-        if($approval->process_name =='createInvestment'){
-            $this->approveInvestment($approval->process_id,$id);
+        if ($approval->process_name == 'createInvestment') {
+            $this->approveInvestment($approval->process_id, $id);
         }
-        if($approval->process_name =='editNode'){
-            $this->approveEditNode($approval->process_id,$id,$approval->edit_package);
+        if ($approval->process_name == 'editNode') {
+            $this->approveEditNode($approval->process_id, $id, $approval->edit_package);
         }
-        if($approval->process_name =='addNode'){
-            $this->approveAddNode($approval->process_id,$id,$approval->edit_package);
-        }
-
-
-
-///////////////////////////////////BRANCH//////////////////////////////////////////
-
-        if($approval->process_name =='addBranch'){
-            $this->approveAddBranch($approval->process_id,$id);
-        }
-        if($approval->process_name =='blockBranch'){
-            $this->approveBlockBranch($approval->process_id,$id);
-        }
-        if($approval->process_name =='editBranch'){
-            $this->approveEditBranch($approval->process_id,$id);
-        }
-        if($approval->process_name =='activateBranch'){
-            $this->approveActivateBranch($approval->process_id,$id);
-        }
-        if($approval->process_name =='deleteBranch'){
-            $this->approveDeleteBranch($approval->process_id,$id);
+        if ($approval->process_name == 'addNode') {
+            $this->approveAddNode($approval->process_id, $id, $approval->edit_package);
         }
 
+        // /////////////////////////////////BRANCH//////////////////////////////////////////
 
-
-        ///////////////////////////////////CASH ACCOUNTS//////////////////////////////////////////
-        if($approval->process_name =='editAccount'){
-            $this->approveEditAccount($approval->process_id,$id,$approval->edit_package);
+        if ($approval->process_name == 'addBranch') {
+            $this->approveAddBranch($approval->process_id, $id);
+        }
+        if ($approval->process_name == 'blockBranch') {
+            $this->approveBlockBranch($approval->process_id, $id);
+        }
+        if ($approval->process_name == 'editBranch') {
+            $this->approveEditBranch($approval->process_id, $id);
+        }
+        if ($approval->process_name == 'activateBranch') {
+            $this->approveActivateBranch($approval->process_id, $id);
+        }
+        if ($approval->process_name == 'deleteBranch') {
+            $this->approveDeleteBranch($approval->process_id, $id);
         }
 
-
-
-        //////////////////////////////////////DEPARTMENT//////////////////////
-
-         if($approval->process_name =='createdDepartment'){
-             $this->approveCreatedDepartment($approval->process_id,$id,$approval->edit_package);
-         }
-
-        ////////////////////////////////APPROVE MEMBERS/////////////////////////////////////////////
-        if($approval->process_name =='createClient'){
-            $this->approveCreateClient($approval->process_id,$id);
-        }
-        if($approval->process_name =='exitClient'){
-            $this->approveClientExit($approval->process_id,$id);
-        }
-        if($approval->process_name =='addService'){
-            $this->approveAddService($approval->process_id,$id,$approval->edit_package);
+        // /////////////////////////////////CASH ACCOUNTS//////////////////////////////////////////
+        if ($approval->process_name == 'editAccount') {
+            $this->approveEditAccount($approval->process_id, $id, $approval->edit_package);
         }
 
+        // ////////////////////////////////////DEPARTMENT//////////////////////
 
- //////////////////////////////// TELLERS MANAGEMENT/////////////////////////////////////////////
-        if($approval->process_name =='createTeller'){
-            $this->approveCreateTeller($approval->process_id,$id);
-        }
-        if($approval->process_name =='assignTeller'){
-            $this->approveAssignTeller($approval->process_id,$id);
-        }
-        /// remove teller////
-        if($approval->process_name =='removeTeller'){
-            $this->approveRemoveTeller($approval->process_id,$id);
-        }
-        if($approval->process_name =='editTeller'){
-            $this->approveEditTeller($approval->process_id,$id);
+        if ($approval->process_name == 'createdDepartment') {
+            $this->approveCreatedDepartment($approval->process_id, $id, $approval->edit_package);
         }
 
-        ////////////////////////////////CHANNEL/////////////////////////////////////////////
-
-
-        if($approval->process_name =='deleteChannel'){
-            $this->approveDeleteChannel($approval->process_id,$id);
+        // //////////////////////////////APPROVE MEMBERS/////////////////////////////////////////////
+        if ($approval->process_name == 'createClient') {
+            $this->approveCreateClient($approval->process_id, $id);
         }
-        if($approval->process_name =='editChannel'){
-            $this->approveEditChannel($approval->process_id,$id,$approval->edit_package);
+        if ($approval->process_name == 'exitClient') {
+            $this->approveClientExit($approval->process_id, $id);
         }
-        if($approval->process_name =='addChannel'){
-            $this->approveAddChannel($approval->process_id,$id,$approval->edit_package);
+        if ($approval->process_name == 'addService') {
+            $this->approveAddService($approval->process_id, $id, $approval->edit_package);
         }
 
-        ////////////////////////////////USERS/////////////////////////////////////////////
-
-
-        if($approval->process_name =='deleteUser' || $approval->process_name =='blockUser' || $approval->process_name =='activateUser' ){
-            $this->approveDeleteUser($approval->process_id,$id);
+        // ////////////////////////////// TELLERS MANAGEMENT/////////////////////////////////////////////
+        if ($approval->process_name == 'createTeller') {
+            $this->approveCreateTeller($approval->process_id, $id);
         }
-        if($approval->process_name =='editUser'){
-            $this->approveEditUser($approval->process_id,$id,$approval->edit_package);
+        if ($approval->process_name == 'assignTeller') {
+            $this->approveAssignTeller($approval->process_id, $id);
         }
-        if($approval->process_name =='addUser'){
-            $this->approveAddUser($approval->process_id,$id,$approval->edit_package);
+        // / remove teller////
+        if ($approval->process_name == 'removeTeller') {
+            $this->approveRemoveTeller($approval->process_id, $id);
         }
-
-        ////////////////////////////////DEPARTMENT/////////////////////////////////////////////
-
-
-        if($approval->process_name =='deleteDepartment'){
-            $this->approveDeleteDepartment($approval->process_id,$id);
-        }
-        if($approval->process_name =='editRole'){
-            $this->approveEditDepartment($approval->process_id,$id,$approval->edit_package);
-        }
-        if($approval->process_name =='addDepartment'){
-            $this->approveAddDepartment($approval->process_id,$id,$approval->edit_package);
+        if ($approval->process_name == 'editTeller') {
+            $this->approveEditTeller($approval->process_id, $id);
         }
 
-        ////////////////////////////////PASSWORD RESET/////////////////////////////////////////////
+        // //////////////////////////////CHANNEL/////////////////////////////////////////////
 
-
-        if($approval->process_name =='passwordReset'){
-            $this->approvePasswordReset($approval->reset_email,$id);
+        if ($approval->process_name == 'deleteChannel') {
+            $this->approveDeleteChannel($approval->process_id, $id);
+        }
+        if ($approval->process_name == 'editChannel') {
+            $this->approveEditChannel($approval->process_id, $id, $approval->edit_package);
+        }
+        if ($approval->process_name == 'addChannel') {
+            $this->approveAddChannel($approval->process_id, $id, $approval->edit_package);
         }
 
-        ////////////////////////////////PERMISSIONS/////////////////////////////////////////////
+        // //////////////////////////////USERS/////////////////////////////////////////////
 
-
-        if($approval->process_name =='editPermission'){
-            $this->approveEditPermission($approval->process_id,$id);
+        if ($approval->process_name == 'deleteUser' || $approval->process_name == 'blockUser' || $approval->process_name == 'activateUser') {
+            $this->approveDeleteUser($approval->process_id, $id);
+        }
+        if ($approval->process_name == 'editUser') {
+            $this->approveEditUser($approval->process_id, $id, $approval->edit_package);
+        }
+        if ($approval->process_name == 'addUser') {
+            $this->approveAddUser($approval->process_id, $id, $approval->edit_package);
         }
 
+        // //////////////////////////////DEPARTMENT/////////////////////////////////////////////
 
-        ////////////////////////////////LOAN PRODUCT/////////////////////////////////////////////
-        if($approval->process_name =='createLanProduct'){
-            $this->approveCreateLanProduct($approval->process_id,$id);
+        if ($approval->process_name == 'deleteDepartment') {
+            $this->approveDeleteDepartment($approval->process_id, $id);
+        }
+        if ($approval->process_name == 'editRole') {
+            $this->approveEditDepartment($approval->process_id, $id, $approval->edit_package);
+        }
+        if ($approval->process_name == 'addDepartment') {
+            $this->approveAddDepartment($approval->process_id, $id, $approval->edit_package);
         }
 
+        // //////////////////////////////PASSWORD RESET/////////////////////////////////////////////
 
+        if ($approval->process_name == 'passwordReset') {
+            $this->approvePasswordReset($approval->reset_email, $id);
+        }
 
-            ////////////////////////////////TRANSACTIONS/////////////////////////////////////////////
+        // //////////////////////////////PERMISSIONS/////////////////////////////////////////////
 
+        if ($approval->process_name == 'editPermission') {
+            $this->approveEditPermission($approval->process_id, $id);
+        }
 
-            if($approval->process_name =='resolveTransaction'){
-                $this->approveResolveTransaction($approval->process_id,$id,$approval->edit_package);
-            }
+        // //////////////////////////////LOAN PRODUCT/////////////////////////////////////////////
+        if ($approval->process_name == 'createLanProduct') {
+            $this->approveCreateLanProduct($approval->process_id, $id);
+        }
 
+        // //////////////////////////////TRANSACTIONS/////////////////////////////////////////////
 
+        if ($approval->process_name == 'resolveTransaction') {
+            $this->approveResolveTransaction($approval->process_id, $id, $approval->edit_package);
+        }
 
     }
 
@@ -288,157 +254,143 @@ class ApprovalsTable extends LivewireDatatable
 
         $approval = approvals::find($id);
 
-
-
-        if($approval->process_name =='strongRoomDeposition'){
-            $this->rejectStrongRoomDeposition($approval->process_id,$id);
+        if ($approval->process_name == 'strongRoomDeposition') {
+            $this->rejectStrongRoomDeposition($approval->process_id, $id);
         }
 
-        ////////////////////PASSWORD POLICY///////////////
+        // //////////////////PASSWORD POLICY///////////////
 
-        if($approval->process_name =='passwordPolicy'){
-            $this->rejectPasswordPolicy($approval->process_id,$id);
+        if ($approval->process_name == 'passwordPolicy') {
+            $this->rejectPasswordPolicy($approval->process_id, $id);
         }
 
+        // /////////////////////////////////REJECT INVESTMENT//////////////////////////////////////////
 
-        ///////////////////////////////////REJECT INVESTMENT//////////////////////////////////////////
+        if ($approval->process_name == 'createInvestment') {
 
-        if($approval->process_name =='createInvestment'){
-
-            $this->rejectCreateInvestment($approval->process_id,$id);
+            $this->rejectCreateInvestment($approval->process_id, $id);
         }
 
-        ///////////////////////////////////LOAN SUB PRODUCT//////////////////////////////////////////
+        // /////////////////////////////////LOAN SUB PRODUCT//////////////////////////////////////////
 
-        if($approval->process_name =='createLanProduct'){
+        if ($approval->process_name == 'createLanProduct') {
 
-            $this->rejectCreateLanProduct($approval->process_id,$id);
+            $this->rejectCreateLanProduct($approval->process_id, $id);
         }
 
+        // ////////////////////////////////////// BRANCHES/////////////////////////////
 
-        //////////////////////////////////////// BRANCHES/////////////////////////////
-
-        if($approval->process_name=='addBranch'){
-            $this->declineAddBranch($approval->process_id,$id);
+        if ($approval->process_name == 'addBranch') {
+            $this->declineAddBranch($approval->process_id, $id);
         }
-        if($approval->process_name=='editBranch'){
-            $this->declineEditBranch($approval->process_id,$id);
+        if ($approval->process_name == 'editBranch') {
+            $this->declineEditBranch($approval->process_id, $id);
         }
-        if($approval->process_name=='blockBranch'){
-            $this->declineBlockBranch($approval->process_id,$id);
+        if ($approval->process_name == 'blockBranch') {
+            $this->declineBlockBranch($approval->process_id, $id);
         }
-        if($approval->process_name=='activateBranch'){
-            $this->declineActivateBranch($approval->process_id,$id);
+        if ($approval->process_name == 'activateBranch') {
+            $this->declineActivateBranch($approval->process_id, $id);
         }
-        if($approval->process_name=='deleteBranch'){
-            $this->declineDeleteBranch($approval->process_id,$id);
-        }
-
-
-///////////////////////////////////CASH ACCOUNTS//////////////////////////////////////////
-
-        if($approval->process_name =='editAccount'){
-            $this->rejectEditAccount($approval->process_id,$id);
+        if ($approval->process_name == 'deleteBranch') {
+            $this->declineDeleteBranch($approval->process_id, $id);
         }
 
+        // /////////////////////////////////CASH ACCOUNTS//////////////////////////////////////////
 
-        //////////////////////////////DEPARTMENT/////////////////////////
-
-         if($approval->process_name =='createdDepartment'){
-
-             $this->rejectCreatedDepartment($approval->process_id,$id);
-         }
-
-
-        if($approval->process_name =='editNode'){
-            $this->rejectEditNode($approval->process_id,$id);
-        }
-        if($approval->process_name =='addNode'){
-            $this->rejectAddNode($approval->process_id,$id,$approval->edit_package);
+        if ($approval->process_name == 'editAccount') {
+            $this->rejectEditAccount($approval->process_id, $id);
         }
 
-        ////////////////////////////////TELLER MANAGEMENT/////////////////////////////////////////////
+        // ////////////////////////////DEPARTMENT/////////////////////////
 
+        if ($approval->process_name == 'createdDepartment') {
 
-        if($approval->process_name =='createTeller'){
-            $this->rejectCreateTeller($approval->process_id,$id);
-        }
-        if($approval->process_name =='assignTeller'){
-            $this->rejectAssignTeller($approval->process_id,$id);
-        }
-        if($approval->process_name =='editTeller'){
-            $this->rejectEditTeller($approval->process_id,$id);
+            $this->rejectCreatedDepartment($approval->process_id, $id);
         }
 
-        ////////////////////////////////CHANNEL/////////////////////////////////////////////
-
-
-        if($approval->process_name =='deleteChannel'){
-            $this->rejectDeleteChannel($approval->process_id,$id);
+        if ($approval->process_name == 'editNode') {
+            $this->rejectEditNode($approval->process_id, $id);
         }
-        if($approval->process_name =='editChannel'){
-            $this->rejectEditChannel($approval->process_id,$id,$approval->edit_package);
-        }
-        if($approval->process_name =='addChannel'){
-            $this->rejectAddChannel($approval->process_id,$id,$approval->edit_package);
+        if ($approval->process_name == 'addNode') {
+            $this->rejectAddNode($approval->process_id, $id, $approval->edit_package);
         }
 
-        ////////////////////////////////USER/////////////////////////////////////////////
+        // //////////////////////////////TELLER MANAGEMENT/////////////////////////////////////////////
 
-
-        if($approval->process_name =='deleteUser' || $approval->process_name =='blockUser' || $approval->process_name =='activateUser'){
-            $this->rejectDeleteUser($approval->process_id,$id);
+        if ($approval->process_name == 'createTeller') {
+            $this->rejectCreateTeller($approval->process_id, $id);
         }
-        if($approval->process_name =='editUser'){
-            $this->rejectEditUser($approval->process_id,$id,$approval->edit_package);
+        if ($approval->process_name == 'assignTeller') {
+            $this->rejectAssignTeller($approval->process_id, $id);
         }
-        if($approval->process_name =='addUser'){
-            $this->rejectAddUser($approval->process_id,$id,$approval->edit_package);
-        }
-
-        ////////////////////////////////DEPARTMENT/////////////////////////////////////////////
-
-
-        if($approval->process_name =='deleteDepartment'){
-            $this->rejectDeleteDepartment($approval->process_id,$id);
-        }
-        if($approval->process_name =='editRole'){
-            $this->rejectEditDepartment($approval->process_id,$id,$approval->edit_package);
-        }
-        if($approval->process_name =='addDepartment'){
-            $this->rejectAddDepartment($approval->process_id,$id,$approval->edit_package);
+        if ($approval->process_name == 'editTeller') {
+            $this->rejectEditTeller($approval->process_id, $id);
         }
 
-        ////////////////////////////////PASSWORD RESET/////////////////////////////////////////////
+        // //////////////////////////////CHANNEL/////////////////////////////////////////////
 
-
-        if($approval->process_name =='passwordReset'){
-            $this->rejectPasswordReset($approval->reset_email,$id);
+        if ($approval->process_name == 'deleteChannel') {
+            $this->rejectDeleteChannel($approval->process_id, $id);
+        }
+        if ($approval->process_name == 'editChannel') {
+            $this->rejectEditChannel($approval->process_id, $id, $approval->edit_package);
+        }
+        if ($approval->process_name == 'addChannel') {
+            $this->rejectAddChannel($approval->process_id, $id, $approval->edit_package);
         }
 
-        ////////////////////////////////PERMISSIONS/////////////////////////////////////////////
+        // //////////////////////////////USER/////////////////////////////////////////////
 
-
-        if($approval->process_name =='editPermission'){
-            $this->rejectEditPermission($approval->process_id,$id);
+        if ($approval->process_name == 'deleteUser' || $approval->process_name == 'blockUser' || $approval->process_name == 'activateUser') {
+            $this->rejectDeleteUser($approval->process_id, $id);
+        }
+        if ($approval->process_name == 'editUser') {
+            $this->rejectEditUser($approval->process_id, $id, $approval->edit_package);
+        }
+        if ($approval->process_name == 'addUser') {
+            $this->rejectAddUser($approval->process_id, $id, $approval->edit_package);
         }
 
-        ////////////////////////////////TRANSACTIONS/////////////////////////////////////////////
+        // //////////////////////////////DEPARTMENT/////////////////////////////////////////////
 
+        if ($approval->process_name == 'deleteDepartment') {
+            $this->rejectDeleteDepartment($approval->process_id, $id);
+        }
+        if ($approval->process_name == 'editRole') {
+            $this->rejectEditDepartment($approval->process_id, $id, $approval->edit_package);
+        }
+        if ($approval->process_name == 'addDepartment') {
+            $this->rejectAddDepartment($approval->process_id, $id, $approval->edit_package);
+        }
 
-               if($approval->process_name =='resolveTransaction'){
-                $this->rejectResolveTransaction($approval->process_id,$id);
-            }
+        // //////////////////////////////PASSWORD RESET/////////////////////////////////////////////
+
+        if ($approval->process_name == 'passwordReset') {
+            $this->rejectPasswordReset($approval->reset_email, $id);
+        }
+
+        // //////////////////////////////PERMISSIONS/////////////////////////////////////////////
+
+        if ($approval->process_name == 'editPermission') {
+            $this->rejectEditPermission($approval->process_id, $id);
+        }
+
+        // //////////////////////////////TRANSACTIONS/////////////////////////////////////////////
+
+        if ($approval->process_name == 'resolveTransaction') {
+            $this->rejectResolveTransaction($approval->process_id, $id);
+        }
 
     }
 
+    // ///////////////////////////department///////////////////////
 
-    /////////////////////////////department///////////////////////
-
-    public function approveCreatedDepartment($process_id,$approvalsId){
+    public function approveCreatedDepartment($process_id, $approvalsId)
+    {
 
         DB::table('departments')
-            ->where('id',$process_id)->update(['status'=>"ACTIVE"]);
+            ->where('id', $process_id)->update(['status' => 'ACTIVE']);
 
         approvals::where('id', $approvalsId)->update([
             'approver_id' => Auth::user()->id,
@@ -449,127 +401,113 @@ class ApprovalsTable extends LivewireDatatable
 
     }
 
-
-
-    ///////////////////////////////////////INVESTMENT////////////////////////////////////////
-    public function approveInvestment($process_id,$approvalsId): void
+    // /////////////////////////////////////INVESTMENT////////////////////////////////////////
+    public function approveInvestment($process_id, $approvalsId): void
     {
-        $edit_package=json_decode(approvals::where('id',$approvalsId)->value('edit_package'));
-
+        $edit_package = json_decode(approvals::where('id', $approvalsId)->value('edit_package'));
 
         Investment::where('id', $process_id)->update([
-            'status' => 'APPROVED'
+            'status' => 'APPROVED',
         ]);
 
-        $sub_product=DB::table('accounts')->where('product_number','1600')->latest()->value('sub_product_number');
-        if($sub_product){
-            $sub_product=(int)$sub_product +1;
-        }
-        else{
-            $sub_product=1610;
+        $sub_product = DB::table('accounts')->where('product_number', '1600')->latest()->value('sub_product_number');
+        if ($sub_product) {
+            $sub_product = (int) $sub_product + 1;
+        } else {
+            $sub_product = 1610;
         }
 
-        $account_number=str_pad(auth()->user()->institution_id,2,0,STR_PAD_LEFT).str_pad(auth()->user()->branch,2,0,STR_PAD_LEFT) .'0000'.$sub_product;
+        $account_number = str_pad(auth()->user()->institution_id, 2, 0, STR_PAD_LEFT).str_pad(auth()->user()->branch, 2, 0, STR_PAD_LEFT).'0000'.$sub_product;
 
-        $idx =  AccountsModel::create([
+        $idx = AccountsModel::create([
             'account_use' => 'internal',
-            'institution_number'=>auth()->user()->institution_id,
-            'branch_number'=> auth()->user()->branch,
-            'member_number'=> null,
-            'product_number'=> '1600',
-            'sub_product_number'=> $sub_product,
-            'account_name'=> DB::table('asset_account')->where('account_code',1600)->value('name') .'-'.$edit_package->name,
-            'account_number'=>$account_number,
+            'institution_number' => auth()->user()->institution_id,
+            'branch_number' => auth()->user()->branch,
+            'member_number' => null,
+            'product_number' => '1600',
+            'sub_product_number' => $sub_product,
+            'account_name' => DB::table('asset_account')->where('account_code', 1600)->value('name').'-'.$edit_package->name,
+            'account_number' => $account_number,
 
         ])->id;
 
+        // get account number
+        $debit_account_number = DB::table('accounts')->where('sub_product_number', $edit_package->account_code)->value('account_number');
+        $new_investment_account_balance = (float) AccountsModel::where('account_number', $account_number)->value('balance') + (float) $edit_package->amount;
+        $new_investment_costs_account_balance = (float) AccountsModel::where('account_number', $debit_account_number)->value('balance') - (float) $edit_package->amount;
 
-         // get account number
-         $debit_account_number=DB::table('accounts')->where('sub_product_number',$edit_package->account_code)->value('account_number');
-         $new_investment_account_balance = (double)AccountsModel::where('account_number', $account_number)->value('balance') + (double)$edit_package->amount;
-        $new_investment_costs_account_balance = (double)AccountsModel::where('account_number',$debit_account_number)->value('balance') - (double)$edit_package->amount;
-
-
-      AccountsModel::where('account_number', $debit_account_number)->update(['balance' => $new_investment_costs_account_balance]);
-//      AccountsModel::where('account_number', $mirror_account)->update(['balance' => $savings_ledger_account_new_balance]);
+        AccountsModel::where('account_number', $debit_account_number)->update(['balance' => $new_investment_costs_account_balance]);
+        //      AccountsModel::where('account_number', $mirror_account)->update(['balance' => $savings_ledger_account_new_balance]);
         AccountsModel::where('account_number', $account_number)->update(['balance' => $new_investment_account_balance]);
 
-
         $reference_number = time();
-        $institution_id=auth()->user()->institution_id;
+        $institution_id = auth()->user()->institution_id;
 
-
-
-
-        //DEBIT RECORD MEMBER
+        // DEBIT RECORD MEMBER
         general_ledger::create([
-            'record_on_account_number'=> $debit_account_number,
-            'record_on_account_number_balance'=> $new_investment_costs_account_balance,
-            'sender_branch_id'=> auth()->user()->institution_id,
-            'beneficiary_branch_id'=> auth()->user()->institution_id,
-            'sender_product_id'=>  AccountsModel::where('account_number',$debit_account_number)->value('product_number'),
-            'sender_sub_product_id'=> AccountsModel::where('account_number',$debit_account_number)->value('sub_product_number'),
-            'beneficiary_product_id'=> AccountsModel::where('account_number',$account_number)->value('product_number'),
-            'beneficiary_sub_product_id'=> AccountsModel::where('account_number',$account_number)->value('sub_product_number'),
-            'sender_id'=> '0000',
-            'beneficiary_id'=> '0000',
-            'sender_name'=> AccountsModel::where('account_number',$debit_account_number )->value('account_name'),
-            'beneficiary_name'=> AccountsModel::where('account_number',$account_number)->value('account_name'),
-            'sender_account_number'=>$debit_account_number ,
-            'beneficiary_account_number'=> $account_number,
-            'transaction_type'=> 'IFT',
-            'sender_account_currency_type'=> 'TZS',
-            'beneficiary_account_currency_type'=> 'TZS',
-            'narration'=> 'Payment for investment  - '.DB::table('asset_account')->where('account_code',1600)->value('name') .'-'.$edit_package->name,
-            'credit'=> 0,
-            'debit'=> $edit_package->amount,
-            'reference_number'=> $reference_number,
-            'trans_status'=> 'Successful',
-            'trans_status_description'=> 'Successful',
-            'swift_code'=> '',
-            'destination_bank_name'=> '',
-            'destination_bank_number'=> null,
-            'payment_status'=> 'Successful',
-            'recon_status'=> 'PENDING',
+            'record_on_account_number' => $debit_account_number,
+            'record_on_account_number_balance' => $new_investment_costs_account_balance,
+            'sender_branch_id' => auth()->user()->institution_id,
+            'beneficiary_branch_id' => auth()->user()->institution_id,
+            'sender_product_id' => AccountsModel::where('account_number', $debit_account_number)->value('product_number'),
+            'sender_sub_product_id' => AccountsModel::where('account_number', $debit_account_number)->value('sub_product_number'),
+            'beneficiary_product_id' => AccountsModel::where('account_number', $account_number)->value('product_number'),
+            'beneficiary_sub_product_id' => AccountsModel::where('account_number', $account_number)->value('sub_product_number'),
+            'sender_id' => '0000',
+            'beneficiary_id' => '0000',
+            'sender_name' => AccountsModel::where('account_number', $debit_account_number)->value('account_name'),
+            'beneficiary_name' => AccountsModel::where('account_number', $account_number)->value('account_name'),
+            'sender_account_number' => $debit_account_number,
+            'beneficiary_account_number' => $account_number,
+            'transaction_type' => 'IFT',
+            'sender_account_currency_type' => 'TZS',
+            'beneficiary_account_currency_type' => 'TZS',
+            'narration' => 'Payment for investment  - '.DB::table('asset_account')->where('account_code', 1600)->value('name').'-'.$edit_package->name,
+            'credit' => 0,
+            'debit' => $edit_package->amount,
+            'reference_number' => $reference_number,
+            'trans_status' => 'Successful',
+            'trans_status_description' => 'Successful',
+            'swift_code' => '',
+            'destination_bank_name' => '',
+            'destination_bank_number' => null,
+            'payment_status' => 'Successful',
+            'recon_status' => 'PENDING',
         ]);
 
-
-
-        //CREDIT RECORD LOAN ACCOUNT
+        // CREDIT RECORD LOAN ACCOUNT
         general_ledger::create([
-            'record_on_account_number'=> $account_number,
-            'record_on_account_number_balance'=> $new_investment_costs_account_balance,
-            'sender_branch_id'=> auth()->user()->institution_id,
-            'beneficiary_branch_id'=> auth()->user()->institution_id,
-            'sender_product_id'=>  AccountsModel::where('account_number',$debit_account_number)->value('product_number'),
-            'sender_sub_product_id'=> AccountsModel::where('account_number',$debit_account_number)->value('sub_product_number'),
-            'beneficiary_product_id'=> AccountsModel::where('account_number',$account_number)->value('product_number'),
-            'beneficiary_sub_product_id'=> AccountsModel::where('account_number',$account_number)->value('sub_product_number'),
-            'sender_id'=> '0000',
-            'beneficiary_id'=> '0000',
-            'sender_name'=> AccountsModel::where('account_number',$debit_account_number )->value('account_name'),
-            'beneficiary_name'=> AccountsModel::where('account_number',$debit_account_number )->value('account_name'),
-            'sender_account_number'=> $debit_account_number,
-            'beneficiary_account_number'=>$account_number ,
-            'transaction_type'=> 'IFT',
-            'sender_account_currency_type'=> 'TZS',
-            'beneficiary_account_currency_type'=> 'TZS',
-            'narration'=> 'Payment for loans issued',
-            'credit'=> $edit_package->amount,
-            'debit'=> 0,
-            'reference_number'=> $reference_number,
-            'trans_status'=> 'Successful',
-            'trans_status_description'=> 'Successful',
-            'swift_code'=> '',
-            'destination_bank_name'=> '',
-            'destination_bank_number'=> null,
-            'payment_status'=> 'Successful',
-            'recon_status'=> 'PENDING',
+            'record_on_account_number' => $account_number,
+            'record_on_account_number_balance' => $new_investment_costs_account_balance,
+            'sender_branch_id' => auth()->user()->institution_id,
+            'beneficiary_branch_id' => auth()->user()->institution_id,
+            'sender_product_id' => AccountsModel::where('account_number', $debit_account_number)->value('product_number'),
+            'sender_sub_product_id' => AccountsModel::where('account_number', $debit_account_number)->value('sub_product_number'),
+            'beneficiary_product_id' => AccountsModel::where('account_number', $account_number)->value('product_number'),
+            'beneficiary_sub_product_id' => AccountsModel::where('account_number', $account_number)->value('sub_product_number'),
+            'sender_id' => '0000',
+            'beneficiary_id' => '0000',
+            'sender_name' => AccountsModel::where('account_number', $debit_account_number)->value('account_name'),
+            'beneficiary_name' => AccountsModel::where('account_number', $debit_account_number)->value('account_name'),
+            'sender_account_number' => $debit_account_number,
+            'beneficiary_account_number' => $account_number,
+            'transaction_type' => 'IFT',
+            'sender_account_currency_type' => 'TZS',
+            'beneficiary_account_currency_type' => 'TZS',
+            'narration' => 'Payment for loans issued',
+            'credit' => $edit_package->amount,
+            'debit' => 0,
+            'reference_number' => $reference_number,
+            'trans_status' => 'Successful',
+            'trans_status_description' => 'Successful',
+            'swift_code' => '',
+            'destination_bank_name' => '',
+            'destination_bank_number' => null,
+            'payment_status' => 'Successful',
+            'recon_status' => 'PENDING',
         ]);
 
-
-
-        //CREDIT RECORD GL
+        // CREDIT RECORD GL
         approvals::where('id', $approvalsId)->update([
             'approver_id' => Auth::user()->id,
             'process_status' => 'APPROVED',
@@ -579,45 +517,41 @@ class ApprovalsTable extends LivewireDatatable
 
     }
 
-    //////////////////////////////////////REJECT CREATE INVESTMENT////////////////////////////////////////////
-    public function rejectCreateInvestment($process_id,$approvalsId): void
+    // ////////////////////////////////////REJECT CREATE INVESTMENT////////////////////////////////////////////
+    public function rejectCreateInvestment($process_id, $approvalsId): void
     {
-      Investment::where('id',$process_id)->update(['status'=>"REJECTED"]);
+        Investment::where('id', $process_id)->update(['status' => 'REJECTED']);
         approvals::where('id', $approvalsId)->update([
             'approver_id' => Auth::user()->id,
             'process_status' => 'REJECTED',
             'approval_status' => 'REJECTED',
             'approval_process_description' => 'Rejected the creation of new investment',
 
-
         ]);
 
     }
 
-
-
-    public function rejectCreateLanProduct($process_id,$approvalsId){
-        Loan_sub_products::where('id',$process_id)->update(['sub_product_status'=>"DECLINED"]);
+    public function rejectCreateLanProduct($process_id, $approvalsId)
+    {
+        Loan_sub_products::where('id', $process_id)->update(['sub_product_status' => 'DECLINED']);
         approvals::where('id', $approvalsId)->update([
             'approver_id' => Auth::user()->id,
             'process_status' => 'REJECTED',
             'approval_status' => 'REJECTED',
             'approval_process_description' => 'Rejected the creation of new loan sub product',
 
-
         ]);
 
     }
 
-
-    private function approveEditNode($process_id, $approvalsId,$changes): void
+    private function approveEditNode($process_id, $approvalsId, $changes): void
     {
         $changes = json_decode($changes, true);
-        foreach($changes as $key => $value){
-            $dbValue = NodesList::where('id',$process_id)->value($key);
-            if($dbValue != $value){
+        foreach ($changes as $key => $value) {
+            $dbValue = NodesList::where('id', $process_id)->value($key);
+            if ($dbValue != $value) {
                 NodesList::where('id', $process_id)->update([
-                    $key => $value
+                    $key => $value,
                 ]);
             }
 
@@ -630,22 +564,21 @@ class ApprovalsTable extends LivewireDatatable
         ]);
     }
 
+    // /////////////////////PASSWORD POLICY//////////////////////
+    public function approvePasswordPolicy($process_id, $approvalsId)
+    {
 
-    ///////////////////////PASSWORD POLICY//////////////////////
-    public function approvePasswordPolicy($process_id,$approvalsId){
+        $value = approvals::where('id', $approvalsId)->value('approval_process_description');
+        $values = json_decode($value);
 
-        $value=approvals::where('id',$approvalsId)->value('approval_process_description');
-        $values=json_decode($value);
-
-        DB::table('password_policies')->where('id',$process_id)->update([
-            'length'=>$values->length,
-            'requireUppercase'=>$values->requireUppercase,
-            'requireNumeric'=>$values->requireNumeric,
-            'requireSpecialCharacter'=>$values->requireSpecialCharacter,
-            'limiter'=>$values->limiter,
-            'passwordExpire'=>$values->passwordExpire,
+        DB::table('password_policies')->where('id', $process_id)->update([
+            'length' => $values->length,
+            'requireUppercase' => $values->requireUppercase,
+            'requireNumeric' => $values->requireNumeric,
+            'requireSpecialCharacter' => $values->requireSpecialCharacter,
+            'limiter' => $values->limiter,
+            'passwordExpire' => $values->passwordExpire,
         ]);
-
 
         approvals::where('id', $approvalsId)->update([
             'approver_id' => Auth::user()->id,
@@ -655,9 +588,10 @@ class ApprovalsTable extends LivewireDatatable
         ]);
     }
 
-    public function approveCreateLoanProduct($process_id,$approvalsId){
+    public function approveCreateLoanProduct($process_id, $approvalsId)
+    {
 
-       // $value=Loan_sub_products::where('id',$approvalsId)->update([''=>'']);
+        // $value=Loan_sub_products::where('id',$approvalsId)->update([''=>'']);
 
         approvals::where('id', $approvalsId)->update([
             'approver_id' => Auth::user()->id,
@@ -666,9 +600,6 @@ class ApprovalsTable extends LivewireDatatable
             'approval_process_description' => 'Approved  change  of password policy',
         ]);
     }
-
-
-
 
     private function rejectEditNode($process_id, $approvalsId): void
     {
@@ -684,7 +615,7 @@ class ApprovalsTable extends LivewireDatatable
     {
 
         NodesList::where('ID', $process_id)->update([
-            'NODE_STATUS' => 'ACTIVE'
+            'NODE_STATUS' => 'ACTIVE',
         ]);
 
         approvals::where('id', $approvalsId)->update([
@@ -705,30 +636,27 @@ class ApprovalsTable extends LivewireDatatable
         ]);
     }
 
-///////////////////////////////////END OF NODES////////////////////////////////////////
+    // /////////////////////////////////END OF NODES////////////////////////////////////////
 
+    // ////////////////////TELLER MANAGEMENT//////////////////////////////////////
 
-//////////////////////TELLER MANAGEMENT//////////////////////////////////////
+    // ////////////////////////////////CREATE TELLER//////////////////////////////////////////
+    public function approveCreateTeller($process_id, $approvalsId)
+    {
 
-//////////////////////////////////CREATE TELLER//////////////////////////////////////////
-    public  function  approveCreateTeller($process_id,$approvalsId){
+        $approval = approvals::where('id', $approvalsId)->value('edit_package');
+        $approval = json_decode($approval);
 
-        $approval=approvals::where('id',$approvalsId)->value('edit_package');
-          $approval=json_decode($approval);
+        $getlatest_account_number = DB::table('accounts')->where('product_number', '2200')->where('sub_product_number', '2240')->latest()->value('account_number');
+        $get_sub_string_nunber = substr($getlatest_account_number, 4, 4);
+        if ($get_sub_string_nunber) {
+            $get_sub_string_nunber = (int) $get_sub_string_nunber + 1;
 
-
-        $getlatest_account_number=DB::table('accounts')->where('product_number','2200')->where('sub_product_number','2240')->latest()->value('account_number');
-        $get_sub_string_nunber=substr($getlatest_account_number,4,4);
-        if($get_sub_string_nunber){
-            $get_sub_string_nunber=(int)$get_sub_string_nunber+1;
-
-        }
-        else{
-            $get_sub_string_nunber='0001';
+        } else {
+            $get_sub_string_nunber = '0001';
         }
 
-
-        $account=str_pad(auth()->user()->institution_id, 2, '0', STR_PAD_LEFT).str_pad(auth()->user()->branch,2,0,STR_PAD_LEFT).str_pad($get_sub_string_nunber,4,0,STR_PAD_LEFT).'2240';
+        $account = str_pad(auth()->user()->institution_id, 2, '0', STR_PAD_LEFT).str_pad(auth()->user()->branch, 2, 0, STR_PAD_LEFT).str_pad($get_sub_string_nunber, 4, 0, STR_PAD_LEFT).'2240';
         $id = AccountsModel::create([
             'account_use' => 'internal',
             'institution_number' => auth()->user()->institution_id,
@@ -737,54 +665,54 @@ class ApprovalsTable extends LivewireDatatable
             'product_number' => '2200',
             'sub_product_number' => '2240',
             'employeeId' => auth()->user()->employeeId,
-            'account_name' =>'TELLER'.(int)$get_sub_string_nunber,
+            'account_name' => 'TELLER'.(int) $get_sub_string_nunber,
             'account_number' => $account,
         ])->id;
 
-
         // update teller table
-        Teller::where('id',$process_id)->update(['status'=>"APPROVED",'account_id'=>$id,'teller_name'=>'TELLER'.(int)$get_sub_string_nunber]);
+        Teller::where('id', $process_id)->update(['status' => 'APPROVED', 'account_id' => $id, 'teller_name' => 'TELLER'.(int) $get_sub_string_nunber]);
 
-
-        ///// update teller creation //////
+        // /// update teller creation //////
         approvals::where('id', $approvalsId)->update([
             'approver_id' => Auth::user()->id,
             'process_status' => 'APPROVED',
             'approval_status' => 'APPROVED',
             'approval_process_description' => 'Approved the creation of new teller',
         ]);
-}
-/////////////////////////////END CREATE TELLER////////////////////////////////////////
+    }
+    // ///////////////////////////END CREATE TELLER////////////////////////////////////////
 
+    // /////////////////////////// REJECT TELLER///////////
 
-///////////////////////////// REJECT TELLER///////////
+    public function rejectCreateTeller($process_id, $approvalsId): void
+    {
+        Teller::where('id', $process_id)->update(['status' => 'REJECTED']);
 
- public function rejectCreateTeller($process_id,$approvalsId):void{
-        Teller::where('id',$process_id)->update(['status'=>'REJECTED']);
+        approvals::where('id', $approvalsId)->update([
+            'approver_id' => Auth::user()->id,
+            'process_status' => 'REJECTED',
+            'approval_status' => 'REJECTED',
+            'approval_process_description' => 'rejected the creation of new teller',
+        ]);
+    }
 
-     approvals::where('id', $approvalsId)->update([
-         'approver_id' => Auth::user()->id,
-         'process_status' => 'REJECTED',
-         'approval_status' => 'REJECTED',
-         'approval_process_description' => 'rejected the creation of new teller',
-     ]);
- }
+    // ////////reject assign teller///////////////
+    public function rejectAssignTeller($process_id, $approvalsId): void
+    {
+        Teller::where('id', $process_id)->update(['status' => 'REJECTED']);
 
- //////////reject assign teller///////////////
- public function rejectAssignTeller($process_id,$approvalsId):void{
-        Teller::where('id',$process_id)->update(['status'=>'REJECTED']);
+        approvals::where('id', $approvalsId)->update([
+            'approver_id' => Auth::user()->id,
+            'process_status' => 'REJECTED',
+            'approval_status' => 'REJECTED',
+            'approval_process_description' => 'rejected the creation of new teller',
+        ]);
+    }
 
-     approvals::where('id', $approvalsId)->update([
-         'approver_id' => Auth::user()->id,
-         'process_status' => 'REJECTED',
-         'approval_status' => 'REJECTED',
-         'approval_process_description' => 'rejected the creation of new teller',
-     ]);
- }
-
- /////////////////reject edit teller/////////////////
-    public function rejectEditTeller($process_id,$approvalsId):void{
-//        Teller::where('id',$process_id)->update(['status'=>'REJECTED']);
+    // ///////////////reject edit teller/////////////////
+    public function rejectEditTeller($process_id, $approvalsId): void
+    {
+        //        Teller::where('id',$process_id)->update(['status'=>'REJECTED']);
         approvals::where('id', $approvalsId)->update([
             'approver_id' => Auth::user()->id,
             'process_status' => 'REJECTED',
@@ -793,11 +721,9 @@ class ApprovalsTable extends LivewireDatatable
         ]);
     }
 
-
-
-
-    public function rejectStrongRoomDeposition($process_id,$approvalsId):void{
-//        Teller::where('id',$process_id)->update(['status'=>'REJECTED']);
+    public function rejectStrongRoomDeposition($process_id, $approvalsId): void
+    {
+        //        Teller::where('id',$process_id)->update(['status'=>'REJECTED']);
         approvals::where('id', $approvalsId)->update([
             'approver_id' => Auth::user()->id,
             'process_status' => 'REJECTED',
@@ -806,52 +732,45 @@ class ApprovalsTable extends LivewireDatatable
         ]);
     }
 
+    public function approveStrongRoomDeposition($proces_id, $id)
+    {
 
-
-
-
-    public function approveStrongRoomDeposition($proces_id,$id){
-
-
-        $approval=approvals::where('id',$id)->value('edit_package');
+        $approval = approvals::where('id', $id)->value('edit_package');
 
         // get edit package
-        $edit_package=json_decode($approval);
+        $edit_package = json_decode($approval);
 
         // debit side
-        $debit_account_number=$edit_package->source_account_number;
+        $debit_account_number = $edit_package->source_account_number;
 
-        $debit_amount=$edit_package->amount;
+        $debit_amount = $edit_package->amount;
 
-        $debit_account_previous_balance= AccountsModel::where('account_number',$debit_account_number)->value('balance');
+        $debit_account_previous_balance = AccountsModel::where('account_number', $debit_account_number)->value('balance');
         // get remaining balance
-        $debit_account_new_balance=(double)$debit_account_previous_balance-(double)$debit_amount;
+        $debit_account_new_balance = (float) $debit_account_previous_balance - (float) $debit_amount;
 
         // update debited account
-        AccountsModel::where('account_number',$debit_account_number)->update(['balance'=>$debit_account_new_balance]);
+        AccountsModel::where('account_number', $debit_account_number)->update(['balance' => $debit_account_new_balance]);
 
         // credit accounts
-        $credit_account_number=$edit_package->destination_account_number;
-        //get previous balance
-        $credit_account_previous_balance=AccountsModel::where('account_number',$credit_account_number)->value('balance');
+        $credit_account_number = $edit_package->destination_account_number;
+        // get previous balance
+        $credit_account_previous_balance = AccountsModel::where('account_number', $credit_account_number)->value('balance');
         // total balance
-        $credit_side_new_balance=(double)$edit_package->amount + (double)$credit_account_previous_balance;
+        $credit_side_new_balance = (float) $edit_package->amount + (float) $credit_account_previous_balance;
         // update credited account
-        AccountsModel::where('account_number',$credit_account_number)->update(['balance'=>$credit_side_new_balance]);
-
-
+        AccountsModel::where('account_number', $credit_account_number)->update(['balance' => $credit_side_new_balance]);
 
         //  general ledger record
-        $general_redger_records=new general_ledger();
+        $general_redger_records = new general_ledger;
         // debit records
         $general_redger_records->debit(
-            $debit_account_number,$debit_account_new_balance,
-            $credit_account_number,$edit_package->amount,$edit_package->notes,''
+            $debit_account_number, $debit_account_new_balance,
+            $credit_account_number, $edit_package->amount, $edit_package->notes, ''
         );
         // credit record
         $general_redger_records->credit(
-            $credit_account_number,$credit_side_new_balance
-            ,$debit_account_number,$edit_package->amount,$edit_package->notes,'');
+            $credit_account_number, $credit_side_new_balance, $debit_account_number, $edit_package->amount, $edit_package->notes, '');
 
         approvals::where('id', $id)->update([
             'approver_id' => Auth::user()->id,
@@ -862,19 +781,17 @@ class ApprovalsTable extends LivewireDatatable
 
     }
 
-
-
-///////////////////////////////ASSIGN  TELLER POSITION
-public function approveAssignTeller($process_id,$approvalsId){
-        $approval_data=approvals::where('id',$approvalsId)->value('edit_package');
-        $teller_id=json_decode($approval_data);
-        $check_if_exist=Teller::where('employee_id',$teller_id->employee_id)->first();
-        if($check_if_exist){
+    // /////////////////////////////ASSIGN  TELLER POSITION
+    public function approveAssignTeller($process_id, $approvalsId)
+    {
+        $approval_data = approvals::where('id', $approvalsId)->value('edit_package');
+        $teller_id = json_decode($approval_data);
+        $check_if_exist = Teller::where('employee_id', $teller_id->employee_id)->first();
+        if ($check_if_exist) {
             dd('reject');
-        }
-        else{
+        } else {
 
-            Teller::where('id',$process_id)->update(['employee_id'=>$teller_id->employee_id]);
+            Teller::where('id', $process_id)->update(['employee_id' => $teller_id->employee_id]);
 
             approvals::where('id', $approvalsId)->update([
                 'approver_id' => Auth::user()->id,
@@ -885,100 +802,94 @@ public function approveAssignTeller($process_id,$approvalsId){
 
         }
 
-}
-    //////////////////END ASSIGN  TELLER POSITION ///////////////
-    ///
-    //////  REMOVE TELLER////
-    public function approveRemoveTeller($process_id,$approvalsId):void{
-
-        Teller::where('id',$process_id)->update(['employee_id'=>0,'status'=>'APPROVED']);
-        approvals::where('id', $approvalsId)->update([
-            'approver_id' => Auth::user()->id,
-            'process_status' => 'APPROVED',
-            'approval_status' => 'APPROVED',
-            'approval_process_description' => 'Approved remove teller position',
-        ]);
     }
 
-
-
-
-    ///////////////
-    public function approveEditTeller($process_id,$approvalsId){
-
-        $edited_data=json_decode(approvals::where('id',$approvalsId)->value('edit_package'));
-
-        DB::table('tellers')->where('id',$process_id)->update([
-            'branch_id'=>$edited_data->branch_id,
-            'max_amount'=>$edited_data->max_amount,
-        ]);
-
-
-        approvals::where('id', $approvalsId)->update([
-            'approver_id' => Auth::user()->id,
-            'process_status' => 'APPROVED',
-            'approval_status' => 'APPROVED',
-            'approval_process_description' => 'Approved remove teller position',
-        ]);
-    }
-
-    ///////////////////////////////////////SERVICES////////////////////////////////////////
-    public function approveCreateClient($process_id,$approvalsId): void
+    // ////////////////END ASSIGN  TELLER POSITION ///////////////
+    // /
+    // ////  REMOVE TELLER////
+    public function approveRemoveTeller($process_id, $approvalsId): void
     {
 
-        ////////////////// serving account//////////////////////////
-        $account_number=str_pad(auth()->user()->institution_id,2,0,STR_PAD_LEFT).str_pad(auth()->user()->branch,2,0,STR_PAD_LEFT) .DB::table('clients')->where('id',$process_id)->value('membership_number').'2210';
-        $idx =  AccountsModel::create([
+        Teller::where('id', $process_id)->update(['employee_id' => 0, 'status' => 'APPROVED']);
+        approvals::where('id', $approvalsId)->update([
+            'approver_id' => Auth::user()->id,
+            'process_status' => 'APPROVED',
+            'approval_status' => 'APPROVED',
+            'approval_process_description' => 'Approved remove teller position',
+        ]);
+    }
+
+    // /////////////
+    public function approveEditTeller($process_id, $approvalsId)
+    {
+
+        $edited_data = json_decode(approvals::where('id', $approvalsId)->value('edit_package'));
+
+        DB::table('tellers')->where('id', $process_id)->update([
+            'branch_id' => $edited_data->branch_id,
+            'max_amount' => $edited_data->max_amount,
+        ]);
+
+        approvals::where('id', $approvalsId)->update([
+            'approver_id' => Auth::user()->id,
+            'process_status' => 'APPROVED',
+            'approval_status' => 'APPROVED',
+            'approval_process_description' => 'Approved remove teller position',
+        ]);
+    }
+
+    // /////////////////////////////////////SERVICES////////////////////////////////////////
+    public function approveCreateClient($process_id, $approvalsId): void
+    {
+
+        // //////////////// serving account//////////////////////////
+        $account_number = str_pad(auth()->user()->institution_id, 2, 0, STR_PAD_LEFT).str_pad(auth()->user()->branch, 2, 0, STR_PAD_LEFT).DB::table('clients')->where('id', $process_id)->value('membership_number').'2210';
+        $idx = AccountsModel::create([
             'account_use' => 'external',
-            'institution_number'=> auth()->user()->institution_id,
-            'branch_number'=> str_pad(DB::table('clients')->where('id',$process_id)->value('branch'), 2, '0', STR_PAD_LEFT),
-            'member_number'=> DB::table('clients')->where('id',$process_id)->value('membership_number'),
-            'product_number'=> '2200',
-            'sub_product_number'=> '2210',
-            'account_name'=>DB::table('clients')->where('id',$process_id)->value('first_name').' '.DB::table('clients')->where('id',$process_id)->value('middle_name').' '.DB::table('clients')->where('id',$process_id)->value('last_name'),
-            'account_number'=>$account_number,
+            'institution_number' => auth()->user()->institution_id,
+            'branch_number' => str_pad(DB::table('clients')->where('id', $process_id)->value('branch'), 2, '0', STR_PAD_LEFT),
+            'member_number' => DB::table('clients')->where('id', $process_id)->value('membership_number'),
+            'product_number' => '2200',
+            'sub_product_number' => '2210',
+            'account_name' => DB::table('clients')->where('id', $process_id)->value('first_name').' '.DB::table('clients')->where('id', $process_id)->value('middle_name').' '.DB::table('clients')->where('id', $process_id)->value('last_name'),
+            'account_number' => $account_number,
         ])->id;
-        //$this->sendApproval($idx,'has created a new savings account','09');
+        // $this->sendApproval($idx,'has created a new savings account','09');
 
-
-        //////////////////// fixed-term deposits////////////////
-        $account_number2=str_pad(auth()->user()->institution_id,2,0,STR_PAD_LEFT).str_pad(auth()->user()->branch,2,0,STR_PAD_LEFT) .DB::table('clients')->where('id',$process_id)->value('membership_number').'2230';
-        $idy =  AccountsModel::create([
+        // ////////////////// fixed-term deposits////////////////
+        $account_number2 = str_pad(auth()->user()->institution_id, 2, 0, STR_PAD_LEFT).str_pad(auth()->user()->branch, 2, 0, STR_PAD_LEFT).DB::table('clients')->where('id', $process_id)->value('membership_number').'2230';
+        $idy = AccountsModel::create([
             'account_use' => 'external',
-            'institution_number'=>auth()->user()->institution_id,
-            'branch_number'=> str_pad(DB::table('clients')->where('id',$process_id)->value('branch'), 2, '0', STR_PAD_LEFT),
-            'member_number'=> DB::table('clients')->where('id',$process_id)->value('membership_number'),
-            'product_number'=> '2200',
-            'sub_product_number'=> '2230',
-            'account_name'=>DB::table('clients')->where('id',$process_id)->value('first_name').' '.DB::table('clients')->where('id',$process_id)->value('middle_name').' '.DB::table('clients')->where('id',$process_id)->value('last_name'),
-            'account_number'=> $account_number2,
+            'institution_number' => auth()->user()->institution_id,
+            'branch_number' => str_pad(DB::table('clients')->where('id', $process_id)->value('branch'), 2, '0', STR_PAD_LEFT),
+            'member_number' => DB::table('clients')->where('id', $process_id)->value('membership_number'),
+            'product_number' => '2200',
+            'sub_product_number' => '2230',
+            'account_name' => DB::table('clients')->where('id', $process_id)->value('first_name').' '.DB::table('clients')->where('id', $process_id)->value('middle_name').' '.DB::table('clients')->where('id', $process_id)->value('last_name'),
+            'account_number' => $account_number2,
 
         ])->id;
-        //$this->sendApproval($idy,'has created a new amana account','09');
+        // $this->sendApproval($idy,'has created a new amana account','09');
 
-       //////////////////////shares account//////////////////
-        $account_number3=str_pad(auth()->user()->institution_id,2,0,STR_PAD_LEFT).str_pad(auth()->user()->branch,2,0,STR_PAD_LEFT) .DB::table('clients')->where('id',$process_id)->value('membership_number').'3010';
-        $idz =  AccountsModel::create([
+        // ////////////////////shares account//////////////////
+        $account_number3 = str_pad(auth()->user()->institution_id, 2, 0, STR_PAD_LEFT).str_pad(auth()->user()->branch, 2, 0, STR_PAD_LEFT).DB::table('clients')->where('id', $process_id)->value('membership_number').'3010';
+        $idz = AccountsModel::create([
             'account_use' => 'external',
-            'institution_number'=> auth()->user()->institution_id,
-            'branch_number'=>str_pad(DB::table('clients')->where('id',$process_id)->value('branch'), 2, '0', STR_PAD_LEFT),
-            'member_number'=> DB::table('clients')->where('id',$process_id)->value('membership_number'),
-            'product_number'=> '3000',
-            'sub_product_number'=> '3010',
-            'account_name'=>DB::table('clients')->where('id',$process_id)->value('first_name').' '.DB::table('clients')->where('id',$process_id)->value('middle_name').' '.DB::table('clients')->where('id',$process_id)->value('last_name'),
-            'account_number'=>$account_number3,
+            'institution_number' => auth()->user()->institution_id,
+            'branch_number' => str_pad(DB::table('clients')->where('id', $process_id)->value('branch'), 2, '0', STR_PAD_LEFT),
+            'member_number' => DB::table('clients')->where('id', $process_id)->value('membership_number'),
+            'product_number' => '3000',
+            'sub_product_number' => '3010',
+            'account_name' => DB::table('clients')->where('id', $process_id)->value('first_name').' '.DB::table('clients')->where('id', $process_id)->value('middle_name').' '.DB::table('clients')->where('id', $process_id)->value('last_name'),
+            'account_number' => $account_number3,
 
         ]);
-        //$this->sendApproval($idz,'has created a new deposit account','09');
+        // $this->sendApproval($idz,'has created a new deposit account','09');
 
+        // //// update the status of the new clients///////
+        DB::table('clients')->where('id', $process_id)->update(['member_status' => 'NON FULLY MEMBER']);
 
-
-
-////// update the status of the new clients///////
-        DB::table('clients')->where('id',$process_id)->update(['member_status'=>'NON FULLY MEMBER']);
-
-
-        ///// update new  clients//////
+        // /// update new  clients//////
         approvals::where('id', $approvalsId)->update([
             'approver_id' => Auth::user()->id,
             'process_status' => 'APPROVED',
@@ -988,19 +899,15 @@ public function approveAssignTeller($process_id,$approvalsId){
 
     }
 
-
-
-
-    public function approveEditAccount($process_id, $approvalsId, $changes )
+    public function approveEditAccount($process_id, $approvalsId, $changes)
     {
 
-
         $changes = json_decode($changes, true);
-        foreach($changes as $key => $value){
-            $dbValue = AccountsModel::where('id',$process_id)->where('institution_number',auth()->user()->institution_id)->value($key);
-            if($dbValue != $value){
+        foreach ($changes as $key => $value) {
+            $dbValue = AccountsModel::where('id', $process_id)->where('institution_number', auth()->user()->institution_id)->value($key);
+            if ($dbValue != $value) {
                 AccountsModel::where('id', $process_id)->update([
-                    $key => $value
+                    $key => $value,
                 ]);
             }
 
@@ -1013,7 +920,8 @@ public function approveAssignTeller($process_id,$approvalsId){
         ]);
     }
 
-    public function rejectEditAccount($process_id,$approvalsId){
+    public function rejectEditAccount($process_id, $approvalsId)
+    {
         approvals::where('id', $approvalsId)->update([
             'approver_id' => Auth::user()->id,
             'approval_status' => 'REJECTED',
@@ -1021,9 +929,7 @@ public function approveAssignTeller($process_id,$approvalsId){
         ]);
     }
 
-
-
-    public function rejectPasswordPolicy($process_id,$approvalsId): void
+    public function rejectPasswordPolicy($process_id, $approvalsId): void
     {
         approvals::where('id', $approvalsId)->update([
             'approver_id' => Auth::user()->id,
@@ -1034,8 +940,7 @@ public function approveAssignTeller($process_id,$approvalsId){
 
     }
 
-
-    public function rejectDeleteService($process_id,$approvalsId): void
+    public function rejectDeleteService($process_id, $approvalsId): void
     {
 
         approvals::where('id', $approvalsId)->update([
@@ -1049,23 +954,23 @@ public function approveAssignTeller($process_id,$approvalsId){
 
     private function approveClientExit($process_id, $approvalsId): void
     {
-      $Client_number=Clients::where('id',$process_id)->value('membership_number');
+        $Client_number = Clients::where('id', $process_id)->value('membership_number');
 
-        $total_balance_available=DB::table('accounts')->where('member_number',$Client_number)->sum('balance');
+        $total_balance_available = DB::table('accounts')->where('member_number', $Client_number)->sum('balance');
 
-        $unpaid_balance=loans_schedules::where('loan_id',DB::table('loans')->where('member_number',$Client_number)->value('loan_id'))->where('completion_status','!=','CLOSED')->sum('installment');
+        $unpaid_balance = loans_schedules::where('loan_id', DB::table('loans')->where('member_number', $Client_number)->value('loan_id'))->where('completion_status', '!=', 'CLOSED')->sum('installment');
 
         // new balance
-        $new_member_balance=(double) ($total_balance_available-$unpaid_balance);
+        $new_member_balance = (float) ($total_balance_available - $unpaid_balance);
 
         // exit suspense account
-            $account_details=DB::table('accounts')->where('product_number',2000)->where('sub_product_number',2231)->first();
-            $account_balance =(double) ($account_details->balance +$new_member_balance);
-            // update balance
-        DB::table('accounts')->where('product_number',2000)->where('sub_product_number',2231)->update(['balance'=>$account_balance]);
+        $account_details = DB::table('accounts')->where('product_number', 2000)->where('sub_product_number', 2231)->first();
+        $account_balance = (float) ($account_details->balance + $new_member_balance);
+        // update balance
+        DB::table('accounts')->where('product_number', 2000)->where('sub_product_number', 2231)->update(['balance' => $account_balance]);
 
-        $reference_number=time();
-        foreach(DB::table('accounts')->where('member_number',$Client_number)->get()     as   $member_accounts) {
+        $reference_number = time();
+        foreach (DB::table('accounts')->where('member_number', $Client_number)->get() as $member_accounts) {
 
             general_ledger::create([
                 'record_on_account_number' => $member_accounts->account_number,
@@ -1098,52 +1003,45 @@ public function approveAssignTeller($process_id,$approvalsId){
                 'recon_status' => 'PENDING',
             ]);
 
-            DB::table('accounts')->where('account_number',$member_accounts->account_number)->update(['balance'=>0]);
-
+            DB::table('accounts')->where('account_number', $member_accounts->account_number)->update(['balance' => 0]);
 
         }
 
-
-        //CREDIT RECORD LOAN ACCOUNT
+        // CREDIT RECORD LOAN ACCOUNT
         general_ledger::create([
-            'record_on_account_number'=> $account_details->account_number,
-            'record_on_account_number_balance'=> $account_balance,
-            'sender_branch_id'=> auth()->user()->institution_id,
-            'beneficiary_branch_id'=> auth()->user()->institution_id,
-            'sender_product_id'=>  $Client_number,
-            'sender_sub_product_id'=>$Client_number,
-            'beneficiary_product_id'=> AccountsModel::where('account_number', $account_details->account_number)->value('product_number'),
-            'beneficiary_sub_product_id'=> AccountsModel::where('account_number', $account_details->account_number)->value('sub_product_number'),
-            'sender_id'=> '0000',
-            'beneficiary_id'=> '0000',
-            'sender_name'=> AccountsModel::where('member_number',$Client_number )->value('account_name'),
-            'beneficiary_name'=> AccountsModel::where('account_number',$account_details->account_number )->value('account_name'),
-            'sender_account_number'=> $Client_number,
-            'beneficiary_account_number'=>$account_details->account_number  ,
-            'transaction_type'=> 'IFT',
-            'sender_account_currency_type'=> 'TZS',
-            'beneficiary_account_currency_type'=> 'TZS',
-            'narration'=> 'Payment for loans issued',
-            'credit'=> $new_member_balance,
-            'debit'=> 0,
-            'reference_number'=> $reference_number,
-            'trans_status'=> 'Successful',
-            'trans_status_description'=> 'Successful',
-            'swift_code'=> '',
-            'destination_bank_name'=> '',
-            'destination_bank_number'=> null,
-            'payment_status'=> 'Successful',
-            'recon_status'=> 'PENDING',
+            'record_on_account_number' => $account_details->account_number,
+            'record_on_account_number_balance' => $account_balance,
+            'sender_branch_id' => auth()->user()->institution_id,
+            'beneficiary_branch_id' => auth()->user()->institution_id,
+            'sender_product_id' => $Client_number,
+            'sender_sub_product_id' => $Client_number,
+            'beneficiary_product_id' => AccountsModel::where('account_number', $account_details->account_number)->value('product_number'),
+            'beneficiary_sub_product_id' => AccountsModel::where('account_number', $account_details->account_number)->value('sub_product_number'),
+            'sender_id' => '0000',
+            'beneficiary_id' => '0000',
+            'sender_name' => AccountsModel::where('member_number', $Client_number)->value('account_name'),
+            'beneficiary_name' => AccountsModel::where('account_number', $account_details->account_number)->value('account_name'),
+            'sender_account_number' => $Client_number,
+            'beneficiary_account_number' => $account_details->account_number,
+            'transaction_type' => 'IFT',
+            'sender_account_currency_type' => 'TZS',
+            'beneficiary_account_currency_type' => 'TZS',
+            'narration' => 'Payment for loans issued',
+            'credit' => $new_member_balance,
+            'debit' => 0,
+            'reference_number' => $reference_number,
+            'trans_status' => 'Successful',
+            'trans_status_description' => 'Successful',
+            'swift_code' => '',
+            'destination_bank_name' => '',
+            'destination_bank_number' => null,
+            'payment_status' => 'Successful',
+            'recon_status' => 'PENDING',
         ]);
-
 
         // DEBIT
 
-
-
-
-
-           approvals::where('id', $approvalsId)->update([
+        approvals::where('id', $approvalsId)->update([
             'approver_id' => Auth::user()->id,
             'approval_status' => 'APPROVED',
             'approval_process_description' => 'Approved editing of the service',
@@ -1164,7 +1062,7 @@ public function approveAssignTeller($process_id,$approvalsId){
     {
 
         servicesModel::where('ID', $process_id)->update([
-            'STATUS' => 'ACTIVE'
+            'STATUS' => 'ACTIVE',
         ]);
 
         approvals::where('id', $approvalsId)->update([
@@ -1185,16 +1083,14 @@ public function approveAssignTeller($process_id,$approvalsId){
         ]);
     }
 
-///////////////////////////////////END OF SERVICES////////////////////////////////////////
+    // /////////////////////////////////END OF SERVICES////////////////////////////////////////
 
-
-
-    ///////////////////////////////////////CHANNEL////////////////////////////////////////
-    public function approveDeleteChannel($process_id,$approvalsId): void
+    // /////////////////////////////////////CHANNEL////////////////////////////////////////
+    public function approveDeleteChannel($process_id, $approvalsId): void
     {
 
         ChannelsModel::where('ID', $process_id)->update([
-            'STATUS' => 'DELETED'
+            'STATUS' => 'DELETED',
         ]);
 
         approvals::where('id', $approvalsId)->update([
@@ -1206,7 +1102,7 @@ public function approveAssignTeller($process_id,$approvalsId){
 
     }
 
-    public function rejectDeleteChannel($process_id,$approvalsId): void
+    public function rejectDeleteChannel($process_id, $approvalsId): void
     {
 
         approvals::where('id', $approvalsId)->update([
@@ -1221,11 +1117,11 @@ public function approveAssignTeller($process_id,$approvalsId){
     private function approveEditChannel($process_id, $approvalsId, $changes): void
     {
         $changes = json_decode($changes, true);
-        foreach($changes as $key => $value){
-            $dbValue = ChannelsModel::where('ID',$process_id)->value($key);
-            if($dbValue != $value){
+        foreach ($changes as $key => $value) {
+            $dbValue = ChannelsModel::where('ID', $process_id)->value($key);
+            if ($dbValue != $value) {
                 ChannelsModel::where('ID', $process_id)->update([
-                    $key => $value
+                    $key => $value,
                 ]);
             }
 
@@ -1252,7 +1148,7 @@ public function approveAssignTeller($process_id,$approvalsId){
     {
 
         ChannelsModel::where('ID', $process_id)->update([
-            'STATUS' => 'ACTIVE'
+            'STATUS' => 'ACTIVE',
         ]);
 
         approvals::where('id', $approvalsId)->update([
@@ -1273,17 +1169,15 @@ public function approveAssignTeller($process_id,$approvalsId){
         ]);
     }
 
-///////////////////////////////////END OF CHANNEL////////////////////////////////////////
+    // /////////////////////////////////END OF CHANNEL////////////////////////////////////////
 
-
-
-    ///////////////////////////////////////USER////////////////////////////////////////
-    public function approveDeleteUser($process_id,$approvalsId): void
+    // /////////////////////////////////////USER////////////////////////////////////////
+    public function approveDeleteUser($process_id, $approvalsId): void
     {
 
-        $status = approvals::where('id',$approvalsId)->value('process_status');
+        $status = approvals::where('id', $approvalsId)->value('process_status');
         User::where('id', $process_id)->update([
-            'status' => $status
+            'status' => $status,
         ]);
 
         approvals::where('id', $approvalsId)->update([
@@ -1294,7 +1188,7 @@ public function approveAssignTeller($process_id,$approvalsId){
 
     }
 
-    public function rejectDeleteUser($process_id,$approvalsId): void
+    public function rejectDeleteUser($process_id, $approvalsId): void
     {
 
         approvals::where('id', $approvalsId)->update([
@@ -1309,11 +1203,11 @@ public function approveAssignTeller($process_id,$approvalsId){
     private function approveEditUser($process_id, $approvalsId, $changes): void
     {
         $changes = json_decode($changes, true);
-        foreach($changes as $key => $value){
-            $dbValue = User::where('id',$process_id)->value($key);
-            if($dbValue != $value){
+        foreach ($changes as $key => $value) {
+            $dbValue = User::where('id', $process_id)->value($key);
+            if ($dbValue != $value) {
                 User::where('id', $process_id)->update([
-                    $key => $value
+                    $key => $value,
                 ]);
             }
 
@@ -1355,10 +1249,9 @@ public function approveAssignTeller($process_id,$approvalsId){
             'approval_process_description' => 'Approved the addition of the user',
         ]);
 
+        //  $this->composeEmail(User::where('id',$process_id)->value('email'), 'Dear '.User::where('id',$process_id)->value('name').', You have been added as a user in the CyberPoint Pro System. You can proceed and login using your email and temporary password '.$password. ' use link https://testcyberpointpro.ubx.co.tz as soon as you are logged in you must change the temporary password to your choice. Thank you');
 
-      //  $this->composeEmail(User::where('id',$process_id)->value('email'), 'Dear '.User::where('id',$process_id)->value('name').', You have been added as a user in the CyberPoint Pro System. You can proceed and login using your email and temporary password '.$password. ' use link https://testcyberpointpro.ubx.co.tz as soon as you are logged in you must change the temporary password to your choice. Thank you');
-
-        //dd($password);
+        // dd($password);
     }
 
     private function rejectAddUser($process_id, $approvalsId, $edit_package): void
@@ -1370,16 +1263,14 @@ public function approveAssignTeller($process_id,$approvalsId){
         ]);
     }
 
-///////////////////////////////////END USER////////////////////////////////////////
+    // /////////////////////////////////END USER////////////////////////////////////////
 
-
-
-    ///////////////////////////////////////DEPARTMENT////////////////////////////////////////
-    public function approveDeleteDepartment($process_id,$approvalsId): void
+    // /////////////////////////////////////DEPARTMENT////////////////////////////////////////
+    public function approveDeleteDepartment($process_id, $approvalsId): void
     {
 
         departmentsList::where('id', $process_id)->update([
-            'status' => 'DELETED'
+            'status' => 'DELETED',
         ]);
 
         approvals::where('id', $approvalsId)->update([
@@ -1391,7 +1282,7 @@ public function approveAssignTeller($process_id,$approvalsId){
 
     }
 
-    public function rejectDeleteDepartment($process_id,$approvalsId): void
+    public function rejectDeleteDepartment($process_id, $approvalsId): void
     {
 
         approvals::where('id', $approvalsId)->update([
@@ -1405,13 +1296,13 @@ public function approveAssignTeller($process_id,$approvalsId){
 
     private function approveEditDepartment($process_id, $approvalsId, $changes): void
     {
-        //dd('hapaa');
+        // dd('hapaa');
         $changes = json_decode($changes, true);
-        foreach($changes as $key => $value){
-            $dbValue = departmentsList::where('id',$process_id)->value($key);
-            if($dbValue != $value){
+        foreach ($changes as $key => $value) {
+            $dbValue = departmentsList::where('id', $process_id)->value($key);
+            if ($dbValue != $value) {
                 departmentsList::where('id', $process_id)->update([
-                    $key => $value
+                    $key => $value,
                 ]);
             }
 
@@ -1438,7 +1329,7 @@ public function approveAssignTeller($process_id,$approvalsId){
     {
 
         departmentsList::where('id', $process_id)->update([
-            'status' => 'ACTIVE'
+            'status' => 'ACTIVE',
         ]);
 
         approvals::where('id', $approvalsId)->update([
@@ -1459,23 +1350,22 @@ public function approveAssignTeller($process_id,$approvalsId){
         ]);
     }
 
-///////////////////////////////////END DEPARTMENT////////////////////////////////////////
+    // /////////////////////////////////END DEPARTMENT////////////////////////////////////////
 
-
-///////////////////////////////////PASSWORD RESET////////////////////////////////////////
+    // /////////////////////////////////PASSWORD RESET////////////////////////////////////////
     private function approvePasswordReset($reset_email, $id): void
     {
 
-        if (User::where('email',$reset_email)->get()->count() > 0 ) {
+        if (User::where('email', $reset_email)->get()->count() > 0) {
 
             $characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()-_=+{}[]<>,.?/~';
             $randomString = str_shuffle($characters);
             $password = substr($randomString, 0, 8);
 
             User::where('email', $reset_email)->update([
-                'password'  =>  bcrypt($password),
-                'otp_time'  =>  now(),
-                'verification_status'   =>  '0',
+                'password' => bcrypt($password),
+                'otp_time' => now(),
+                'verification_status' => '0',
             ]);
 
             approvals::where('id', $id)->update([
@@ -1484,27 +1374,24 @@ public function approveAssignTeller($process_id,$approvalsId){
                 'approval_process_description' => 'Approved password reset for the user with email - '.$reset_email,
             ]);
 
-            $this->composeEmail($reset_email, 'Dear '.User::where('email',$reset_email)->value('name').', You have requested to reset your password, use the following temporary password - '.$password.' Change the password immediately after login. ');
+            $this->composeEmail($reset_email, 'Dear '.User::where('email', $reset_email)->value('name').', You have requested to reset your password, use the following temporary password - '.$password.' Change the password immediately after login. ');
 
         } else {
 
             approvals::where('id', $id)->update([
                 'approver_id' => Auth::user()->id,
                 'approval_status' => 'REJECTED',
-                'approval_process_description' => Auth::user()->name . ' This email is not registered - '.$reset_email,
+                'approval_process_description' => Auth::user()->name.' This email is not registered - '.$reset_email,
             ]);
         }
 
-
-
     }
 
+    // ///////////////////////branch//////////////////
+    public function approveAddBranch($process_id, $id)
+    {
 
-
-    /////////////////////////branch//////////////////
-    public function approveAddBranch($process_id, $id){
-
-        BranchesModel::where('id',$process_id)->update(['branch_status'=>"ACTIVE"]);
+        BranchesModel::where('id', $process_id)->update(['branch_status' => 'ACTIVE']);
 
         approvals::where('id', $id)->update([
             'approver_id' => Auth::user()->id,
@@ -1513,9 +1400,11 @@ public function approveAssignTeller($process_id,$approvalsId){
             'approval_process_description' => 'Approved  create new branch',
         ]);
     }
-    public function approveBlockBranch($process_id, $id){
 
-        BranchesModel::where('id',$process_id)->update(['branch_status'=>"BLOCKED"]);
+    public function approveBlockBranch($process_id, $id)
+    {
+
+        BranchesModel::where('id', $process_id)->update(['branch_status' => 'BLOCKED']);
 
         approvals::where('id', $id)->update([
             'approver_id' => Auth::user()->id,
@@ -1524,18 +1413,19 @@ public function approveAssignTeller($process_id,$approvalsId){
             'approval_process_description' => 'Approved  block branch',
         ]);
     }
-    public function approveEditBranch($process_id, $id){
 
-        $edit_package=approvals::where('id',$id)->value('edit_package');
-        $edit_package=json_decode($edit_package);
+    public function approveEditBranch($process_id, $id)
+    {
 
+        $edit_package = approvals::where('id', $id)->value('edit_package');
+        $edit_package = json_decode($edit_package);
 
-        BranchesModel::where('id',$process_id)->update([
-            'name' =>$edit_package->name,
-            'region' =>$edit_package->region,
-            'wilaya' =>$edit_package->wilaya,
-            'email' =>$edit_package->email,
-            'phone_number'=>$edit_package->phone_number,
+        BranchesModel::where('id', $process_id)->update([
+            'name' => $edit_package->name,
+            'region' => $edit_package->region,
+            'wilaya' => $edit_package->wilaya,
+            'email' => $edit_package->email,
+            'phone_number' => $edit_package->phone_number,
         ]);
 
         approvals::where('id', $id)->update([
@@ -1545,9 +1435,11 @@ public function approveAssignTeller($process_id,$approvalsId){
             'approval_process_description' => 'Approved  edit branch informations',
         ]);
     }
-    public function approveActivateBranch($process_id, $id){
 
-        BranchesModel::where('id',$process_id)->update(['branch_status'=>"ACTIVE"]);
+    public function approveActivateBranch($process_id, $id)
+    {
+
+        BranchesModel::where('id', $process_id)->update(['branch_status' => 'ACTIVE']);
 
         approvals::where('id', $id)->update([
             'approver_id' => Auth::user()->id,
@@ -1556,9 +1448,11 @@ public function approveAssignTeller($process_id,$approvalsId){
             'approval_process_description' => 'Approved  activate branches',
         ]);
     }
-    public function approveDeleteBranch($process_id, $id){
 
-        BranchesModel::where('id',$process_id)->update(['branch_status'=>"DELETED"]);
+    public function approveDeleteBranch($process_id, $id)
+    {
+
+        BranchesModel::where('id', $process_id)->update(['branch_status' => 'DELETED']);
 
         approvals::where('id', $id)->update([
             'approver_id' => Auth::user()->id,
@@ -1568,12 +1462,10 @@ public function approveAssignTeller($process_id,$approvalsId){
         ]);
     }
 
+    public function declineAddBranch($process_id, $id)
+    {
 
-
-
-    public function declineAddBranch($process_id, $id){
-
-        BranchesModel::where('id',$process_id)->update(['branch_status'=>"REJECTED"]);
+        BranchesModel::where('id', $process_id)->update(['branch_status' => 'REJECTED']);
         approvals::where('id', $id)->update([
             'approver_id' => Auth::user()->id,
             'process_status' => 'REJECTED',
@@ -1581,9 +1473,11 @@ public function approveAssignTeller($process_id,$approvalsId){
             'approval_process_description' => 'Rejected  to create new branch',
         ]);
     }
-    public function declineBlockBranch($process_id, $id){
 
-//        BranchesModel::where('id',$process_id)->update(['branch_status'=>"REJECTED"]);
+    public function declineBlockBranch($process_id, $id)
+    {
+
+        //        BranchesModel::where('id',$process_id)->update(['branch_status'=>"REJECTED"]);
         approvals::where('id', $id)->update([
             'approver_id' => Auth::user()->id,
             'process_status' => 'REJECTED',
@@ -1592,9 +1486,10 @@ public function approveAssignTeller($process_id,$approvalsId){
         ]);
     }
 
-    public function declineEditBranch($process_id, $id){
+    public function declineEditBranch($process_id, $id)
+    {
 
-//        BranchesModel::where('id',$process_id)->update(['branch_status'=>"REJECTED"]);
+        //        BranchesModel::where('id',$process_id)->update(['branch_status'=>"REJECTED"]);
         approvals::where('id', $id)->update([
             'approver_id' => Auth::user()->id,
             'process_status' => 'REJECTED',
@@ -1602,9 +1497,11 @@ public function approveAssignTeller($process_id,$approvalsId){
             'approval_process_description' => ' has rejected  to edit  branch informations',
         ]);
     }
-    public function declineDeleteBranch($process_id, $id){
 
-//        BranchesModel::where('id',$process_id)->update(['branch_status'=>"REJECTED"]);
+    public function declineDeleteBranch($process_id, $id)
+    {
+
+        //        BranchesModel::where('id',$process_id)->update(['branch_status'=>"REJECTED"]);
         approvals::where('id', $id)->update([
             'approver_id' => Auth::user()->id,
             'process_status' => 'REJECTED',
@@ -1613,9 +1510,10 @@ public function approveAssignTeller($process_id,$approvalsId){
         ]);
     }
 
-    public function declineActivateBranch($process_id, $id){
+    public function declineActivateBranch($process_id, $id)
+    {
 
-//        BranchesModel::where('id',$process_id)->update(['branch_status'=>"REJECTED"]);
+        //        BranchesModel::where('id',$process_id)->update(['branch_status'=>"REJECTED"]);
         approvals::where('id', $id)->update([
             'approver_id' => Auth::user()->id,
             'process_status' => 'REJECTED',
@@ -1623,10 +1521,6 @@ public function approveAssignTeller($process_id,$approvalsId){
             'approval_process_description' => ' has rejected  to activate a branch',
         ]);
     }
-
-
-
-
 
     private function rejectPasswordReset($reset_email, $id): void
     {
@@ -1637,10 +1531,11 @@ public function approveAssignTeller($process_id,$approvalsId){
         ]);
     }
 
-    /////////////////////////loan product/ /////////////////////
+    // ///////////////////////loan product/ /////////////////////
 
-    public function approveCreateLanProduct($process_id, $id){
-        Loan_sub_products::where('id',$process_id)->update(['sub_product_status'=>'ACTIVE']);
+    public function approveCreateLanProduct($process_id, $id)
+    {
+        Loan_sub_products::where('id', $process_id)->update(['sub_product_status' => 'ACTIVE']);
 
         approvals::where('id', $id)->update([
             'approver_id' => Auth::user()->id,
@@ -1650,15 +1545,13 @@ public function approveAssignTeller($process_id,$approvalsId){
 
     }
 
-
-
-    ////////////////////////////////PERMISSIONS/////////////////////////////////////////////
+    // //////////////////////////////PERMISSIONS/////////////////////////////////////////////
     private function approveEditPermission($process_id, $id)
     {
         UserSubMenu::where('user_id', $process_id)->update([
             'updated' => 0,
             'previous' => null,
-            'status' => 'ACTIVE'
+            'status' => 'ACTIVE',
         ]);
         approvals::where('id', $id)->update([
             'approver_id' => Auth::user()->id,
@@ -1670,16 +1563,14 @@ public function approveAssignTeller($process_id,$approvalsId){
     private function rejectEditPermission($process_id, $id)
     {
         $menuData = UserSubMenu::where('user_id', $process_id)->where('updated', 1)->get();
-        foreach ($menuData as $data)
-        {
+        foreach ($menuData as $data) {
             UserSubMenu::where('ID', $data->ID)->update([
                 'updated' => 0,
                 'previous' => null,
                 'permission' => $data->previous,
-                'status' => 'ACTIVE'
+                'status' => 'ACTIVE',
             ]);
         }
-
 
         approvals::where('id', $id)->update([
             'approver_id' => Auth::user()->id,
@@ -1688,16 +1579,16 @@ public function approveAssignTeller($process_id,$approvalsId){
         ]);
     }
 
+    // ///////////////////////////////////TRANSACTIONS///////////////////////////////
 
-    /////////////////////////////////////TRANSACTIONS///////////////////////////////
-
-    public function approveResolveTransaction($process_id, $approvalsId, $changes){
+    public function approveResolveTransaction($process_id, $approvalsId, $changes)
+    {
         $changes = json_decode($changes, true);
-        foreach($changes as $key => $value){
+        foreach ($changes as $key => $value) {
             $dbValue = Transactions::where('id',$process_id)->value($key);
-            if($dbValue != $value){
+            if ($dbValue != $value) {
                 Transactions::where('id', $process_id)->update([
-                    $key => $value
+                    $key => $value,
                 ]);
             }
 
@@ -1710,12 +1601,12 @@ public function approveAssignTeller($process_id,$approvalsId){
         ]);
     }
 
-    public function rejectResolveTransaction($process_id,$approvalsId){
+    public function rejectResolveTransaction($process_id,$approvalsId)
+    {
         approvals::where('id', $approvalsId)->update([
             'approver_id' => Auth::user()->id,
             'approval_status' => 'REJECTED',
             'approval_process_description' => 'Rejected transaction resolution',
         ]);
     }
-
 }

@@ -2,24 +2,23 @@
 
 namespace App\Http\Livewire\Deposits;
 
-
-use Livewire\Component;
 use App\Models\sub_products;
 use Illuminate\Support\Facades\Session;
-
+use Livewire\Component;
 
 class DepositsOverview extends Component
 {
+    public $term = '';
 
-    public $term = "";
     public $showAddUser = false;
+
     public $memberStatus = 'All';
+
     public $numberOfProducts;
+
     public $products;
+
     public $item;
-
-
-
 
     protected $listeners = ['refreshClientsListComponent' => '$refresh'];
 

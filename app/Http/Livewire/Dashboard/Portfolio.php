@@ -2,26 +2,28 @@
 
 namespace App\Http\Livewire\Dashboard;
 
-use Livewire\Component;
 use Illuminate\Support\Facades\Session;
+use Livewire\Component;
 
 class Portfolio extends Component
 {
-
     public $tab_id = '2';
+
     public $title = 'Clients list';
 
-    public function setView($selected){
+    public function setView($selected)
+    {
         $this->tab_id = $selected;
-        session::put('loanStageId',$selected);
+        session::put('loanStageId', $selected);
     }
 
-    public function menuItemClicked($tabId){
+    public function menuItemClicked($tabId)
+    {
         $this->tab_id = $tabId;
-        if($tabId == '1'){
+        if ($tabId == '1') {
             $this->title = 'Loans list';
         }
-        if($tabId == '2'){
+        if ($tabId == '2') {
             $this->title = 'Enter new LoansAccount details';
         }
     }

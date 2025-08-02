@@ -2,32 +2,38 @@
 
 namespace App\Http\Livewire\Document;
 
+use App\Models\Lender;
+use App\Models\Resource as Document;
+use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Livewire\WithPagination;
-use App\Models\Resource as Document;
-use Illuminate\Support\Facades\Storage;
-use App\Models\Lender;
 
 class DoculemtView extends Component
 {
-
-
-
     use WithFileUploads, WithPagination;
 
     public $isOpen = false;
+
     public $showDeleteModal = false;
+
     public $documentId;
+
     public $searchTerm = '';
+
     public $editMode = false;
 
     // Document properties
     public $name;
+
     public $path_url;
+
     public $descriptions;
+
     public $lender_id;
+
     public $status;
+
     public $document; // For file uploads
 
     protected $paginationTheme = 'tailwind';
@@ -49,43 +55,41 @@ class DoculemtView extends Component
     public function render()
     {
         $search = $this->searchTerm;
-    
+
         // Search lenders separately (for dropdown, suggestions, etc.)
         $lenders = [];
         if (strlen($search) >= 2) {
-            $lenders = Lender::where('name', 'like', '%' . $search . '%')
+            $lenders = Lender::where('name', 'like', '%'.$search.'%')
                 ->orderBy('name')
                 ->limit(10)
                 ->get();
         }
-    
+
         // Search documents along with lender name
         $documents = Document::query()->with('lender')
             ->where(function ($query) use ($search) {
-                $query->where('resources.name', 'like', '%' . $search . '%')
-                    ->orWhere('resources.descriptions', 'like', '%' . $search . '%')
+                $query->where('resources.name', 'like', '%'.$search.'%')
+                    ->orWhere('resources.descriptions', 'like', '%'.$search.'%')
                     ->orWhereHas('lender', function ($q) use ($search) {
-                        $q->where('name', 'like', '%' . $search . '%');
+                        $q->where('name', 'like', '%'.$search.'%');
                     });
             });
-    
+
         // Restrict view based on department
         if (auth()->user()->department == 2) {
             $documents->where('lender_id', auth()->user()->institution_id);
         }
 
-       // dd(auth()->user()->institution_id);
+        // dd(auth()->user()->institution_id);
 
-
-    
         $documents = $documents->orderBy('resources.id', 'desc')
             ->paginate(10); // assuming pagination is needed
-    
+
         // Document stats
         $totalDocuments = Document::count();
         $activeDocuments = Document::where('status', 'Active')->count();
         $inactiveDocuments = Document::where('status', 'Inactive')->count();
-    
+
         return view('livewire.document.doculemt-view', [
             'documents' => $documents,
             'totalDocuments' => $totalDocuments,
@@ -94,10 +98,6 @@ class DoculemtView extends Component
             'lenders' => $lenders,
         ]);
     }
-
-    
-
-
 
     public function resetInputFields()
     {
@@ -139,12 +139,12 @@ class DoculemtView extends Component
                     ]);
 
                     // Delete old file if it exists
-                    if ($document->path_url && Storage::exists('public/documents/' . $document->path_url)) {
-                        Storage::delete('public/documents/' . $document->path_url);
+                    if ($document->path_url && Storage::exists('public/documents/'.$document->path_url)) {
+                        Storage::delete('public/documents/'.$document->path_url);
                     }
 
                     // Store new file
-                    $fileName = time() . '_' . $this->document->getClientOriginalName();
+                    $fileName = time().'_'.$this->document->getClientOriginalName();
                     $this->document->storeAs('public/documents', $fileName);
                     $validatedData['path_url'] = $fileName;
                 }
@@ -161,11 +161,11 @@ class DoculemtView extends Component
             ]);
 
             // Store file
-            $fileName = time() . '_' . $this->document->getClientOriginalName();
+            $fileName = time().'_'.$this->document->getClientOriginalName();
             $this->document->storeAs('public/documents', $fileName);
 
             $validatedData['path_url'] = $fileName;
-            $validatedData['lender_id']= auth()->user()->institution_id;
+            $validatedData['lender_id'] = auth()->user()->institution_id;
 
             Document::create($validatedData);
             session()->flash('message', 'Document added successfully!');
@@ -202,8 +202,8 @@ class DoculemtView extends Component
 
         if ($document) {
             // Delete file from storage if it exists
-            if ($document->path_url && Storage::exists('public/documents/' . $document->path_url)) {
-                Storage::delete('public/documents/' . $document->path_url);
+            if ($document->path_url && Storage::exists('public/documents/'.$document->path_url)) {
+                Storage::delete('public/documents/'.$document->path_url);
             }
 
             $document->delete();
@@ -220,18 +220,12 @@ class DoculemtView extends Component
 
         $document = Document::find($id);
 
-        if ($document && $document->path_url && Storage::disk('public')->exists('documents/' . $document->path_url)) {
-            return Storage::disk('public')->download('documents/' . $document->path_url, $document->name);
+        if ($document && $document->path_url && Storage::disk('public')->exists('documents/'.$document->path_url)) {
+            return Storage::disk('public')->download('documents/'.$document->path_url, $document->name);
         }
 
         session()->flash('error', 'Document file not found!');
+
         return redirect()->back();
     }
-
-
-
-
-
-
-
 }

@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('Expenses',function (Blueprint $table){
+        Schema::create('Expenses', function (Blueprint $table) {
             $table->id()->autoIncrement();
             $table->string('vendor');
             $table->string('category');

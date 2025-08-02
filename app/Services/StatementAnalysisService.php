@@ -4,15 +4,14 @@ namespace App\Services;
 
 use App\Models\StatementAnalysis;
 use Carbon\Carbon;
-use Illuminate\Support\Arr;
 
 class StatementAnalysisService
 {
     /**
      * Process and store the statement analysis JSON response.
      *
-     * @param array $response The JSON response from the API
-     * @param int|null $userId The ID of the user this analysis belongs to (optional)
+     * @param  array  $response  The JSON response from the API
+     * @param  int|null  $userId  The ID of the user this analysis belongs to (optional)
      * @return StatementAnalysis
      */
     public function processAndStore(array $response, $userId = null)
@@ -27,16 +26,16 @@ class StatementAnalysisService
         // Extract main account details
         $accountNumber = $profileData['account'] ?? $profileData['name'] ?? null;
         $provider = $profileData['company'] ?? null;
-        
+
         // Parse dates
         $startDate = null;
         $endDate = null;
-        
-        if (!empty($profileData['start_date'])) {
+
+        if (! empty($profileData['start_date'])) {
             $startDate = Carbon::parse($profileData['start_date'])->toDateString();
         }
-        
-        if (!empty($profileData['end_date'])) {
+
+        if (! empty($profileData['end_date'])) {
             $endDate = Carbon::parse($profileData['end_date'])->toDateString();
         }
 
@@ -72,9 +71,6 @@ class StatementAnalysisService
     /**
      * Create a summary of the analysis for better query performance.
      *
-     * @param array $analysis1d
-     * @param array $analysis2d
-     * @param array $analysis3d
      * @return array
      */
     protected function createAnalysisSummary(array $analysis1d, array $analysis2d, array $analysis3d)
@@ -89,16 +85,16 @@ class StatementAnalysisService
             'cash_outflow' => $analysis2d['cash_outflow'] ?? [],
             'monthly_analysis' => [
                 'inflow' => $analysis3d['cash_flow_analysis']['cash_inflow'] ?? [],
-                'outflow' => $analysis3d['cash_flow_analysis']['cash_outflow'] ?? []
+                'outflow' => $analysis3d['cash_flow_analysis']['cash_outflow'] ?? [],
             ],
-            'loan_activity' => []
+            'loan_activity' => [],
         ];
 
         // Extract loan information from 1d analysis
         $loanTypes = ['songesha', 'mpawa', 'chomoka', 'mgodi'];
         foreach ($loanTypes as $loanType) {
             $loanInfo = $analysis1d["{$loanType}_info"] ?? [];
-            if (!empty($loanInfo)) {
+            if (! empty($loanInfo)) {
                 $summary['loan_activity'][$loanType] = [
                     'disbursed' => [
                         'total' => $loanInfo["total_amount_{$loanType}_disbursed"] ?? 0,
@@ -115,7 +111,7 @@ class StatementAnalysisService
                         'max' => $loanInfo["max_amount_{$loanType}_repaid"] ?? 0,
                         'last_date' => $loanInfo["last_day_of_{$loanType}_repayment"] ?? null,
                         'last_amount' => $loanInfo["last_{$loanType}_repayment_amount"] ?? 0,
-                    ]
+                    ],
                 ];
             }
         }
@@ -126,8 +122,7 @@ class StatementAnalysisService
     /**
      * Verify a statement analysis based on criteria.
      *
-     * @param StatementAnalysis $analysis
-     * @param array $criteria Optional criteria to use for verification
+     * @param  array  $criteria  Optional criteria to use for verification
      * @return bool
      */
     public function verifyStatement(StatementAnalysis $analysis, array $criteria = [])
@@ -140,41 +135,41 @@ class StatementAnalysisService
         ];
 
         $criteria = array_merge($defaultCriteria, $criteria);
-        
+
         // Get 1d analysis from raw response
         $analysis1d = $analysis->raw_response['1d_analysis'] ?? [];
-        
+
         // Check total transactions
         $totalTransactions = $analysis->total_transactions;
         if ($totalTransactions < $criteria['min_transactions']) {
             return false;
         }
-        
+
         // Check total turnover
         $totalTurnover = $analysis->total_turnover;
         if ($totalTurnover < $criteria['min_turnover']) {
             return false;
         }
-        
+
         // Check statement duration
         $startDate = Carbon::parse($analysis->statement_start_date);
         $endDate = Carbon::parse($analysis->statement_end_date);
         $days = $startDate->diffInDays($endDate);
-        
+
         if ($days < $criteria['min_days']) {
             return false;
         }
-        
+
         // Check if statement is valid according to the API
         $isValid = $analysis1d['statement_check']['isvalid'] ?? false;
-        if (!$isValid) {
+        if (! $isValid) {
             return false;
         }
-        
+
         // Update verification status
         $analysis->is_verified = true;
         $analysis->save();
-        
+
         return true;
     }
 }

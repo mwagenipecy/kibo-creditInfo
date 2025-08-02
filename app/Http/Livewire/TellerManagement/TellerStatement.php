@@ -1,21 +1,22 @@
 <?php
+
 //
-//namespace App\Http\Livewire\TellerManagement;
+// namespace App\Http\Livewire\TellerManagement;
 //
-//use App\Models\Branches;
-//use App\Models\BranchesModel;
-//use App\Models\Department;
-//use App\Models\Employee;
-//use App\Models\general_ledger;
-//use Illuminate\Support\Facades\Config;
-//use Illuminate\Support\Facades\DB;
-//use Illuminate\Support\Facades\Session;
-//use Livewire\Component;
-//use Mediconesystems\LivewireDatatables\Column;
-//use Mediconesystems\LivewireDatatables\Http\Livewire\LivewireDatatable;
+// use App\Models\Branches;
+// use App\Models\BranchesModel;
+// use App\Models\Department;
+// use App\Models\Employee;
+// use App\Models\general_ledger;
+// use Illuminate\Support\Facades\Config;
+// use Illuminate\Support\Facades\DB;
+// use Illuminate\Support\Facades\Session;
+// use Livewire\Component;
+// use Mediconesystems\LivewireDatatables\Column;
+// use Mediconesystems\LivewireDatatables\Http\Livewire\LivewireDatatable;
 //
-//class TellerStatement extends LivewireDatatable
-//{
+// class TellerStatement extends LivewireDatatable
+// {
 //
 //    protected $listeners = ['refreshTilTable' => '$refresh'];
 //    public $exportable = true;
@@ -84,30 +85,21 @@
 //
 //        ];
 //    }
-//}
-
+// }
 
 namespace App\Http\Livewire\TellerManagement;
 
-use App\Models\Branches;
-use App\Models\BranchesModel;
-use App\Models\Department;
-use App\Models\Employee;
 use App\Models\general_ledger;
-use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
-use Livewire\Component;
 use Mediconesystems\LivewireDatatables\Column;
 use Mediconesystems\LivewireDatatables\Http\Livewire\LivewireDatatable;
 
 class TellerStatement extends LivewireDatatable
 {
-
     protected $listeners = ['refreshTilTable' => '$refresh'];
+
     public $exportable = true;
-
-
 
     public function builder()
     {
@@ -116,12 +108,12 @@ class TellerStatement extends LivewireDatatable
         $sessionTillId = Session::get('sessionTillId');
         $tilAccountId = DB::table('tellers')->where('id', $sessionTillId)->value('account_id');
         $tilAccountNumber = DB::table('accounts')->where('id', $tilAccountId)->value('account_number');
-        //dd($businessDate, $sessionTillId, $tilAccountId, $tilAccountNumber);
+
+        // dd($businessDate, $sessionTillId, $tilAccountId, $tilAccountNumber);
         return general_ledger::query()
             ->whereDate('created_at', $businessDate)
             ->where('record_on_account_number', $tilAccountNumber)
             ->orderBy('created_at', 'asc');
-
 
     }
 
@@ -146,11 +138,9 @@ class TellerStatement extends LivewireDatatable
             Column::name('narration')
                 ->label('Narration')->searchable(),
 
-
             Column::callback(['id', 'credit'], function ($id, $credit) {
                 return number_format($credit, 2);
             })->label('Credit'),
-
 
             Column::callback(['id', 'debit'], function ($id, $debit) {
                 return number_format($debit, 2);

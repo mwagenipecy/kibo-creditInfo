@@ -2,38 +2,34 @@
 
 namespace App\Http\Livewire\Channels;
 
-
 use App\Models\approvals;
-use App\Models\servicesModel;
+use App\Models\ChannelsModel;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Livewire\Component;
-use App\Models\ChannelsModel;
-use App\Models\ServicesList;
 
 class AddChannel extends Component
 {
-
-
-
     public $identifier;
 
-    public $services = array();
-    public $servicesList = array();
+    public $services = [];
+
+    public $servicesList = [];
+
     public $NewServices;
 
-    public $tempArray= [];
-    public $name;
-    public mixed $NewService;
+    public $tempArray = [];
 
+    public $name;
+
+    public mixed $NewService;
 
     public function updatedNewServicex(): void
     {
 
-
-        $this->servicesList[] = array(
-            "service_id" => $this->NewService
-        );
+        $this->servicesList[] = [
+            'service_id' => $this->NewService,
+        ];
 
         $this->NewService = null;
 
@@ -44,12 +40,13 @@ class AddChannel extends Component
         $serviceIds = array_column($this->servicesList, 'service_id');
         if (in_array($this->NewService, $serviceIds)) {
             $this->NewService = null;
+
             return;
         }
 
-        $this->servicesList[] = array(
-            "service_id" => $this->NewService
-        );
+        $this->servicesList[] = [
+            'service_id' => $this->NewService,
+        ];
 
         $this->NewService = null;
     }
@@ -59,7 +56,6 @@ class AddChannel extends Component
 
         foreach ($this->servicesList as $index => $service) {
 
-
             if ($service['service_id'] == $serviceId) {
 
                 unset($this->servicesList[$index]);
@@ -68,7 +64,7 @@ class AddChannel extends Component
             }
         }
 
-        //dd($this->nodesList);
+        // dd($this->nodesList);
     }
 
     public function save(): void
@@ -88,7 +84,7 @@ class AddChannel extends Component
             $value = approvals::updateOrCreate(
                 [
                     'process_id' => $Channel->ID,
-                    'user_id' => Auth::user()->id
+                    'user_id' => Auth::user()->id,
 
                 ],
                 [
@@ -100,20 +96,16 @@ class AddChannel extends Component
                     'process_id' => $Channel->ID,
                     'process_status' => 'PENDING',
                     'approval_status' => 'PENDING',
-                    'user_id'  => Auth::user()->id,
-                    'team_id'  => ''
+                    'user_id' => Auth::user()->id,
+                    'team_id' => '',
 
                 ]
             );
-
 
             Session::flash('message', 'Channel has been successfully saved, awaiting approval for activation!');
             Session::flash('alert-class', 'alert-success');
             $this->resetVar();
         }
-
-
-
 
     }
 
@@ -121,13 +113,12 @@ class AddChannel extends Component
     {
 
         $this->identifier = null;
-        $this->services = array();
-        $this->servicesList = array();
+        $this->services = [];
+        $this->servicesList = [];
         $this->NewService = null;
-        $this->tempArray= [];
+        $this->tempArray = [];
         $this->name = null;
     }
-
 
     public function render(): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Contracts\Foundation\Application
     {

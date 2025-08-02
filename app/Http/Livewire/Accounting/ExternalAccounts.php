@@ -2,34 +2,30 @@
 
 namespace App\Http\Livewire\Accounting;
 
-use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\DB;
-use Livewire\Component;
 use App\Models\AccountsModel;
-use App\Models\Members;
-use App\Models\Branches;
-use App\Models\Banks;
-use Illuminate\Support\Facades\Session;
-
-
 use App\Models\approvals;
-use App\Models\TeamUser;
+use App\Models\Banks;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
+use Livewire\Component;
 
 class ExternalAccounts extends Component
 {
-
-
     public $mirror_account;
+
     public $account_number;
+
     public $number_of_shares;
+
     public $bank;
+
     public $balance;
+
     public $nominal_price;
+
     public $branches;
+
     public $member;
-
-
 
     public function save()
     {
@@ -47,10 +43,7 @@ class ExternalAccounts extends Component
 
         ])->id;
 
-
         $user = auth()->user();
-
-
 
         approvals::create([
             'institution' => auth()->user()->institution_id,
@@ -60,10 +53,9 @@ class ExternalAccounts extends Component
             'process_code' => '04',
             'process_id' => $id,
             'process_status' => 'Pending',
-            'user_id'  => Auth::user()->id,
-            'team_id'  => ""
+            'user_id' => Auth::user()->id,
+            'team_id' => '',
         ]);
-
 
         $this->resetData();
 
@@ -81,6 +73,7 @@ class ExternalAccounts extends Component
     public function render()
     {
         $this->branches = AccountsModel::where('sub_product_number', '19')->get();
+
         return view('livewire.accounting.external-accounts');
     }
 }

@@ -1,20 +1,21 @@
 <?php
+
 //
-//namespace App\Http\Livewire\TellerManagement;
+// namespace App\Http\Livewire\TellerManagement;
 //
-//use App\Models\AccountsModel;
-//use App\Models\approvals;
-//use App\Models\BranchesModel;
-//use App\Models\Employee;
-//use App\Models\general_ledger;
-//use App\Models\Members;
-//use Illuminate\Support\Facades\Config;
-//use Illuminate\Support\Facades\DB;
-//use Illuminate\Support\Facades\Session;
-//use Livewire\Component;
+// use App\Models\AccountsModel;
+// use App\Models\approvals;
+// use App\Models\BranchesModel;
+// use App\Models\Employee;
+// use App\Models\general_ledger;
+// use App\Models\Members;
+// use Illuminate\Support\Facades\Config;
+// use Illuminate\Support\Facades\DB;
+// use Illuminate\Support\Facades\Session;
+// use Livewire\Component;
 //
-//class TellerTransaction extends Component
-//{
+// class TellerTransaction extends Component
+// {
 //    public $makeTransaction=false;
 //    public $member;
 //    public $accountSelected;
@@ -231,7 +232,7 @@
 //        ]);
 //        // teller account number
 //        $teller_account_number= AccountsModel::where('id',DB::table('tellers')->where('employee_id',auth()->user()->employeeId)->value('account_id'))->where('institution_number',auth()->user()->institution_id)->value('account_number');
-////        $teller_account_number=AccountsModel::where('sub_product_number', '106')->where('employeeId',auth()->user()->employeeId)->value('account_number');
+// //        $teller_account_number=AccountsModel::where('sub_product_number', '106')->where('employeeId',auth()->user()->employeeId)->value('account_number');
 //        // teller available balance;
 //        $teller_prev_account_balance=AccountsModel::where('id',DB::table('tellers')->where('employee_id',auth()->user()->employeeId)->value('account_id'))->where('institution_number',auth()->user()->institution_id)->value('balance');
 //        // get strong room amount
@@ -379,8 +380,7 @@
 //        $this->note_to_strong_room=null;
 //
 //    }
-//}
-
+// }
 
 namespace App\Http\Livewire\TellerManagement;
 
@@ -389,8 +389,6 @@ use App\Models\approvals;
 use App\Models\BranchesModel;
 use App\Models\Employee;
 use App\Models\general_ledger;
-use App\Models\Members;
-use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 use Livewire\Component;
@@ -398,33 +396,42 @@ use Livewire\Component;
 class TellerTransaction extends Component
 {
     public $makeTransaction = false;
-    public $member;
-    public $accountSelected;
-    public $member1;
-    public $accountSelected1;
-    public $item = 7;
 
+    public $member;
+
+    public $accountSelected;
+
+    public $member1;
+
+    public $accountSelected1;
+
+    public $item = 7;
 
     // send part system
     public $account_number;
-    public $amount;
-    public $notes;
-    public $tellerMyAccountNumber;
-    public $tellerMyAccountBalance;
 
+    public $amount;
+
+    public $notes;
+
+    public $tellerMyAccountNumber;
+
+    public $tellerMyAccountBalance;
 
     // to strong room
     public $amount_to_strong_room;
-    public $strong_roomAccount;
-    public $note_to_strong_room;
-    public $tellerList;
 
+    public $strong_roomAccount;
+
+    public $note_to_strong_room;
+
+    public $tellerList;
 
     public function makePaymentForm()
     {
         if ($this->makeTransaction == false) {
             $this->makeTransaction = true;
-        } else if ($this->makeTransaction == true) {
+        } elseif ($this->makeTransaction == true) {
             $this->makeTransaction = false;
         }
     }
@@ -435,7 +442,6 @@ class TellerTransaction extends Component
         $this->branches = BranchesModel::get();
 
     }
-
 
     public function render()
     {
@@ -455,55 +461,48 @@ class TellerTransaction extends Component
         $this->tellerMyAccountNumber = $accountData->account_number;
         $this->tellerMyAccountBalance = $accountData->balance;
 
-
         return view('livewire.teller-management.teller-transaction');
     }
-
 
     public function process()
     {
         // valiate input
         $this->validate(['account_number' => 'required', 'amount' => 'required|numeric|gt:0', 'notes' => 'required']);
 
-
         // check if available amount is greater than transfer amount
         $available_amount = AccountsModel::where('id', DB::table('tellers')->where('employee_id', auth()->user()->employeeId)->value('account_id'))->value('balance');
 
         // source account number
-        $source_account_number = AccountsModel::where('id', DB::table('tellers')->where('employee_id', auth()->user()->employeeId)->value('account_id'))->where('institution_number', auth()->user()->institution_id)->value('account_number');;
+        $source_account_number = AccountsModel::where('id', DB::table('tellers')->where('employee_id', auth()->user()->employeeId)->value('account_id'))->where('institution_number', auth()->user()->institution_id)->value('account_number');
         if ($this->account_number != $this->tellerMyAccountNumber) {
-
 
             if ($available_amount > $this->amount) {
                 // incase for institutions
                 $institution_id = auth()->user()->institution_id;
                 // transfer amount from teller account to another
 
-                //for source teller new balance
-                $prev_account_balance = (double)($available_amount - $this->amount);
+                // for source teller new balance
+                $prev_account_balance = (float) ($available_amount - $this->amount);
                 // destination teller total balance calculation
                 // get destination acount number
                 $destination_teller_account = $this->account_number;
                 //  balance for next teller
                 $second_teller_account_balance = AccountsModel::where('institution_number', auth()->user()->institution_id)->where('account_number', $destination_teller_account)->value('balance');
                 // second teller new balance
-                $second_teller_new_balance = (double)$second_teller_account_balance + $this->amount;
-
+                $second_teller_new_balance = (float) $second_teller_account_balance + $this->amount;
 
                 // update previous teller account
                 AccountsModel::where('account_number', $source_account_number)->where('institution_number', auth()->user()->institution_id)->update(['balance' => $prev_account_balance]);
 
-
                 // second teller new balance records
                 AccountsModel::where('account_number', $destination_teller_account)->update(['balance' => $second_teller_new_balance]);
 
-                $loan_ledger_account_new_balance = (double)AccountsModel::where('account_number', '5111108827')->value('balance') + $this->amount;
+                $loan_ledger_account_new_balance = (float) AccountsModel::where('account_number', '5111108827')->value('balance') + $this->amount;
                 AccountsModel::where('account_number', '5111108827')->update(['balance' => $loan_ledger_account_new_balance]);
 
                 $reference_number = time();
 
-
-                //DEBIT RECORD MEMBER
+                // DEBIT RECORD MEMBER
                 general_ledger::create([
                     'record_on_account_number' => $destination_teller_account,
                     'record_on_account_number_balance' => $second_teller_new_balance,
@@ -515,7 +514,7 @@ class TellerTransaction extends Component
                     'beneficiary_sub_product_id' => AccountsModel::where('account_number', $destination_teller_account)->value('sub_product_number'),
                     'sender_id' => auth()->user()->employeeId,
                     'beneficiary_id' => AccountsModel::where('account_number', $destination_teller_account)->value('employeeId'),
-                    'sender_name' => Employee::where('id', auth()->user()->employeeId)->value('first_name') . ' ' . Employee::where('id', auth()->user()->employeeId)->value('middle_name') . ' ' . Employee::where('id', auth()->user()->employeeId)->value('last_name'),
+                    'sender_name' => Employee::where('id', auth()->user()->employeeId)->value('first_name').' '.Employee::where('id', auth()->user()->employeeId)->value('middle_name').' '.Employee::where('id', auth()->user()->employeeId)->value('last_name'),
 
                     'beneficiary_name' => AccountsModel::where('account_number', $destination_teller_account)->value('account_name'),
                     'sender_account_number' => $source_account_number,
@@ -536,7 +535,7 @@ class TellerTransaction extends Component
                     'recon_status' => 'Pending',
                 ]);
 
-                //CREDIT RECORD LOAN ACCOUNT
+                // CREDIT RECORD LOAN ACCOUNT
                 general_ledger::create([
                     'record_on_account_number' => $source_account_number,
                     'record_on_account_number_balance' => $prev_account_balance,
@@ -550,7 +549,7 @@ class TellerTransaction extends Component
                     'beneficiary_sub_product_id' => AccountsModel::where('account_number', $destination_teller_account)->value('sub_product_number'),
                     'sender_id' => auth()->user()->employeeId,
                     'beneficiary_id' => AccountsModel::where('account_number', $destination_teller_account)->value('employeeId'),
-                    'sender_name' => Employee::where('id', auth()->user()->employeeId)->value('first_name') . ' ' . Employee::where('id', auth()->user()->employeeId)->value('middle_name') . ' ' . Employee::where('id', auth()->user()->employeeId)->value('last_name'),
+                    'sender_name' => Employee::where('id', auth()->user()->employeeId)->value('first_name').' '.Employee::where('id', auth()->user()->employeeId)->value('middle_name').' '.Employee::where('id', auth()->user()->employeeId)->value('last_name'),
                     'beneficiary_name' => AccountsModel::where('account_number', $destination_teller_account)->value('account_name'),
                     'sender_account_number' => $destination_teller_account,
                     'beneficiary_account_number' => $source_account_number,
@@ -570,7 +569,7 @@ class TellerTransaction extends Component
                     'recon_status' => 'Pending',
                 ]);
 
-                //CREDIT RECORD GL
+                // CREDIT RECORD GL
                 general_ledger::create([
                     'record_on_account_number' => '5111108827',
                     'record_on_account_number_balance' => $this->amount,
@@ -582,7 +581,7 @@ class TellerTransaction extends Component
                     'beneficiary_sub_product_id' => AccountsModel::where('account_number', $destination_teller_account)->value('sub_product_number'),
                     'sender_id' => auth()->user()->employeeId,
                     'beneficiary_id' => '999999',
-                    'sender_name' => Employee::where('id', auth()->user()->employeeId)->value('first_name') . ' ' . Employee::where('id', auth()->user()->employeeId)->value('middle_name') . ' ' . Employee::where('id', auth()->user()->employeeId)->value('last_name'),
+                    'sender_name' => Employee::where('id', auth()->user()->employeeId)->value('first_name').' '.Employee::where('id', auth()->user()->employeeId)->value('middle_name').' '.Employee::where('id', auth()->user()->employeeId)->value('last_name'),
                     'beneficiary_name' => 'Organization',
                     'sender_account_number' => $source_account_number,
                     'beneficiary_account_number' => '5111108827',
@@ -602,23 +601,20 @@ class TellerTransaction extends Component
                     'recon_status' => 'Pending',
                 ]);
 
-
                 // aprovals
-                $approvals = new approvals();
+                $approvals = new approvals;
                 $approvals->sendApproval($reference_number, 'New fund transaction', 'initiate new fund transfer', 'teller to teller transaction', '07', '');
                 Session::flash('message', 'Transaction has been successfully issued!');
                 $this->resetAccountDetails();
-
 
             } else {
                 session()->flash('message_fail', 'Invalid amount');
             }
         } else {
-            session()->flash('message_fail', "Invalid destination account number");
+            session()->flash('message_fail', 'Invalid destination account number');
         }
 
     }
-
 
     public function resetAccountDetails()
     {
@@ -637,7 +633,7 @@ class TellerTransaction extends Component
         ]);
         // teller account number
         $teller_account_number = AccountsModel::where('id', DB::table('tellers')->where('employee_id', auth()->user()->employeeId)->value('account_id'))->where('institution_number', auth()->user()->institution_id)->value('account_number');
-//        $teller_account_number=AccountsModel::where('sub_product_number', '106')->where('employeeId',auth()->user()->employeeId)->value('account_number');
+        //        $teller_account_number=AccountsModel::where('sub_product_number', '106')->where('employeeId',auth()->user()->employeeId)->value('account_number');
         // teller available balance;
         $teller_prev_account_balance = AccountsModel::where('id', DB::table('tellers')->where('employee_id', auth()->user()->employeeId)->value('account_id'))->where('institution_number', auth()->user()->institution_id)->value('balance');
         // get strong room amount
@@ -649,20 +645,18 @@ class TellerTransaction extends Component
             // new teller balance
             $new_teller_balance = $teller_prev_account_balance - $this->amount_to_strong_room;
 
-            //strong  room new balance
-            $strong_room_new_balance = (double)$strong_room_account_balance + $this->amount_to_strong_room;
+            // strong  room new balance
+            $strong_room_new_balance = (float) $strong_room_account_balance + $this->amount_to_strong_room;
 
             // update previous teller account
             AccountsModel::where('account_number', $teller_account_number)->update(['balance' => $new_teller_balance]);
-
 
             // strong room  new balance records
             AccountsModel::where('account_number', $this->strong_roomAccount)->update(['balance' => $strong_room_new_balance]);
 
             $reference_number = time();
 
-
-            //DEBIT RECORD strong room
+            // DEBIT RECORD strong room
             general_ledger::create([
                 'record_on_account_number' => $this->strong_roomAccount,
                 'record_on_account_number_balance' => $strong_room_new_balance,
@@ -674,7 +668,7 @@ class TellerTransaction extends Component
                 'beneficiary_sub_product_id' => AccountsModel::where('account_number', $this->strong_roomAccount)->value('sub_product_number'),
                 'sender_id' => auth()->user()->employeeId,
                 'beneficiary_id' => AccountsModel::where('account_number', $this->strong_roomAccount)->value('employeeId'),
-                'sender_name' => Employee::where('id', auth()->user()->employeeId)->value('first_name') . ' ' . Employee::where('id', auth()->user()->employeeId)->value('middle_name') . ' ' . Employee::where('id', auth()->user()->employeeId)->value('last_name'),
+                'sender_name' => Employee::where('id', auth()->user()->employeeId)->value('first_name').' '.Employee::where('id', auth()->user()->employeeId)->value('middle_name').' '.Employee::where('id', auth()->user()->employeeId)->value('last_name'),
                 'beneficiary_name' => AccountsModel::where('account_number', $this->strong_roomAccount)->value('account_name'),
                 'sender_account_number' => $teller_account_number,
                 'beneficiary_account_number' => $this->strong_roomAccount,
@@ -694,7 +688,7 @@ class TellerTransaction extends Component
                 'recon_status' => 'Pending',
             ]);
 
-            //CREDIT RECORD TELLER ACCOUNT
+            // CREDIT RECORD TELLER ACCOUNT
             general_ledger::create([
                 'record_on_account_number' => $teller_account_number,
                 'record_on_account_number_balance' => $new_teller_balance,
@@ -709,7 +703,7 @@ class TellerTransaction extends Component
                 'sender_id' => auth()->user()->employeeId,
 
                 'beneficiary_id' => AccountsModel::where('account_number', $this->strong_roomAccount)->value('employeeId'),
-                'sender_name' => Employee::where('id', auth()->user()->employeeId)->value('first_name') . ' ' . Employee::where('id', auth()->user()->employeeId)->value('middle_name') . ' ' . Employee::where('id', auth()->user()->employeeId)->value('last_name'),
+                'sender_name' => Employee::where('id', auth()->user()->employeeId)->value('first_name').' '.Employee::where('id', auth()->user()->employeeId)->value('middle_name').' '.Employee::where('id', auth()->user()->employeeId)->value('last_name'),
                 'beneficiary_name' => AccountsModel::where('account_number', $this->strong_roomAccount)->value('account_name'),
                 'sender_account_number' => $teller_account_number,
                 'beneficiary_account_number' => $this->strong_roomAccount,
@@ -729,7 +723,6 @@ class TellerTransaction extends Component
                 'recon_status' => 'Pending',
             ]);
 
-
             Session::flash('message2', 'Transaction has been successfully issued!');
             $this->resetTellerToStrongRoomData();
 
@@ -740,7 +733,6 @@ class TellerTransaction extends Component
 
     }
 
-
     public function resetTellerToStrongRoomData()
     {
         $this->amount_to_strong_room = null;
@@ -748,6 +740,4 @@ class TellerTransaction extends Component
         $this->note_to_strong_room = null;
 
     }
-
-
 }

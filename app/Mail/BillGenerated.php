@@ -1,18 +1,20 @@
 <?php
 
 // app/Mail/BillGenerated.php
+
 namespace App\Mail;
 
+use App\Models\Bill;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
-use App\Models\Bill;
 
 class BillGenerated extends Mailable
 {
     use Queueable, SerializesModels;
 
     public $bill;
+
     public $entity;
 
     public function __construct(Bill $bill, $entity)
@@ -23,12 +25,12 @@ class BillGenerated extends Mailable
 
     public function build()
     {
-        return $this->subject('New Bill Generated - ' . $this->bill->bill_number)
-                    ->view('emails.bill-generated')
-                    ->with([
-                        'bill' => $this->bill,
-                        'entity' => $this->entity,
-                        'entityType' => ucfirst(str_replace('_', ' ', $this->bill->entity_type))
-                    ]);
+        return $this->subject('New Bill Generated - '.$this->bill->bill_number)
+            ->view('emails.bill-generated')
+            ->with([
+                'bill' => $this->bill,
+                'entity' => $this->entity,
+                'entityType' => ucfirst(str_replace('_', ' ', $this->bill->entity_type)),
+            ]);
     }
 }

@@ -2,37 +2,38 @@
 
 namespace App\Http\Livewire\Approvals;
 
-use App\Models\NodesList;
-use App\Models\UserSubMenu;
-use Livewire\Component;
-
 use App\Models\approvals;
 use App\Models\Branches;
 use App\Models\Nodes;
+use App\Models\NodesList;
+use App\Models\UserSubMenu;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Component;
 
 class ApprovalsProcessor extends Component
 {
-
     public $approvals;
-    public $term = "";
-    public $showAddUser = false;
-    protected $listeners = ['refreshBranchesListComponent' => '$refresh'];
-    public $pendingApprovals;
-    public $user_sub_menus;
 
+    public $term = '';
+
+    public $showAddUser = false;
+
+    protected $listeners = ['refreshBranchesListComponent' => '$refresh'];
+
+    public $pendingApprovals;
+
+    public $user_sub_menus;
 
     public function boot(): void
     {
-        $this->user_sub_menus = UserSubMenu::where('menu_id',7)->where('user_id', Auth::user()->id)->get();
+        $this->user_sub_menus = UserSubMenu::where('menu_id', 7)->where('user_id', Auth::user()->id)->get();
     }
 
-
-    public function approveCreateNode($branchId,$approvalsId)
+    public function approveCreateNode($branchId, $approvalsId)
     {
 
         Branches::where('id', $branchId)->update([
-            'branch_status' => 'Active'
+            'branch_status' => 'Active',
         ]);
 
         approvals::where('id', $approvalsId)->update([
@@ -42,11 +43,11 @@ class ApprovalsProcessor extends Component
 
     }
 
-    public function rejectCreateNode($branchId,$approvalsId)
+    public function rejectCreateNode($branchId, $approvalsId)
     {
 
         Branches::where('id', $branchId)->update([
-            'branch_status' => 'Rejected'
+            'branch_status' => 'Rejected',
         ]);
 
         approvals::where('id', $approvalsId)->update([
@@ -56,15 +57,15 @@ class ApprovalsProcessor extends Component
 
     }
 
-    ////////////////////////////////////////////////////////////////////
-    /// ///////////////////////////////////////////////////////////////
-    ///
-    ///
-    public function approveDeleteNode($branchId,$approvalsId)
+    // //////////////////////////////////////////////////////////////////
+    // / ///////////////////////////////////////////////////////////////
+    // /
+    // /
+    public function approveDeleteNode($branchId, $approvalsId)
     {
 
         NodesList::where('ID', $branchId)->update([
-            'branch_status' => 'Blocked'
+            'branch_status' => 'Blocked',
         ]);
 
         approvals::where('id', $approvalsId)->update([
@@ -74,11 +75,11 @@ class ApprovalsProcessor extends Component
 
     }
 
-    public function rejectDeleteNode($branchId,$approvalsId)
+    public function rejectDeleteNode($branchId, $approvalsId)
     {
 
         Branches::where('id', $branchId)->update([
-            'branch_status' => 'Active'
+            'branch_status' => 'Active',
         ]);
 
         approvals::where('id', $approvalsId)->update([
@@ -88,17 +89,17 @@ class ApprovalsProcessor extends Component
 
     }
 
-    ////////////////////////////////////////////////////////////////////
-    /// ///////////////////////////////////////////////////////////////
-    ///
-    public function approveEditNode($nodeId,$approvalsId,$changes)
+    // //////////////////////////////////////////////////////////////////
+    // / ///////////////////////////////////////////////////////////////
+    // /
+    public function approveEditNode($nodeId, $approvalsId, $changes)
     {
         $changes = json_decode($changes, true);
-        foreach($changes as $key => $value){
-            $dbValue = Nodes::where('id',$nodeId)->value($key);
-            if($dbValue != $value){
+        foreach ($changes as $key => $value) {
+            $dbValue = Nodes::where('id', $nodeId)->value($key);
+            if ($dbValue != $value) {
                 Nodes::where('id', $nodeId)->update([
-                    $key => $value
+                    $key => $value,
                 ]);
             }
 
@@ -121,20 +122,14 @@ class ApprovalsProcessor extends Component
 
     }
 
-    ////////////////////////////////////////////////////////////////////
-    /// ///////////////////////////////////////////////////////////////
+    // //////////////////////////////////////////////////////////////////
+    // / ///////////////////////////////////////////////////////////////
 
-
-
-
-
-
-
-    public function approveCreateClient($branchId,$approvalsId)
+    public function approveCreateClient($branchId, $approvalsId)
     {
 
         Branches::where('id', $branchId)->update([
-            'branch_status' => 'Active'
+            'branch_status' => 'Active',
         ]);
 
         approvals::where('id', $approvalsId)->update([
@@ -144,11 +139,11 @@ class ApprovalsProcessor extends Component
 
     }
 
-    public function rejectCreateClient($branchId,$approvalsId)
+    public function rejectCreateClient($branchId, $approvalsId)
     {
 
         Branches::where('id', $branchId)->update([
-            'branch_status' => 'Rejected'
+            'branch_status' => 'Rejected',
         ]);
 
         approvals::where('id', $approvalsId)->update([
@@ -158,15 +153,15 @@ class ApprovalsProcessor extends Component
 
     }
 
-    ////////////////////////////////////////////////////////////////////
-    /// ///////////////////////////////////////////////////////////////
-    ///
-    ///
-    public function approveDeleteClient($branchId,$approvalsId)
+    // //////////////////////////////////////////////////////////////////
+    // / ///////////////////////////////////////////////////////////////
+    // /
+    // /
+    public function approveDeleteClient($branchId, $approvalsId)
     {
 
         Branches::where('id', $branchId)->update([
-            'branch_status' => 'Blocked'
+            'branch_status' => 'Blocked',
         ]);
 
         approvals::where('id', $approvalsId)->update([
@@ -176,11 +171,11 @@ class ApprovalsProcessor extends Component
 
     }
 
-    public function rejectDeleteClient($branchId,$approvalsId)
+    public function rejectDeleteClient($branchId, $approvalsId)
     {
 
         Branches::where('id', $branchId)->update([
-            'branch_status' => 'Active'
+            'branch_status' => 'Active',
         ]);
 
         approvals::where('id', $approvalsId)->update([
@@ -190,17 +185,17 @@ class ApprovalsProcessor extends Component
 
     }
 
-    ////////////////////////////////////////////////////////////////////
-    /// ///////////////////////////////////////////////////////////////
-    ///
-    public function approveEditClient($branchId,$approvalsId,$changes)
+    // //////////////////////////////////////////////////////////////////
+    // / ///////////////////////////////////////////////////////////////
+    // /
+    public function approveEditClient($branchId, $approvalsId, $changes)
     {
         $changes = json_decode($changes, true);
-        foreach($changes as $key => $value){
-            $dbValue = Branches::where('id',$branchId)->value($key);
-            if($dbValue != $value){
+        foreach ($changes as $key => $value) {
+            $dbValue = Branches::where('id', $branchId)->value($key);
+            if ($dbValue != $value) {
                 Branches::where('id', $branchId)->update([
-                    $key => $value
+                    $key => $value,
                 ]);
             }
 
@@ -223,25 +218,14 @@ class ApprovalsProcessor extends Component
 
     }
 
-    ////////////////////////////////////////////////////////////////////
-    /// ///////////////////////////////////////////////////////////////
+    // //////////////////////////////////////////////////////////////////
+    // / ///////////////////////////////////////////////////////////////
 
-
-
-
-
-
-
-
-
-
-
-
-    public function approveCreateAccount($branchId,$approvalsId)
+    public function approveCreateAccount($branchId, $approvalsId)
     {
 
         Branches::where('id', $branchId)->update([
-            'branch_status' => 'Active'
+            'branch_status' => 'Active',
         ]);
 
         approvals::where('id', $approvalsId)->update([
@@ -251,11 +235,11 @@ class ApprovalsProcessor extends Component
 
     }
 
-    public function rejectCreateAccount($branchId,$approvalsId)
+    public function rejectCreateAccount($branchId, $approvalsId)
     {
 
         Branches::where('id', $branchId)->update([
-            'branch_status' => 'Rejected'
+            'branch_status' => 'Rejected',
         ]);
 
         approvals::where('id', $approvalsId)->update([
@@ -265,15 +249,15 @@ class ApprovalsProcessor extends Component
 
     }
 
-    ////////////////////////////////////////////////////////////////////
-    /// ///////////////////////////////////////////////////////////////
-    ///
-    ///
-    public function approveDeleteAccount($branchId,$approvalsId)
+    // //////////////////////////////////////////////////////////////////
+    // / ///////////////////////////////////////////////////////////////
+    // /
+    // /
+    public function approveDeleteAccount($branchId, $approvalsId)
     {
 
         Branches::where('id', $branchId)->update([
-            'branch_status' => 'Blocked'
+            'branch_status' => 'Blocked',
         ]);
 
         approvals::where('id', $approvalsId)->update([
@@ -283,11 +267,11 @@ class ApprovalsProcessor extends Component
 
     }
 
-    public function rejectDeleteAccount($branchId,$approvalsId)
+    public function rejectDeleteAccount($branchId, $approvalsId)
     {
 
         Branches::where('id', $branchId)->update([
-            'branch_status' => 'Active'
+            'branch_status' => 'Active',
         ]);
 
         approvals::where('id', $approvalsId)->update([
@@ -297,17 +281,17 @@ class ApprovalsProcessor extends Component
 
     }
 
-    ////////////////////////////////////////////////////////////////////
-    /// ///////////////////////////////////////////////////////////////
-    ///
-    public function approveEditAccount($branchId,$approvalsId,$changes)
+    // //////////////////////////////////////////////////////////////////
+    // / ///////////////////////////////////////////////////////////////
+    // /
+    public function approveEditAccount($branchId, $approvalsId, $changes)
     {
         $changes = json_decode($changes, true);
-        foreach($changes as $key => $value){
-            $dbValue = Branches::where('id',$branchId)->value($key);
-            if($dbValue != $value){
+        foreach ($changes as $key => $value) {
+            $dbValue = Branches::where('id', $branchId)->value($key);
+            if ($dbValue != $value) {
                 Branches::where('id', $branchId)->update([
-                    $key => $value
+                    $key => $value,
                 ]);
             }
 
@@ -330,24 +314,16 @@ class ApprovalsProcessor extends Component
 
     }
 
-    ////////////////////////////////////////////////////////////////////
-    /// ///////////////////////////////////////////////////////////////
-
-
-
-
-
-
-
-
+    // //////////////////////////////////////////////////////////////////
+    // / ///////////////////////////////////////////////////////////////
 
     public function render(): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Contracts\Foundation\Application
     {
 
-        $this->approvals = approvals::where('approval_status','PENDING')->get();
+        $this->approvals = approvals::where('approval_status', 'PENDING')->get();
         $this->pendingApprovals = $this->approvals->count();
-        $this->user_sub_menus = UserSubMenu::where('menu_id',7)->where('user_id', Auth::user()->id)->get();
-        //dd($this->approvals);
+        $this->user_sub_menus = UserSubMenu::where('menu_id', 7)->where('user_id', Auth::user()->id)->get();
+        // dd($this->approvals);
 
         return view('livewire.approvals.approvals-processor');
     }

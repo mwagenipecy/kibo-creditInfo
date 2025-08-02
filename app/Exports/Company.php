@@ -3,11 +3,9 @@
 namespace App\Exports;
 
 use App\Models\ClientsModel;
-use App\Models\general_ledger;
 use App\Models\LoansModel;
 use App\Models\User;
 use Maatwebsite\Excel\Concerns\FromArray;
-use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\WithHeadings;
@@ -16,72 +14,66 @@ use Maatwebsite\Excel\Concerns\WithTitle;
 use Maatwebsite\Excel\Events\AfterSheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx\Worksheet;
 
-class Company implements FromArray,WithHeadings, WithStyles, ShouldAutoSize, WithEvents,WithTitle
+class Company implements FromArray, ShouldAutoSize, WithEvents, WithHeadings, WithStyles, WithTitle
 {
     /**
-    * @return \Illuminate\Support\Collection
-    */
+     * @return \Illuminate\Support\Collection
+     */
     public $value;
 
-
-
-    public function __construct($value){
-        $this->value=$value;
+    public function __construct($value)
+    {
+        $this->value = $value;
     }
 
-
-    public function array():array
+    public function array(): array
     {
 
-     $array=[];
+        $array = [];
 
+        $users = User::all();
 
-      $users=User::all();
+        $client_numbers = $this->value;
 
-        $client_numbers=$this->value;
+        $loan_datas = LoansModel::whereIn('id', $client_numbers)->pluck('client_number');
+        // guarantor
+        $clientDatas = ClientsModel::whereIn('client_number', $loan_datas)->where('membership_type', '!=', 'individual')->pluck('client_number');
 
-        $loan_datas=LoansModel::whereIn('id',$client_numbers)->pluck('client_number');
-        //guarantor
-        $clientDatas=ClientsModel::whereIn('client_number',$loan_datas)->where('membership_type','!=','individual')->pluck('client_number');
+        foreach ($clientDatas as $number) {
 
+            // guarantor
+            $clientData = ClientsModel::where('client_number', $number)->first();
 
+            $array[] = [
 
-        foreach ($clientDatas as $number){
+                'CustomerCode' => $clientData->client_number,
+                'CompanyName' => $clientData->first_name,
+                'TradeName' => $clientData->trade_name,
+                'LegalForm' => $clientData->legal_form,
+                'EstablishmentDate' => $clientData->establishment_date,
+                'RegistrationCountry' => $clientData->registration_country,
+                'IndustrySector' => $clientData->industry_sector,
+                'RegistrationNumber' => $clientData->registration_number,
+                'TaxIdentificationNumber' => $clientData->tax_identification_number,
+                'Street' => $clientData->street,
+                'NumberOfBuilding' => $clientData->number_of_building,
+                'PostalCode' => $clientData->postal_code,
+                'Region' => $clientData->region,
+                'District' => $clientData->district,
+                'Country' => $clientData->country,
+                'MobilePhone' => $clientData->mobile_phone,
+                'FixedLine' => $clientData->fixed_line,
+                'E-mail' => $clientData->email,
+                'WebPage' => $clientData->web_page,
+            ];
+        }
 
-            //guarantor
-            $clientData=ClientsModel::where('client_number',$number)->first();
-
-          $array[]=[
-
-              'CustomerCode'=>$clientData->client_number,
-              'CompanyName'=>$clientData->first_name,
-              'TradeName'=>$clientData->trade_name,
-              'LegalForm'=>$clientData->legal_form,
-              'EstablishmentDate'=>$clientData->establishment_date,
-              'RegistrationCountry'=>$clientData->registration_country,
-              'IndustrySector'=>$clientData->industry_sector,
-              'RegistrationNumber'=>$clientData->registration_number,
-              'TaxIdentificationNumber'=>$clientData->tax_identification_number,
-              'Street'=>$clientData->street,
-              'NumberOfBuilding'=>$clientData->number_of_building,
-              'PostalCode'=>$clientData->postal_code,
-              'Region'=>$clientData->region,
-              'District'=>$clientData->district,
-              'Country'=>$clientData->country,
-              'MobilePhone'=>$clientData->mobile_phone,
-              'FixedLine'=>$clientData->fixed_line,
-              'E-mail'=>$clientData->email,
-              'WebPage'=>$clientData->web_page,
-      ];
-      }
-
-      return $array;
+        return $array;
     }
-
 
     public function title(): string
     {
-        return "COMPANY";
+        return 'COMPANY';
     }
 
     public function headings(): array
@@ -131,7 +123,4 @@ class Company implements FromArray,WithHeadings, WithStyles, ShouldAutoSize, Wit
             },
         ];
     }
-
-
-
 }

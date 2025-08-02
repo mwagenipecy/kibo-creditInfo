@@ -3,22 +3,12 @@
 namespace App\Http\Livewire\Accounting;
 
 use App\Models\AccountsModel;
-use App\Models\BranchesModel;
-use App\Models\Employee;
-use App\Models\MembersModel;
-use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\DB;
-use Livewire\Component;
 use Livewire\WithFileUploads;
 use Mediconesystems\LivewireDatatables\Column;
 use Mediconesystems\LivewireDatatables\Http\Livewire\LivewireDatatable;
 
 class CashAccountsTable extends LivewireDatatable
 {
-
-
-
-
     use WithFileUploads;
 
     public $exportable = true;
@@ -26,11 +16,8 @@ class CashAccountsTable extends LivewireDatatable
     public function builder(): \Illuminate\Database\Eloquent\Builder
     {
         return AccountsModel::query()
-            ->where('major_category_code','1000')->where('account_use','internal');
+            ->where('major_category_code', '1000')->where('account_use', 'internal');
     }
-
-
-
 
     public function columns(): array
     {
@@ -46,9 +33,8 @@ class CashAccountsTable extends LivewireDatatable
         ];
     }
 
-    public function edit($id){
-        $this->emitUp('editAccountsAccount',$id);
+    public function edit($id)
+    {
+        $this->emitUp('editAccountsAccount', $id);
     }
-
-
 }

@@ -11,27 +11,24 @@ class ApiAuthMiddleware
     /**
      * Handle an incoming request.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure  $next
      * @return mixed
      */
     public function handle(Request $request, Closure $next)
     {
         // Get credentials from environment variables (more secure than hardcoding)
-      //  $validUsername = env('API_AUTH_USERNAME', 'vehicleTest');
-      //  $validPassword = env('API_AUTH_PASSWORD', 'vehicle@test#7843.cb_');
+        //  $validUsername = env('API_AUTH_USERNAME', 'vehicleTest');
+        //  $validPassword = env('API_AUTH_PASSWORD', 'vehicle@test#7843.cb_');
 
+        $validUsername = 'vehicleTest';
+        $validPassword = 'vehicle@test#7843.cb_';
 
-        $validUsername =  'vehicleTest';
-        $validPassword =  'vehicle@test#7843.cb_';
-        
-        Log::info("request validate");
+        Log::info('request validate');
         // Get provided credentials
-        $providedUsername = 'vehicleTest' ;// $request->getUser();
+        $providedUsername = 'vehicleTest'; // $request->getUser();
         $providedPassword = 'vehicle@test#7843.cb_'; // $request->getPassword();
 
         Log::info($providedPassword.' username=> '.$providedUsername);
-        
+
         // Check if credentials match
         if ($providedUsername !== $validUsername || $providedPassword !== $validPassword) {
             // Log failed attempt (optional)
@@ -41,13 +38,13 @@ class ApiAuthMiddleware
                 'provided_username' => $providedUsername,
                 // Never log passwords, even wrong ones
             ]);
-            
+
             return response()->json([
                 'success' => false,
-                'message' => 'Unauthorized. Authentication failed.'
+                'message' => 'Unauthorized. Authentication failed.',
             ], 401);
         }
-        
+
         return $next($request);
     }
 }

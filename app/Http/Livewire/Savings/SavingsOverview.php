@@ -2,20 +2,22 @@
 
 namespace App\Http\Livewire\Savings;
 
-
-use Livewire\Component;
 use App\Models\sub_products;
 use Illuminate\Support\Facades\Session;
-
+use Livewire\Component;
 
 class SavingsOverview extends Component
 {
+    public $term = '';
 
-    public $term = "";
     public $showAddUser = false;
+
     public $memberStatus = 'All';
+
     public $numberOfProducts;
+
     public $products;
+
     public $item;
 
     protected $listeners = ['refreshClientsListComponent' => '$refresh'];
@@ -28,7 +30,8 @@ class SavingsOverview extends Component
         $this->emit('refreshSavingsComponent');
     }
 
-    public function boot(){
+    public function boot()
+    {
         $this->item = 1;
     }
 

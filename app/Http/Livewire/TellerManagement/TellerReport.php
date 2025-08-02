@@ -1,22 +1,23 @@
 <?php
+
 //
-//namespace App\Http\Livewire\TellerManagement;
+// namespace App\Http\Livewire\TellerManagement;
 //
-//use App\Models\AccountsModel;
-//use App\Models\approvals;
-//use App\Models\BranchesModel;
-//use App\Models\Employee;
-//use App\Models\general_ledger;
-//use App\Models\Teller;
-//use App\Models\TellerEndOfDayPositions;
-//use Carbon\Carbon;
-//use Illuminate\Support\Facades\Config;
-//use Illuminate\Support\Facades\DB;
-//use Illuminate\Support\Facades\Session;
-//use Livewire\Component;
+// use App\Models\AccountsModel;
+// use App\Models\approvals;
+// use App\Models\BranchesModel;
+// use App\Models\Employee;
+// use App\Models\general_ledger;
+// use App\Models\Teller;
+// use App\Models\TellerEndOfDayPositions;
+// use Carbon\Carbon;
+// use Illuminate\Support\Facades\Config;
+// use Illuminate\Support\Facades\DB;
+// use Illuminate\Support\Facades\Session;
+// use Livewire\Component;
 //
-//class TellerReport extends Component
-//{
+// class TellerReport extends Component
+// {
 //    public $selectedDate;
 //    public $disableProcess;
 //
@@ -225,27 +226,21 @@
 //    public function render()
 //    {
 //
-////        dd($this->tellerEndOfDay);
+// //        dd($this->tellerEndOfDay);
 //        $this->tellers = DB::table('tellers')->get();
 //
 //
 //
 //        return view('livewire.teller-management.teller-report');
 //    }
-//}
-
+// }
 
 namespace App\Http\Livewire\TellerManagement;
 
 use App\Models\AccountsModel;
-use App\Models\approvals;
-use App\Models\BranchesModel;
-use App\Models\Employee;
 use App\Models\general_ledger;
 use App\Models\Teller;
 use App\Models\TellerEndOfDayPositions;
-use Carbon\Carbon;
-use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 use Livewire\Component;
@@ -253,24 +248,33 @@ use Livewire\Component;
 class TellerReport extends Component
 {
     public $selectedDate;
+
     public $disableProcess;
 
     public $tilId;
+
     public $businessDate;
+
     public $strong_roomAccount;
+
     public $tellers;
+
     public $openingBalance;
+
     public $closingBalance;
+
     public $cashAtHand;
+
     public $message;
+
     public $state;
+
     public TellerEndOfDayPositions $tellerEndOfDay;
 
     protected $rules = [
         'tellerEndOfDay.tiller_cash_at_hand' => 'required',
-        'tellerEndOfDay.business_date' => 'required'
+        'tellerEndOfDay.business_date' => 'required',
     ];
-
 
     public function boot()
     {
@@ -285,7 +289,6 @@ class TellerReport extends Component
 
     }
 
-
     public function updatedSelectedDate()
     {
 
@@ -293,14 +296,13 @@ class TellerReport extends Component
             ->whereDate('business_date', $this->selectedDate)->first();
 
         if ($tellerEndOfDay == null) {
-            $this->tellerEndOfDay = new TellerEndOfDayPositions();
+            $this->tellerEndOfDay = new TellerEndOfDayPositions;
         } else {
             $this->tellerEndOfDay = $tellerEndOfDay;
         }
 
         Session::put('businessDate', $this->selectedDate);
         $this->emit('refreshTilTable');
-
 
         $this->processData();
 
@@ -313,11 +315,10 @@ class TellerReport extends Component
             ->whereDate('business_date', $this->selectedDate)->first();
 
         if ($tellerEndOfDay == null) {
-            $this->tellerEndOfDay = new TellerEndOfDayPositions();
+            $this->tellerEndOfDay = new TellerEndOfDayPositions;
         } else {
             $this->tellerEndOfDay = $tellerEndOfDay;
         }
-
 
         Session::put('sessionTillId', $this->tilId);
         $this->emit('refreshTilTable');
@@ -329,17 +330,16 @@ class TellerReport extends Component
     public function setAmount()
     {
         if ($this->tellerEndOfDay->tiller_cash_at_hand == $this->closingBalance) {
-            $this->message = "This Till is balanced, you can now close it";
-            $this->state = "BALANCED";
+            $this->message = 'This Till is balanced, you can now close it';
+            $this->state = 'BALANCED';
 
         } elseif ($this->tellerEndOfDay->tiller_cash_at_hand > $this->closingBalance) {
-            $this->message = "This Till is over, it can not be closed";
-            $this->state = "OVER";
+            $this->message = 'This Till is over, it can not be closed';
+            $this->state = 'OVER';
         } else {
-            $this->message = "This Till is under, it can not be closed";
-            $this->state = "UNDER";
+            $this->message = 'This Till is under, it can not be closed';
+            $this->state = 'UNDER';
         }
-
 
         $this->tellerEndOfDay->employee_id = $this->employee_id;
         $this->tellerEndOfDay->til_number = $this->tilId;
@@ -351,12 +351,9 @@ class TellerReport extends Component
         $this->tellerEndOfDay->institution_id = auth()->user()->institution_id;
         $this->tellerEndOfDay->branch_id = auth()->user()->branch;
 
-
         $this->tellerEndOfDay->save();
 
-
     }
-
 
     public function closeTil()
     {
@@ -372,12 +369,11 @@ class TellerReport extends Component
         // get strong room amount
         $strong_room_account_balance = AccountsModel::where('account_number', $strong_roomAccount)->value('balance');
 
-
         // new teller balance
         $new_teller_balance = $teller_prev_account_balance - $this->closingBalance;
 
-        //strong  room new balance
-        $strong_room_new_balance = (double)$strong_room_account_balance + $this->closingBalance;
+        // strong  room new balance
+        $strong_room_new_balance = (float) $strong_room_account_balance + $this->closingBalance;
 
         // update previous teller account
         AccountsModel::where('account_number', $teller_account_number)->where('sub_product_number', '106')->update(['balance' => $new_teller_balance]);
@@ -388,28 +384,25 @@ class TellerReport extends Component
         $reference_number = time();
 
         // record on general ledger
-        $record_on_general_ledger = new general_ledger();
+        $record_on_general_ledger = new general_ledger;
 
-        $record_on_general_ledger->debit($teller_account_number,$new_teller_balance,
-            $strong_roomAccount, $this->closingBalance,'Closing Til','');
-        //credit
-        $record_on_general_ledger->credit($strong_roomAccount,$strong_room_new_balance
-            ,$teller_account_number,$this->closingBalance,'Closing Til','');
+        $record_on_general_ledger->debit($teller_account_number, $new_teller_balance,
+            $strong_roomAccount, $this->closingBalance, 'Closing Til', '');
+        // credit
+        $record_on_general_ledger->credit($strong_roomAccount, $strong_room_new_balance, $teller_account_number, $this->closingBalance, 'Closing Til', '');
 
         $this->closingBalance = null;
 
     }
 
-
     public function processData()
     {
-
 
         // Get the Till's account number using relationships (assuming relationships are set up correctly)
         $tilAccountId = DB::table('tellers')->where('id', $this->tilId)->value('account_id');
         $this->employee_id = DB::table('tellers')->where('id', $this->tilId)->value('employee_id');
         $this->tilAccountNumber = DB::table('accounts')->where('id', $tilAccountId)->value('account_number');
-        //$tilAccountNumber = Teller::find($sessionTillId)->account->account_number;
+        // $tilAccountNumber = Teller::find($sessionTillId)->account->account_number;
 
         // Query the general_ledger using Eloquent to get the first record of the day
         $firstTransactionOfDay = general_ledger::where('institution_id', auth()->user()->institution_id)
@@ -417,7 +410,6 @@ class TellerReport extends Component
             ->where('record_on_account_number', $this->tilAccountNumber)
             ->orderBy('created_at', 'asc')
             ->first();
-
 
         // Check if a transaction was found
         if ($firstTransactionOfDay) {
@@ -440,8 +432,7 @@ class TellerReport extends Component
             ->sum('debit');
 
         // Query the general_ledger using Eloquent to get the last record of the day
-        $lastTransactionOfDay = general_ledger::
-        whereDate('created_at', $this->selectedDate)
+        $lastTransactionOfDay = general_ledger::whereDate('created_at', $this->selectedDate)
             ->where('record_on_account_number', $this->tilAccountNumber)
             ->orderBy('created_at', 'desc')
             ->first();
@@ -454,15 +445,13 @@ class TellerReport extends Component
             $this->closingBalance = 0.00;
         }
 
-
     }
 
     public function render()
     {
 
-//        dd($this->tellerEndOfDay);
+        //        dd($this->tellerEndOfDay);
         $this->tellers = DB::table('tellers')->where('employee_id', '!=', null)->where('employee_id', '!=', 0)->get();
-
 
         return view('livewire.teller-management.teller-report');
     }

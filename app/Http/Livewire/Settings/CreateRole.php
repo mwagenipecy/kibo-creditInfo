@@ -2,24 +2,23 @@
 
 namespace App\Http\Livewire\Settings;
 
-use App\Models\approvals;
-use App\Models\ChannelsModel;
 use App\Models\departmentsList;
 use App\Models\menus;
 use App\Models\sub_menus;
-use App\Models\User;
-use App\Models\UserSubMenu;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Session;
 use Livewire\Component;
 
 class CreateRole extends Component
 {
     public $moduleList;
+
     public $menusArray;
+
     public $sub_menus;
+
     public $permissions = [];
+
     public $role_name;
+
     public $description;
 
     protected $rules = [
@@ -28,7 +27,8 @@ class CreateRole extends Component
         'description' => 'required|string|max:255',
     ];
 
-    public function boot(){
+    public function boot()
+    {
         $this->moduleList = menus::get();
         $this->getPermissions();
     }
@@ -36,15 +36,15 @@ class CreateRole extends Component
     public function getPermissions(): void
     {
         $SubMenuData = sub_menus::get();
-        foreach ($SubMenuData as $permission){
-            //dd($permission);
-            $this->menusArray[]= $permission->id;
+        foreach ($SubMenuData as $permission) {
+            // dd($permission);
+            $this->menusArray[] = $permission->id;
         }
-
 
     }
 
-    public function save(){
+    public function save()
+    {
 
         $this->validate();
 
@@ -59,13 +59,9 @@ class CreateRole extends Component
             session()->flash('message', 'Role created');
             session()->flash('alert-class', 'alert-success');
 
-
-
-
             $this->permissions = [];
             $this->role_name = null;
             $this->description = null;
-
 
         }
 

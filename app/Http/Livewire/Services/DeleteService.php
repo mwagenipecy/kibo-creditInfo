@@ -3,7 +3,6 @@
 namespace App\Http\Livewire\Services;
 
 use App\Models\approvals;
-use App\Models\NodesList;
 use App\Models\servicesModel;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Support\Facades\Auth;
@@ -14,6 +13,7 @@ use Livewire\Component;
 class DeleteService extends Component
 {
     public $servicesList;
+
     public $serviceSelected;
 
     public $password = null;
@@ -21,6 +21,7 @@ class DeleteService extends Component
     public function render(): Factory|\Illuminate\Contracts\View\View|\Illuminate\Contracts\Foundation\Application
     {
         $this->servicesList = servicesModel::get();
+
         return view('livewire.services.delete-service');
     }
 
@@ -28,15 +29,14 @@ class DeleteService extends Component
     {
         // Check if password matches for logged-in user
         if (Hash::check($this->password, auth()->user()->password)) {
-            //dd('password matches');
+            // dd('password matches');
             $this->delete();
         } else {
-            //dd('password does not match');
+            // dd('password does not match');
             Session::flash('message', 'This password does not match our records');
             Session::flash('alert-class', 'alert-warning');
         }
         $this->resetPassword();
-
 
     }
 
@@ -45,18 +45,16 @@ class DeleteService extends Component
         $this->password = null;
     }
 
-
-
     public function delete(): void
     {
-        $service = servicesModel::where('ID',$this->serviceSelected)->first();
+        $service = servicesModel::where('ID', $this->serviceSelected)->first();
 
         if ($service) {
 
             $update_value = approvals::updateOrCreate(
                 [
                     'process_id' => $this->serviceSelected,
-                    'user_id' => Auth::user()->id
+                    'user_id' => Auth::user()->id,
 
                 ],
                 [
@@ -68,13 +66,11 @@ class DeleteService extends Component
                     'process_id' => $this->serviceSelected,
                     'process_status' => 'PENDING',
                     'approval_status' => 'PENDING',
-                    'user_id'  => Auth::user()->id,
-                    'team_id'  => '',
-                    'edit_package'=> null
+                    'user_id' => Auth::user()->id,
+                    'team_id' => '',
+                    'edit_package' => null,
                 ]
             );
-
-
 
             Session::flash('message', 'Awaiting approval');
             Session::flash('alert-class', 'alert-success');
@@ -95,6 +91,4 @@ class DeleteService extends Component
         $this->password = null;
 
     }
-
-
 }

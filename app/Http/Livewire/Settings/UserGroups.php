@@ -5,14 +5,13 @@ namespace App\Http\Livewire\Settings;
 use App\Models\approvals;
 use App\Models\departmentsList;
 use App\Models\menus;
-use App\Models\NodesList;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
-use App\Models\menu_list;
 
 class UserGroups extends Component
 {
     public $department = null;
+
     public $moduleList;
 
     public $modules = [];
@@ -38,8 +37,6 @@ class UserGroups extends Component
         session()->flash('alert-class', 'alert-success');
     }
 
-
-
     public function save(): void
     {
 
@@ -54,11 +51,10 @@ class UserGroups extends Component
             session()->flash('message', 'Role created');
             session()->flash('alert-class', 'alert-success');
 
-
             $update_value = approvals::updateOrCreate(
                 [
                     'process_id' => $department->id,
-                    'user_id' => Auth::user()->id
+                    'user_id' => Auth::user()->id,
 
                 ],
                 [
@@ -70,33 +66,27 @@ class UserGroups extends Component
                     'process_id' => $department->id,
                     'process_status' => 'PENDING',
                     'approval_status' => 'PENDING',
-                    'user_id'  => Auth::user()->id,
-                    'team_id'  => ''
+                    'user_id' => Auth::user()->id,
+                    'team_id' => '',
 
                 ]
             );
 
-
             $this->modules = [];
             $this->department_name = null;
 
-
-
         }
-
-
 
     }
 
-    public function setView($number){
+    public function setView($number)
+    {
         $this->selected = $number;
     }
 
-
     public function render(): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Contracts\Foundation\Application
     {
-        //$this->modules = menus::get();
-
+        // $this->modules = menus::get();
 
         return view('livewire.settings.user-groups');
     }

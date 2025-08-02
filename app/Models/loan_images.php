@@ -8,5 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class loan_images extends Model
 {
     use HasFactory;
-    protected $fillable = ['filename','url','category','document_descriptions','loan_id'];
+
+    protected $fillable = ['filename', 'url', 'category', 'document_descriptions', 'loan_id'];
 }

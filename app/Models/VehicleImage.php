@@ -8,13 +8,13 @@ use Illuminate\Database\Eloquent\Model;
 class VehicleImage extends Model
 {
     use HasFactory;
-    
-    protected $fillable = ['vehicle_id', 'image_url', 'is_featured','view'];
-    
+
+    protected $fillable = ['vehicle_id', 'image_url', 'is_featured', 'view'];
+
     protected $casts = [
         'is_featured' => 'boolean',
     ];
-    
+
     // Relationships
     public function vehicle()
     {

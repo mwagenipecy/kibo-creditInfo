@@ -2,31 +2,19 @@
 
 namespace App\Http\Livewire\Reconciliation\Cb;
 
-use Illuminate\Support\Facades\DB;
-use Livewire\Component;
-
 use App\Models\CashBookMatchingStore;
-use App\Models\Crdb;
-use App\Models\Cashbook;
-use App\Models\Audit;
-use App\Models\CashBookNonMatching;
-use App\Models\CrdbNonMatching;
-use App\Models\Processes;
 use App\Models\cashbooknonmatchingstore;
-
-use Illuminate\Support\Str;
-use Mediconesystems\LivewireDatatables\Column;
-use Mediconesystems\LivewireDatatables\NumberColumn;
-use Mediconesystems\LivewireDatatables\DateColumn;
-use Mediconesystems\LivewireDatatables\Http\Livewire\LivewireDatatable;
 use Illuminate\Support\Facades\Session;
+use Mediconesystems\LivewireDatatables\Column;
+use Mediconesystems\LivewireDatatables\Http\Livewire\LivewireDatatable;
 
 class NewCbTable extends LivewireDatatable
 {
     protected $listeners = ['refreshTables' => '$refresh'];
-    public $exportable = true;
-    public $ordernumber;
 
+    public $exportable = true;
+
+    public $ordernumber;
 
     public function builder()
     {
@@ -34,27 +22,28 @@ class NewCbTable extends LivewireDatatable
 
         return cashbooknonmatchingstore::query()->where('order_number', $this->ordernumber);
 
-
     }
 
-    public function viewClient($memberId){
-        Session::put('memberToViewId',$memberId);
-        $this->emit('refreshClientsListComponent');
-    }
-    public function editClient($memberId,$name){
-        Session::put('memberToEditId',$memberId);
-        Session::put('memberToEditName',$name);
+    public function viewClient($memberId)
+    {
+        Session::put('memberToViewId', $memberId);
         $this->emit('refreshClientsListComponent');
     }
 
-    public function resolve($value){
+    public function editClient($memberId, $name)
+    {
+        Session::put('memberToEditId', $memberId);
+        Session::put('memberToEditName', $name);
+        $this->emit('refreshClientsListComponent');
+    }
 
+    public function resolve($value)
+    {
 
+        $transactions = cashbooknonmatchingstore::where('id', $value)->get();
+        foreach ($transactions as $transaction) {
 
-        $transactions = cashbooknonmatchingstore::where('id',$value)->get();
-        foreach ($transactions as $transaction){
-
-            $CashBookNonMatching = new CashBookMatchingStore();
+            $CashBookNonMatching = new CashBookMatchingStore;
             $CashBookNonMatching->team_id = $transaction->team_id;
             $CashBookNonMatching->value_date = $transaction->value_date;
             $CashBookNonMatching->transaction_amount = $transaction->transaction_amount;
@@ -66,13 +55,11 @@ class NewCbTable extends LivewireDatatable
 
         }
 
-        cashbooknonmatchingstore::where('id',$value)->delete();
+        cashbooknonmatchingstore::where('id', $value)->delete();
 
         $this->emit('refreshSideInfo');
 
     }
-
-
 
     /**
      * Write code on Method
@@ -98,30 +85,25 @@ class NewCbTable extends LivewireDatatable
                 ->label('Value Date'),
 
             Column::callback(['id', 'transaction_amount'], function ($id, $transaction_amount) {
-                if($transaction_amount > 0){
+                if ($transaction_amount > 0) {
                     return number_format($transaction_amount, 2);
-                }else{
-                    return "0.00";
+                } else {
+                    return '0.00';
                 }
 
             })->label('Debit')
-            ->alignRight(),
+                ->alignRight(),
 
-            Column::callback(['transaction_amount'], function ( $transaction_amount) {
-                if($transaction_amount > 0){
-                    return "0.00";
-                }else{
+            Column::callback(['transaction_amount'], function ($transaction_amount) {
+                if ($transaction_amount > 0) {
+                    return '0.00';
+                } else {
                     return number_format($transaction_amount * -1, 2);
                 }
 
             })->label('Credit')
-            ->alignRight(),
-
-
-
+                ->alignRight(),
 
         ];
     }
-
-
 }

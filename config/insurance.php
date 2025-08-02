@@ -139,7 +139,7 @@ return [
             'Iringa', 'Mtwara', 'Tabora', 'Kigoma', 'Shinyanga',
             'Kagera', 'Kilimanjaro', 'Manyara', 'Lindi', 'Ruvuma',
             'Rukwa', 'Pwani', 'Singida', 'Katavi', 'Simiyu',
-            'Geita', 'Njombe', 'Songwe'
+            'Geita', 'Njombe', 'Songwe',
         ],
     ],
 

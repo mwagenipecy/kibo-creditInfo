@@ -2,8 +2,8 @@
 
 namespace App\Exports;
 
-use Maatwebsite\Excel\Concerns\FromCollection;
 use App\Models\loans_schedules;
+use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\WithHeadings;
@@ -11,26 +11,22 @@ use Maatwebsite\Excel\Concerns\WithStyles;
 use Maatwebsite\Excel\Events\AfterSheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx\Worksheet;
 
-
-class LoanSchedule implements FromCollection,WithHeadings, WithStyles, ShouldAutoSize, WithEvents
+class LoanSchedule implements FromCollection, ShouldAutoSize, WithEvents, WithHeadings, WithStyles
 {
-
     /**
      * @return \Illuminate\Support\Collection
      */
-
     public $loanId;
-
 
     public function __construct($loanId)
     {
-        $this->loanId=$loanId;
+        $this->loanId = $loanId;
     }
 
     public function collection()
     {
 
-        return loans_schedules::where('loan_id',$this->loanId)->select('installment','interest','principle','installment_date','payment','penalties','completion_status')->get();
+        return loans_schedules::where('loan_id', $this->loanId)->select('installment', 'interest', 'principle', 'installment_date', 'payment', 'penalties', 'completion_status')->get();
     }
 
     public function headings(): array
@@ -42,7 +38,7 @@ class LoanSchedule implements FromCollection,WithHeadings, WithStyles, ShouldAut
             'INSTALLMENT DATE',
             'PAYMENT',
             'PENALTIES',
-            'STATUS'
+            'STATUS',
         ];
     }
 

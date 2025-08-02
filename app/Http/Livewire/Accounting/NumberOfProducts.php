@@ -2,36 +2,22 @@
 
 namespace App\Http\Livewire\Accounting;
 
-
-use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\DB;
-use Livewire\Component;
-
-use App\Models\issured_shares;
 use App\Models\AccountsModel;
-use Illuminate\Support\Str;
-use Mediconesystems\LivewireDatatables\Column;
-use Mediconesystems\LivewireDatatables\NumberColumn;
-use Mediconesystems\LivewireDatatables\DateColumn;
-use Mediconesystems\LivewireDatatables\Http\Livewire\LivewireDatatable;
 use Illuminate\Support\Facades\Session;
-use App\Models\search;
+use Mediconesystems\LivewireDatatables\Column;
+use Mediconesystems\LivewireDatatables\Http\Livewire\LivewireDatatable;
 
 class NumberOfProducts extends LivewireDatatable
 {
-
     protected $listeners = ['refreshSavingsComponent' => '$refresh'];
+
     public $exportable = true;
-
-    
-
 
     public function builder()
     {
-        //dd(Session::get('sharesViewItem'));
+        // dd(Session::get('sharesViewItem'));
 
         return AccountsModel::query()->where('product_number', '10');
-
 
     }
 
@@ -56,7 +42,6 @@ class NumberOfProducts extends LivewireDatatable
     public function columns(): array
     {
 
-
         return [
 
             Column::name('account_name')
@@ -72,10 +57,8 @@ class NumberOfProducts extends LivewireDatatable
                 ->label('Notes'),
 
             Column::name('account_status')
-                ->label('Status')
+                ->label('Status'),
 
         ];
     }
-
-
 }

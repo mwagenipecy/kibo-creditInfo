@@ -2,32 +2,20 @@
 
 namespace App\Http\Livewire\Accounting;
 
-
 use App\Models\AccountsModel;
-use App\Models\sub_products;
-use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
-use Mediconesystems\LivewireDatatables\Column;
-use Mediconesystems\LivewireDatatables\NumberColumn;
-use Mediconesystems\LivewireDatatables\DateColumn;
-use Mediconesystems\LivewireDatatables\Http\Livewire\LivewireDatatable;
 use Illuminate\Support\Facades\Session;
-use App\Models\search;
+use Mediconesystems\LivewireDatatables\Column;
+use Mediconesystems\LivewireDatatables\Http\Livewire\LivewireDatatable;
 
 class OtherData extends LivewireDatatable
 {
-
     protected $listeners = ['refreshSavingsComponent' => '$refresh'];
+
     public $exportable = true;
-
-    
-
 
     public function builder()
     {
-        //dd(Session::get('sharesViewItem'));
-
+        // dd(Session::get('sharesViewItem'));
 
         if (Session::get('savingsViewItem') == '2') {
             return AccountsModel::query()->where('sub_product_number', '101');
@@ -47,8 +35,8 @@ class OtherData extends LivewireDatatable
         if (Session::get('savingsViewItem') == '8') {
             return AccountsModel::query();
         }
-        return AccountsModel::query();
 
+        return AccountsModel::query();
 
     }
 
@@ -88,12 +76,9 @@ class OtherData extends LivewireDatatable
                 ->label('Notes'),
 
             Column::name('account_status')
-                ->label('Status')
+                ->label('Status'),
 
         ];
 
-
     }
-
-
 }

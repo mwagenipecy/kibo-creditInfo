@@ -9,17 +9,16 @@ class Resource extends Model
 {
     use HasFactory;
 
-
     protected $fillable = [
         'name',
         'path_url',
         'descriptions',
         'lender_id',
-        'status'
+        'status',
     ];
 
-
-    public function lender(){
+    public function lender()
+    {
 
         return $this->belongsTo(Lender::class, 'lender_id');
     }

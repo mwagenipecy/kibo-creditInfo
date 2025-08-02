@@ -16,11 +16,12 @@ class OnBold extends Component
         return view('livewire.profile-setting.on-bold');
     }
 
-    public function setAccount(){
-     // create table general accounts
+    public function setAccount()
+    {
+        // create table general accounts
 
         Schema::dropIfExists('GL_accounts');
-        Schema::create('GL_accounts',function (Blueprint $table){
+        Schema::create('GL_accounts', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('account_code')->unique();
             $table->string('account_name', 100);
@@ -28,14 +29,13 @@ class OnBold extends Component
         });
 
         // insert data
-//        DB::table('GL_accounts')->insert([
-//            ['account_code' => 4000, 'account_name' => 'Revenue Account', 'created_at' => now(), 'updated_at' => now()],
-//            ['account_code' => 5000, 'account_name' => 'Expense Accounts', 'created_at' => now(), 'updated_at' => now()],
-//            ['account_code' => 1000, 'account_name' => 'Asset Account', 'created_at' => now(), 'updated_at' => now()],
-//            ['account_code' => 2000, 'account_name' => 'Liability Accounts', 'created_at' => now(), 'updated_at' => now()],
-//            ['account_code' => 3000, 'account_name' => 'Equity Accounts', 'created_at' => now(), 'updated_at' => now()],
-//        ]);
-
+        //        DB::table('GL_accounts')->insert([
+        //            ['account_code' => 4000, 'account_name' => 'Revenue Account', 'created_at' => now(), 'updated_at' => now()],
+        //            ['account_code' => 5000, 'account_name' => 'Expense Accounts', 'created_at' => now(), 'updated_at' => now()],
+        //            ['account_code' => 1000, 'account_name' => 'Asset Account', 'created_at' => now(), 'updated_at' => now()],
+        //            ['account_code' => 2000, 'account_name' => 'Liability Accounts', 'created_at' => now(), 'updated_at' => now()],
+        //            ['account_code' => 3000, 'account_name' => 'Equity Accounts', 'created_at' => now(), 'updated_at' => now()],
+        //        ]);
 
         // Get the file path
         $filePath = storage_path('txt/go.txt');
@@ -43,9 +43,7 @@ class OnBold extends Component
         // Read the contents of the file
         $fileContents = File::get($filePath);
 
-
         $lines = explode("\n", $fileContents);
-
 
         $majorCategory = '';
         $majorCategoryCode = '';
@@ -54,22 +52,20 @@ class OnBold extends Component
 
         foreach ($lines as $line) {
 
-
             $letters = trim(preg_replace('/[^A-Za-z\s]/', '', $line));
             $letters = trim(str_replace(' ', '_', $letters));
 
             preg_match('/\d+/', $line, $match);
             $number = 0000;
-            if (!empty($match)) {
+            if (! empty($match)) {
                 $number = trim($match[0]);
 
             }
 
-
             // Check if there are any letters and if they are all uppercase
-            if (!empty($letters) && strtoupper($letters) == $letters) {
+            if (! empty($letters) && strtoupper($letters) == $letters) {
 
-                if (strpos($letters, "ACCOUNTS")) {
+                if (strpos($letters, 'ACCOUNTS')) {
                     // THIS IS A MAJOR CATEGORY
                     $letters = strtolower(str_replace(' ', '_', $letters));
                     $newAccountData = [
@@ -90,7 +86,6 @@ class OnBold extends Component
 
                     $majorCategory = $letters;
                     $majorCategoryCode = $number;
-
 
                 } else {
 
@@ -116,7 +111,7 @@ class OnBold extends Component
                     $categoryCode = $number;
                 }
 
-            } elseif (!empty($letters)) {
+            } elseif (! empty($letters)) {
 
                 $letters = strtolower(str_replace(' ', '_', $letters));
                 $newAccountData = [
@@ -126,7 +121,6 @@ class OnBold extends Component
                 ];
 
                 $inserted = DB::table($category)->insert($newAccountData);
-
 
                 // Replace underscores with spaces
                 $letters = str_replace('_', ' ', $letters);
@@ -145,18 +139,14 @@ class OnBold extends Component
                     'category_code' => $categoryCode,
                     'sub_category_code' => $number,
                     'account_name' => $letters,
-                    'account_number' => str_pad(auth()->user()->institution_id, 2, 0, STR_PAD_LEFT) . '' . str_pad(auth()->user()->branch, 2, 0, STR_PAD_LEFT) . '0000' . $number,
-                    'notes' => "  ",
+                    'account_number' => str_pad(auth()->user()->institution_id, 2, 0, STR_PAD_LEFT).''.str_pad(auth()->user()->branch, 2, 0, STR_PAD_LEFT).'0000'.$number,
+                    'notes' => '  ',
 
                 ])->id;
 
-
+            } else {
+                echo 'No letters found in the string.';
             }
-
-            else {
-                echo "No letters found in the string.";
-            }
-
 
         }
     }

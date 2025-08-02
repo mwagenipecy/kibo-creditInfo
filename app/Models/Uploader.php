@@ -8,5 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class Uploader extends Model
 {
     use HasFactory;
-    protected $fillable = ['filename','url','category','loan_id'];
+
+    protected $fillable = ['filename', 'url', 'category', 'loan_id'];
 }

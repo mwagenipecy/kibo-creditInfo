@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class CrdbNonMatching extends Model
 {
     use HasFactory;
+
     protected $table = 'crdb_transactions_non_matching';
+
     protected $guarded = [];
 }

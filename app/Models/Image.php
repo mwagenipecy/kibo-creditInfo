@@ -11,6 +11,5 @@ class Image extends Model
 
     protected $guarded = [];
 
-    protected $table='images';
-
+    protected $table = 'images';
 }

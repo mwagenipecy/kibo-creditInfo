@@ -2,21 +2,24 @@
 
 namespace App\Http\Livewire\Branches;
 
-use Livewire\Component;
-use App\Models\BranchesModel;
 use App\Models\approvals;
+use App\Models\BranchesModel;
 use App\Models\TeamUser;
-use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Session;
+use Livewire\Component;
 
 class AddBranch extends Component
 {
-
     public $name;
+
     public $region;
+
     public $wilaya;
+
     public $membershipNumber;
+
     public $parentBranch;
 
     protected $rules = [
@@ -24,38 +27,38 @@ class AddBranch extends Component
         'region' => 'required|min:3',
         'wilaya' => 'required|min:3',
         'membershipNumber' => 'required|min:3|unique:branches',
-        //'parentBranch' => 'required|min:3',
+        // 'parentBranch' => 'required|min:3',
     ];
 
     public function submit()
     {
 
-        $institution_id='';
+        $institution_id = '';
         $id = auth()->user()->id;
         $currentUser = DB::table('team_user')->where('user_id', $id)->get();
-        foreach ($currentUser as $User){
-            $institution_id=$User->team_id;
+        foreach ($currentUser as $User) {
+            $institution_id = $User->team_id;
         }
 
         $this->validate();
 
         // Execution doesn't reach here if validation fails.
 
-        $id =  BranchesModel::create([
+        $id = BranchesModel::create([
             'name' => $this->name,
             'region' => $this->region,
             'wilaya' => $this->wilaya,
             'membershipNumber' => $this->membershipNumber,
             'parentBranch' => $this->parentBranch,
             'institution_id' => $institution_id,
-            'branch_status'  => 'Pending'
+            'branch_status' => 'Pending',
         ])->id;
 
         $user = auth()->user();
 
         $team = $user->currentTeam;
 
-        $institution = TeamUser::where('user_id',Auth::user()->id)->value('institution');
+        $institution = TeamUser::where('user_id', Auth::user()->id)->value('institution');
 
         approvals::create([
             'institution' => $institution,
@@ -65,11 +68,9 @@ class AddBranch extends Component
             'process_code' => '01',
             'process_id' => $id,
             'process_status' => 'Pending',
-            'user_id'  => Auth::user()->id,
-            'team_id'  => ""
+            'user_id' => Auth::user()->id,
+            'team_id' => '',
         ]);
-
-
 
         $this->resetData();
 
@@ -86,7 +87,6 @@ class AddBranch extends Component
         $this->parentBranch = '';
 
     }
-
 
     public function render()
     {

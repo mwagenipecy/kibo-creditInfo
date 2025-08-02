@@ -2,29 +2,20 @@
 
 namespace App\Http\Livewire\Savings;
 
-use Livewire\Component;
-
 use App\Models\AccountsModel;
-use App\Models\sub_products;
-use Illuminate\Support\Str;
-use Mediconesystems\LivewireDatatables\Column;
-use Mediconesystems\LivewireDatatables\NumberColumn;
-use Mediconesystems\LivewireDatatables\DateColumn;
-use Mediconesystems\LivewireDatatables\Http\Livewire\LivewireDatatable;
 use Illuminate\Support\Facades\Session;
-use App\Models\search;
+use Mediconesystems\LivewireDatatables\Column;
+use Mediconesystems\LivewireDatatables\Http\Livewire\LivewireDatatable;
 
 class OtherData extends LivewireDatatable
 {
-
     protected $listeners = ['refreshSavingsComponent' => '$refresh'];
-    public $exportable = true;
 
+    public $exportable = true;
 
     public function builder()
     {
-        //dd(Session::get('sharesViewItem'));
-
+        // dd(Session::get('sharesViewItem'));
 
         if (Session::get('savingsViewItem') == '3') {
             return AccountsModel::query()->where('account_status', 'Active')->where('product_number', '12');
@@ -44,8 +35,8 @@ class OtherData extends LivewireDatatable
         if (Session::get('savingsViewItem') == '8') {
             return AccountsModel::query();
         }
-        return AccountsModel::query();
 
+        return AccountsModel::query();
 
     }
 
@@ -92,8 +83,5 @@ class OtherData extends LivewireDatatable
 
         ];
 
-
     }
-
-
 }

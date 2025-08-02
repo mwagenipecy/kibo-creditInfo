@@ -109,5 +109,4 @@ return [
     'password_timeout' => 10800,
     'otp_validity_period' => 5, // Set the OTP validity period to 5 minutes
 
-
 ];

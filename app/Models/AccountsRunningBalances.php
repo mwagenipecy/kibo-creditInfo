@@ -8,5 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class AccountsRunningBalances extends Model
 {
     use HasFactory;
+
     protected $table = 'accounts_running_balances';
 }

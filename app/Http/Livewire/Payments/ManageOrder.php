@@ -2,95 +2,108 @@
 
 namespace App\Http\Livewire\Payments;
 
-
-
-use App\Models\Branch;
-use App\Models\Expenses;
-use App\Models\MonthlyPaymentsStatus;
+use App\Exports\ExportTransactions;
+use App\Imports\ImportTransactions;
+use App\Models\Orders;
 use App\Models\Processes;
 use App\Models\Transactions;
 use Illuminate\Contracts\View\Factory;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+// use Vtiful\Kernel\Excel;
 
 use JetBrains\PhpStorm\NoReturn;
 use Livewire\Component;
-use App\Models\Orders;
-use App\Models\AccountsModel;
-use Livewire\WithFileUploads;
-use Rappasoft\LaravelLivewireTables\DataTableComponent;
-use Rappasoft\LaravelLivewireTables\Exceptions\DataTableConfigurationException;
-use Rappasoft\LaravelLivewireTables\Traits\WithBulkActions;
-use Rappasoft\LaravelLivewireTables\Traits\WithColumns;
-use Rappasoft\LaravelLivewireTables\Traits\WithColumnSelect;
-use Rappasoft\LaravelLivewireTables\Traits\WithData;
-use Rappasoft\LaravelLivewireTables\Traits\WithDebugging;
-use Rappasoft\LaravelLivewireTables\Traits\WithFilters;
-use Rappasoft\LaravelLivewireTables\Traits\WithFooter;
-use Rappasoft\LaravelLivewireTables\Traits\WithPagination;
-use Rappasoft\LaravelLivewireTables\Traits\WithRefresh;
-use Rappasoft\LaravelLivewireTables\Traits\WithReordering;
-use Rappasoft\LaravelLivewireTables\Traits\WithSearch;
-use Rappasoft\LaravelLivewireTables\Traits\WithSecondaryHeader;
-use Rappasoft\LaravelLivewireTables\Traits\WithSorting;
-use Rappasoft\LaravelLivewireTables\Views\Column;
-
-//use Vtiful\Kernel\Excel;
-
 use Maatwebsite\Excel\Facades\Excel;
-use App\Exports\ExportTransactions;
-use App\Imports\ImportTransactions;
 use Session;
-
 
 class ManageOrder extends Component
 {
-
-
     public $css;
+
     public $oneIsSetClicked = true;
+
     public $twoIsSetClicked = false;
+
     public $threeIsSetClicked = false;
+
     public $ordernumber = '';
+
     public $ordernumberissaved = false;
+
     public $selectedDestination = '';
+
     public $amountOfTransactions = '';
+
     public $amountOfTransactionsDisplay = '';
+
     public $selectedBank = '';
+
     public $recipientName = '';
+
     public $sourceAccount = '';
+
     public $description = '';
+
     public $amount = '';
+
     public $accountNumber = '';
+
     public $fromDB = false;
+
     public $showSaveButton = false;
+
     public $xx = 'Select';
+
     public $accounts;
+
     public $selectedMno = 'Tigo';
+
     public $mobileNumber = '';
 
     public $monthOnFocus = 'April';
+
     public $yearOnFocus = '2022';
+
     public $theselected;
+
     public $permissionId = [];
+
     public $Amountpending;
+
     public $level = [];
+
     public $ProcessExists;
+
     public $ProcessStatus;
+
     public $ProcessPaymentStatus;
+
     public $excelFile;
+
     public $orders;
+
     public $CurrentOrder;
+
     public $modal = false;
+
     public $deleteOrderModal = false;
+
     public $orderToDeleteId = '';
+
     public $entryToDeleteId = '';
+
     public $deleteEntryModal = '';
+
     public $order_status = '';
+
     public $exceptions = false;
+
     public $rejectionReason = '';
+
     public mixed $reasonError = '';
+
     public $prepareForRejection = false;
+
     public $newOrderNumber = '';
 
     protected $listeners = [
@@ -102,7 +115,7 @@ class ManageOrder extends Component
         'closeDeleteOrderModal',
         'closeDeleteEntryModal',
         'closeDeleteEntryModal',
-        'refreshComponent' => '$refresh'
+        'refreshComponent' => '$refresh',
     ];
 
     public function preReject()
@@ -113,7 +126,7 @@ class ManageOrder extends Component
 
     public function showEditModal($value)
     {
-        //Session::get('orderNumber')
+        // Session::get('orderNumber')
         Session::put('editTransactionID', $value);
         $this->modal = true;
     }
@@ -121,7 +134,7 @@ class ManageOrder extends Component
     public function confirmDeleteOrder($value)
     {
         $this->orderToDeleteId = $value;
-        //Session::get('orderNumber')
+        // Session::get('orderNumber')
         Session::put('deleteOrderID', $value);
         $this->deleteOrderModal = true;
     }
@@ -130,7 +143,7 @@ class ManageOrder extends Component
     {
 
         $this->entryToDeleteId = $value;
-        //Session::get('orderNumber')
+        // Session::get('orderNumber')
         Session::put('deleteTransactionID', $value);
         $this->deleteEntryModal = true;
     }
@@ -142,7 +155,6 @@ class ManageOrder extends Component
         $this->deleteOrderModal = false;
     }
 
-
     public function closeDeleteOrderModal()
     {
         $this->deleteOrderModal = false;
@@ -152,7 +164,6 @@ class ManageOrder extends Component
     {
         $this->deleteEntryModal = false;
     }
-
 
     public function closeEditEntryModal()
     {
@@ -170,7 +181,8 @@ class ManageOrder extends Component
         $this->showSaveButton = true;
     }
 
-    #[NoReturn] public function sourceAccountx()
+    #[NoReturn]
+    public function sourceAccountx()
     {
         dd($this->description);
     }
@@ -196,7 +208,6 @@ class ManageOrder extends Component
 
     }
 
-
     public function render(): Factory|\Illuminate\Contracts\View\View|\Illuminate\Contracts\Foundation\Application
     {
 
@@ -220,10 +231,10 @@ class ManageOrder extends Component
             $this->order_status = $TheOrder->order_status;
         }
         Session::put('orderNumber', $this->ordernumber);
+
         return view('livewire.payments.manage-order');
 
     }
-
 
     public function resetData(): \Illuminate\Routing\Redirector|\Illuminate\Contracts\Foundation\Application|\Illuminate\Http\RedirectResponse
     {
@@ -246,7 +257,6 @@ class ManageOrder extends Component
 
         Excel::import(new ImportTransactions, $this->excelFile->store('files'));
 
-
     }
 
     public function getOrderDetails($OrderId)
@@ -258,16 +268,16 @@ class ManageOrder extends Component
             $order_number_new = $TheOrder->order_number;
         }
         $this->ordernumber = $order_number_new;
-        //$this->ordernumber->reflesh();
+        // $this->ordernumber->reflesh();
         Session::put('orderNumber', $order_number_new);
-        //$this->emit('refreshComponent');
-        //return redirect(request()->header('Referer'));
+        // $this->emit('refreshComponent');
+        // return redirect(request()->header('Referer'));
         $this->emit('viewOrder');
     }
 
     public function getOrderDetailsExceptions($OrderId)
     {
-        //dd($OrderId);
+        // dd($OrderId);
         $this->exceptions = true;
         $order_number_new = '';
         $currentOrder = DB::table('orders')->where('id', $OrderId)->get();
@@ -277,9 +287,8 @@ class ManageOrder extends Component
         $this->ordernumber = $order_number_new;
         Session::put('orderNumber', $order_number_new);
 
-        //return redirect(request()->header('Referer'));
+        // return redirect(request()->header('Referer'));
     }
-
 
     public function requestApproval()
     {
@@ -287,7 +296,7 @@ class ManageOrder extends Component
         Orders::where('order_number', $this->ordernumber)->update(['order_status' => 'Pending Approval']);
         Transactions::where('order_number', $this->ordernumber)->update(['trans_status' => 'Pending Approval']);
 
-        //return redirect(request()->header('Referer'));
+        // return redirect(request()->header('Referer'));
     }
 
     public function cancelRequest()
@@ -296,17 +305,15 @@ class ManageOrder extends Component
         Orders::where('order_number', $this->ordernumber)->update(['order_status' => 'Pending']);
         Transactions::where('order_number', $this->ordernumber)->update(['trans_status' => 'Pending']);
 
-        //return redirect(request()->header('Referer'));
+        // return redirect(request()->header('Referer'));
     }
 
     public function createNewOrder(): \Illuminate\Routing\Redirector|\Illuminate\Contracts\Foundation\Application|\Illuminate\Http\RedirectResponse
     {
 
-
         if ($this->newOrderNumber == '') {
-            $this->newOrderNumber = sprintf("%06d", mt_rand(1, 999999));
+            $this->newOrderNumber = sprintf('%06d', mt_rand(1, 999999));
         }
-
 
         $ref = time();
         $branch_id = '';
@@ -321,9 +328,8 @@ class ManageOrder extends Component
             $name = $branch->name;
         }
 
-
         $Orders = Orders::where('order_number', $this->ordernumber)->get();
-        //dd($this->ordernumber);
+        // dd($this->ordernumber);
 
         foreach ($Orders as $Orderx) {
 
@@ -364,15 +370,13 @@ class ManageOrder extends Component
 
         }
 
-
         return redirect(request()->header('Referer'));
     }
 
     public function createNewOrderExceptions(): \Illuminate\Routing\Redirector|\Illuminate\Contracts\Foundation\Application|\Illuminate\Http\RedirectResponse
     {
 
-
-        $newOrderNumber = sprintf("%06d", mt_rand(1, 999999));
+        $newOrderNumber = sprintf('%06d', mt_rand(1, 999999));
 
         $ref = time();
         $branch_id = '';
@@ -387,9 +391,8 @@ class ManageOrder extends Component
             $name = $branch->name;
         }
 
-
         $Orders = Orders::where('order_number', $this->ordernumber)->get();
-        //dd($this->ordernumber);
+        // dd($this->ordernumber);
 
         foreach ($Orders as $Orderx) {
 
@@ -437,14 +440,12 @@ class ManageOrder extends Component
         return redirect(request()->header('Referer'));
     }
 
-
     public function createNewOrderErrors(): \Illuminate\Routing\Redirector|\Illuminate\Contracts\Foundation\Application|\Illuminate\Http\RedirectResponse
     {
 
         if ($this->newOrderNumber == '') {
-            $this->newOrderNumber = sprintf("%06d", mt_rand(1, 999999));
+            $this->newOrderNumber = sprintf('%06d', mt_rand(1, 999999));
         }
-
 
         $ref = time();
         $branch_id = '';
@@ -459,9 +460,8 @@ class ManageOrder extends Component
             $name = $branch->name;
         }
 
-
         $Orders = Orders::where('order_number', $this->ordernumber)->get();
-        //dd($this->ordernumber);
+        // dd($this->ordernumber);
 
         foreach ($Orders as $Orderx) {
 
@@ -475,7 +475,6 @@ class ManageOrder extends Component
             $order->typeOfTransfer = $Orderx->typeOfTransfer;
             $order->amountOfTransactions = $Orderx->amountOfTransactions;
             $order->save();
-
 
         }
         Orders::where('order_number', $this->ordernumber)->update(['order_status' => 'Processed']);
@@ -519,9 +518,8 @@ class ManageOrder extends Component
     {
 
         if ($this->newOrderNumber == '') {
-            $this->newOrderNumber = sprintf("%06d", mt_rand(1, 999999));
+            $this->newOrderNumber = sprintf('%06d', mt_rand(1, 999999));
         }
-
 
         $ref = time();
         $branch_id = '';
@@ -536,9 +534,8 @@ class ManageOrder extends Component
             $name = $branch->name;
         }
 
-
         $Orders = Orders::where('order_number', $this->ordernumber)->get();
-        //dd($this->ordernumber);
+        // dd($this->ordernumber);
 
         foreach ($Orders as $Orderx) {
 
@@ -552,7 +549,6 @@ class ManageOrder extends Component
             $order->typeOfTransfer = $Orderx->typeOfTransfer;
             $order->amountOfTransactions = $Orderx->amountOfTransactions;
             $order->save();
-
 
         }
         Orders::where('order_number', $this->ordernumber)->update(['order_status' => 'Processed']);
@@ -591,6 +587,4 @@ class ManageOrder extends Component
 
         return redirect(request()->header('Referer'));
     }
-
-
 }

@@ -1,16 +1,17 @@
 <?php
+
 //
-//namespace App\Http\Livewire\TellerManagement;
+// namespace App\Http\Livewire\TellerManagement;
 //
-//use App\Models\AccountsModel;
-//use App\Models\approvals;
-//use App\Models\general_ledger;
-//use Illuminate\Support\Facades\Config;
-//use Illuminate\Support\Facades\DB;
-//use Livewire\Component;
+// use App\Models\AccountsModel;
+// use App\Models\approvals;
+// use App\Models\general_ledger;
+// use Illuminate\Support\Facades\Config;
+// use Illuminate\Support\Facades\DB;
+// use Livewire\Component;
 //
-//class StrongRoom extends Component
-//{
+// class StrongRoom extends Component
+// {
 //    public $item;
 //    public $source_teller_account;
 //    public $source_teller_amount;
@@ -127,80 +128,81 @@
 //    {
 //        return view('livewire.teller-management.strong-room');
 //    }
-//}
-
+// }
 
 namespace App\Http\Livewire\TellerManagement;
 
 use App\Models\AccountsModel;
 use App\Models\approvals;
 use App\Models\general_ledger;
-use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 
 class StrongRoom extends Component
 {
     public $item;
+
     public $source_teller_account;
+
     public $source_teller_amount;
 
-
     public $destination_teller_account;
+
     public $amount2;
+
     public $notes;
+
     public $teller_account_number;
 
-
     public $mirror_account_number;
-    public $strong_room_note;
-    public $reference_number;
-    public $destination_account_number;
-    public $mirror_account_amount;
-    public $tellerAccount;
 
+    public $strong_room_note;
+
+    public $reference_number;
+
+    public $destination_account_number;
+
+    public $mirror_account_amount;
+
+    public $tellerAccount;
 
     protected $rules = [
         'destination_teller_account' => 'required',
         'notes' => 'required',
         'source_teller_amount' => 'required',
-        'source_teller_account' => 'required'
+        'source_teller_account' => 'required',
     ];
-
 
     public function process()
     {
 
         $this->validate();
         if ($this->source_teller_account == $this->destination_teller_account) {
-            session()->flash('message_fail', "sorry you provided wrong destination");
+            session()->flash('message_fail', 'sorry you provided wrong destination');
         } else {
 
             if ($this->source_teller_amount < AccountsModel::where('account_number', $this->source_teller_account)->value('balance')) {
                 // do transaction otherwise block the transaction
                 // source teller
-                $new_teller_balance = (double)AccountsModel::where('account_number', $this->source_teller_account)->value('balance') - (double)$this->source_teller_amount;
+                $new_teller_balance = (float) AccountsModel::where('account_number', $this->source_teller_account)->value('balance') - (float) $this->source_teller_amount;
                 // update source teller account
                 AccountsModel::where('account_number', $this->source_teller_account)->update(['balance' => $new_teller_balance]);
                 // for destination teller account
-                $teller_new_account_balance = (double)AccountsModel::where('account_number', $this->destination_teller_account)->value('balance') + (double)$this->source_teller_amount;
+                $teller_new_account_balance = (float) AccountsModel::where('account_number', $this->destination_teller_account)->value('balance') + (float) $this->source_teller_amount;
                 // update destination teller account
                 AccountsModel::where('account_number', $this->destination_teller_account)->update(['balance' => $teller_new_account_balance]);
                 // debit at the first teller account
                 $reference = time();
-                $general_ledger_records = new general_ledger();
+                $general_ledger_records = new general_ledger;
 
+                $general_ledger_records->debit($this->source_teller_account, $new_teller_balance,
+                    $this->destination_teller_account, $this->source_teller_amount, 'internal funds transfer', '');
+                // credit to the account
+                $general_ledger_records->credit(
+                    $this->destination_teller_account, $teller_new_account_balance, $this->source_teller_amount, $this->source_teller_amount, 'internal funds transfer', ''
+                );
 
-                 $general_ledger_records->debit($this->source_teller_account,$new_teller_balance,
-                     $this->destination_teller_account,$this->source_teller_amount,'internal funds transfer','');
-                 // credit to the account
-                 $general_ledger_records->credit(
-                     $this->destination_teller_account,$teller_new_account_balance
-                     ,$this->source_teller_amount,$this->source_teller_amount,'internal funds transfer',''
-                 );
-
-
-                session()->flash('message', "process is successfully");
+                session()->flash('message', 'process is successfully');
 
                 $this->resetStrongRoomDeposition();
             } else {
@@ -209,7 +211,6 @@ class StrongRoom extends Component
         }
 
     }
-
 
     public function strongRoomToTeller()
     {
@@ -223,10 +224,10 @@ class StrongRoom extends Component
             'notes' => $this->strong_room_note,
         ];
         $process_id = AccountsModel::where('account_number', $this->mirror_account_number)->value('id');
-        $approvals = new approvals();
-        $approvals->sendApproval($process_id, 'strongRoomDeposition', auth()->user()->name . 'has deposit funds from bank', 'funds deposition', '102', json_encode($array_data));
+        $approvals = new approvals;
+        $approvals->sendApproval($process_id, 'strongRoomDeposition', auth()->user()->name.'has deposit funds from bank', 'funds deposition', '102', json_encode($array_data));
         $this->resetStrongRoomDeposition();
-        session()->flash('message2', "Awaiting approval");
+        session()->flash('message2', 'Awaiting approval');
     }
 
     public function resetStrongRoomDeposition()
@@ -241,9 +242,7 @@ class StrongRoom extends Component
         $this->source_teller_amount = null;
         $this->notes = null;
 
-
     }
-
 
     public function render()
     {
@@ -253,7 +252,6 @@ class StrongRoom extends Component
         // teller account details
         $accountData = DB::table('accounts')->whereIn('id', $accountId)->orWhere('sub_category_code', 1025)->get();
         $this->tellerAccount = $accountData;
-
 
         return view('livewire.teller-management.strong-room');
     }

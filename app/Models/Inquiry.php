@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Inquiry extends Model
 {
     use HasFactory;
-    
+
     protected $fillable = [
         'vehicle_id',
         'dealer_id',
@@ -18,13 +18,13 @@ class Inquiry extends Model
         'message',
         'status',
     ];
-    
+
     // Relationships
     public function vehicle()
     {
         return $this->belongsTo(Vehicle::class);
     }
-    
+
     public function dealer()
     {
         return $this->belongsTo(CarDealer::class);

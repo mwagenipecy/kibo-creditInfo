@@ -8,9 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class BodyType extends Model
 {
     use HasFactory;
-    
+
     protected $fillable = ['name'];
-    
+
     // Relationships
     public function vehicles()
     {

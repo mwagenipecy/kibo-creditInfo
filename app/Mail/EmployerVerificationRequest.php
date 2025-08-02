@@ -13,16 +13,16 @@ class EmployerVerificationRequest extends Mailable
     use Queueable, SerializesModels;
 
     public $application;
+
     public $verification;
+
     public $messageContent;
+
     public $verificationUrl;
 
     /**
      * Create a new message instance.
      *
-     * @param Application $application
-     * @param EmployerVerification $verification
-     * @param string $messageContent
      * @return void
      */
     public function __construct(Application $application, EmployerVerification $verification, string $messageContent)
@@ -40,9 +40,7 @@ class EmployerVerificationRequest extends Mailable
      */
     public function build()
     {
-        return $this->subject('Employee Verification Request - ' . config('app.name'))
-                   ->markdown('emails.employer-verification-request');
+        return $this->subject('Employee Verification Request - '.config('app.name'))
+            ->markdown('emails.employer-verification-request');
     }
-
-    
 }

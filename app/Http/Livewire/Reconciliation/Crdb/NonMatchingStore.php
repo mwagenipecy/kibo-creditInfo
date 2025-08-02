@@ -2,23 +2,10 @@
 
 namespace App\Http\Livewire\Reconciliation\Crdb;
 
-use Livewire\Component;
-
-use App\Models\Crdb;
-use App\Models\Cashbook;
-use App\Models\Audit;
-use App\Models\CashBookNonMatching;
-use App\Models\CrdbNonMatching;
-use App\Models\Processes;
 use App\Models\crdbtransactionsnonmatchingstore;
 use Illuminate\Contracts\View\Factory;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 use JetBrains\PhpStorm\NoReturn;
-
-use App\Models\Orders;
-use App\Models\RecoSessions;
 use Livewire\WithFileUploads;
 use Rappasoft\LaravelLivewireTables\DataTableComponent;
 use Rappasoft\LaravelLivewireTables\Exceptions\DataTableConfigurationException;
@@ -37,18 +24,10 @@ use Rappasoft\LaravelLivewireTables\Traits\WithSecondaryHeader;
 use Rappasoft\LaravelLivewireTables\Traits\WithSorting;
 use Rappasoft\LaravelLivewireTables\Views\Column;
 
-//use Vtiful\Kernel\Excel;
-
-use Maatwebsite\Excel\Facades\Excel;
-use App\Exports\ExportTransactions;
-use App\Imports\ImportTransactions;
-
+// use Vtiful\Kernel\Excel;
 
 class NonMatchingStore extends DataTableComponent
 {
-
-
-    use WithFileUploads;
     use WithBulkActions,
         WithColumns,
         WithColumnSelect,
@@ -56,12 +35,13 @@ class NonMatchingStore extends DataTableComponent
         WithDebugging,
         WithFilters,
         WithFooter,
-        WithSecondaryHeader,
         WithPagination,
         WithRefresh,
         WithReordering,
         WithSearch,
+        WithSecondaryHeader,
         WithSorting;
+    use WithFileUploads;
 
     public $ordernumber = '';
 
@@ -71,7 +51,6 @@ class NonMatchingStore extends DataTableComponent
     {
         $this->ordernumber = Session::get('orderNumber');
 
-
         return view('livewire.reconciliation.crdb.non-matching-store')->with([
             'columns' => $this->getColumns(),
             'rows' => $this->getRows(),
@@ -79,32 +58,29 @@ class NonMatchingStore extends DataTableComponent
 
     }
 
-
     public function builder(): \Illuminate\Database\Eloquent\Builder
     {
         $this->ordernumber = Session::get('orderNumber');
         $transactions = crdbtransactionsnonmatchingstore::where('order_number', $this->ordernumber);
-        //dd($transactions->get());
+        // dd($transactions->get());
 
         return $transactions;
     }
 
-
     /**
      * @throws DataTableConfigurationException
      */
-    #[NoReturn] public function boot(): void
+    #[NoReturn]
+    public function boot(): void
     {
 
-
-        //$this->builder =$this->Builder();
+        // $this->builder =$this->Builder();
         $this->setBuilder($this->builder());
 
-
-//        $this->{$this->tableName} = [
-//            'sorts' => $this->{$this->tableName}['sorts'] ?? [],
-//            'filters' => $this->{$this->tableName}['filters'] ?? [],
-//        ];
+        //        $this->{$this->tableName} = [
+        //            'sorts' => $this->{$this->tableName}['sorts'] ?? [],
+        //            'filters' => $this->{$this->tableName}['filters'] ?? [],
+        //        ];
 
         // Set the user defined columns to work with
         $this->setColumns();
@@ -113,21 +89,19 @@ class NonMatchingStore extends DataTableComponent
         $this->configure();
 
         // Make sure a primary key is set
-        if (!$this->hasPrimaryKey()) {
+        if (! $this->hasPrimaryKey()) {
             throw new DataTableConfigurationException('You must set a primary key using setPrimaryKey in the configure method.');
         }
 
         // Set the filter defaults based on the filter type
-        //$this->setFilterDefaults();
-
+        // $this->setFilterDefaults();
 
     }
-
 
     public function configure(): void
     {
         $this->setPrimaryKey('id')
-            //->setReorderEnabled()
+            // ->setReorderEnabled()
             ->setSingleSortingDisabled()
             ->setHideReorderColumnUnlessReorderingEnabled()
             ->setFilterLayoutSlideDown()
@@ -156,7 +130,7 @@ class NonMatchingStore extends DataTableComponent
             ->setHideBulkActionsWhenEmptyEnabled();
     }
 
-    //BULK ACTIONS
+    // BULK ACTIONS
     public function paySelected()
     {
         foreach ($this->getSelected() as $item) {
@@ -164,7 +138,6 @@ class NonMatchingStore extends DataTableComponent
         }
         $this->clearSelected();
     }
-
 
     public function columns(): array
     {
@@ -174,17 +147,18 @@ class NonMatchingStore extends DataTableComponent
         return [
             Column::make('id', 'id')
                 ->hideIf(true),
-            Column::make('select','selected')
-                ->format(function($value, $row, Column $column) {
+            Column::make('select', 'selected')
+                ->format(function ($value, $row, Column $column) {
 
                     $this->theselected = $row->id;
 
-                    if($this->ProcessStatus === 'pending'){
+                    if ($this->ProcessStatus === 'pending') {
                         return view('livewire.payments.checkbox-disabled')->withValue($value);
                     }
-                    if($this->ProcessStatus === 'approved'){
+                    if ($this->ProcessStatus === 'approved') {
                         return view('livewire.payments.checkbox-disabled')->withValue($value);
                     }
+
                     return view('livewire.payments.checkbox')->withValue($value);
                 })
                 ->hideIf(true),
@@ -206,31 +180,25 @@ class NonMatchingStore extends DataTableComponent
             Column::make('Resolution', 'payment_status')
                 ->sortable()
                 ->searchable(),
-            Column::make('Action','id')
-                ->format(function($value, $row, Column $column) {
+            Column::make('Action', 'id')
+                ->format(function ($value, $row, Column $column) {
 
                     $this->theselected = $row->id;
-                    if($row->payment_status =='Pending'){
+                    if ($row->payment_status == 'Pending') {
                         return view('livewire.cb.action')->withValue($value);
-                    }else{
+                    } else {
                         return null;
                     }
 
                 }),
 
-
-
-
         ];
     }
 
-    public function resolve($value){
+    public function resolve($value)
+    {
 
-        crdbtransactionsnonmatchingstore::where('id',$value)->update(['payment_status'=>'Resolved']);
+        crdbtransactionsnonmatchingstore::where('id', $value)->update(['payment_status' => 'Resolved']);
         $this->emit('refreshSideInfo');
     }
-
-
-
 }
-

@@ -2,17 +2,14 @@
 
 namespace App\Http\Livewire\Approvals;
 
-use Livewire\Component;
 use Illuminate\Support\Facades\Session;
-
+use Livewire\Component;
 
 class Approvals extends Component
 {
-
-
     public $tab_id = '1';
-    public $title = 'Savings report';
 
+    public $title = 'Savings report';
 
     public function menuItemClicked($tabId)
     {
@@ -28,26 +25,24 @@ class Approvals extends Component
         }
         if ($tabId == '4') {
             $this->title = 'Loan Disbursements';
-            Session::put('viewLoansWithCategory','Accounting');
+            Session::put('viewLoansWithCategory', 'Accounting');
 
-            Session::put('currentloanID',null);
-            Session::put('currentloanClient',null);
-            Session::put('disableInputs',true);
+            Session::put('currentloanID', null);
+            Session::put('currentloanClient', null);
+            Session::put('disableInputs', true);
         }
 
         if ($tabId == '5') {
             $this->title = 'PO / Invoices';
-            Session::put('viewLoansWithCategory','AccountingPO');
-            Session::put('currentloanID',null);
-            Session::put('currentloanClient',null);
-            Session::put('disableInputs',true);
+            Session::put('viewLoansWithCategory', 'AccountingPO');
+            Session::put('currentloanID', null);
+            Session::put('currentloanClient', null);
+            Session::put('disableInputs', true);
         }
     }
-
 
     public function render()
     {
         return view('livewire.approvals.approvals');
     }
 }
-

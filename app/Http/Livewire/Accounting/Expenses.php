@@ -2,66 +2,88 @@
 
 namespace App\Http\Livewire\Accounting;
 
-use App\Models\ExpensesCategory;
-use App\Models\MembersModel;
-use App\Models\TeamUser;
-use App\Models\User;
-use Illuminate\Support\Facades\Config;
-use Livewire\Component;
-
-use Exception;
-use App\Models\ExpensesModel;
-use App\Models\approvals;
 use App\Models\AccountsModel;
+use App\Models\approvals;
+use App\Models\ExpensesCategory;
+use App\Models\ExpensesModel;
+use App\Models\MembersModel;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Hash;
-use Livewire\WithFileUploads;
+use Illuminate\Support\Facades\Session;
+use Livewire\Component;
 
 class Expenses extends Component
 {
-
     public $title = 'Expenses list';
+
     public $selected;
+
     public $showCreateNewExpense;
+
     public $showDeleteExpense;
+
     public $ExpenseSelected;
+
     public $showEditExpense;
+
     public $Expense;
+
     public $showAddExpense;
+
     public $vendor;
+
     public $category;
+
     public $amount;
+
     public $paymentMethod;
+
     public $expenditureAccount;
+
     public $destinationAccount;
+
     public $employeeId;
+
     public $departmentId;
+
     public $expenseDate;
+
     public $confirmingUserDeletion = false;
 
     public $branches;
+
     public $activeExpensesCount;
+
     public $inactiveExpensesCount;
+
     public $pendingExpensename;
+
     public $photo;
+
     public $profile_photo_path;
+
     public $selectedCategory = null;
-    public $approveExpenses=false;
+
+    public $approveExpenses = false;
+
     public $member_name;
+
     public $source_account;
+
     public $source_account_name;
+
     public $request_amount;
+
     public $description;
+
     public $account_balance;
-
-
 
     protected $listeners = [
         'showUsersList' => 'showUsersList',
         'editExpense' => 'editExpenseModal',
-        'approveExpenses'=>'approveExpenseModal'
+        'approveExpenses' => 'approveExpenseModal',
     ];
 
     protected $rules = [
@@ -73,28 +95,26 @@ class Expenses extends Component
         'destinationAccount' => 'required|min:3',
         'employeeId' => 'required|integer',
         'departmentId' => 'required|integer',
-        'expenseDate' => 'required|date'
+        'expenseDate' => 'required|date',
     ];
+
     public $categories;
+
     public $expenditureAccounts;
 
-
-
-    public function desplayExpensesData($id){
-        ///
-        $expenses=  DB::table('Expenses')->where('id',$id)->first();
-        $this->member_name =MembersModel::where('membership_number',$expenses->member_number)
+    public function desplayExpensesData($id)
+    {
+        // /
+        $expenses = DB::table('Expenses')->where('id', $id)->first();
+        $this->member_name = MembersModel::where('membership_number', $expenses->member_number)
             ->selectRaw("CONCAT(first_name,' ',middle_name,'  ',last_name) as name")->value('name');
-        $this->source_account=AccountsModel::where('sub_category_code',$expenses->sub_category_code)->value('account_number');
-        $this->source_account_name=AccountsModel::where('sub_category_code',$expenses->sub_category_code)->value('account_name');
-        $this->account_balance=AccountsModel::where('sub_category_code',$expenses->sub_category_code)->value('balance');
-        $this->request_amount=$expenses->amount;
-        $this->description=$expenses->notes;
+        $this->source_account = AccountsModel::where('sub_category_code', $expenses->sub_category_code)->value('account_number');
+        $this->source_account_name = AccountsModel::where('sub_category_code', $expenses->sub_category_code)->value('account_name');
+        $this->account_balance = AccountsModel::where('sub_category_code', $expenses->sub_category_code)->value('balance');
+        $this->request_amount = $expenses->amount;
+        $this->description = $expenses->notes;
 
     }
-
-    
-
 
     public function showAddExpenseModal($selected)
     {
@@ -133,7 +153,7 @@ class Expenses extends Component
             'employeeId' => $this->employeeId,
             'departmentId' => $this->departmentId,
             'expenseDate' => $this->expenseDate,
-            'updated_at' => now()
+            'updated_at' => now(),
         ]);
 
         // reset data
@@ -183,10 +203,10 @@ class Expenses extends Component
 
     // ... the rest of the methods
 
-    public function sendApproval($id,$msg,$code){
+    public function sendApproval($id, $msg, $code)
+    {
 
         $user = auth()->user();
-
 
         approvals::create([
             'institution' => $id,
@@ -196,39 +216,37 @@ class Expenses extends Component
             'process_code' => $code,
             'process_id' => $id,
             'process_status' => 'Pending',
-            'user_id'  => Auth::user()->id,
-            'team_id'  => $id
+            'user_id' => Auth::user()->id,
+            'team_id' => $id,
         ]);
 
     }
 
-
     public function submit()
     {
 
-        $institution_id='';
+        $institution_id = '';
         $id = auth()->user()->id;
         $currentUser = DB::table('team_user')->where('user_id', $id)->get();
-        foreach ($currentUser as $User){
-            $institution_id=$User->team_id;
+        foreach ($currentUser as $User) {
+            $institution_id = $User->team_id;
         }
 
         $this->validate();
 
         // Execution doesn't reach here if validation fails.
 
-        $id =  ExpensesModel::create([
+        $id = ExpensesModel::create([
             'name' => $this->name,
             'region' => $this->region,
             'wilaya' => $this->wilaya,
             'expenseshipNumber' => $this->expenseshipNumber,
             'parentExpense' => $this->parentExpense,
             'institution_id' => $institution_id,
-            'Expense_status'  => 'Pending'
+            'Expense_status' => 'Pending',
         ])->id;
 
         $user = auth()->user();
-
 
         approvals::create([
             'institution' => '',
@@ -238,11 +256,9 @@ class Expenses extends Component
             'process_code' => '01',
             'process_id' => $id,
             'process_status' => 'Pending',
-            'user_id'  => session()->get('currentUser')->id,
-            'team_id'  => ""
+            'user_id' => session()->get('currentUser')->id,
+            'team_id' => '',
         ]);
-
-
 
         $this->resetData();
 
@@ -250,23 +266,19 @@ class Expenses extends Component
         Session::flash('alert-class', 'alert-success');
     }
 
-
-
-
-    public function menuItemClicked($tabId){
+    public function menuItemClicked($tabId)
+    {
         $this->tab_id = $tabId;
-        if($tabId == '1'){
+        if ($tabId == '1') {
             $this->title = 'Expenses list';
         }
-        if($tabId == '2'){
+        if ($tabId == '2') {
             $this->title = 'Enter new Expense details';
         }
     }
 
-
     public function createNewExpense()
     {
-
 
         $this->showCreateNewExpense = true;
     }
@@ -283,12 +295,13 @@ class Expenses extends Component
         $this->showEditExpense = true;
         $this->pendingExpense = $id;
         $this->Expense = $id;
-        $this->pendingExpensename = ExpensesModel::where('id',$id)->value('first_name');
+        $this->pendingExpensename = ExpensesModel::where('id', $id)->value('first_name');
         $this->updatedExpense();
 
     }
 
-    public function closeModal(){
+    public function closeModal()
+    {
         $this->showCreateNewExpense = false;
         $this->showDeleteExpense = false;
         $this->showEditExpense = false;
@@ -298,15 +311,14 @@ class Expenses extends Component
     {
         // Check if password matches for logged-in user
         if (Hash::check($this->password, auth()->user()->password)) {
-            //dd('password matches');
+            // dd('password matches');
             $this->delete();
         } else {
-            //dd('password does not match');
+            // dd('password does not match');
             Session::flash('message', 'This password does not match our records');
             Session::flash('alert-class', 'alert-warning');
         }
         $this->resetPassword();
-
 
     }
 
@@ -317,24 +329,24 @@ class Expenses extends Component
 
     public function delete(): void
     {
-        $user = User::where('id',$this->userSelected)->first();
+        $user = User::where('id', $this->userSelected)->first();
         $action = '';
         if ($user) {
 
-            if($this->permission == 'BLOCKED'){
+            if ($this->permission == 'BLOCKED') {
                 $action = 'blockUser';
             }
-            if($this->permission == 'ACTIVE'){
+            if ($this->permission == 'ACTIVE') {
                 $action = 'activateUser';
             }
-            if($this->permission == 'DELETED'){
+            if ($this->permission == 'DELETED') {
                 $action = 'deleteUser';
             }
 
             $update_value = approvals::updateOrCreate(
                 [
                     'process_id' => $this->userSelected,
-                    'user_id' => Auth::user()->id
+                    'user_id' => Auth::user()->id,
 
                 ],
                 [
@@ -346,22 +358,20 @@ class Expenses extends Component
                     'process_id' => $this->userSelected,
                     'process_status' => $this->permission,
                     'approval_status' => 'PENDING',
-                    'user_id'  => Auth::user()->id,
-                    'team_id'  => '',
-                    'edit_package'=> null
+                    'user_id' => Auth::user()->id,
+                    'team_id' => '',
+                    'edit_package' => null,
                 ]
             );
 
-
             // Delete the record
-            //$node->delete();
+            // $node->delete();
             // Add your logic here for successful deletion
             Session::flash('message', 'Awaiting approval');
             Session::flash('alert-class', 'alert-success');
 
             $this->closeModal();
             $this->render();
-
 
         } else {
             // Handle case where record was not found
@@ -374,8 +384,9 @@ class Expenses extends Component
 
     public function render()
     {
-//        $this->categories  = ExpensesCategory::get();
+        //        $this->categories  = ExpensesCategory::get();
         $this->expenditureAccounts = AccountsModel::where('product_number', '10')->get();
+
         return view('livewire.accounting.expenses');
     }
 }

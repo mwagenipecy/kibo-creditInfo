@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use Carbon\Carbon;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -37,7 +36,7 @@ class User extends Authenticatable
         'institution_id',
         'address',
         'phone_number',
-        'status'
+        'status',
         // add this line to the array
     ];
 
@@ -81,25 +80,22 @@ class User extends Authenticatable
         return static::where('email', $email)->count() == 0;
     }
 
-
-    public function registerUser($email,$department,$name,$imployeeId,$password){
-
+    public function registerUser($email, $department, $name, $imployeeId, $password)
+    {
 
         User::create([
-            'email'=>$email,
-            'password'=>Hash::make($password),   // password is 1234567890
-            'department'=>$department,
-            'created_at'=>Carbon::now(),
-             'updated_at'=>Carbon::now(),
-            'name'=>$name,
-            'employeeId'=>$imployeeId,
-            'branch'=>auth()->user()->branch,
-            'institution_id'=>auth()->user()->institution_id,
+            'email' => $email,
+            'password' => Hash::make($password),   // password is 1234567890
+            'department' => $department,
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now(),
+            'name' => $name,
+            'employeeId' => $imployeeId,
+            'branch' => auth()->user()->branch,
+            'institution_id' => auth()->user()->institution_id,
         ]);
         // send mail
     }
-
-
 
     public function needsOtpVerification()
     {
@@ -125,13 +121,13 @@ class User extends Authenticatable
      */
     public function getMaskedPhoneAttribute()
     {
-        if (!$this->phone) {
+        if (! $this->phone) {
             return null;
         }
 
         $phone = $this->phone;
         if (strlen($phone) >= 7) {
-            return substr($phone, 0, 3) . '***' . substr($phone, -4);
+            return substr($phone, 0, 3).'***'.substr($phone, -4);
         }
 
         return $phone;
@@ -148,13 +144,9 @@ class User extends Authenticatable
         $atPosition = strpos($email, '@');
 
         if ($atPosition > 1) {
-            return substr($email, 0, 1) . '***' . substr($email, $atPosition);
+            return substr($email, 0, 1).'***'.substr($email, $atPosition);
         }
 
         return $email;
     }
-
-
-
-
 }

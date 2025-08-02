@@ -66,9 +66,8 @@ class Kernel extends HttpKernel
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'auth.manka.api' => \App\Http\Middleware\ApiAuthMiddleware::class,
 
-
         'client' => \App\Http\Middleware\ClientMiddleware::class,
-        'otp' => \App\Http\Middleware\OTPMiddleware::class, 
+        'otp' => \App\Http\Middleware\OTPMiddleware::class,
 
     ];
 }

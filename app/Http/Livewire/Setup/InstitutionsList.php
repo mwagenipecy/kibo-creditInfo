@@ -2,31 +2,20 @@
 
 namespace App\Http\Livewire\Setup;
 
-use Livewire\Component;
-
 use App\Models\institutions;
-use App\Models\LoansModel;
-use App\Models\Clients;
-use Illuminate\Support\Str;
-use Mediconesystems\LivewireDatatables\Column;
-use Mediconesystems\LivewireDatatables\NumberColumn;
-use Mediconesystems\LivewireDatatables\DateColumn;
-use Mediconesystems\LivewireDatatables\Http\Livewire\LivewireDatatable;
 use Illuminate\Support\Facades\Session;
-use App\Models\search;
+use Mediconesystems\LivewireDatatables\Column;
+use Mediconesystems\LivewireDatatables\Http\Livewire\LivewireDatatable;
 
 class InstitutionsList extends LivewireDatatable
 {
-
     protected $listeners = ['refreshInstitutionsListComponent' => '$refresh'];
-    public $exportable = true;
 
+    public $exportable = true;
 
     public function builder()
     {
         return institutions::query();
-
-
 
     }
 
@@ -52,10 +41,9 @@ class InstitutionsList extends LivewireDatatable
     public function columns(): array
     {
 
+        $html = null;
 
-        $html =null;
         return [
-
 
             Column::name('name')
                 ->label('Institution name'),
@@ -78,35 +66,28 @@ class InstitutionsList extends LivewireDatatable
             Column::name('admin')
                 ->label('Admin'),
 
-            Column::callback(['id','institution_id','branch_status'], function ($id,$member_number,$status) use ($html) {
-                //$status = 1;
+            Column::callback(['id', 'institution_id', 'branch_status'], function ($id, $member_number, $status) use ($html) {
+                // $status = 1;
 
-                if($status == 'Pending'){
+                if ($status == 'Pending') {
                     $status = 1;
-                }elseif ($status == 'Awaiting Approval'){
+                } elseif ($status == 'Awaiting Approval') {
                     $status = 2;
-                }
-                elseif ($status == 'Approved'){
+                } elseif ($status == 'Approved') {
                     $status = 3;
-                }
-                elseif ($status == 'Restructured'){
+                } elseif ($status == 'Restructured') {
                     $status = 4;
-                }
-                elseif ($status == 'Top Up'){
+                } elseif ($status == 'Top Up') {
                     $status = 5;
-                }
-                elseif ($status == 'Active'){
+                } elseif ($status == 'Active') {
                     $status = 6;
-                }
-                elseif ($status == 'Rejected'){
+                } elseif ($status == 'Rejected') {
                     $status = 7;
-                }
-                elseif ($status == 'Recovery'){
+                } elseif ($status == 'Recovery') {
                     $status = 8;
-                }else{
+                } else {
                     $status = 1;
                 }
-
 
                 $html = '<div class="w-full">
                             <button wire:click="viewloan('.$id.','.$member_number.','.$status.')" class=" m-2 py-2 px-4 text-sm font-medium text-center text-gray-900
@@ -126,52 +107,39 @@ class InstitutionsList extends LivewireDatatable
 
         ];
 
-
     }
 
+    public function viewloan($id, $member_number, $status)
+    {
 
-    public function viewloan($id,$member_number,$status){
-
-
-
-        if($status == 1){
-            Session::put('loanStatus','Pending');
-        }elseif ($status == 2){
-            Session::put('loanStatus','Awaiting Approval');
-        }
-        elseif ($status == 3){
-            Session::put('loanStatus','Approved');
-        }
-        elseif ($status == 4){
-            Session::put('loanStatus','Restructured');
-        }
-        elseif ($status == 5){
-            Session::put('loanStatus','Top Up');
-        }
-        elseif ($status == 6){
-            Session::put('loanStatus','Active');
-        }
-        elseif ($status == 7){
-            Session::put('loanStatus','Rejected');
-        }
-        elseif ($status == 8){
-            Session::put('loanStatus','Recovery');
-        }else{
-            Session::put('loanStatus','Pending');
+        if ($status == 1) {
+            Session::put('loanStatus', 'Pending');
+        } elseif ($status == 2) {
+            Session::put('loanStatus', 'Awaiting Approval');
+        } elseif ($status == 3) {
+            Session::put('loanStatus', 'Approved');
+        } elseif ($status == 4) {
+            Session::put('loanStatus', 'Restructured');
+        } elseif ($status == 5) {
+            Session::put('loanStatus', 'Top Up');
+        } elseif ($status == 6) {
+            Session::put('loanStatus', 'Active');
+        } elseif ($status == 7) {
+            Session::put('loanStatus', 'Rejected');
+        } elseif ($status == 8) {
+            Session::put('loanStatus', 'Recovery');
+        } else {
+            Session::put('loanStatus', 'Pending');
         }
 
-
-        if ($status == 1){
-            Session::put('disableInputs',false);
-        }else{
-            Session::put('disableInputs',true);
+        if ($status == 1) {
+            Session::put('disableInputs', false);
+        } else {
+            Session::put('disableInputs', true);
         }
 
-        Session::put('currentloanClient',$member_number);
-        Session::put('currentloanID',$id);
+        Session::put('currentloanClient', $member_number);
+        Session::put('currentloanID', $id);
         $this->emit('currentloanID');
     }
-
-
-
 }

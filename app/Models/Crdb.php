@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class Crdb extends Model
 {
     use HasFactory;
+
     protected $table = 'crdb_transactions';
+
     protected $guarded = [];
 }

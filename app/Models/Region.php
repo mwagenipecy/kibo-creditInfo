@@ -11,7 +11,7 @@ class Region extends Model
 
     protected $fillable = [
         'name',
-        'country_code'
+        'country_code',
     ];
 
     /**
@@ -21,5 +21,4 @@ class Region extends Model
     {
         return $this->hasMany(City::class);
     }
-    
 }

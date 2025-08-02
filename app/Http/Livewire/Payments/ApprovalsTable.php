@@ -2,34 +2,22 @@
 
 namespace App\Http\Livewire\Payments;
 
-use Livewire\Component;
-
-
-
-
 use App\Models\Transactions;
-use App\Models\Clients;
-use Illuminate\Support\Str;
-use Mediconesystems\LivewireDatatables\Column;
-use Mediconesystems\LivewireDatatables\NumberColumn;
-use Mediconesystems\LivewireDatatables\DateColumn;
-use Mediconesystems\LivewireDatatables\Http\Livewire\LivewireDatatable;
-use Illuminate\Support\Facades\Session;
-use App\Models\search;
-
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Session;
+use Mediconesystems\LivewireDatatables\Column;
+use Mediconesystems\LivewireDatatables\Http\Livewire\LivewireDatatable;
 
 class ApprovalsTable extends LivewireDatatable
 {
-
     protected $listeners = ['viewOrderToApprove' => '$refresh'];
-    public $exportable = true;
 
+    public $exportable = true;
 
     public function builder()
     {
 
-        //dd(Session::get('orderNumber'));
+        // dd(Session::get('orderNumber'));
 
         $first_authorizer_action = '';
         $second_authorizer_action = '';
@@ -53,21 +41,21 @@ class ApprovalsTable extends LivewireDatatable
                     ->whereNotNull('order_number');
             }
 
-        }elseif ($role == 'secondAuthorizer') {
+        } elseif ($role == 'secondAuthorizer') {
 
             if ($second_authorizer_action == 'Pending') {
                 return Transactions::query()->where('order_number', Session::get('orderNumber'))
                     ->where('trans_status', 'Pending Approval')
                     ->whereNotNull('order_number');
             }
-        }elseif ($role == 'thirdAuthorizer') {
+        } elseif ($role == 'thirdAuthorizer') {
 
             if ($third_authorizer_action == 'Pending') {
                 return Transactions::query()->where('order_number', Session::get('orderNumber'))
                     ->where('trans_status', 'Pending Approval')
                     ->whereNotNull('order_number');
             }
-        }else{
+        } else {
             if ($third_authorizer_action == 'Pending') {
                 return Transactions::query()->where('order_number', Session::get('orderNumber'))
                     ->where('trans_status', 'Pending Approval')
@@ -77,7 +65,6 @@ class ApprovalsTable extends LivewireDatatable
 
         return Transactions::query()->where('order_number', Session::get('orderNumber'))
             ->where('trans_status', 'none');
-
 
     }
 
@@ -131,9 +118,7 @@ class ApprovalsTable extends LivewireDatatable
                 ->label('Progress'),
 
             Column::name('payment_status')
-                ->label('Status')
+                ->label('Status'),
         ];
     }
-
-
 }

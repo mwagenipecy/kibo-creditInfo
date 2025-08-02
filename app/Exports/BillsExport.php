@@ -22,23 +22,23 @@ class BillsExport implements FromCollection, WithHeadings, WithMapping, WithStyl
     {
         $query = Bill::with(['entity', 'billItems', 'payments']);
 
-        if (!empty($this->filters['entity_type'])) {
+        if (! empty($this->filters['entity_type'])) {
             $query->where('entity_type', $this->filters['entity_type']);
         }
 
-        if (!empty($this->filters['entity_id'])) {
+        if (! empty($this->filters['entity_id'])) {
             $query->where('entity_id', $this->filters['entity_id']);
         }
 
-        if (!empty($this->filters['status'])) {
+        if (! empty($this->filters['status'])) {
             $query->where('status', $this->filters['status']);
         }
 
-        if (!empty($this->filters['date_from'])) {
+        if (! empty($this->filters['date_from'])) {
             $query->where('issued_date', '>=', $this->filters['date_from']);
         }
 
-        if (!empty($this->filters['date_to'])) {
+        if (! empty($this->filters['date_to'])) {
             $query->where('issued_date', '<=', $this->filters['date_to']);
         }
 

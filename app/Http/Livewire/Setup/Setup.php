@@ -2,17 +2,14 @@
 
 namespace App\Http\Livewire\Setup;
 
-use Livewire\Component;
 use Illuminate\Support\Facades\Session;
-
+use Livewire\Component;
 
 class Setup extends Component
 {
-
-
     public $tab_id = '1';
-    public $title = 'Add Institution';
 
+    public $title = 'Add Institution';
 
     public function menuItemClicked($tabId)
     {
@@ -31,11 +28,8 @@ class Setup extends Component
         Session::put('currentInstitutionID', null);
     }
 
-
     public function render()
     {
         return view('livewire.setup.setup');
     }
 }
-
-

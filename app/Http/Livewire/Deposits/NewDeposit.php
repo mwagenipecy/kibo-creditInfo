@@ -2,37 +2,40 @@
 
 namespace App\Http\Livewire\Deposits;
 
-use Livewire\Component;
-
-
-use Illuminate\Support\Facades\Session;
-use Livewire\WithFileUploads;
-use App\Models\issured_shares;
+use App\Models\AccountsModel;
+use App\Models\approvals;
+use App\Models\Clients;
+use App\Models\general_ledger;
+use App\Models\TeamUser;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use App\Models\AccountsModel;
-use App\Models\general_ledger;
-use App\Models\Clients;
-
-use App\Models\approvals;
-use App\Models\TeamUser;
-
-
+use Illuminate\Support\Facades\Session;
+use Livewire\Component;
 
 class NewDeposit extends Component
 {
-
     public $member;
+
     public $product;
+
     public $number_of_shares;
+
     public $linked_savings_account;
+
     public $account_number;
+
     public $balance;
+
     public $deposit_charge_min_value;
+
     public $accountSelected;
+
     public $amount;
+
     public $notes;
+
     public $bank;
+
     public $reference_number;
 
     protected $rules = [
@@ -56,11 +59,11 @@ class NewDeposit extends Component
 
         $mirror_account = AccountsModel::where('account_number', $this->bank)->value('mirror_account');
 
-        $savings_account_new_balance = (double)AccountsModel::where('account_number', $this->accountSelected)->value('balance') + (double)$this->amount;
+        $savings_account_new_balance = (float) AccountsModel::where('account_number', $this->accountSelected)->value('balance') + (float) $this->amount;
 
-        $savings_ledger_account_new_balance = (double)AccountsModel::where('account_number', $mirror_account)->value('balance') - (double)$this->amount;
+        $savings_ledger_account_new_balance = (float) AccountsModel::where('account_number', $mirror_account)->value('balance') - (float) $this->amount;
 
-        $partner_bank_account_new_balance = (double)AccountsModel::where('account_number', $this->bank)->value('balance') + (double)$this->amount;
+        $partner_bank_account_new_balance = (float) AccountsModel::where('account_number', $this->bank)->value('balance') + (float) $this->amount;
 
         AccountsModel::where('account_number', $this->accountSelected)->update(['balance' => $savings_account_new_balance]);
         AccountsModel::where('account_number', $mirror_account)->update(['balance' => $savings_ledger_account_new_balance]);
@@ -68,8 +71,7 @@ class NewDeposit extends Component
 
         $reference_number = time();
 
-
-        //DEBIT RECORD MEMBER
+        // DEBIT RECORD MEMBER
         general_ledger::create([
             'record_on_account_number' => $this->accountSelected,
             'record_on_account_number_balance' => $savings_account_new_balance,
@@ -82,14 +84,14 @@ class NewDeposit extends Component
             'sender_id' => '999999',
             'beneficiary_id' => $this->member,
             'sender_name' => 'Organization',
-            'beneficiary_name' => Clients::where('membership_number', $this->member)->value('first_name') . ' ' . Clients::where('membership_number', $this->member)->value('middle_name') . ' ' . Clients::where('membership_number', $this->member)->value('last_name'),
+            'beneficiary_name' => Clients::where('membership_number', $this->member)->value('first_name').' '.Clients::where('membership_number', $this->member)->value('middle_name').' '.Clients::where('membership_number', $this->member)->value('last_name'),
             'sender_account_number' => $mirror_account,
             'beneficiary_account_number' => $this->accountSelected,
             'transaction_type' => 'IFT',
             'sender_account_currency_type' => 'TZS',
             'beneficiary_account_currency_type' => 'TZS',
             'narration' => $this->notes,
-            'credit' => (double)$this->amount,
+            'credit' => (float) $this->amount,
             'debit' => 0,
             'reference_number' => $reference_number,
             'trans_status' => 'Successful',
@@ -105,7 +107,7 @@ class NewDeposit extends Component
             'partner_bank_transaction_reference_number' => $this->reference_number,
         ]);
 
-        //CREDIT RECORD SHARE ACCOUNT
+        // CREDIT RECORD SHARE ACCOUNT
         general_ledger::create([
             'record_on_account_number' => $this->bank,
             'record_on_account_number_balance' => $partner_bank_account_new_balance,
@@ -117,7 +119,7 @@ class NewDeposit extends Component
             'beneficiary_sub_product_id' => AccountsModel::where('account_number', $this->bank)->value('sub_product_number'),
             'sender_id' => $this->member,
             'beneficiary_id' => AccountsModel::where('account_number', $this->bank)->value('institution_number'),
-            'sender_name' => Clients::where('membership_number', $this->member)->value('first_name') . ' ' . Clients::where('membership_number', $this->member)->value('middle_name') . ' ' . Clients::where('membership_number', $this->member)->value('last_name'),
+            'sender_name' => Clients::where('membership_number', $this->member)->value('first_name').' '.Clients::where('membership_number', $this->member)->value('middle_name').' '.Clients::where('membership_number', $this->member)->value('last_name'),
             'beneficiary_name' => AccountsModel::where('account_number', $this->bank)->value('account_name'),
             'sender_account_number' => $this->accountSelected,
             'beneficiary_account_number' => $this->bank,
@@ -125,7 +127,7 @@ class NewDeposit extends Component
             'sender_account_currency_type' => 'TZS',
             'beneficiary_account_currency_type' => 'TZS',
             'narration' => $this->notes,
-            'credit' => (double)$this->amount,
+            'credit' => (float) $this->amount,
             'debit' => 0,
             'reference_number' => $reference_number,
             'trans_status' => 'Successful',
@@ -141,7 +143,7 @@ class NewDeposit extends Component
             'partner_bank_transaction_reference_number' => $this->reference_number,
         ]);
 
-        //CREDIT RECORD GL
+        // CREDIT RECORD GL
         general_ledger::create([
             'record_on_account_number' => $mirror_account,
             'record_on_account_number_balance' => $savings_ledger_account_new_balance,
@@ -155,7 +157,7 @@ class NewDeposit extends Component
             'beneficiary_id' => $this->member,
             'sender_name' => AccountsModel::where('account_number', $mirror_account)->value('account_name'),
 
-            'beneficiary_name' => Clients::where('membership_number', $this->member)->value('first_name') . ' ' . Clients::where('membership_number', $this->member)->value('middle_name') . ' ' . Clients::where('membership_number', $this->member)->value('last_name'),
+            'beneficiary_name' => Clients::where('membership_number', $this->member)->value('first_name').' '.Clients::where('membership_number', $this->member)->value('middle_name').' '.Clients::where('membership_number', $this->member)->value('last_name'),
             'sender_account_number' => $mirror_account,
             'beneficiary_account_number' => $this->accountSelected,
             'transaction_type' => 'IFT',
@@ -163,7 +165,7 @@ class NewDeposit extends Component
             'beneficiary_account_currency_type' => 'TZS',
             'narration' => $this->notes,
             'credit' => 0,
-            'debit' => (double)$this->amount,
+            'debit' => (float) $this->amount,
             'reference_number' => $reference_number,
             'trans_status' => 'Successful',
             'trans_status_description' => 'Successful',
@@ -178,7 +180,7 @@ class NewDeposit extends Component
             'partner_bank_transaction_reference_number' => $this->reference_number,
         ]);
 
-        $this->sendApproval($reference_number,'New deposit transaction','07');
+        $this->sendApproval($reference_number, 'New deposit transaction', '07');
 
         $this->resetData();
 
@@ -187,14 +189,14 @@ class NewDeposit extends Component
 
     }
 
-
-    public function sendApproval($id,$msg,$code){
+    public function sendApproval($id, $msg, $code)
+    {
 
         $user = auth()->user();
 
         $team = $user->currentTeam;
 
-        $institution = TeamUser::where('user_id',Auth::user()->id)->value('institution');
+        $institution = TeamUser::where('user_id', Auth::user()->id)->value('institution');
 
         approvals::create([
             'institution' => $institution,
@@ -204,8 +206,8 @@ class NewDeposit extends Component
             'process_code' => $code,
             'process_id' => $id,
             'process_status' => 'Pending',
-            'user_id'  => Auth::user()->id,
-            'team_id'  => ""
+            'user_id' => Auth::user()->id,
+            'team_id' => '',
         ]);
 
     }
@@ -220,7 +222,6 @@ class NewDeposit extends Component
         $this->notes = '';
         $this->bank = '';
         $this->reference_number = '';
-
 
     }
 

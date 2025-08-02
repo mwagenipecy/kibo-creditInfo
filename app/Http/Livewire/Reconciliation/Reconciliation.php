@@ -4,15 +4,11 @@ namespace App\Http\Livewire\Reconciliation;
 
 use Livewire\Component;
 
-
-
 class Reconciliation extends Component
 {
-
-
     public $tab_id = '1';
-    public $title = 'New reconciliation session';
 
+    public $title = 'New reconciliation session';
 
     public function menuItemClicked($tabId)
     {
@@ -28,10 +24,8 @@ class Reconciliation extends Component
         }
     }
 
-
     public function render()
     {
         return view('livewire.reconciliation.reconciliation');
     }
 }
-

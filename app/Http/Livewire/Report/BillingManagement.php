@@ -2,21 +2,20 @@
 
 namespace App\Http\Livewire\Report;
 
-use Livewire\Component;
-use Livewire\WithPagination;
-use App\Models\Bill;
-use App\Models\Payment;
-use App\Models\BillItem;
 use App\Models\Application;
-use App\Models\Lender;
+use App\Models\Bill;
+use App\Models\BillItem;
 use App\Models\CarDealer;
-use App\Models\BillingConfiguration;
+use App\Models\Lender;
+use App\Models\Payment;
 use App\Services\BillingService;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Log;
 use Exception;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+use Livewire\Component;
+use Livewire\WithPagination;
 
 class BillingManagement extends Component
 {
@@ -24,41 +23,62 @@ class BillingManagement extends Component
 
     // Tab and filter states
     public $selectedTab = 'bills';
+
     public $selectedEntityType = '';
+
     public $selectedEntityId = '';
+
     public $dateFrom = '';
+
     public $dateTo = '';
+
     public $statusFilter = '';
+
     public $searchTerm = '';
 
     // Bill creation modal
     public $showBillModal = false;
+
     public $newBillEntityType = 'lender';
+
     public $newBillEntityId = '';
+
     public $newBillPeriodStart = '';
+
     public $newBillPeriodEnd = '';
+
     public $sendEmailOnGenerate = true;
 
     // Payment recording modal
     public $showPaymentModal = false;
+
     public $selectedBillId = '';
+
     public $paymentAmount = '';
+
     public $paymentMethod = 'bank_transfer';
+
     public $paymentReference = '';
+
     public $paymentDate = '';
+
     public $paymentNotes = '';
+
     public $sendEmailOnPayment = true;
 
     // Bill details modal
     public $showBillDetailsModal = false;
+
     public $selectedBillForDetails = null;
 
-    // Payment receipt modal  
+    // Payment receipt modal
     public $showPaymentReceiptModal = false;
+
     public $selectedPaymentForReceipt = null;
 
     // Loading states
     public $isGeneratingBill = false;
+
     public $isRecordingPayment = false;
 
     protected $billingService;
@@ -76,7 +96,7 @@ class BillingManagement extends Component
     public function render()
     {
         $data = $this->prepareRenderData();
-        
+
         return view('livewire.report.billing-management', $data);
     }
 
@@ -103,17 +123,17 @@ class BillingManagement extends Component
     private function getBills()
     {
         $query = Bill::with(['entity', 'billItems', 'payments'])
-            ->when($this->selectedEntityType, fn($q) => $q->where('entity_type', $this->selectedEntityType))
-            ->when($this->selectedEntityId, fn($q) => $q->where('entity_id', $this->selectedEntityId))
-            ->when($this->statusFilter, fn($q) => $q->where('status', $this->statusFilter))
-            ->when($this->dateFrom, fn($q) => $q->where('issued_date', '>=', $this->dateFrom))
-            ->when($this->dateTo, fn($q) => $q->where('issued_date', '<=', $this->dateTo))
-            ->when($this->searchTerm, function($q) {
-                $q->where(function($query) {
-                    $query->where('bill_number', 'like', '%' . $this->searchTerm . '%')
-                          ->orWhereHas('entity', function($entityQuery) {
-                              $entityQuery->where('name', 'like', '%' . $this->searchTerm . '%');
-                          });
+            ->when($this->selectedEntityType, fn ($q) => $q->where('entity_type', $this->selectedEntityType))
+            ->when($this->selectedEntityId, fn ($q) => $q->where('entity_id', $this->selectedEntityId))
+            ->when($this->statusFilter, fn ($q) => $q->where('status', $this->statusFilter))
+            ->when($this->dateFrom, fn ($q) => $q->where('issued_date', '>=', $this->dateFrom))
+            ->when($this->dateTo, fn ($q) => $q->where('issued_date', '<=', $this->dateTo))
+            ->when($this->searchTerm, function ($q) {
+                $q->where(function ($query) {
+                    $query->where('bill_number', 'like', '%'.$this->searchTerm.'%')
+                        ->orWhereHas('entity', function ($entityQuery) {
+                            $entityQuery->where('name', 'like', '%'.$this->searchTerm.'%');
+                        });
                 });
             })
             ->orderBy('created_at', 'desc');
@@ -124,15 +144,15 @@ class BillingManagement extends Component
     private function getPayments()
     {
         return Payment::with(['bill.entity'])
-            ->when($this->dateFrom, fn($q) => $q->where('payment_date', '>=', $this->dateFrom))
-            ->when($this->dateTo, fn($q) => $q->where('payment_date', '<=', $this->dateTo))
-            ->when($this->searchTerm, function($q) {
-                $q->where(function($query) {
-                    $query->where('payment_number', 'like', '%' . $this->searchTerm . '%')
-                          ->orWhere('payment_reference', 'like', '%' . $this->searchTerm . '%')
-                          ->orWhereHas('bill.entity', function($entityQuery) {
-                              $entityQuery->where('name', 'like', '%' . $this->searchTerm . '%');
-                          });
+            ->when($this->dateFrom, fn ($q) => $q->where('payment_date', '>=', $this->dateFrom))
+            ->when($this->dateTo, fn ($q) => $q->where('payment_date', '<=', $this->dateTo))
+            ->when($this->searchTerm, function ($q) {
+                $q->where(function ($query) {
+                    $query->where('payment_number', 'like', '%'.$this->searchTerm.'%')
+                        ->orWhere('payment_reference', 'like', '%'.$this->searchTerm.'%')
+                        ->orWhereHas('bill.entity', function ($entityQuery) {
+                            $entityQuery->where('name', 'like', '%'.$this->searchTerm.'%');
+                        });
                 });
             })
             ->orderBy('payment_date', 'desc')
@@ -177,7 +197,7 @@ class BillingManagement extends Component
     {
         $this->validate([
             'newBillEntityType' => 'required|in:lender,car_dealer',
-            'newBillEntityId' => 'required|integer|exists:' . ($this->newBillEntityType === 'lender' ? 'lenders' : 'car_dealers') . ',id',
+            'newBillEntityId' => 'required|integer|exists:'.($this->newBillEntityType === 'lender' ? 'lenders' : 'car_dealers').',id',
             'newBillPeriodStart' => 'required|date|before_or_equal:newBillPeriodEnd',
             'newBillPeriodEnd' => 'required|date|after_or_equal:newBillPeriodStart',
         ]);
@@ -187,8 +207,8 @@ class BillingManagement extends Component
         try {
             DB::transaction(function () {
                 $entity = $this->getEntityById($this->newBillEntityType, $this->newBillEntityId);
-                
-                if (!$entity) {
+
+                if (! $entity) {
                     throw new Exception('Entity not found or inactive.');
                 }
 
@@ -200,7 +220,7 @@ class BillingManagement extends Component
 
                 // Get billable applications
                 $applications = $this->getBillableApplications();
-                
+
                 if ($applications->isEmpty()) {
                     throw new Exception('No approved applications found for this billing period.');
                 }
@@ -213,7 +233,7 @@ class BillingManagement extends Component
                     $this->sendBillNotificationEmail($bill, $entity);
                 }
 
-                $this->emit('bill-generated', 'Bill generated successfully! ' . 
+                $this->emit('bill-generated', 'Bill generated successfully! '.
                     ($this->sendEmailOnGenerate ? 'Email notification sent.' : ''));
             });
 
@@ -222,7 +242,7 @@ class BillingManagement extends Component
 
         } catch (Exception $e) {
             $this->addError('newBillEntityId', $e->getMessage());
-            Log::error('Bill generation failed: ' . $e->getMessage());
+            Log::error('Bill generation failed: '.$e->getMessage());
         } finally {
             $this->isGeneratingBill = false;
         }
@@ -240,13 +260,13 @@ class BillingManagement extends Component
     private function getBillableApplications()
     {
         $entityColumn = $this->newBillEntityType === 'lender' ? 'lender_id' : 'car_dealer_id';
-        
+
         return Application::where($entityColumn, $this->newBillEntityId)
             ->whereBetween('created_at', [
-                $this->newBillPeriodStart . ' 00:00:00',
-                $this->newBillPeriodEnd . ' 23:59:59'
+                $this->newBillPeriodStart.' 00:00:00',
+                $this->newBillPeriodEnd.' 23:59:59',
             ])
-            ->whereIn('application_status', ['APPROVED', 'COMPLETED', 'DISBURSED','ACCEPTED'])
+            ->whereIn('application_status', ['APPROVED', 'COMPLETED', 'DISBURSED', 'ACCEPTED'])
             ->whereDoesntHave('billItems') // Exclude already billed applications
             ->with(['lender', 'carDealer'])
             ->get();
@@ -277,7 +297,7 @@ class BillingManagement extends Component
         // Create bill items
         foreach ($applications as $application) {
             $itemTotal = $this->calculateItemAmount($billingConfig, $application, $rate);
-            
+
             BillItem::create([
                 'bill_id' => $bill->id,
                 'application_id' => $application->id,
@@ -307,30 +327,32 @@ class BillingManagement extends Component
 
     private function calculateItemAmount($billingConfig, $application, $defaultRate)
     {
-        if (!$billingConfig) {
+        if (! $billingConfig) {
             return $defaultRate;
         }
 
         switch ($billingConfig->billing_type) {
             case 'per_application':
                 return $billingConfig->rate;
-                
+
             case 'commission_based':
-                $loanAmount = $application->loan_amount 
-                    ?? $application->amount 
-                    ?? $application->purchase_price 
+                $loanAmount = $application->loan_amount
+                    ?? $application->amount
+                    ?? $application->purchase_price
                     ?? 0;
-                    
+
                 if ($loanAmount <= 0) {
                     return $billingConfig->rate; // Use rate as minimum fee
                 }
+
                 return ($loanAmount * $billingConfig->rate) / 100;
-                
+
             case 'monthly_subscription':
                 // For subscription, divide monthly rate by applications count
                 $monthlyApps = $this->getMonthlyApplicationCount($application);
+
                 return $monthlyApps > 0 ? $billingConfig->rate / $monthlyApps : $billingConfig->rate;
-                
+
             default:
                 return $billingConfig->rate;
         }
@@ -350,21 +372,27 @@ class BillingManagement extends Component
 
     private function generateItemDescription($application)
     {
-        $applicantName = trim(($application->first_name ?? '') . ' ' . ($application->last_name ?? ''));
+        $applicantName = trim(($application->first_name ?? '').' '.($application->last_name ?? ''));
         $vehicle = $application->make_and_model ?? 'Vehicle';
         $loanAmount = $application->loan_amount ?? $application->amount ?? 0;
 
-        $serviceType = $this->newBillEntityType === 'lender' 
-            ? 'Loan Processing Service' 
+        $serviceType = $this->newBillEntityType === 'lender'
+            ? 'Loan Processing Service'
             : 'Vehicle Financing Facilitation';
 
         $details = [];
-        if (!empty($applicantName)) $details[] = "for {$applicantName}";
-        if (!empty($vehicle)) $details[] = "Vehicle: {$vehicle}";
-        if ($loanAmount > 0) $details[] = "Amount: " . number_format($loanAmount, 0) . " TZS";
+        if (! empty($applicantName)) {
+            $details[] = "for {$applicantName}";
+        }
+        if (! empty($vehicle)) {
+            $details[] = "Vehicle: {$vehicle}";
+        }
+        if ($loanAmount > 0) {
+            $details[] = 'Amount: '.number_format($loanAmount, 0).' TZS';
+        }
         $details[] = "App ID: {$application->id}";
 
-        return $serviceType . ' ' . implode(' - ', $details);
+        return $serviceType.' '.implode(' - ', $details);
     }
 
     public function recordPayment()
@@ -382,14 +410,14 @@ class BillingManagement extends Component
 
         try {
             $bill = Bill::with('entity')->find($this->selectedBillId);
-            
-            if (!$bill) {
+
+            if (! $bill) {
                 throw new Exception('Bill not found.');
             }
 
             if ($this->paymentAmount > $bill->remaining_balance) {
-                throw new Exception('Payment amount cannot exceed remaining balance of ' . 
-                    number_format($bill->remaining_balance, 0) . ' TZS');
+                throw new Exception('Payment amount cannot exceed remaining balance of '.
+                    number_format($bill->remaining_balance, 0).' TZS');
             }
 
             DB::transaction(function () use ($bill) {
@@ -421,7 +449,7 @@ class BillingManagement extends Component
                 }
             });
 
-            $this->emit('payment-recorded', 'Payment recorded successfully! ' . 
+            $this->emit('payment-recorded', 'Payment recorded successfully! '.
                 ($this->sendEmailOnPayment ? 'Confirmation email sent.' : ''));
 
             $this->resetPaymentForm();
@@ -429,7 +457,7 @@ class BillingManagement extends Component
 
         } catch (Exception $e) {
             $this->addError('paymentAmount', $e->getMessage());
-            Log::error('Payment recording failed: ' . $e->getMessage());
+            Log::error('Payment recording failed: '.$e->getMessage());
         } finally {
             $this->isRecordingPayment = false;
         }
@@ -448,13 +476,13 @@ class BillingManagement extends Component
     public function viewBillDetails($billId)
     {
         $this->selectedBillForDetails = Bill::with([
-            'entity', 
-            'billItems.application', 
-            'payments' => function($query) {
+            'entity',
+            'billItems.application',
+            'payments' => function ($query) {
                 $query->orderBy('payment_date', 'desc');
-            }
+            },
         ])->find($billId);
-        
+
         if ($this->selectedBillForDetails) {
             $this->showBillDetailsModal = true;
         }
@@ -463,7 +491,7 @@ class BillingManagement extends Component
     public function viewPaymentReceipt($paymentId)
     {
         $this->selectedPaymentForReceipt = Payment::with(['bill.entity'])->find($paymentId);
-        
+
         if ($this->selectedPaymentForReceipt) {
             $this->showPaymentReceiptModal = true;
         }
@@ -472,6 +500,7 @@ class BillingManagement extends Component
     private function getEntityById($entityType, $entityId)
     {
         $model = $entityType === 'lender' ? Lender::class : CarDealer::class;
+
         return $model::where('id', $entityId)
             ->where('status', 'APPROVED')
             ->first();
@@ -480,17 +509,17 @@ class BillingManagement extends Component
     private function sendBillNotificationEmail($bill, $entity)
     {
         try {
-            
+
             Mail::to($entity->email)
                 ->send(new \App\Mail\BillGenerated($bill, $entity));
-            
+
             // Update bill status to 'sent'
             $bill->update(['status' => 'sent']);
-            
+
             Log::info("Bill notification email sent to {$entity->email} for bill {$bill->bill_number}");
-            
+
         } catch (Exception $e) {
-            Log::error('Failed to send bill notification email: ' . $e->getMessage());
+            Log::error('Failed to send bill notification email: '.$e->getMessage());
             // Don't throw exception, just log it
         }
     }
@@ -500,11 +529,11 @@ class BillingManagement extends Component
         try {
             Mail::to($bill->entity->email)
                 ->send(new \App\Mail\PaymentReceived($bill, $payment->amount));
-                
+
             Log::info("Payment notification email sent to {$bill->entity->email} for payment {$payment->payment_number}");
-            
+
         } catch (Exception $e) {
-            Log::error('Failed to send payment notification email: ' . $e->getMessage());
+            Log::error('Failed to send payment notification email: '.$e->getMessage());
             // Don't throw exception, just log it
         }
     }
@@ -518,7 +547,7 @@ class BillingManagement extends Component
                 $this->emit('status-updated', 'Bill marked as overdue.');
             }
         } catch (Exception $e) {
-            Log::error('Failed to mark bill as overdue: ' . $e->getMessage());
+            Log::error('Failed to mark bill as overdue: '.$e->getMessage());
         }
     }
 
@@ -528,7 +557,7 @@ class BillingManagement extends Component
             $this->emit('export-started', 'Export started...');
             // Export functionality will be handled by the route
         } catch (Exception $e) {
-            Log::error('Export failed: ' . $e->getMessage());
+            Log::error('Export failed: '.$e->getMessage());
         }
     }
 
