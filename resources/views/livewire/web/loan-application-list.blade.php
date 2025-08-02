@@ -102,7 +102,12 @@
             $badgeClass = 'bg-yellow-100 text-yellow-800';
             $statusText = 'Pending';
             break;
-        case 'approved':
+        case 'Approved':
+            $badgeClass = 'bg-green-100 text-green-800';
+            $statusText = 'Approved';
+            break;
+
+        case 'ACCEPTED':
             $badgeClass = 'bg-green-100 text-green-800';
             $statusText = 'Approved';
             break;

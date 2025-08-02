@@ -1440,8 +1440,6 @@ public function nextStepCarDealer()
     }
 }
 
-
-
 public function prevStep()
 {
     if ($this->currentStep > 1) {

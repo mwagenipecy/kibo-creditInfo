@@ -443,7 +443,7 @@ JSON;
             $stage="car_dealer";
 
         }else{
-
+            
             $stage="statement_verification";
         }
 
