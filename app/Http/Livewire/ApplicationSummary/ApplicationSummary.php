@@ -2,25 +2,12 @@
 
 namespace App\Http\Livewire\ApplicationSummary;
 
-<<<<<<< HEAD
-=======
-use App\Models\Attachment;
-use App\Models\Vehicle;
-use App\Models\VehicleImage;
-use Livewire\Component;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Response;
-use App\Models\Application;
-use App\Models\Image;
-use App\Models\EmployerVerification;
->>>>>>> 23326fd4fc3d0d76819f118df0b06962ef0cfb6b
 use App\Mail\EmployerVerificationRequest;
 use App\Models\Application;
 use App\Models\Attachment;
 use App\Models\EmployerVerification;
 use App\Models\Image;
+use App\Models\Vehicle;
 use App\Models\VehicleImage;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -106,7 +93,6 @@ Regards,
             'status' => 'active',
         ]);
 
-
     }
 
     public function acceptApplication()
@@ -134,13 +120,10 @@ Regards,
             $application->application_status = 'ACCEPTED';
             $application->save();
 
-<<<<<<< HEAD
-=======
             Vehicle::where('id', $application->vehicle_id)->update([
                 'status' => 'sold',
             ]);
-            
->>>>>>> 23326fd4fc3d0d76819f118df0b06962ef0cfb6b
+
             // Update loan status
             // DB::table('loans')->where('id', $loanId)->update(['status' => 'ACTIVE']);
 
@@ -224,13 +207,8 @@ Regards,
     public $statementData;
 
     public function selectApplication($id)
-<<<<<<< HEAD
     {
 
-        dd($id);
-=======
-    {        
->>>>>>> 23326fd4fc3d0d76819f118df0b06962ef0cfb6b
         $this->selectedApplication = Application::findOrFail($id);
 
         $this->applicationDocuments = Attachment::where('loan_id', $this->selectedApplication->loan_id)->get();
@@ -286,9 +264,9 @@ Regards,
     },
     "1d_analysis": {
         "initial_info": {
-            "account_number": "255767582837", 
+            "account_number": "255767582837",
             "first_date": "2025-04-18 11:05:00",
-            "last_date": "2025-05-02 09:03:00", 
+            "last_date": "2025-05-02 09:03:00",
             "total_days": 14,
             "total_active_days": 8
         },
@@ -446,16 +424,8 @@ JSON;
     {
 
         if ($status == 'REJECTED') {
-
             $stage = 'car_dealer';
-
-<<<<<<< HEAD
-        } else {
-=======
-
-
-        if($status=="REJECTED"){
->>>>>>> 23326fd4fc3d0d76819f118df0b06962ef0cfb6b
+        } else{
 
             $stage = 'statement_verification';
         }
@@ -467,31 +437,31 @@ JSON;
             'status' => 'on_hold',
         ]);
 
-        
+
         Application::find($id)->update([
             'application_status' => $status,
             'stage_name' => $stage,
 
         ]);
-<<<<<<< HEAD
+
         session()->flash('message', "successfully status changed to {$status}");
-=======
 
 
 
-        
 
-        session()->flash('message',"successfully status changed to {$status}");
->>>>>>> 23326fd4fc3d0d76819f118df0b06962ef0cfb6b
+
+
+
+
     }
 
-   
+
     public function render()
 {
     $query = Application::query();
-    
 
-<<<<<<< HEAD
+
+
         // get user institution id
 
         $this->show();
@@ -500,37 +470,7 @@ JSON;
 
         // user permission id
 
-        $userPermissionId = auth()->user()->department;
-
-        // filter for lender is 2 and for car dealer is 3
-
-        if ($userPermissionId == 3) {
-
-            $query->whereIn('application_status', ['pending'])
-                ->where('car_dealer_id', auth()->user()->institution_id);
-
-        } else {
-
-            $query->whereNotIn('application_status', ['pending'])->where('lender_id', auth()->user()->institution_id);
-
-        }
-
-        if ($this->statusFilter !== 'ALL') {
-            $query->where('application_status', $this->statusFilter);
-        }
-
-        if (! empty($this->search)) {
-            $query->where(function ($q) {
-                $q->where('first_name', 'like', '%'.$this->search.'%')
-                    ->orWhere('last_name', 'like', '%'.$this->search.'%')
-                    ->orWhere('email', 'like', '%'.$this->search.'%');
-            });
-        }
-
-        return view('livewire.application-summary.application-summary', [
-            'applicationx' => $query->latest()->paginate(30),
-        ]);
-=======
+       
     // Get user institution ID and permission (department)
     $user = auth()->user();
     $userInstitutionId = $user->institution_id;
@@ -545,7 +485,7 @@ JSON;
         // Lender or Other: See non-pending applications linked to their institution
         $query->where('application_status', '!=', 'pending')
               ->where('lender_id', $userInstitutionId);
->>>>>>> 23326fd4fc3d0d76819f118df0b06962ef0cfb6b
+
     }
 
     // Status Filter

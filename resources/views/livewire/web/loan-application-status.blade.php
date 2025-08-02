@@ -423,7 +423,7 @@
                                     <div class="text-sm font-medium text-gray-900">{{ $application->tenure }} months
                                     </div>
                                 </div>
-                                <div class="grid grid-cols-2">
+                                {{-- <div class="grid grid-cols-2">
                                     <div class="text-sm text-gray-500">Interest Rate</div>
                                     <div class="text-sm font-medium text-gray-900">{{ $interest_rate }}%
                                     </div>
@@ -432,7 +432,7 @@
                                     <div class="text-sm text-gray-500">Monthly Payment</div>
                                     <div class="text-sm font-medium text-gray-900">TZS
                                         {{ number_format($monthlyPayment) }}</div>
-                                </div>
+                                </div> --}}
                             </div>
                         </div>
                     </div>

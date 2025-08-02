@@ -278,7 +278,7 @@ class LoanApplication extends Component
             return true;
         } catch (\Exception $e) {
             // Log error
-            \Log::error('File upload error: '.$e->getMessage());
+            Log::error('File upload error: '.$e->getMessage());
 
             return false;
         }

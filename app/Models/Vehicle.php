@@ -38,11 +38,7 @@ class Vehicle extends Model
         'location',
         'is_featured',
         'vehicle_condition',
-        'downPaymentPercent',
-<<<<<<< HEAD
-=======
-        'status'
->>>>>>> 23326fd4fc3d0d76819f118df0b06962ef0cfb6b
+        'downPaymentPercent'
     ];
 
     protected $casts = [
@@ -62,22 +58,14 @@ class Vehicle extends Model
 
     // Relationships
 
-    public function frontView()
-    {
+    public function frontView(){
 
         return $this->hasMany(VehicleImage::class, 'vehicle_id')
-            ->where('view', 'front')
-            ->first();
+        ->where('view', 'front')
+        ->first();
 
     }
 
-    public function generalDisplayImage()
-    {
-
-        return VehicleImage::where('vehicle_id', $this->id)
-            ->where('view', 'front')
-            ->first();
-    }
 
     public function make()
     {
@@ -91,7 +79,7 @@ class Vehicle extends Model
 
     public function dealer()
     {
-        return $this->belongsTo(CarDealer::class, 'dealer_id');
+        return $this->belongsTo(CarDealer::class,'dealer_id');
     }
 
     public function bodyType()
@@ -135,7 +123,6 @@ class Vehicle extends Model
 
         // If no featured image, return the first image
         $firstImage = $this->images()->first();
-
         return $firstImage ? $firstImage->image_url : '/img/default-vehicle.jpg';
     }
 
@@ -178,7 +165,6 @@ class Vehicle extends Model
     public function scopeByYear($query, $from, $to)
     {
         $query = $from ? $query->where('year', '>=', $from) : $query;
-
         return $to ? $query->where('year', '<=', $to) : $query;
     }
 
