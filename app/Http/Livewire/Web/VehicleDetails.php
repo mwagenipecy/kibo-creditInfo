@@ -53,7 +53,16 @@ class VehicleDetails extends Component
         $this->updateVehicleId = $id;
         //  $this->vehicle = Vehicle::with(['dealer', 'make', 'model', 'bodyType', 'fuelType', 'transmission'])->findOrFail($id);
 
+<<<<<<< HEAD
         $this->vehicle = Vehicle::with(['dealer', 'make', 'model', 'bodyType', 'fuelType', 'transmission'])->findOrFail($id);
+=======
+        $this->updateVehicleId=$id;
+      //  $this->vehicle = Vehicle::with(['dealer', 'make', 'model', 'bodyType', 'fuelType', 'transmission'])->findOrFail($id);
+        
+        $this->vehicle = Vehicle::with(['dealer', 'make', 'model', 'bodyType', 'fuelType', 'transmission'])
+        ->where('status', 'active')
+        ->findOrFail($id);
+>>>>>>> 23326fd4fc3d0d76819f118df0b06962ef0cfb6b
 
         // $this->lenders=Lender::get();
 
@@ -79,6 +88,7 @@ class VehicleDetails extends Component
                 ->orWhere('body_type_id', $this->vehicle->body_type_id);
         })
             ->where('id', '!=', $this->vehicle->id)
+            ->where('status', 'active')
             ->take(4)
             ->get();
     }
@@ -133,6 +143,7 @@ class VehicleDetails extends Component
                 ->orWhere('body_type_id', $this->vehicle->body_type_id);
         })
             ->where('id', '!=', $this->vehicle->id)
+            ->where('status', 'active')
             ->take(4)
             ->get();
 

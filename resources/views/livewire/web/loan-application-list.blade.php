@@ -96,14 +96,42 @@
                                         TZS {{ number_format($application->loan_amount) }}
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
-                                        <span class="inline-flex px-2.5 py-0.5 rounded-full text-xs font-medium
-                                            {{ $application->application_status === 'pending' ? 'bg-yellow-100 text-yellow-800' : 
-                                               ($application->application_status === 'approved' ? 'bg-green-100 text-green-800' : 
-                                               ($application->application_status === 'rejected' ? 'bg-red-100 text-red-800' : 
-                                               ($application->application_status === 'processing' ? 'bg-blue-100 text-blue-800' : 
-                                               'bg-purple-100 text-purple-800'))) }}">
-                                            {{ ucfirst($application->application_status) }}
-                                        </span>
+                                    @php
+    switch ($application->application_status) {
+        case 'pending':
+            $badgeClass = 'bg-yellow-100 text-yellow-800';
+            $statusText = 'Pending';
+            break;
+        case 'approved':
+            $badgeClass = 'bg-green-100 text-green-800';
+            $statusText = 'Approved';
+            break;
+        case 'REJECTED':
+            $badgeClass = 'bg-red-100 text-red-800';
+            $statusText = 'Rejected';
+            break;
+
+              
+        case 'NEW CLIENT':
+            $badgeClass = 'bg-green-100 text-green-800';
+            $statusText = 'Processing';
+            break;
+        case 'processing':
+            $badgeClass = 'bg-blue-100 text-blue-800';
+            $statusText = 'Processing';
+            break;
+        default:
+            $badgeClass = 'bg-purple-100 text-purple-800';
+            $statusText = 'Processing';
+    }
+@endphp
+
+<span class="inline-flex px-2.5 py-0.5 rounded-full text-xs font-medium {{ $badgeClass }}">
+    {{ ucfirst(strtolower($statusText)) }}
+</span>
+
+
+
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
                                         {{ $application->created_at->format('M d, Y') }}
