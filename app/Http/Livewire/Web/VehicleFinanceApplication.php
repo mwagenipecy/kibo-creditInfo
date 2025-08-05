@@ -139,7 +139,11 @@ class VehicleFinanceApplication extends Component
                 'Referer' => 'https://tiramis.tira.go.tz/',
                 'Origin' => 'https://tiramis.tira.go.tz',
                 'Content-Type' => 'application/x-www-form-urlencoded'
-            ])->timeout(30)->post('https://tiramis.tira.go.tz/covernote/api/public/portal/verify', [
+            ])->withOptions([
+                'verify' => false, // Disable SSL verification
+                'timeout' => 30,
+                'allow_redirects' => true
+            ])->post('https://tiramis.tira.go.tz/covernote/api/public/portal/verify', [
                 'paramType' => 2,
                 'searchParam' => strtoupper($this->registration_number)
             ]);
@@ -250,9 +254,10 @@ class VehicleFinanceApplication extends Component
         
         return $insuranceData;
     }
-
-
     
+
+
+
     
     public function updatedSelectedMakeId($makeId)
     {
