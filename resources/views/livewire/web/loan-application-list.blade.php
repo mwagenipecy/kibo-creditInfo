@@ -106,7 +106,6 @@
             $badgeClass = 'bg-green-100 text-green-800';
             $statusText = 'Approved';
             break;
-
         case 'ACCEPTED':
             $badgeClass = 'bg-green-100 text-green-800';
             $statusText = 'Approved';
