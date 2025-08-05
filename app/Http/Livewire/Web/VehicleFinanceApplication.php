@@ -215,16 +215,22 @@ class VehicleFinanceApplication extends Component
             if ($response && $response->successful()) {
                 $htmlContent = $response->body();
                 
-                // Check if insurance is active
-                if (strpos($htmlContent, 'INSURANCE IS ACTIVE') !== false) {
-                    // Parse the HTML to extract insurance details
-                    $this->insurance_data = $this->parseInsuranceHtml($htmlContent);
-                    $this->insurance_verified = true;
+                // Debug: Log first 500 characters of response
+                Log::info('Response content preview: ' . substr($htmlContent, 0, 500));
+                
+                // Check if we got JSON response instead of HTML
+                $jsonData = json_decode($htmlContent, true);
+                if (json_last_error() === JSON_ERROR_NONE) {
+                    Log::info('Got JSON response: ', $jsonData);
                     
-                    // Extract end date from HTML and validate
-                    if (isset($this->insurance_data['end_date'])) {
-                        try {
-                            $endDate = Carbon::createFromFormat('d M, Y H:i:s A', $this->insurance_data['end_date']);
+                    // Handle JSON response
+                    if (isset($jsonData['code']) && $jsonData['code'] == 1000 && !empty($jsonData['data'])) {
+                        $this->insurance_data = $jsonData['data'][0];
+                        $this->insurance_verified = true;
+                        
+                        // Check if insurance is valid (end date > 1 month from now)
+                        if (isset($this->insurance_data['coverNoteEndDate'])) {
+                            $endDate = Carbon::createFromTimestampMs($this->insurance_data['coverNoteEndDate']);
                             $oneMonthFromNow = Carbon::now()->addMonth();
                             
                             if ($endDate->gt($oneMonthFromNow)) {
@@ -233,17 +239,57 @@ class VehicleFinanceApplication extends Component
                             } else {
                                 session()->flash('error', 'Insurance expires too soon. Please renew your insurance first.');
                             }
-                        } catch (\Exception $e) {
-                            // Fallback if date parsing fails
+                        } else {
                             $this->insurance_valid = true;
                             session()->flash('success', 'Insurance verified successfully!');
                         }
                     } else {
-                        $this->insurance_valid = true;
-                        session()->flash('success', 'Insurance verified successfully!');
+                        session()->flash('error', 'No valid insurance found for this registration number.');
                     }
                 } else {
-                    session()->flash('error', 'No valid insurance found for this registration number.');
+                    // Handle HTML response
+                    Log::info('Got HTML response, checking for active insurance...');
+                    
+                    if (strpos($htmlContent, 'INSURANCE IS ACTIVE') !== false) {
+                        Log::info('Found INSURANCE IS ACTIVE in response');
+                        // Parse the HTML to extract insurance details
+                        $this->insurance_data = $this->parseInsuranceHtml($htmlContent);
+                        $this->insurance_verified = true;
+                        
+                        // Extract end date from HTML and validate
+                        if (isset($this->insurance_data['end_date'])) {
+                            try {
+                                $endDate = Carbon::createFromFormat('d M, Y H:i:s A', $this->insurance_data['end_date']);
+                                $oneMonthFromNow = Carbon::now()->addMonth();
+                                
+                                if ($endDate->gt($oneMonthFromNow)) {
+                                    $this->insurance_valid = true;
+                                    session()->flash('success', 'Insurance verified successfully! Valid until ' . $endDate->format('Y-m-d'));
+                                } else {
+                                    session()->flash('error', 'Insurance expires too soon. Please renew your insurance first.');
+                                }
+                            } catch (\Exception $e) {
+                                // Fallback if date parsing fails
+                                $this->insurance_valid = true;
+                                session()->flash('success', 'Insurance verified successfully!');
+                            }
+                        } else {
+                            $this->insurance_valid = true;
+                            session()->flash('success', 'Insurance verified successfully!');
+                        }
+                    } else {
+                        Log::info('INSURANCE IS ACTIVE not found in response');
+                        // Check for other indicators
+                        if (strpos($htmlContent, 'No data found') !== false || 
+                            strpos($htmlContent, 'Invalid') !== false ||
+                            strpos($htmlContent, 'not found') !== false) {
+                            session()->flash('error', 'No valid insurance found for this registration number.');
+                        } else {
+                            // Log more of the response to see what we're getting
+                            Log::info('Full response content: ' . $htmlContent);
+                            session()->flash('error', 'Unable to determine insurance status. Please check the registration number.');
+                        }
+                    }
                 }
             } else {
                 Log::error('All attempts failed. Last error: ' . $lastError);
