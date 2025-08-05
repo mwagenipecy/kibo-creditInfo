@@ -124,18 +124,27 @@ class VehicleFinanceApplication extends Component
 
     public function verifyInsurance()
     {
+        // Add CORS headers immediately
+        if (request()->getMethod() === 'OPTIONS') {
+            return response('', 200)
+                ->header('Access-Control-Allow-Origin', 'https://kiboauto.co.tz')
+                ->header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
+                ->header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, X-CSRF-TOKEN, X-Livewire')
+                ->header('Access-Control-Allow-Credentials', 'true');
+        }
+    
         $this->validate(['registration_number' => 'required|string']);
         
         $this->verification_loading = true;
         $this->insurance_verified = false;
         $this->insurance_valid = false;
-
+    
         try {
             $response = Http::post('https://tiramis.tira.go.tz/covernote/api/public/portal/verify', [
                 'paramType' => 2,
                 'searchParam' => strtoupper($this->registration_number)
             ]);
-
+    
             // Check if the response is successful
             Log::info('Insurance verification response: ', ['response' => $response->body()]);
             if ($response->successful()) {
@@ -163,13 +172,21 @@ class VehicleFinanceApplication extends Component
             }
         } catch (\Exception $e) {
             session()->flash('error', 'Insurance verification service unavailable. Please try again later.');
-
             \Log::error('Insurance verification error: ' . $e->getMessage());
         }
-
+    
         $this->verification_loading = false;
+        
+        // Add CORS headers to the final response
+        $this->dispatchBrowserEvent('cors-headers', [
+            'headers' => [
+                'Access-Control-Allow-Origin' => 'https://kiboauto.co.tz',
+                'Access-Control-Allow-Credentials' => 'true'
+            ]
+        ]);
     }
 
+    
     public function updatedSelectedMakeId($makeId)
     {
         $this->models = [];
