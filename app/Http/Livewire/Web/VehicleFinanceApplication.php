@@ -122,17 +122,10 @@ class VehicleFinanceApplication extends Component
         }
     }
 
+    
+
     public function verifyInsurance()
     {
-        // Add CORS headers immediately
-        if (request()->getMethod() === 'OPTIONS') {
-            return response('', 200)
-                ->header('Access-Control-Allow-Origin', 'https://kiboauto.co.tz')
-                ->header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
-                ->header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, X-CSRF-TOKEN, X-Livewire')
-                ->header('Access-Control-Allow-Credentials', 'true');
-        }
-    
         $this->validate(['registration_number' => 'required|string']);
         
         $this->verification_loading = true;
@@ -140,13 +133,21 @@ class VehicleFinanceApplication extends Component
         $this->insurance_valid = false;
     
         try {
-            $response = Http::post('https://tiramis.tira.go.tz/covernote/api/public/portal/verify', [
+            // Make the request server-side with user agent to mimic browser
+            $response = Http::withHeaders([
+                'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+                'Accept' => 'application/json, text/plain, */*',
+                'Accept-Language' => 'en-US,en;q=0.9',
+                'Referer' => 'https://kiboauto.co.tz',
+                'Origin' => 'https://kiboauto.co.tz',
+                'Content-Type' => 'application/json'
+            ])->timeout(30)->post('https://tiramis.tira.go.tz/covernote/api/public/portal/verify', [
                 'paramType' => 2,
                 'searchParam' => strtoupper($this->registration_number)
             ]);
     
-            // Check if the response is successful
             Log::info('Insurance verification response: ', ['response' => $response->body()]);
+            
             if ($response->successful()) {
                 $data = $response->json();
                 
@@ -168,25 +169,25 @@ class VehicleFinanceApplication extends Component
                     session()->flash('error', 'No valid insurance found for this registration number.');
                 }
             } else {
+                // Log the actual error for debugging
+                Log::error('Insurance API Error: ', [
+                    'status' => $response->status(),
+                    'body' => $response->body(),
+                    'headers' => $response->headers()
+                ]);
                 session()->flash('error', 'Failed to verify insurance. Please try again.');
             }
         } catch (\Exception $e) {
+            Log::error('Insurance verification error: ' . $e->getMessage());
             session()->flash('error', 'Insurance verification service unavailable. Please try again later.');
-            \Log::error('Insurance verification error: ' . $e->getMessage());
         }
     
         $this->verification_loading = false;
-        
-        // Add CORS headers to the final response
-        $this->dispatchBrowserEvent('cors-headers', [
-            'headers' => [
-                'Access-Control-Allow-Origin' => 'https://kiboauto.co.tz',
-                'Access-Control-Allow-Credentials' => 'true'
-            ]
-        ]);
     }
 
-    
+
+
+
     public function updatedSelectedMakeId($makeId)
     {
         $this->models = [];
