@@ -131,26 +131,88 @@ class VehicleFinanceApplication extends Component
         $this->insurance_valid = false;
     
         try {
-            // Make request with browser-like headers to get HTML response
-            $response = Http::withHeaders([
-                'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-                'Accept' => 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-                'Accept-Language' => 'en-US,en;q=0.9',
-                'Referer' => 'https://tiramis.tira.go.tz/',
-                'Origin' => 'https://tiramis.tira.go.tz',
-                'Content-Type' => 'application/x-www-form-urlencoded'
-            ])->withOptions([
-                'verify' => false, // Disable SSL verification
-                'timeout' => 30,
-                'allow_redirects' => true
-            ])->post('https://tiramis.tira.go.tz/covernote/api/public/portal/verify', [
-                'paramType' => 2,
-                'searchParam' => strtoupper($this->registration_number)
-            ]);
+            // Try different approaches to match what the website expects
+            $attempts = [
+                // Attempt 1: JSON format
+                [
+                    'headers' => [
+                        'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+                        'Accept' => 'application/json, text/plain, */*',
+                        'Accept-Language' => 'en-US,en;q=0.9',
+                        'Content-Type' => 'application/json',
+                        'Referer' => 'https://tiramis.tira.go.tz/',
+                        'Origin' => 'https://tiramis.tira.go.tz'
+                    ],
+                    'data' => json_encode([
+                        'paramType' => 2,
+                        'searchParam' => strtoupper($this->registration_number)
+                    ])
+                ],
+                // Attempt 2: Form data
+                [
+                    'headers' => [
+                        'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+                        'Accept' => 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+                        'Content-Type' => 'application/x-www-form-urlencoded',
+                        'Referer' => 'https://tiramis.tira.go.tz/'
+                    ],
+                    'data' => [
+                        'paramType' => 2,
+                        'searchParam' => strtoupper($this->registration_number)
+                    ]
+                ],
+                // Attempt 3: No content type (let Laravel decide)
+                [
+                    'headers' => [
+                        'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+                        'Accept' => 'application/json, text/html, */*',
+                        'Referer' => 'https://tiramis.tira.go.tz/'
+                    ],
+                    'data' => [
+                        'paramType' => 2,
+                        'searchParam' => strtoupper($this->registration_number)
+                    ]
+                ]
+            ];
     
-            Log::info('Insurance verification response status: ' . $response->status());
+            $response = null;
+            $lastError = null;
+    
+            foreach ($attempts as $index => $attempt) {
+                try {
+                    Log::info("Trying attempt " . ($index + 1));
+                    
+                    if (isset($attempt['data']) && is_string($attempt['data'])) {
+                        // For JSON data
+                        $response = Http::withHeaders($attempt['headers'])
+                            ->withOptions(['verify' => false, 'timeout' => 30])
+                            ->withBody($attempt['data'], $attempt['headers']['Content-Type'])
+                            ->post('https://tiramis.tira.go.tz/covernote/api/public/portal/verify');
+                    } else {
+                        // For form data
+                        $response = Http::withHeaders($attempt['headers'])
+                            ->withOptions(['verify' => false, 'timeout' => 30])
+                            ->post('https://tiramis.tira.go.tz/covernote/api/public/portal/verify', $attempt['data']);
+                    }
+    
+                    Log::info("Attempt " . ($index + 1) . " status: " . $response->status());
+                    
+                    if ($response->successful() || $response->status() == 200) {
+                        break; // Success, exit the loop
+                    }
+                    
+                    $lastError = "HTTP " . $response->status();
+                    
+                } catch (\Exception $e) {
+                    $lastError = $e->getMessage();
+                    Log::info("Attempt " . ($index + 1) . " failed: " . $e->getMessage());
+                    continue;
+                }
+            }
+    
+            Log::info('Insurance verification response status: ' . ($response ? $response->status() : 'No response'));
             
-            if ($response->successful()) {
+            if ($response && $response->successful()) {
                 $htmlContent = $response->body();
                 
                 // Check if insurance is active
@@ -184,10 +246,11 @@ class VehicleFinanceApplication extends Component
                     session()->flash('error', 'No valid insurance found for this registration number.');
                 }
             } else {
-                Log::error('Insurance API Error: ', [
-                    'status' => $response->status(),
-                    'body' => $response->body()
-                ]);
+                Log::error('All attempts failed. Last error: ' . $lastError);
+                if ($response) {
+                    Log::error('Final response status: ' . $response->status());
+                    Log::error('Final response body: ' . $response->body());
+                }
                 session()->flash('error', 'Failed to verify insurance. Please try again.');
             }
         } catch (\Exception $e) {
@@ -254,7 +317,6 @@ class VehicleFinanceApplication extends Component
         
         return $insuranceData;
     }
-    
 
 
 
