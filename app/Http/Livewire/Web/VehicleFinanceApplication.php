@@ -200,9 +200,14 @@ class VehicleFinanceApplication extends Component
 
     protected function calculateLoanAmount()
     {
-        if (is_numeric($this->down_payment) && is_numeric($this->purchase_price)) {
+
+       // dd($this->purchase_price, $this->down_payment);
+        if (is_numeric((float)$this->down_payment) && is_numeric((float)$this->purchase_price)) {
             $this->loan_amount = $this->purchase_price - $this->down_payment;
+
         }
+
+       // dd($this->loan_amount);
     }
 
     protected function findQualifiedLenders()
@@ -210,9 +215,9 @@ class VehicleFinanceApplication extends Component
         if ($this->selected_make_id && $this->selected_model_id && $this->purchase_price) {
             $this->qualified_lenders = Lender::whereHas('financingCriteria', function($query) {
                 $query->where('make_id', $this->selected_make_id)
-                      ->where('model_id', $this->selected_model_id)
-                      ->where('min_loan_amount', '<=', $this->loan_amount ?: $this->purchase_price)
-                      ->where('max_loan_amount', '>=', $this->loan_amount ?: $this->purchase_price);
+                      ->where('model_id', $this->selected_model_id);
+                     // ->where('min_loan_amount', '<=', $this->loan_amount ?: $this->purchase_price)
+                    //  ->where('max_loan_amount', '>=', $this->loan_amount ?: $this->purchase_price);
             })->with(['financingCriteria' => function($query) {
                 $query->where('make_id', $this->selected_make_id)
                       ->where('model_id', $this->selected_model_id);
@@ -239,7 +244,7 @@ class VehicleFinanceApplication extends Component
         $this->selected_district = '';
         
         if ($regionId) {
-            $this->districts = District::where('region_id', $regionId)->orderBy('name')->get();
+           // $this->districts = District::where('region_id', $regionId)->orderBy('name')->get();
         }
     }
 

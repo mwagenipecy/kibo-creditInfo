@@ -3,6 +3,7 @@
 use App\Http\Controllers\BillingController;
 use App\Http\Controllers\GarageManagementController;
 use App\Http\Controllers\InsuranceController;
+use App\Http\Controllers\SparePartController;
 use App\Http\Controllers\WebsiteController;
 use App\Http\Middleware\ClientMiddleware;
 use App\Http\Middleware\OTPMiddleware;
@@ -17,6 +18,15 @@ use App\Http\Controllers\EmployerVerificationController;
 
 Route::redirect('/', 'welcome');
 
+
+/// spare part routes
+Route::get('spare-parts/list',[SparePartController::class, 'index'])->name('spare.parts.list');
+
+Route::get('spare-parts/details/{id}',[SparePartController::class, 'viewDetails'])->name('spare-part.detail');
+
+
+
+
 // Public website pages
 Route::get('welcome', [WebsiteController::class, 'index'])->name('home.page');
 Route::get('vehicle/list', [WebsiteController::class, 'vehicleList'])->name('vehicle.list');
@@ -25,6 +35,11 @@ Route::get('/about-us', [WebsiteController::class, 'aboutPage'])->name('about.us
 Route::get('/contact', [WebsiteController::class, 'contactPage'])->name('contact.page');
 Route::get('/client-registration', [WebsiteController::class, 'clientRegistration'])->name('client.registration');
 Route::get('loan-calculator', [WebsiteController::class, 'loanCalculator'])->name('loan.calculator');
+
+
+
+
+
 
 // Public service pages
 Route::get('garage-list', [GarageManagementController::class, 'index'])->name('garage.list');

@@ -41,6 +41,14 @@ class User extends Authenticatable
         // add this line to the array
     ];
 
+
+    public function shop()
+{
+    return $this->belongsTo(Shop::class);
+}
+
+
+
     /**
      * The attributes that should be hidden for serialization.
      *

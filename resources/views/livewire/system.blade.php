@@ -113,8 +113,12 @@
         @break
 
         @case('17')
-        <livewire:budget-management.budget/>
+        <livewire:admin.shop-onboarding />
+
+        <livewire:shop.spare-parts-management />
+
         @break
+
 
            @case('19')
             <livewire:profile-setting.profile/>

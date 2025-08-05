@@ -277,12 +277,9 @@
 
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-2">District *</label>
-                                <select wire:model="selected_district" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
-                                    <option value="">Select District</option>
-                                    @foreach($districts as $district)
-                                    <option value="{{ $district->id }}">{{ $district->name }}</option>
-                                    @endforeach
-                                </select>
+                                <input type="text" wire:model="selected_district" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500" />
+                                   
+                              
                                 @error('selected_district') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                             </div>
                         </div>
@@ -417,7 +414,7 @@
                         <div class="grid md:grid-cols-3 gap-6">
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-2">Down Payment (TZS) *</label>
-                                <input type="number" wire:model="down_payment" min="0"
+                                <input type="number" wire:model="down_payment" min="0" disabled
                                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
                                 @error('down_payment') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                             </div>
