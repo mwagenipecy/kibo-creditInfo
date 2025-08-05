@@ -36,6 +36,10 @@ trait Search
             $this->buildWildCards($term)
         );
 
+    
+
+
+
         return $query;
     }
 }

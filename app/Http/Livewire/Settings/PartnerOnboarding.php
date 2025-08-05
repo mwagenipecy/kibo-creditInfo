@@ -1435,6 +1435,7 @@ class PartnerOnboarding extends Component
     {
         switch ($this->currentStep) {
             case 1:
+
                 $this->validate([
                     'name' => 'required|string|max:255',
                     'businessRegistrationNumber' => 'required|string|max:50',

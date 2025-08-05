@@ -5,27 +5,27 @@
 <div class="bg-white w-full">
     <!-- Hero Section with Slideshow -->
 <!-- Enhanced Hero Section with Professional Styling and Balanced Height -->
-<div class="relative" 
-     x-data="{ 
-        activeSlide: 0, 
+<div class="relative"
+     x-data="{
+        activeSlide: 0,
         slides: [
-            { 
-                image: '{{ asset('/cars/66815.jpg') }}', 
-                title: 'Find Your Dream Car', 
-                description: 'Browse our exclusive collection of premium vehicles', 
-                buttonText: 'Explore Now' 
+            {
+                image: '{{ asset('/cars/66815.jpg') }}',
+                title: 'Find Your Dream Car',
+                description: 'Browse our exclusive collection of premium vehicles',
+                buttonText: 'Explore Now'
             },
-            { 
-                image: '{{ asset('/cars/11452727.png') }}', 
-                title: 'Connect With Top Dealers', 
-                description: 'Direct access to the most trusted dealers in the country', 
-                buttonText: 'View Dealers' 
+            {
+                image: '{{ asset('/cars/11452727.png') }}',
+                title: 'Connect With Top Dealers',
+                description: 'Direct access to the most trusted dealers in the country',
+                buttonText: 'View Dealers'
             },
-            { 
-                image: '{{ asset('//default/car1.jpg') }}', 
-                title: 'Best Deals Guaranteed', 
-                description: 'Quality vehicles at competitive prices', 
-                buttonText: 'See Deals' 
+            {
+                image: '{{ asset('//default/car1.jpg') }}',
+                title: 'Best Deals Guaranteed',
+                description: 'Quality vehicles at competitive prices',
+                buttonText: 'See Deals'
             }
         ],
         play() {
@@ -36,55 +36,55 @@
         pause() {
             clearInterval(this.slideInterval);
         }
-     }" 
+     }"
      x-init="play()"
      @mouseenter="pause()"
      @mouseleave="play()">
-    
+
     <!-- Slideshow Container with Balanced Height -->
     <div class="relative h-[450px] md:h-[500px] w-full overflow-hidden">
         <!-- Slides -->
         <template x-for="(slide, index) in slides" :key="index">
-            <div x-show="activeSlide === index" 
-                x-transition:enter="transition ease-out duration-800" 
-                x-transition:enter-start="opacity-0 transform scale-105" 
+            <div x-show="activeSlide === index"
+                x-transition:enter="transition ease-out duration-800"
+                x-transition:enter-start="opacity-0 transform scale-105"
                 x-transition:enter-end="opacity-100 transform scale-100"
-                x-transition:leave="transition ease-in duration-500" 
-                x-transition:leave-start="opacity-100 transform scale-100" 
+                x-transition:leave="transition ease-in duration-500"
+                x-transition:leave-start="opacity-100 transform scale-100"
                 x-transition:leave-end="opacity-0 transform scale-95"
                 class="absolute inset-0">
-                
+
                 <!-- Image with Overlay -->
                 <div class="relative h-full">
                     <!-- Base Image -->
                     <img :src="slide.image" class="w-full h-full object-cover" :alt="slide.title">
-                    
+
                     <!-- Custom Overlay with Left-to-Center Gradient -->
                     <div class="absolute inset-0 bg-gradient-to-r from-green-900/80 via-black/60 to-black/40"></div>
-                    
+
                     <!-- Additional Vignette Effect -->
                     <div class="absolute inset-0 bg-radial-gradient"></div>
                 </div>
-                
+
                 <!-- Content Container - Left Aligned -->
                 <div class="absolute inset-0 flex items-center">
                     <div class="container mx-auto px-6 md:px-12">
                         <div class="max-w-xl ml-0 md:ml-12 text-left">
                             <!-- Decorative Element -->
                             <div class="w-20 h-1.5 bg-green-500 mb-4 rounded shadow-glow-green"></div>
-                            
+
                             <!-- Title with Text Shadow - Slightly Reduced Size -->
-                            <h1 x-text="slide.title" 
+                            <h1 x-text="slide.title"
                                 class="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 leading-tight tracking-tight text-shadow-lg"></h1>
-                            
+
                             <!-- Description with Enhanced Shadow - Slightly Reduced Size -->
-                            <p x-text="slide.description" 
+                            <p x-text="slide.description"
                                class="text-base md:text-lg text-gray-100 mb-6 max-w-lg text-shadow-sm"></p>
-                            
+
                             <!-- Button with Enhanced Style -->
-                            <button x-text="slide.buttonText" 
+                            <button x-text="slide.buttonText"
                                     class="bg-green-600 hover:bg-green-700 text-white px-6 py-2.5 rounded-lg text-md font-semibold transition-all duration-300 transform hover:-translate-y-0.5 shadow-xl hover:shadow-2xl hover:shadow-green-600/30 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"></button>
-                            
+
                             <!-- Slide Number Indicator - Slightly Reduced Size -->
                             <div class="hidden md:flex items-center mt-6 text-gray-300 text-sm">
                                 <span class="text-lg font-bold text-green-500" x-text="`0${index + 1}`"></span>
@@ -96,35 +96,35 @@
                 </div>
             </div>
         </template>
-        
+
         <!-- Decorative Element - Bottom Right -->
         <div class="absolute bottom-0 right-0 w-1/3 h-16 bg-gradient-to-tl from-green-600/20 to-transparent"></div>
     </div>
-    
+
     <!-- Enhanced Slide Indicators - Repositioned -->
     <div class="absolute bottom-6 left-0 right-0">
         <div class="container mx-auto px-6 md:px-12">
             <div class="flex space-x-3 md:ml-12">
                 <template x-for="(slide, index) in slides" :key="index">
-                    <button @click="activeSlide = index" 
-                        :class="{ 
-                            'w-10 bg-green-500 shadow-md shadow-green-500/50': activeSlide === index, 
-                            'w-5 bg-white/40 hover:bg-white/60': activeSlide !== index 
+                    <button @click="activeSlide = index"
+                        :class="{
+                            'w-10 bg-green-500 shadow-md shadow-green-500/50': activeSlide === index,
+                            'w-5 bg-white/40 hover:bg-white/60': activeSlide !== index
                         }"
                         class="h-1.5 rounded-full transition-all duration-300 focus:outline-none"></button>
                 </template>
             </div>
         </div>
     </div>
-    
+
     <!-- Enhanced Arrow Navigation - Slightly Reduced Size -->
-    <button @click="activeSlide = activeSlide === 0 ? slides.length - 1 : activeSlide - 1" 
+    <button @click="activeSlide = activeSlide === 0 ? slides.length - 1 : activeSlide - 1"
         class="absolute left-6 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center rounded-full bg-black/20 backdrop-blur-sm text-white hover:bg-green-600/70 transition-all duration-300 focus:outline-none border border-white/20 shadow-lg">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
         </svg>
     </button>
-    <button @click="activeSlide = activeSlide === slides.length - 1 ? 0 : activeSlide + 1" 
+    <button @click="activeSlide = activeSlide === slides.length - 1 ? 0 : activeSlide + 1"
         class="absolute right-6 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center rounded-full bg-black/20 backdrop-blur-sm text-white hover:bg-green-600/70 transition-all duration-300 focus:outline-none border border-white/20 shadow-lg">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
@@ -175,7 +175,7 @@
                     <h2 class="text-lg font-semibold text-gray-800">Find Your Perfect Vehicle</h2>
                 </div>
             </div>
-            
+
             <!-- Search Form -->
             <div class="p-5">
                 <!-- Main Search Fields -->
@@ -184,9 +184,9 @@
                     <div>
                         <label for="make" class="block text-xs font-medium text-gray-600 mb-1.5">Make</label>
                         <div class="relative">
-                            <select 
-                                wire:model="selectedMake" 
-                                id="make" 
+                            <select
+                                wire:model="selectedMake"
+                                id="make"
                                 class="w-full rounded border-gray-300 py-2 pl-3 pr-8 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:ring-opacity-50 shadow-sm"
                             >
                                 <option value="">All Makes</option>
@@ -194,17 +194,17 @@
                                     <option value="{{ $make->id }}">{{ $make->name }}</option>
                                 @endforeach
                             </select>
-                        
+
                         </div>
                     </div>
-                    
+
                     <!-- Model Dropdown -->
                     <div>
                         <label for="model" class="block text-xs font-medium text-gray-600 mb-1.5">Model</label>
                         <div class="relative">
-                            <select 
-                                wire:model="selectedModel" 
-                                id="model" 
+                            <select
+                                wire:model="selectedModel"
+                                id="model"
                                 class="w-full rounded border-gray-300 py-2 pl-3 pr-8 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:ring-opacity-50 shadow-sm"
                             >
                                 <option value="">All Models</option>
@@ -212,17 +212,17 @@
                                     <option value="{{ $model->id }}">{{ $model->name }}</option>
                                 @endforeach
                             </select>
-                           
+
                         </div>
                     </div>
-                    
+
                     <!-- Price Range Dropdown -->
                     <div>
                         <label for="price" class="block text-xs font-medium text-gray-600 mb-1.5">Price Range</label>
                         <div class="relative">
-                            <select 
-                                wire:model="priceRange" 
-                                id="price" 
+                            <select
+                                wire:model="priceRange"
+                                id="price"
                                 class="w-full rounded border-gray-300 py-2 pl-3 pr-8 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:ring-opacity-50 shadow-sm"
                             >
                                 <option value="">Any Price</option>
@@ -232,14 +232,14 @@
                                 <option value="30000000-50000000">30M - 50M</option>
                                 <option value="50000000-999999999">Over 50M</option>
                             </select>
-                         
+
                         </div>
                     </div>
-                    
+
                     <!-- Search Button -->
                     <div class="flex items-end">
-                        <button 
-                            wire:click="searchVehicles" 
+                        <button
+                            wire:click="searchVehicles"
                             class="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded transition duration-150 flex justify-center items-center"
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
@@ -249,7 +249,7 @@
                         </button>
                     </div>
                 </div>
-                
+
                 <!-- Advanced Search Toggle -->
                 <div class="mt-4 pt-3 border-t border-gray-100">
                     <button type="button" class="flex items-center text-xs text-gray-600 hover:text-blue-600 transition">
@@ -259,7 +259,7 @@
                         Advanced Filters
                     </button>
                 </div>
-                
+
                 <!-- Popular Searches -->
                 <div class="mt-3">
                     <div class="flex flex-wrap gap-2">
@@ -283,11 +283,11 @@
     <!-- Featured Vehicles Section -->
     <div class="py-4 bg-white">
         <div class="container mx-auto px-4">
-           
-            
+
+
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
                 @foreach($featuredVehicles as $vehicle)
-                
+
                 <div class="bg-white rounded-lg shadow overflow-hidden group hover:shadow-md transition duration-200">
     <!-- Vehicle Image Section -->
     <div class="relative aspect-[16/9] overflow-hidden">
@@ -297,14 +297,14 @@
     $frontImage = $vehicle->frontView();
 @endphp
 
-            <img 
+            <img
                 src="{{ $frontImage ? asset('storage/' . $frontImage->image_url) : asset('default/car1.jpg') }}"
                 onerror="this.onerror=null; this.src='{{ asset('default/car1.jpg') }}';"
                 alt="{{ optional($vehicle->make)->name }} {{ optional($vehicle->model)->name }}"
                 class="w-full h-full object-cover transition duration-300 group-hover:scale-105"
             />
 
-        
+
         <!-- Tags & Badge Overlays -->
         <div class="absolute top-2 left-2 flex flex-col gap-1.5">
             @if($vehicle->featured)
@@ -315,18 +315,18 @@
                 Featured
             </span>
             @endif
-            
+
             <span class="inline-flex items-center px-2 py-1 bg-black bg-opacity-70 text-white text-xs font-medium rounded">
                 {{ $vehicle->year }}
             </span>
         </div>
-        
+
         <!-- Price Tag -->
         <div class="absolute bottom-0 right-0 bg-white py-1 px-2 rounded-tl-lg shadow-md font-bold text-green-600">
             TZS {{ number_format($vehicle->price) }}
         </div>
     </div>
-    
+
     <!-- Vehicle Details Section -->
     <div class="p-3">
         <!-- Vehicle Title -->
@@ -339,7 +339,7 @@
                 <span class="text-xs font-medium text-gray-600">{{ optional($vehicle->transmission)->name }}</span>
             </div>
         </div>
-        
+
         <!-- Main Specs Grid -->
         <div class="grid grid-cols-2 gap-1.5 mb-2.5 text-xs">
             <div class="flex items-center text-gray-600">
@@ -368,14 +368,14 @@
                 {{ $vehicle->location ?? 'Not specified' }}
             </div>
         </div>
-        
+
         <!-- Dealership Info + View Details -->
         <div class="flex items-center justify-between pt-2 border-t border-gray-100">
             <div class="flex items-center">
                 <img src="{{ asset('/cars/icon.avif') }}" alt="{{ optional($vehicle->dealer)->name }}" class="w-7 h-7 rounded-full object-cover border border-gray-200">
                 <p class="ml-2 text-xs font-medium text-gray-700 truncate max-w-[100px]">{{ optional($vehicle->dealer)->name }}</p>
             </div>
-            
+
             <a href="{{ route('view.vehicle', $vehicle->id) }}" class="inline-flex items-center text-xs font-semibold text-blue-600 hover:text-blue-800 transition">
                 Details
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 ml-0.5" viewBox="0 0 20 20" fill="currentColor">
@@ -388,7 +388,7 @@
 
                 @endforeach
             </div>
-            
+
             <div class="mt-12 text-center">
                 <a href="{{ route('vehicle.list') }}" class="inline-flex items-center justify-center bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-8 rounded-lg shadow-md hover:shadow-lg transition duration-300">
                     View All Vehicles
@@ -412,7 +412,7 @@
             <h2 class="text-xl font-bold text-gray-800">Featured Dealers</h2>
             <a href="#" class="text-sm font-medium text-green-600 hover:text-green-700">View All Dealers →</a>
         </div>
-        
+
         <!-- Dealers Row -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             @foreach($topDealers as $dealer)
@@ -433,7 +433,7 @@
                         <img src="{{ asset('/cars/icon.avif') }}" alt="{{ $dealer->name }}" class="w-10 h-10 rounded-full object-cover border border-gray-200">
                     </div>
                 </div>
-                
+
                 <!-- Stats -->
                 <div class="flex divide-x divide-gray-100">
                     <div class="flex-1 p-3 text-center">
@@ -450,7 +450,7 @@
                         <div class="text-xs text-gray-500">Rating</div>
                     </div>
                 </div>
-                
+
                 <!-- Action Link -->
                 <a href="{{ route('vehicle.list') }}" class="block text-center py-2 text-sm font-medium text-green-600 hover:text-green-700 hover:bg-green-50 transition-colors duration-150 border-t border-gray-100">
                     Browse Inventory
@@ -470,7 +470,7 @@
         <div class="flex justify-between items-center border-b border-gray-200 pb-4 mb-6">
             <h2 class="text-xl font-bold text-gray-800">Our Advantages</h2>
         </div>
-        
+
         <!-- Features Row -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             <!-- Verified Dealers -->
@@ -485,7 +485,7 @@
                 </div>
                 <p class="text-sm text-gray-600">All our dealers are verified for reliability and quality service.</p>
             </div>
-            
+
             <!-- Secure Transactions -->
             <div class="bg-white p-5 rounded border border-gray-200">
                 <div class="flex items-center mb-3">
@@ -498,7 +498,7 @@
                 </div>
                 <p class="text-sm text-gray-600">Your interactions and payments are protected on our platform.</p>
             </div>
-            
+
             <!-- Expert Support -->
             <div class="bg-white p-5 rounded border border-gray-200">
                 <div class="flex items-center mb-3">
@@ -523,9 +523,9 @@
                 <h2 class="text-3xl font-bold text-gray-900">What Our Customers Say</h2>
                 <p class="mt-4 text-lg text-gray-600 max-w-3xl mx-auto">Hear from people who found their perfect vehicles through our platform</p>
             </div>
-            
+
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-               
+
                <div class="bg-white rounded-xl shadow-md p-6 relative">
                     <div class="absolute -top-4 left-6 text-green-600">
                         <svg class="w-8 h-8 text-green-600 opacity-25" fill="currentColor" viewBox="0 0 32 32" aria-hidden="true">
@@ -550,7 +550,7 @@
 
 
 
-                
+
                 <div class="bg-white rounded-xl shadow-md p-6 relative">
                     <div class="absolute -top-4 left-6 text-green-600">
                         <svg class="w-8 h-8 text-green-600 opacity-25" fill="currentColor" viewBox="0 0 32 32" aria-hidden="true">
@@ -630,6 +630,6 @@
 </div>
 
 
-                                    
+
 
 </div>

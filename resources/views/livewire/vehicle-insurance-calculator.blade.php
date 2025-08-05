@@ -394,7 +394,7 @@
                         
                         <div class="mt-4 p-3 bg-yellow-50 rounded border border-yellow-200">
                             <div class="text-xs text-yellow-800">
-                                <strong>Note:</strong> All calculations follow the exact Excel formula structure with proper VAT, commission, and excess calculations.
+                                <strong>Note:</strong> All calculations follow the exact formula structure with proper VAT, commission, and excess calculations.
                             </div>
                         </div>
                     </div>
