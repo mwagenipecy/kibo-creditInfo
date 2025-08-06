@@ -21,8 +21,17 @@ class WebsiteController extends Controller
         return view('pages.web.home');
     }
 
-    public function vehicleList()
-    {
+
+   
+
+    public function loanCalculator(){
+
+        return view('pages.web.loan-calculator');
+    }
+
+
+    public function vehicleList(){
+
 
         return view('pages.web.vehicle-list');
     }
@@ -93,5 +102,12 @@ class WebsiteController extends Controller
     public function accountPage()
     {
         return view('pages.web.account');
+    }
+
+
+
+    public function customLoanApplication(){
+
+        return view('pages.web.custom-loan-application');
     }
 }

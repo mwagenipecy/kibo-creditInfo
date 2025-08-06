@@ -24,6 +24,7 @@ Route::get('view/vehicle/{vehicleId}', [WebsiteController::class, 'viewVehicleDa
 Route::get('/about-us', [WebsiteController::class, 'aboutPage'])->name('about.us');
 Route::get('/contact', [WebsiteController::class, 'contactPage'])->name('contact.page');
 Route::get('/client-registration', [WebsiteController::class, 'clientRegistration'])->name('client.registration');
+Route::get('loan-calculator', [WebsiteController::class, 'loanCalculator'])->name('loan.calculator');
 
 // Public service pages
 Route::get('garage-list', [GarageManagementController::class, 'index'])->name('garage.list');
@@ -48,6 +49,9 @@ Route::get('/employer/verification-invalid', [EmployerVerificationController::cl
     ->name('employer.verification.invalid');
 Route::get('/employer/verification-completed', [EmployerVerificationController::class, 'completed'])
     ->name('employer.verification.completed');
+
+
+
 
 // =================================================================
 // OTP VERIFICATION ROUTES (Auth only - NO OTP middleware)
@@ -74,14 +78,23 @@ Route::middleware(['auth:sanctum', OTPMiddleware::class])->group(function () {
         return view('loan.application', compact('id'));
     })->name('loan.application');
 
+
+
+    //// custom loan application routes
+    Route::get('custom/loan/application', [WebsiteController::class, 'customLoanApplication'])->name('custom.loan.application');
+
+
+
     Route::get('loan/list', [WebsiteController::class, 'applicationList'])->name('application.list');
     Route::get('application/status/{id}', [WebsiteController::class, 'applicationStatus'])->name('application.status');
     Route::get('loan/pre-qualify/{vehicleId}/{lenderId}', [WebsiteController::class, 'loanApplication'])->name('loan.pre-qualify');
 });
 
+
 // =================================================================
 // ADMIN/STAFF ROUTES (Auth + OTP + Department restrictions)
 // =================================================================
+
 
 Route::middleware(['auth:sanctum', 'verified', OTPMiddleware::class, ClientMiddleware::class])->group(function () {
 
@@ -120,3 +133,4 @@ Route::fallback(function () {
     // Not authenticated - show 404
     return view('pages/utility/404');
 });
+

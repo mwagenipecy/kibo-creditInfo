@@ -86,6 +86,37 @@
         .dropdown-animation {
             animation: dropdown 0.2s ease forwards;
         }
+        
+        /* Custom dropdown styles */
+        .dropdown-menu {
+            min-width: 200px;
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+        
+        .mega-menu {
+            min-width: 600px;
+        }
+        
+        /* Hover effects for navigation items */
+        .nav-item:hover .dropdown-menu {
+            display: block;
+        }
+        
+        /* Custom scrollbar for mobile menu */
+        .mobile-menu::-webkit-scrollbar {
+            width: 4px;
+        }
+        
+        .mobile-menu::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        
+        .mobile-menu::-webkit-scrollbar-thumb {
+            background: #16a34a;
+            border-radius: 2px;
+        }
     </style>
 </head>
 <body class="font-sans antialiased bg-gray-50">
@@ -117,43 +148,172 @@
             </div>
 
             <!-- Navigation Links - Enhanced Desktop/Tablet -->
-            <nav class="hidden md:flex items-center space-x-1 lg:space-x-5">
-                <a href="{{ route('home.page') }}" class="group relative text-gray-700 @if(Route::is('home.page')) text-green-600 @endif hover:text-green-600 px-3 py-2 rounded-md text-sm lg:text-base font-medium transition-colors duration-300">
+            <nav class="hidden lg:flex items-center space-x-1">
+                <!-- Home -->
+                <a href="{{ route('home.page') }}" class="group relative text-gray-700 @if(Route::is('home.page')) text-green-600 @endif hover:text-green-600 px-3 py-2 rounded-md text-base font-medium transition-colors duration-300">
                     <span>Home</span>
                     <span class="absolute -bottom-[2px] left-1/2 w-0 h-[3px] bg-green-500 group-hover:w-4/5 group-hover:-translate-x-1/2 transition-all duration-300 ease-out rounded-full @if(Route::is('home.page')) w-4/5 -translate-x-1/2 @endif"></span>
                 </a>
                 
-                <a href="{{ route('vehicle.list') }}" class="group relative text-gray-700 @if(Route::is('vehicle.list')) text-green-600 @endif hover:text-green-600 px-3 py-2 rounded-md text-sm lg:text-base font-medium transition-colors duration-300">
-                    <span>Vehicles</span>
-                    <span class="absolute -bottom-[2px] left-1/2 w-0 h-[3px] bg-green-500 group-hover:w-4/5 group-hover:-translate-x-1/2 transition-all duration-300 ease-out rounded-full @if(Route::is('vehicle.list')) w-4/5 -translate-x-1/2 @endif"></span>
-                </a>
+                <!-- Vehicles Dropdown -->
+                <div class="relative nav-item group">
+                    <button class="flex items-center text-gray-700 @if(Route::is('vehicle.*')) text-green-600 @endif hover:text-green-600 px-3 py-2 rounded-md text-base font-medium transition-colors duration-300">
+                        <span>Vehicles</span>
+                        <svg class="ml-1 h-4 w-4 transition-transform duration-200 group-hover:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                        <span class="absolute -bottom-[2px] left-1/2 w-0 h-[3px] bg-green-500 group-hover:w-4/5 group-hover:-translate-x-1/2 transition-all duration-300 ease-out rounded-full @if(Route::is('vehicle.*')) w-4/5 -translate-x-1/2 @endif"></span>
+                    </button>
+                    <div class="absolute left-0 mt-2 dropdown-menu rounded-xl shadow-lg py-2 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-20 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+                        <a href="{{ route('vehicle.list') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-600 transition-colors duration-200">
+                            <div class="flex items-center">
+                                <svg class="h-4 w-4 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                </svg>
+                                Browse Vehicles
+                            </div>
+                        </a>
+                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-600 transition-colors duration-200">
+                            <div class="flex items-center">
+                                <svg class="h-4 w-4 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                                </svg>
+                                Upload Your Vehicle
+                            </div>
+                        </a>
+                        <a href="{{ route('custom.loan.application') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-600 transition-colors duration-200">
+                            <div class="flex items-center">
+                                <svg class="h-4 w-4 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                </svg>
+                                Loan Application
+                            </div>
+                        </a>
+                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-600 transition-colors duration-200">
+                            <div class="flex items-center">
+                                <svg class="h-4 w-4 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                                </svg>
+                                Car Lending (Weddings)
+                            </div>
+                        </a>
+                    </div>
+                </div>
 
+                <!-- Spare Parts Dropdown -->
+                <div class="relative nav-item group">
+                    <button class="flex items-center text-gray-700 hover:text-green-600 px-3 py-2 rounded-md text-base font-medium transition-colors duration-300">
+                        <span>Spare Parts</span>
+                        <svg class="ml-1 h-4 w-4 transition-transform duration-200 group-hover:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                        <span class="absolute -bottom-[2px] left-1/2 w-0 h-[3px] bg-green-500 group-hover:w-4/5 group-hover:-translate-x-1/2 transition-all duration-300 ease-out rounded-full"></span>
+                    </button>
+                    <div class="absolute left-0 mt-2 dropdown-menu rounded-xl shadow-lg py-2 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-20 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-600 transition-colors duration-200">
+                            <div class="flex items-center">
+                                <svg class="h-4 w-4 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                </svg>
+                                Battery Supplies
+                            </div>
+                        </a>
+                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-600 transition-colors duration-200">
+                            <div class="flex items-center">
+                                <svg class="h-4 w-4 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9v-9m0-9v9" />
+                                </svg>
+                                Tire Distributors
+                            </div>
+                        </a>
+                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-600 transition-colors duration-200">
+                            <div class="flex items-center">
+                                <svg class="h-4 w-4 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                                Geo-locator
+                            </div>
+                        </a>
+                    </div>
+                </div>
 
-                <a href="{{ route('garage.list') }}" class="group relative text-gray-700 @if(Route::is('garage.list')) text-green-600 @endif hover:text-green-600 px-3 py-2 rounded-md text-sm lg:text-base font-medium transition-colors duration-300">
+                <!-- Loan Services Dropdown -->
+                <div class="relative nav-item group">
+                    <button class="flex items-center text-gray-700 hover:text-green-600 px-3 py-2 rounded-md text-base font-medium transition-colors duration-300">
+                        <span>Loan Services</span>
+                        <svg class="ml-1 h-4 w-4 transition-transform duration-200 group-hover:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                        <span class="absolute -bottom-[2px] left-1/2 w-0 h-[3px] bg-green-500 group-hover:w-4/5 group-hover:-translate-x-1/2 transition-all duration-300 ease-out rounded-full"></span>
+                    </button>
+                    <div class="absolute left-0 mt-2 dropdown-menu rounded-xl shadow-lg py-2 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-20 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-600 transition-colors duration-200">
+                            <div class="flex items-center">
+                                <svg class="h-4 w-4 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                </svg>
+                                Apply for Loan
+                            </div>
+                        </a>
+                        <a href="{{ route('loan.calculator') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-600 transition-colors duration-200">
+                            <div class="flex items-center">
+                                <svg class="h-4 w-4 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                                </svg>
+                                Loan Calculator
+                            </div>
+                        </a>
+                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-600 transition-colors duration-200">
+                            <div class="flex items-center">
+                                <svg class="h-4 w-4 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+                                </svg>
+                                Tax Financing
+                            </div>
+                        </a>
+                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-600 transition-colors duration-200">
+                            <div class="flex items-center">
+                                <svg class="h-4 w-4 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                                </svg>
+                                Secured Loans
+                            </div>
+                        </a>
+                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-600 transition-colors duration-200">
+                            <div class="flex items-center">
+                                <svg class="h-4 w-4 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                                </svg>
+                                Manka Integration
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Garages -->
+                <a href="{{ route('garage.list') }}" class="group relative text-gray-700 @if(Route::is('garage.list')) text-green-600 @endif hover:text-green-600 px-3 py-2 rounded-md text-base font-medium transition-colors duration-300">
                     <span>Garages</span>
                     <span class="absolute -bottom-[2px] left-1/2 w-0 h-[3px] bg-green-500 group-hover:w-4/5 group-hover:-translate-x-1/2 transition-all duration-300 ease-out rounded-full @if(Route::is('garage.list')) w-4/5 -translate-x-1/2 @endif"></span>
                 </a>
 
-
-
-                <a href="{{ route('insurance.index') }}" class="group relative text-gray-700 @if(Route::is('insurance.index')) text-green-600 @endif hover:text-green-600 px-3 py-2 rounded-md text-sm lg:text-base font-medium transition-colors duration-300">
+                <!-- Insurance -->
+                <a href="{{ route('insurance.index') }}" class="group relative text-gray-700 @if(Route::is('insurance.index')) text-green-600 @endif hover:text-green-600 px-3 py-2 rounded-md text-base font-medium transition-colors duration-300">
                     <span>Insurance</span>
                     <span class="absolute -bottom-[2px] left-1/2 w-0 h-[3px] bg-green-500 group-hover:w-4/5 group-hover:-translate-x-1/2 transition-all duration-300 ease-out rounded-full @if(Route::is('insurance.index')) w-4/5 -translate-x-1/2 @endif"></span>
                 </a>
-
-
-
                 
-                
-                <a href="{{ route('about.us') }}" class="group relative text-gray-700 @if(Route::is('about.us')) text-green-600 @endif hover:text-green-600 px-3 py-2 rounded-md text-sm lg:text-base font-medium transition-colors duration-300">
+                <!-- About Us -->
+                <!-- <a href="{{ route('about.us') }}" class="group relative text-gray-700 @if(Route::is('about.us')) text-green-600 @endif hover:text-green-600 px-3 py-2 rounded-md text-base font-medium transition-colors duration-300">
                     <span>About Us</span>
                     <span class="absolute -bottom-[2px] left-1/2 w-0 h-[3px] bg-green-500 group-hover:w-4/5 group-hover:-translate-x-1/2 transition-all duration-300 ease-out rounded-full @if(Route::is('about.us')) w-4/5 -translate-x-1/2 @endif"></span>
-                </a>
+                </a> -->
                 
-                <a href="{{ route('contact.page') }}" class="group relative text-gray-700 @if(Route::is('contact.page')) text-green-600 @endif hover:text-green-600 px-3 py-2 rounded-md text-sm lg:text-base font-medium transition-colors duration-300">
+                <!-- Contact -->
+                <!-- <a href="{{ route('contact.page') }}" class="group relative text-gray-700 @if(Route::is('contact.page')) text-green-600 @endif hover:text-green-600 px-3 py-2 rounded-md text-base font-medium transition-colors duration-300">
                     <span>Contact</span>
                     <span class="absolute -bottom-[2px] left-1/2 w-0 h-[3px] bg-green-500 group-hover:w-4/5 group-hover:-translate-x-1/2 transition-all duration-300 ease-out rounded-full @if(Route::is('contact.page')) w-4/5 -translate-x-1/2 @endif"></span>
-                </a>
+                </a> -->
             </nav>
 
             <!-- Enhanced Auth Buttons - Desktop/Tablet -->
@@ -305,10 +465,15 @@
         x-transition:leave="transition ease-in duration-150" 
         x-transition:leave-start="opacity-100 transform translate-y-0" 
         x-transition:leave-end="opacity-0 transform -translate-y-2"
-        class="md:hidden bg-white border-t border-gray-100 shadow-lg"
+        class="lg:hidden bg-white border-t border-gray-100 shadow-lg mobile-menu max-h-screen overflow-y-auto"
         style="display: none;">
         
-        <nav class="px-4 pt-3 pb-4 space-y-1">
+        <nav class="px-4 pt-3 pb-4 space-y-1" x-data="{ 
+            vehiclesOpen: false, 
+            sparePartsOpen: false, 
+            loanServicesOpen: false 
+        }">
+            <!-- Home -->
             <a href="{{ route('home.page') }}" @click="mobileMenuOpen = false" class="flex items-center py-3 px-4 text-base font-medium rounded-lg text-gray-900 hover:bg-gray-50 hover:text-green-600 @if(Route::is('home.page')) bg-green-50 text-green-600 @endif transition-colors duration-300">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 @if(Route::is('home.page')) text-green-500 @else text-gray-400 @endif" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
@@ -316,39 +481,149 @@
                 Home
             </a>
             
-            <a href="{{ route('vehicle.list') }}" @click="mobileMenuOpen = false" class="flex items-center py-3 px-4 text-base font-medium rounded-lg text-gray-900 hover:bg-gray-50 hover:text-green-600 @if(Route::is('vehicle.list')) bg-green-50 text-green-600 @endif transition-colors duration-300">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 @if(Route::is('vehicle.list')) text-green-500 @else text-gray-400 @endif" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-                </svg>
-                Vehicles
-            </a>
+            <!-- Vehicles Dropdown -->
+            <div class="space-y-1">
+                <button @click="vehiclesOpen = !vehiclesOpen" class="flex items-center justify-between w-full py-3 px-4 text-base font-medium rounded-lg text-gray-900 hover:bg-gray-50 hover:text-green-600 @if(Route::is('vehicle.*')) bg-green-50 text-green-600 @endif transition-colors duration-300">
+                    <div class="flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 @if(Route::is('vehicle.*')) text-green-500 @else text-gray-400 @endif" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                        </svg>
+                        Vehicles
+                    </div>
+                    <svg class="h-4 w-4 transition-transform duration-200" :class="{'rotate-180': vehiclesOpen}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </button>
+                <div x-show="vehiclesOpen" x-transition class="ml-8 space-y-1" style="display: none;">
+                    <a href="{{ route('vehicle.list') }}" @click="mobileMenuOpen = false" class="flex items-center py-2 px-4 text-sm text-gray-600 hover:bg-gray-50 hover:text-green-600 transition-colors duration-200 rounded-lg">
+                        <svg class="h-4 w-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                        Browse Vehicles
+                    </a>
+                    <a href="#" @click="mobileMenuOpen = false" class="flex items-center py-2 px-4 text-sm text-gray-600 hover:bg-gray-50 hover:text-green-600 transition-colors duration-200 rounded-lg">
+                        <svg class="h-4 w-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                        </svg>
+                        Upload Your Vehicle
+                    </a>
+                    <a href="{{ route('custom.loan.application') }}" @click="mobileMenuOpen = false" class="flex items-center py-2 px-4 text-sm text-gray-600 hover:bg-gray-50 hover:text-green-600 transition-colors duration-200 rounded-lg">
+                        <svg class="h-4 w-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        Loan Application
+                    </a>
+                    <a href="#" @click="mobileMenuOpen = false" class="flex items-center py-2 px-4 text-sm text-gray-600 hover:bg-gray-50 hover:text-green-600 transition-colors duration-200 rounded-lg">
+                        <svg class="h-4 w-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                        </svg>
+                        Car Lending (Weddings)
+                    </a>
+                </div>
+            </div>
 
+            <!-- Spare Parts Dropdown -->
+            <div class="space-y-1">
+                <button @click="sparePartsOpen = !sparePartsOpen" class="flex items-center justify-between w-full py-3 px-4 text-base font-medium rounded-lg text-gray-900 hover:bg-gray-50 hover:text-green-600 transition-colors duration-300">
+                    <div class="flex items-center">
+                        <svg class="h-5 w-5 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                        Spare Parts
+                    </div>
+                    <svg class="h-4 w-4 transition-transform duration-200" :class="{'rotate-180': sparePartsOpen}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </button>
+                <div x-show="sparePartsOpen" x-transition class="ml-8 space-y-1" style="display: none;">
+                    <a href="#" @click="mobileMenuOpen = false" class="flex items-center py-2 px-4 text-sm text-gray-600 hover:bg-gray-50 hover:text-green-600 transition-colors duration-200 rounded-lg">
+                        <svg class="h-4 w-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
+                        Battery Supplies
+                    </a>
+                    <a href="#" @click="mobileMenuOpen = false" class="flex items-center py-2 px-4 text-sm text-gray-600 hover:bg-gray-50 hover:text-green-600 transition-colors duration-200 rounded-lg">
+                        <svg class="h-4 w-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9v-9m0-9v9" />
+                        </svg>
+                        Tire Distributors
+                    </a>
+                    <a href="#" @click="mobileMenuOpen = false" class="flex items-center py-2 px-4 text-sm text-gray-600 hover:bg-gray-50 hover:text-green-600 transition-colors duration-200 rounded-lg">
+                        <svg class="h-4 w-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                        Geo-locator
+                    </a>
+                </div>
+            </div>
 
+            <!-- Loan Services Dropdown -->
+            <div class="space-y-1">
+                <button @click="loanServicesOpen = !loanServicesOpen" class="flex items-center justify-between w-full py-3 px-4 text-base font-medium rounded-lg text-gray-900 hover:bg-gray-50 hover:text-green-600 transition-colors duration-300">
+                    <div class="flex items-center">
+                        <svg class="h-5 w-5 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+                        </svg>
+                        Loan Services
+                    </div>
+                    <svg class="h-4 w-4 transition-transform duration-200" :class="{'rotate-180': loanServicesOpen}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </button>
+                <div x-show="loanServicesOpen" x-transition class="ml-8 space-y-1" style="display: none;">
+                    <a href="#" @click="mobileMenuOpen = false" class="flex items-center py-2 px-4 text-sm text-gray-600 hover:bg-gray-50 hover:text-green-600 transition-colors duration-200 rounded-lg">
+                        <svg class="h-4 w-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        Apply for Loan
+                    </a>
+                    <a href="{{ route('loan.calculator') }}" @click="mobileMenuOpen = false" class="flex items-center py-2 px-4 text-sm text-gray-600 hover:bg-gray-50 hover:text-green-600 transition-colors duration-200 rounded-lg">
+                        <svg class="h-4 w-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                        </svg>
+                        Loan Calculator
+                    </a>
+                    <a href="#" @click="mobileMenuOpen = false" class="flex items-center py-2 px-4 text-sm text-gray-600 hover:bg-gray-50 hover:text-green-600 transition-colors duration-200 rounded-lg">
+                        <svg class="h-4 w-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+                        </svg>
+                        Tax Financing
+                    </a>
+                    <a href="#" @click="mobileMenuOpen = false" class="flex items-center py-2 px-4 text-sm text-gray-600 hover:bg-gray-50 hover:text-green-600 transition-colors duration-200 rounded-lg">
+                        <svg class="h-4 w-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                        </svg>
+                        Secured Loans
+                    </a>
+                    <a href="#" @click="mobileMenuOpen = false" class="flex items-center py-2 px-4 text-sm text-gray-600 hover:bg-gray-50 hover:text-green-600 transition-colors duration-200 rounded-lg">
+                        <svg class="h-4 w-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                        </svg>
+                        Manka Integration
+                    </a>
+                </div>
+            </div>
 
-                <a href="{{ route('garage.list') }}" @click="mobileMenuOpen = false" class="flex items-center py-3 px-4 text-base font-medium rounded-lg text-gray-900 hover:bg-gray-50 hover:text-green-600 @if(Route::is('garage.list')) bg-green-50 text-green-600 @endif transition-colors duration-300">
-                
-                <svg  class="h-5 w-5 mr-3 @if(Route::is('garage.list')) text-green-500 @else text-gray-400 @endif" 
+            <!-- Garages -->
+            <a href="{{ route('garage.list') }}" @click="mobileMenuOpen = false" class="flex items-center py-3 px-4 text-base font-medium rounded-lg text-gray-900 hover:bg-gray-50 hover:text-green-600 @if(Route::is('garage.list')) bg-green-50 text-green-600 @endif transition-colors duration-300">
+                <svg class="h-5 w-5 mr-3 @if(Route::is('garage.list')) text-green-500 @else text-gray-400 @endif" 
                 data-slot="icon" fill="none" stroke-width="1.5" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M11.42 15.17 17.25 21A2.652 2.652 0 0 0 21 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 1 1-3.586-3.586l6.837-5.63m5.108-.233c.55-.164 1.163-.188 1.743-.14a4.5 4.5 0 0 0 4.486-6.336l-3.276 3.277a3.004 3.004 0 0 1-2.25-2.25l3.276-3.276a4.5 4.5 0 0 0-6.336 4.486c.091 1.076-.071 2.264-.904 2.95l-.102.085m-1.745 1.437L5.909 7.5H4.5L2.25 3.75l1.5-1.5L7.5 4.5v1.409l4.26 4.26m-1.745 1.437 1.745-1.437m6.615 8.206L15.75 15.75M4.867 19.125h.008v.008h-.008v-.008Z"></path>
                 </svg>
-
-
                 Garages
             </a>
 
-
-
-
-           <a href="{{ route('insurance.index') }}" @click="mobileMenuOpen = false" class="flex items-center py-3 px-4 text-base font-medium rounded-lg text-gray-900 hover:bg-gray-50 hover:text-green-600 @if(Route::is('insurance.index')) bg-green-50 text-green-600 @endif transition-colors duration-300">
-                <svg data-slot="icon"  class="h-5 w-5 mr-3 @if(Route::is('insurance.index')) text-green-500 @else text-gray-400 @endif" fill="none" stroke-width="1.5" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <!-- Insurance -->
+            <a href="{{ route('insurance.index') }}" @click="mobileMenuOpen = false" class="flex items-center py-3 px-4 text-base font-medium rounded-lg text-gray-900 hover:bg-gray-50 hover:text-green-600 @if(Route::is('insurance.index')) bg-green-50 text-green-600 @endif transition-colors duration-300">
+                <svg data-slot="icon" class="h-5 w-5 mr-3 @if(Route::is('insurance.index')) text-green-500 @else text-gray-400 @endif" fill="none" stroke-width="1.5" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"></path>
                 </svg>
-
                 Insurance
             </a>
-
-
             
+            <!-- About Us -->
             <a href="{{ route('about.us') }}" @click="mobileMenuOpen = false" class="flex items-center py-3 px-4 text-base font-medium rounded-lg text-gray-900 hover:bg-gray-50 hover:text-green-600 @if(Route::is('about.us')) bg-green-50 text-green-600 @endif transition-colors duration-300">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 @if(Route::is('about.us')) text-green-500 @else text-gray-400 @endif" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -356,6 +631,7 @@
                 About Us
             </a>
             
+            <!-- Contact -->
             <a href="{{ route('contact.page') }}" @click="mobileMenuOpen = false" class="flex items-center py-3 px-4 text-base font-medium rounded-lg text-gray-900 hover:bg-gray-50 hover:text-green-600 @if(Route::is('contact.page')) bg-green-50 text-green-600 @endif transition-colors duration-300">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 @if(Route::is('contact.page')) text-green-500 @else text-gray-400 @endif" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
@@ -408,7 +684,6 @@
                         </svg>
                         Dashboard
                     </a>
-
 
                    @else 
                     <a href="{{ route('application.list') }}" @click="mobileMenuOpen = false" class="flex items-center px-4 py-2.5 rounded-lg text-base font-medium bg-white shadow-sm text-gray-900 hover:text-green-600 transition-colors duration-300">
@@ -463,10 +738,6 @@
     }
 </style>
 
-
-
-
-
         <!-- Page Content -->
         <main>
             @yield('main-section')
@@ -518,10 +789,10 @@
                         <ul class="space-y-2">
                             <li><a href="{{ route('home.page') }}" class="text-gray-400 hover:text-white">Home</a></li>
                             <li><a href="{{ route('vehicle.list') }}" class="text-gray-400 hover:text-white">Browse Vehicles</a></li>
-                            <li><a href="#" class="text-gray-400 hover:text-white">Dealers</a></li>
-                            <li><a href="#" class="text-gray-400 hover:text-white">Financing</a></li>
-                            <li><a href="#" class="text-gray-400 hover:text-white">About Us</a></li>
-                            <li><a href="#" class="text-gray-400 hover:text-white">Contact</a></li>
+                            <li><a href="{{ route('about.us') }}" class="text-gray-400 hover:text-white">About Us </a></li>
+                            <!-- <li><a href="#" class="text-gray-400 hover:text-white">Financing</a></li>
+                            <li><a href="#" class="text-gray-400 hover:text-white">About Us</a></li> -->
+                            <li><a href="{{ route('contact.page') }}" class="text-gray-400 hover:text-white">Contact</a></li>
                         </ul>
                     </div>
                     
