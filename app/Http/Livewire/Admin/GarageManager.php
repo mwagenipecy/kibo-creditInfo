@@ -488,4 +488,6 @@ class GarageManager extends Component
             return view('livewire.admin.garage-manager', compact('garages'));
         }
     }
+
+    
 }
