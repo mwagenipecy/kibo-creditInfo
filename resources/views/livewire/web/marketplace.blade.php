@@ -2,11 +2,11 @@
 {{-- resources/views/livewire/marketplace.blade.php --}}
 <div class="min-h-screen bg-gradient-to-br from-green-50 to-white">
     {{-- Header --}}
-    <div class="bg-white shadow-sm border-b">
+    <div class="bg-green-600 shadow-sm border-b">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-            <div class="text-center">
-                <h1 class="text-4xl font-bold text-gray-900 mb-2">Spare Parts Marketplace</h1>
-                <p class="text-lg text-gray-600">Find quality spare parts from verified shops near you</p>
+            <div class="text-start">
+                <h1 class="text-4xl font-bold text-white  mb-2">Spare Parts Marketplace</h1>
+                <p class="text-lg text-white ">Find quality spare parts from verified shops near you</p>
             </div>
         </div>
     </div>

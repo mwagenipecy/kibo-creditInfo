@@ -165,4 +165,29 @@ class User extends Authenticatable
 
 
 
+    // Check if user is shop supervisor
+    public function isShopSupervisor()
+    {
+        return $this->role === 'shop_supervisor';
+    }
+
+    // Check if user is admin
+    public function isAdmin()
+    {
+        return $this->role === 'admin';
+    }
+
+    // Scope for supervisors
+    public function scopeSupervisors($query)
+    {
+        return $query->where('role', 'shop_supervisor');
+    }
+
+    // Scope for active users
+    public function scopeActive($query)
+    {
+        return $query->where('status', 'active');
+    }
+
+
 }

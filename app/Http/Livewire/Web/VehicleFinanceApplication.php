@@ -614,7 +614,7 @@ class VehicleFinanceApplication extends Component
             $application->district = $this->selected_district;
             $application->street = $this->street;
             $application->email = $this->email;
-            $application->application_status = 'pending';
+            $application->application_status = 'NEW CLIENT';
             
             // Vehicle information
             $selectedMake = Make::find($this->selected_make_id);
@@ -630,7 +630,7 @@ class VehicleFinanceApplication extends Component
             $application->tenure = $this->tenure;
             $application->lender_id = $this->selected_lender_id;
             $application->client_id = auth()->user()->id ?? null;
-            $application->stage_name = 'direct_application';
+            $application->stage_name = 'statement_verification';
             
             // Employment information
             if ($this->is_employed) {

@@ -1,7 +1,20 @@
 <div>
 {{-- resources/views/livewire/spare-part-detail.blade.php --}}
-<div class="min-h-screen bg-gradient-to-br from-green-50 to-white py-8">
+<div class="min-h-screen bg-gradient-to-br from-green-50 to-white ">
+
+<div class="bg-green-600 shadow-sm mb-4 border-b">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <div class="text-start">
+                <h1 class="text-4xl font-bold text-white  mb-2">Spare Parts Marketplace</h1>
+                <p class="text-lg text-white ">Find quality spare parts from verified shops near you</p>
+            </div>
+        </div>
+    </div>
+
+
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+    
         {{-- Breadcrumb --}}
         <nav class="flex mb-8" aria-label="Breadcrumb">
             <ol class="inline-flex items-center space-x-1 md:space-x-3">

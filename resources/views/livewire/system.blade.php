@@ -78,6 +78,19 @@
 
            @break
 
+           @case('17')
+        <livewire:admin.shop-onboarding />
+
+
+        @break
+
+
+
+        @case('18')
+        
+        <livewire:shop.spare-parts-management />
+
+        @break
 
 
 
@@ -101,23 +114,15 @@
 {{--        <livewire:investment.investment />--}}
 {{--             @break--}}
 
-            @case('16')
+            @case('1996')
             <div class="p-4">
                 <livewire:expenses.expense />
 {{--                <livewire:accounting.expenses-table />--}}
             </div>
              @break
-           @case('18')
-              <livewire:teller-management.teller/>
+          
 
-        @break
-
-        @case('17')
-        <livewire:admin.shop-onboarding />
-
-        <livewire:shop.spare-parts-management />
-
-        @break
+      
 
 
            @case('19')
