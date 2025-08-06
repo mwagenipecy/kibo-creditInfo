@@ -96,6 +96,44 @@
                 <p class="text-green-700 text-sm">
                     {{ $editMode ? 'Update vehicle information and images' : 'Create a new vehicle listing with all details' }}
                 </p>
+
+
+
+                <div class="flex items-center mb-4 mt-4">
+    <input 
+        id="is_wedding_car" 
+        type="checkbox" 
+        wire:model="is_wedding_car"
+        class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm 
+               focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 
+               dark:bg-gray-700 dark:border-gray-600"
+    >
+    <label for="is_wedding_car" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">
+        For Wedding lending purposes
+    </label>
+</div>
+
+<div class="flex items-center">
+    <input 
+        id="is_for_sale" 
+        type="checkbox" 
+        wire:model="is_for_sale"
+        class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm 
+               focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 
+               dark:bg-gray-700 dark:border-gray-600"
+    >
+    <label for="is_for_sale" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">
+        For sale
+    </label>
+</div>
+
+
+
+
+
+
+
+
             </div>
             <div class="hidden lg:block">
                 <div class="bg-white bg-opacity-20 backdrop-blur-sm rounded-xl p-4">
@@ -308,8 +346,11 @@
                                     @error('vehicle.vehicle_condition') <p class="mt-1 text-sm text-red-600 flex items-center"><svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>{{ $message }}</p> @enderror
                                 </div>
                                 
+
+                                @if($this->is_for_sale)
+                                
                                 <div class="space-y-2">
-                                    <label for="price" class="block text-sm font-medium text-gray-700">Price (TZS)*</label>
+                                    <label for="price" class="block text-sm font-medium text-gray-700"> Sale Price (TZS)*</label>
                                     <div class="relative">
                                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                             <span class="text-gray-500 sm:text-sm">TZS</span>
@@ -318,6 +359,26 @@
                                     </div>
                                     @error('vehicle.price') <p class="mt-1 text-sm text-red-600 flex items-center"><svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>{{ $message }}</p> @enderror
                                 </div>
+
+                                @endif 
+
+
+                                @if($this->is_wedding_car)
+
+                                <div class="space-y-2">
+                                    <label for="rent_price" class="block text-sm font-medium text-gray-700">Renting Price (TZS)*</label>
+                                    <div class="relative">
+                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                            <span class="text-gray-500 sm:text-sm">TZS</span>
+                                        </div>
+                                        <input type="number" id="rent_price" wire:model="vehicle.rent_price" placeholder="50,000" class="w-full pl-12 rounded-xl border-gray-300 shadow-sm focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200 bg-gray-50 focus:bg-white">
+                                    </div>
+                                    @error('vehicle.rent_price') <p class="mt-1 text-sm text-red-600 flex items-center"><svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>{{ $message }}</p> @enderror
+                                </div>
+
+                                @endif 
+
+
                             </div>
 
                             <!-- <div class="space-y-2">

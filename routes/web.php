@@ -36,8 +36,8 @@ Route::get('/contact', [WebsiteController::class, 'contactPage'])->name('contact
 Route::get('/client-registration', [WebsiteController::class, 'clientRegistration'])->name('client.registration');
 Route::get('loan-calculator', [WebsiteController::class, 'loanCalculator'])->name('loan.calculator');
 
-
-
+Route::get('wedding-vehicles', [WebsiteController::class, 'weddingVehicles'])->name('wedding.vehicles');
+Route::get('wedding-vehicle/{vehicleId}', [WebsiteController::class, 'viewWeddingVehicle'])->name('wedding.car.detail');
 
 
 

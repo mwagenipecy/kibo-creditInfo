@@ -39,7 +39,11 @@ class Vehicle extends Model
         'is_featured',
         'vehicle_condition',
         'downPaymentPercent',
-        'status'
+        'status',
+        'rent_price',
+        'is_for_sale',
+        'is_wedding_car',
+
     ];
     
     protected $casts = [

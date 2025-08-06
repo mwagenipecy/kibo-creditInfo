@@ -30,6 +30,11 @@ class VehicleList extends Component
     public $editMode = false;
     public $vehicle = [];
     public $vehicleId = null;
+    public $is_wedding_car = false;
+    public $is_for_sale = false;
+
+    public $rent_price=0;
+
     public $vehicleStatus = 'active';
     
     // New image fields with specific views
@@ -69,7 +74,7 @@ class VehicleList extends Component
             'vehicle.transmission_id' => 'required|exists:transmissions,id',
             'vehicle.year' => 'required|integer|min:1900|max:' . (date('Y') + 1),
            // 'vehicle.downPaymentPercent' => 'required|integer|max:99',
-            'vehicle.price' => 'required|numeric|min:0',
+            'vehicle.price' => 'numeric|min:0',
             'vehicle.mileage' => 'required|numeric|min:0',
             'vehicle.color' => 'required|string|max:50',
             'vehicle.vin' => 'required|string|max:17|unique:vehicles,vin,' . $this->vehicleId,
@@ -86,6 +91,10 @@ class VehicleList extends Component
             'vehicle.is_featured' => 'boolean',
             'additionalImages.*' => 'nullable|image|max:10240', // 10MB Max
             'vehicleStatus' => 'required|in:active,on_hold,sold',
+            'vehicle.is_wedding_car' => 'boolean|required_without:is_for_sale',
+            'vehicle.is_for_sale' => 'boolean|required_without:is_wedding_car',
+            'vehicle.rent_price' => 'nullable|numeric|min:0',
+
         ];
 
         // Add validation rules for view images only if in create mode or if there's no existing image
@@ -683,4 +692,6 @@ private function validateImage($file)
             'featuredCount' => $featuredCount,
         ]);
     }
+
+    
 }

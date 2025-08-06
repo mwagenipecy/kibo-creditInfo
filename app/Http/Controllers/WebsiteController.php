@@ -111,4 +111,16 @@ class WebsiteController extends Controller
 
         return view('pages.web.custom-loan-application');
     }
+
+
+    public function weddingVehicles(){
+
+        return view('pages.web.wedding-vehicles');
+    }
+
+    public function viewWeddingVehicle($vehicleId){
+
+        return view('pages.web.view-wedding-vehicle',['vehicleId'=>$vehicleId]);
+   
+    }
 }
