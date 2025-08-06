@@ -161,7 +161,7 @@
                                 <!-- Wedding Badge -->
                                 <div class="absolute top-3 right-3">
                                     <span class="inline-flex items-center px-2.5 py-1 bg-white bg-opacity-90 text-green-600 text-xs font-bold rounded-full shadow-md">
-                                        💒 WEDDING
+                                         WEDDING
                                     </span>
                                 </div>
                                 

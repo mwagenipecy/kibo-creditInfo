@@ -96,10 +96,13 @@
                 <div class="mb-10" x-data="{ activeSlide: 0, fitMode: 'contain' }">
                     <div class="relative rounded-xl overflow-hidden mb-4 bg-gray-100 shadow-lg">
                         <div class="relative w-full" style="padding-bottom: 56.25%;">
-                            @forelse($vehicle->images as $index => $image)
+                          
+
+                        @forelse($vehicle->images as $index => $image)
+
                                 <div x-show="activeSlide === {{ $index }}" class="absolute inset-0 w-full h-full">
                                     <img 
-                                        src="{{ $image ? asset('storage/' . $image->image_url) : asset('default/car1.jpg') }}" 
+                                        src="{{ $image ? asset('storage/' . $image) : asset('default/car1.jpg') }}" 
                                         alt="Wedding Car {{ $index + 1 }}" 
                                         class="w-full h-full transition-all duration-300"
                                         :class="fitMode === 'contain' ? 'object-contain' : 'object-cover'"
@@ -153,7 +156,7 @@
                                 <button @click="activeSlide = {{ $index }}" class="focus:outline-none">
                                     <div class="relative aspect-w-4 aspect-h-3 rounded-md overflow-hidden group">
                                         <img 
-                                            src="{{ $image ? asset('storage/' . $image->image_url) : asset('default/car1.jpg') }}" 
+                                            src="{{ $image ? asset('storage/' . $image) : asset('default/car1.jpg') }}" 
                                             alt="Thumbnail {{ $index + 1 }}" 
                                             class="w-full h-full object-cover transition-all duration-200"
                                             :class="activeSlide === {{ $index }} ? 'ring-2 ring-green-500' : 'ring-1 ring-gray-200 group-hover:ring-gray-300'"
