@@ -34,9 +34,9 @@
             <livewire:settings.settings />
             @break
 
-        
+
             @case('10')
-            
+
              <livewire:product-management.product-dashboard />
 
             @break
@@ -48,7 +48,7 @@
 
 
            @case('12')
-            
+
             <livewire:settings.partner-onboarding/>
 
            @break
@@ -56,7 +56,7 @@
 
 
            @case('14')
-            
+
             <livewire:lender-management.lender-settings/>
 
            @break
@@ -65,7 +65,7 @@
 
 
            @case('15')
-            
+
             <livewire:report.billing-management />
 
            @break
@@ -73,7 +73,7 @@
 
 
            @case('16')
-           
+
            <livewire:admin.garage-manager/>
 
            @break
@@ -87,14 +87,14 @@
 
 
         @case('18')
-        
+
         <livewire:shop.spare-parts-management />
 
         @break
 
 
 
-           
+
             @case('125')
             <livewire:reconciliation.reconciliation />
             @break
@@ -120,13 +120,13 @@
 {{--                <livewire:accounting.expenses-table />--}}
             </div>
              @break
-          
 
-      
+
+
 
 
            @case('19')
-            <livewire:profile-setting.profile/>
+               @include('profile.show')
             @break
         @default
             <livewire:dashboard.dashboard/>
