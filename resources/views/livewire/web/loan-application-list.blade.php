@@ -30,8 +30,19 @@
     <!-- Main Content -->
     <div class="container mx-auto px-4 py-8">
         <div class="max-w-6xl mx-auto">
+
+
+        <a href="{{ route('import.duty.applications') }}" class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded">
+        Import Duty Application
+        </a>
+
+
+
             <div class="flex justify-between items-center mb-6">
                 <h1 class="text-2xl font-bold text-gray-900">My Loan Applications</h1>
+
+
+
                 
                 <div>
                     <select wire:model="statusFilter" class="rounded-lg border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-200 focus:ring-opacity-50">

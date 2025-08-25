@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\BillingController;
 use App\Http\Controllers\GarageManagementController;
+use App\Http\Controllers\ImportDutyController;
 use App\Http\Controllers\InsuranceController;
 use App\Http\Controllers\SparePartController;
 use App\Http\Controllers\WebsiteController;
@@ -115,7 +116,13 @@ Route::middleware(['auth:sanctum', 'verified', OTPMiddleware::class, ClientMiddl
     Route::get('/System', \App\Http\Livewire\System::class)->name('System');
     Route::get('/CyberPoint-Pro', \App\Http\Livewire\System::class)->name('CyberPoint-Pro');
 
+
+    // import duty routes
+    Route::get('/import-duty', [ImportDutyController::class,'importDutyForm'])->name('import.duty');
+    Route::get('/import-duty/tracking/{applicationId}', [ImportDutyController::class, 'importDutyTracking'])->name('import.duty.tracking');
+    Route::get('/import-duty/applications', [ImportDutyController::class, 'applicationsList'])->name('import.duty.applications');
     // Billing management routes
+
     Route::get('/billing/bills/{bill}/pdf', [BillingController::class, 'generatePDF'])->name('billing.pdf');
     Route::get('/billing/export', [BillingController::class, 'export'])->name('billing.export');
     Route::get('/payments/{payment}/receipt', [BillingController::class, 'generatePaymentReceipt'])->name('payment.receipt');

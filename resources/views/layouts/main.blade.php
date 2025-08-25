@@ -194,7 +194,7 @@
                                 <svg class="h-4 w-4 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                                 </svg>
-                                Car Lending (Weddings)
+                                  Car Rental
                             </div>
                         </a>
                     </div>
@@ -265,7 +265,7 @@
                                 Loan Calculator
                             </div>
                         </a>
-                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-600 transition-colors duration-200">
+                        <a href="{{ route('import.duty') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-600 transition-colors duration-200">
                             <div class="flex items-center">
                                 <svg class="h-4 w-4 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
@@ -518,7 +518,7 @@
                         <svg class="h-4 w-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                         </svg>
-                        Car Lending (Weddings)
+                        Car rental
                     </a>
                 </div>
             </div>
@@ -586,7 +586,7 @@
                         </svg>
                         Loan Calculator
                     </a>
-                    <a href="#" @click="mobileMenuOpen = false" class="flex items-center py-2 px-4 text-sm text-gray-600 hover:bg-gray-50 hover:text-green-600 transition-colors duration-200 rounded-lg">
+                    <a href="{{ route('import.duty') }}" @click="mobileMenuOpen = false" class="flex items-center py-2 px-4 text-sm text-gray-600 hover:bg-gray-50 hover:text-green-600 transition-colors duration-200 rounded-lg">
                         <svg class="h-4 w-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
                         </svg>
