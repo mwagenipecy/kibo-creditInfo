@@ -68,7 +68,7 @@
                             </h1>
                             <div class="flex items-center mb-4">
                                 <span class="bg-gradient-to-r from-green-600 to-green-600 text-white px-4 py-1 rounded-full text-sm font-medium mr-3">
-                                     Wedding Special
+                                Car rental Special
                                 </span>
                                 @if($vehicle->is_featured)
                                     <span class="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm font-medium">
@@ -228,7 +228,7 @@
                 @if($vehicle->description)
                 <div class="mb-10 bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
                     <div class="bg-gradient-to-r from-green-50 to-green-50 px-6 py-4 border-b border-gray-100">
-                        <h2 class="text-xl font-bold text-gray-800">About This Wedding Car</h2>
+                        <h2 class="text-xl font-bold text-gray-800">About This  Car Rental </h2>
                     </div>
                     <div class="p-6">
                         <p class="text-gray-700 leading-relaxed">{{ $vehicle->description }}</p>
@@ -241,7 +241,7 @@
                 <div class="mb-10">
                     <h2 class="text-xl font-bold text-gray-900 mb-6 flex items-center">
                         <span class="text-2xl mr-3">💒</span>
-                        Similar Wedding Cars
+                        Similar  Cars
                     </h2>
                     
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -287,7 +287,7 @@
                     <div class="bg-gradient-to-r from-green-600 to-green-600 text-white px-6 py-4">
                         <h2 class="text-xl font-bold flex items-center">
                             <span class="text-2xl mr-3"></span>
-                            Book Your Wedding Car
+                            Book Now
                         </h2>
                     </div>
                     
@@ -524,7 +524,7 @@
                                         {{ optional($vehicle->dealer)->contact_person_phone }}
                                     </p>
                                     <p class="text-xs text-gray-500">
-                                        {{ optional($vehicle->dealer)->contact_person_name ?? 'Wedding Car Specialist' }}
+                                        {{ optional($vehicle->dealer)->contact_person_name ?? ' Car Specialist' }}
                                     </p>
                                 </div>
                             @endif

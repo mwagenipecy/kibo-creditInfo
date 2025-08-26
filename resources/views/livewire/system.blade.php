@@ -93,7 +93,30 @@
         @break
 
 
+        @case('20')
+        
+        <livewire:admin.c-f-company-management />
 
+        @break
+
+
+        @case('21')
+        
+        <livewire:admin.c-f-company-offers />
+
+        @break
+
+
+        @case('22')
+        
+        <livewire:admin.lender-dashboard />
+
+        @break
+
+
+
+
+           
 
             @case('125')
             <livewire:reconciliation.reconciliation />
@@ -126,8 +149,14 @@
 
 
            @case('19')
-               @include('profile.show')
+
+             @include('profile.show')
+
+
             @break
+
+
+
         @default
             <livewire:dashboard.dashboard/>
     @endswitch

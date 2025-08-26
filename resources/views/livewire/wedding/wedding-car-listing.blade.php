@@ -4,10 +4,10 @@
     <div class="bg-gradient-to-r from-green-600 via-green-600 to-green-600 text-white py-8">
         <div class="container mx-auto px-4 text-start">
             <h1 class="text-4xl md:text-6xl font-bold mb-4">
-                 Wedding Car Rentals 
+                  Car Rentals 
             </h1>
             <p class="text-xl md:text-2xl mb-2 text-green-100">
-                Make your special day unforgettable with our luxury wedding cars
+                Make your special day unforgettable with our luxury  cars
             </p>
             <div class="flex justify-start space-x-2 text-green-100">
                 <span></span>

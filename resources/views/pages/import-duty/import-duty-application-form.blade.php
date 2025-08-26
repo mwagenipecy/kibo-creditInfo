@@ -2,9 +2,5 @@
 @section('main-section')
 
 
-
-  <livewire:wedding.wedding-car-listing />
-
-  
-
+<livewire:import-duty.import-duty-application-form />
 @endsection
