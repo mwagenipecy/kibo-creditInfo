@@ -74,8 +74,8 @@ Route::get('/employer/verification-completed', [EmployerVerificationController::
 Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     // OTP verification page - CRITICAL: No OTPMiddleware here to prevent loops
     Route::get('/otp-page', [WebsiteController::class, 'Otp'])->name('otp-page');
-    
-  
+
+
 });
 
 // =================================================================
@@ -83,7 +83,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 // =================================================================
 
 Route::middleware(['auth:sanctum', OTPMiddleware::class])->group(function () {
-    
+
     // Account settings - Available to all verified users
     Route::get('account', [WebsiteController::class, 'accountPage'])->name('account.setting');
 
@@ -96,8 +96,8 @@ Route::middleware(['auth:sanctum', OTPMiddleware::class])->group(function () {
 
     //// custom loan application routes
     Route::get('custom/loan/application', [WebsiteController::class, 'customLoanApplication'])->name('custom.loan.application');
-    
-    
+
+
     Route::get('loan/list', [WebsiteController::class, 'applicationList'])->name('application.list');
     Route::get('application/status/{id}', [WebsiteController::class, 'applicationStatus'])->name('application.status');
     Route::get('loan/pre-qualify/{vehicleId}/{lenderId}', [WebsiteController::class, 'loanApplication'])->name('loan.pre-qualify');
@@ -110,7 +110,7 @@ Route::middleware(['auth:sanctum', OTPMiddleware::class])->group(function () {
 
 
 Route::middleware(['auth:sanctum', 'verified', OTPMiddleware::class, ClientMiddleware::class])->group(function () {
-    
+
     // Main system/dashboard routes
     Route::get('/System', \App\Http\Livewire\System::class)->name('System');
     Route::get('/CyberPoint-Pro', \App\Http\Livewire\System::class)->name('CyberPoint-Pro');
@@ -128,21 +128,21 @@ Route::middleware(['auth:sanctum', 'verified', OTPMiddleware::class, ClientMiddl
 Route::fallback(function() {
     if (Auth::check()) {
         $user = Auth::user();
-        
+
         // If email not verified, go to OTP page
         if (is_null($user->email_verified_at)) {
             return redirect()->route('otp-page');
         }
-        
+
         // If department 10 (client), go to application list
         if ($user->department == 10) {
             return redirect()->route('application.list');
         }
-        
+
         // Otherwise go to main dashboard
         return redirect()->route('CyberPoint-Pro');
     }
-    
+
     // Not authenticated - show 404
     return view('pages/utility/404');
 });
