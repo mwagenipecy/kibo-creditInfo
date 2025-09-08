@@ -189,15 +189,7 @@
                                 Loan Application
                             </div>
                         </a> -->
-                        <a href="{{ route('wedding.vehicles') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-600 transition-colors duration-200">
-                            <div class="flex items-center">
-                                <svg class="h-4 w-4 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM15 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z" />
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 00-1 1v10a1 1 0 001 1h1.05a2.5 2.5 0 014.9 0H11a1 1 0 001-1v-1h3.05a2.5 2.5 0 014.9 0H20a1 1 0 001-1V5a1 1 0 00-1-1H3z" />
-                                </svg>
-                                  Car Rental
-                            </div>
-                        </a>
+                       
                     </div>
                 </div>
 
@@ -292,6 +284,18 @@
                         </a> -->
                     </div>
                 </div>
+
+
+                <a href="{{ route('wedding.vehicles') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-600 transition-colors duration-200">
+                            <div class="flex items-center">
+                                <svg class="h-4 w-4 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM15 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 00-1 1v10a1 1 0 001 1h1.05a2.5 2.5 0 014.9 0H11a1 1 0 001-1v-1h3.05a2.5 2.5 0 014.9 0H20a1 1 0 001-1V5a1 1 0 00-1-1H3z" />
+                                </svg>
+                                  Car Rental
+                            </div>
+                 </a>
+
 
                 <!-- Garages -->
                 <a href="{{ route('garage.list') }}" class="group relative text-gray-700 @if(Route::is('garage.list')) text-green-600 @endif hover:text-green-600 px-3 py-2 rounded-md text-base font-medium transition-colors duration-300">
@@ -515,13 +519,7 @@
                         </svg>
                         Loan Application
                     </a> -->
-                    <a href="{{ route('wedding.vehicles') }}" @click="mobileMenuOpen = false" class="flex items-center py-2 px-4 text-sm text-gray-600 hover:bg-gray-50 hover:text-green-600 transition-colors duration-200 rounded-lg">
-                        <svg class="h-4 w-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM15 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z" />
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 00-1 1v10a1 1 0 001 1h1.05a2.5 2.5 0 014.9 0H11a1 1 0 001-1v-1h3.05a2.5 2.5 0 014.9 0H20a1 1 0 001-1V5a1 1 0 00-1-1H3z" />
-                        </svg>
-                        Car Rental
-                    </a>
+                 
                 </div>
             </div>
 
@@ -608,6 +606,15 @@
                     </a> -->
                 </div>
             </div>
+
+
+            <a href="{{ route('wedding.vehicles') }}" @click="mobileMenuOpen = false" class="flex items-center py-2 px-4 text-sm text-gray-600 hover:bg-gray-50 hover:text-green-600 transition-colors duration-200 rounded-lg">
+                        <svg class="h-4 w-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM15 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 00-1 1v10a1 1 0 001 1h1.05a2.5 2.5 0 014.9 0H11a1 1 0 001-1v-1h3.05a2.5 2.5 0 014.9 0H20a1 1 0 001-1V5a1 1 0 00-1-1H3z" />
+                        </svg>
+                        Car Rental
+                    </a>
 
             <!-- Garages -->
             <a href="{{ route('garage.list') }}" @click="mobileMenuOpen = false" class="flex items-center py-3 px-4 text-base font-medium rounded-lg text-gray-900 hover:bg-gray-50 hover:text-green-600 @if(Route::is('garage.list')) bg-green-50 text-green-600 @endif transition-colors duration-300">

@@ -266,7 +266,6 @@ class CFCompanyManagement extends Component
                 $existingUser->update([
                     'name' => $this->user_name,
                     'phone_number' => $this->user_phone_number,
-                    'role' => $this->user_role,
                 ]);
                 $message = 'User updated successfully!';
             } else {
@@ -276,8 +275,9 @@ class CFCompanyManagement extends Component
                     'email' => $this->user_email,
                     'password' => Hash::make($this->user_password),
                     'phone_number' => $this->user_phone_number,
-                    'role' => $this->user_role,
-                    'status' => 'active',
+                    //'role' => $this->user_role,
+                    'status' => 'ACTIVE',
+                    'department' => 5,
                 ]);
                 $message = 'User created successfully!';
             }

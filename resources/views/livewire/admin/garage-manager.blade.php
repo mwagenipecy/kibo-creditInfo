@@ -177,8 +177,7 @@
                                                 </svg>
                                             </a>
                                         @endif
-                                        <button wire:click="delete({{ $garage->id }})"
-                                                onclick="return confirm('Are you sure you want to delete this garage?')"
+                                        <button wire:click="confirmDelete({{ $garage->id }})"
                                                 class="text-red-600 hover:text-red-900 transition-colors" title="Delete">
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
@@ -340,9 +339,7 @@
                                         <div>
                                             <label class="block text-sm font-medium text-gray-700 mb-1">Country</label>
                                             <select wire:model="country" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500">
-                                                <option value="USA">United States</option>
-                                                <option value="Canada">Canada</option>
-                                                <option value="Mexico">Mexico</option>
+                                                <option value="Tanzania">Tanzania</option>
                                             </select>
                                             @error('country') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                                         </div>
@@ -351,12 +348,12 @@
                                     <div class="grid grid-cols-2 gap-4">
                                         <div>
                                             <label class="block text-sm font-medium text-gray-700 mb-1">Latitude</label>
-                                            <input wire:model="latitude" type="number" step="any" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                                            <input id="latitude-input" wire:model="latitude" type="number" step="any" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500">
                                             @error('latitude') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                                         </div>
                                         <div>
                                             <label class="block text-sm font-medium text-gray-700 mb-1">Longitude</label>
-                                            <input wire:model="longitude" type="number" step="any" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                                            <input id="longitude-input" wire:model="longitude" type="number" step="any" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500">
                                             @error('longitude') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                                         </div>
                                     </div>
@@ -382,7 +379,8 @@
                                         </button>
 
                                         <button type="button"
-                                                wire:click="useCurrentLocation"
+                                                id="use-my-location"
+                                                onclick="window.kiboGetLocation && window.kiboGetLocation(@json($this->id))"
                                                 class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition-colors flex items-center justify-center space-x-2">
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
@@ -395,6 +393,7 @@
                                     <div class="text-xs text-gray-500 bg-blue-50 p-3 rounded">
                                         <p><strong>Auto-detect:</strong> Uses address to find coordinates via OpenStreetMap (free)</p>
                                         <p><strong>My Location:</strong> Uses your device's GPS to get current coordinates</p>
+                                        <p id="geo-status" class="mt-2 text-gray-600"></p>
                                     </div>
                                 </div>
                             </div>
@@ -427,6 +426,251 @@
         </div>
     </div>
     @endif
+
+    <!-- Delete Confirmation Modal -->
+    @if($showDeleteConfirm)
+    <div class="fixed inset-0 z-50 overflow-y-auto">
+        <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" wire:click="cancelDelete"></div>
+
+            <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-md sm:w-full">
+                <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                    <div class="sm:flex sm:items-start">
+                        <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
+                            <svg class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 100 20 10 10 0 000-20z" />
+                            </svg>
+                        </div>
+                        <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                            <h3 class="text-lg leading-6 font-medium text-gray-900">
+                                Delete Garage
+                            </h3>
+                            <div class="mt-2">
+                                <p class="text-sm text-gray-500">Are you sure you want to delete this garage? This action cannot be undone.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                    <button wire:click="performDelete" type="button" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm transition-colors">Delete</button>
+                    <button wire:click="cancelDelete" type="button" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm transition-colors">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
+
+    <!-- Geolocation (Livewire 2 compatible) -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var componentId = @json($this->id);
+
+            function getLW() {
+                return (window.Livewire || window.livewire || Livewire);
+            }
+
+            // Global helper so inline button click works inside modal re-renders
+            window.kiboGetLocation = function (cid) {
+                function ipFallback() {
+                    var statusEl = document.getElementById('geo-status');
+                    if (statusEl) statusEl.textContent = 'Trying IP-based location...';
+                    fetch('https://ipapi.co/json/')
+                        .then(function(r){ return r.ok ? r.json() : Promise.reject(r.status); })
+                        .then(function(data){
+                            if (!data || !data.latitude || !data.longitude) throw new Error('No IP location');
+                            var lat = parseFloat(data.latitude);
+                            var lng = parseFloat(data.longitude);
+                            var latInput = document.getElementById('latitude-input');
+                            var lngInput = document.getElementById('longitude-input');
+                            if (latInput && lngInput) {
+                                latInput.value = lat;
+                                lngInput.value = lng;
+                                latInput.dispatchEvent(new Event('input', { bubbles: true }));
+                                lngInput.dispatchEvent(new Event('input', { bubbles: true }));
+                            }
+                            if (statusEl) statusEl.textContent = 'Approximate location set via IP: ' + lat.toFixed(4) + ', ' + lng.toFixed(4);
+                            var LW = getLW();
+                            if (LW && LW.find) {
+                                try { LW.find(cid || componentId).call('setCurrentLocation', lat, lng); } catch (e) {}
+                            }
+                        })
+                        .catch(function(){
+                            var statusEl2 = document.getElementById('geo-status');
+                            if (statusEl2) statusEl2.textContent = 'Using default location (Dar es Salaam).';
+                            var latInput2 = document.getElementById('latitude-input');
+                            var lngInput2 = document.getElementById('longitude-input');
+                            if (latInput2 && lngInput2) {
+                                latInput2.value = -6.792354;
+                                lngInput2.value = 39.208328;
+                                latInput2.dispatchEvent(new Event('input', { bubbles: true }));
+                                lngInput2.dispatchEvent(new Event('input', { bubbles: true }));
+                            }
+                            var LW2 = getLW();
+                            if (LW2 && LW2.find) {
+                                try { LW2.find(cid || componentId).call('setCurrentLocation', -6.792354, 39.208328); } catch (e) {}
+                            }
+                        });
+                }
+                function handleLocationSuccess(position) {
+                    var lat = position.coords.latitude;
+                    var lng = position.coords.longitude;
+                    var LW = getLW();
+                    if (LW && LW.find) {
+                        try {
+                            LW.find(cid || componentId).call('setCurrentLocation', lat, lng);
+                        } catch (e) {
+                            console.error('Livewire call failed:', e);
+                            alert('Failed to send coordinates to server. Try again.');
+                        }
+                    } else {
+                        console.error('Livewire not found on window.');
+                        alert('Livewire is not available. Please refresh the page.');
+                    }
+                }
+                function handleLocationError(error) {
+                    var message = 'Unable to retrieve your location.';
+                    if (error && error.code !== undefined) {
+                        switch (error.code) {
+                            case error.PERMISSION_DENIED: message = 'Permission denied. Please allow location access.'; break;
+                            case error.POSITION_UNAVAILABLE: message = 'Location information is unavailable.'; break;
+                            case error.TIMEOUT: message = 'Location request timed out.'; break;
+                            default: message = 'An unknown error occurred.'; break;
+                        }
+                    }
+                    var statusEl = document.getElementById('geo-status');
+                    if (statusEl) statusEl.textContent = message + ' Falling back to IP-based location...';
+                    ipFallback();
+                }
+                if (!('geolocation' in navigator)) {
+                    var statusEl = document.getElementById('geo-status');
+                    if (statusEl) statusEl.textContent = 'Geolocation not supported. Using IP-based location...';
+                    ipFallback();
+                    return;
+                }
+                navigator.geolocation.getCurrentPosition(
+                    handleLocationSuccess,
+                    handleLocationError,
+                    { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+                );
+            };
+
+            function handleLocationSuccess(position) {
+                var lat = position.coords.latitude;
+                var lng = position.coords.longitude;
+                if (window.livewire && window.livewire.find) {
+                    window.livewire.find(componentId).call('setCurrentLocation', lat, lng);
+                }
+            }
+
+            function handleLocationError(error) {
+                var message = 'Unable to retrieve your location.';
+                if (error && error.code !== undefined) {
+                    switch (error.code) {
+                        case error.PERMISSION_DENIED:
+                            message = 'Permission denied. Please allow location access.'; break;
+                        case error.POSITION_UNAVAILABLE:
+                            message = 'Location information is unavailable.'; break;
+                        case error.TIMEOUT:
+                            message = 'Location request timed out.'; break;
+                        default:
+                            message = 'An unknown error occurred.'; break;
+                    }
+                }
+                alert(message);
+            }
+
+            // Listen for Livewire browser event on window (Livewire 2 dispatchBrowserEvent)
+            window.addEventListener('getCurrentLocation', function () {
+                window.kiboGetLocation(componentId);
+            });
+
+            // Fallback: bind directly to the button click to trigger geolocation immediately
+            var btn = document.getElementById('use-my-location');
+            if (btn) {
+                btn.addEventListener('click', function (e) {
+                    window.kiboGetLocation(componentId);
+                });
+            }
+
+            // Rebind after Livewire DOM updates (modal re-render)
+            var LWForHook = getLW();
+            if (LWForHook && LWForHook.hook) {
+                LWForHook.hook('message.processed', function(message, component){
+                    if (component && component.id === componentId) {
+                        var rebBtn = document.getElementById('use-my-location');
+                        if (rebBtn) {
+                            rebBtn.onclick = function(){ window.kiboGetLocation(componentId); };
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+
+    <!-- Simple vanilla JS geolocation (auto on modal open + button click) -->
+    <script>
+        (function(){
+            function setCoords(lat, lng) {
+                var latInput = document.getElementById('latitude-input');
+                var lngInput = document.getElementById('longitude-input');
+                if (latInput && lngInput) {
+                    latInput.value = lat;
+                    lngInput.value = lng;
+                    latInput.dispatchEvent(new Event('input', { bubbles: true }));
+                    lngInput.dispatchEvent(new Event('input', { bubbles: true }));
+                }
+                var statusEl = document.getElementById('geo-status');
+                if (statusEl) statusEl.textContent = 'Location: ' + Number(lat).toFixed(6) + ', ' + Number(lng).toFixed(6);
+            }
+
+            function getCoordsSimple() {
+                var fallbackLat = -6.792354, fallbackLng = 39.208328; // Dar es Salaam
+                if (navigator && navigator.geolocation && navigator.geolocation.getCurrentPosition) {
+                    navigator.geolocation.getCurrentPosition(function(pos){
+                        setCoords(pos.coords.latitude, pos.coords.longitude);
+                    }, function(){
+                        // IP fallback
+                        try {
+                            fetch('https://ipapi.co/json/').then(function(r){return r.ok?r.json():Promise.reject();}).then(function(d){
+                                if (d && d.latitude && d.longitude) return setCoords(parseFloat(d.latitude), parseFloat(d.longitude));
+                                setCoords(fallbackLat, fallbackLng);
+                            }).catch(function(){ setCoords(fallbackLat, fallbackLng); });
+                        } catch(e) { setCoords(fallbackLat, fallbackLng); }
+                    }, { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 });
+                } else {
+                    // No geolocation support
+                    try {
+                        fetch('https://ipapi.co/json/').then(function(r){return r.ok?r.json():Promise.reject();}).then(function(d){
+                            if (d && d.latitude && d.longitude) return setCoords(parseFloat(d.latitude), parseFloat(d.longitude));
+                            setCoords(fallbackLat, fallbackLng);
+                        }).catch(function(){ setCoords(fallbackLat, fallbackLng); });
+                    } catch(e) { setCoords(fallbackLat, fallbackLng); }
+                }
+            }
+
+            // Button click (simple)
+            document.addEventListener('click', function(e){
+                if (e.target && (e.target.id === 'use-my-location' || e.target.closest && e.target.closest('#use-my-location'))) {
+                    getCoordsSimple();
+                }
+            });
+
+            // Auto when modal appears (MutationObserver)
+            var observed = false;
+            var obs = new MutationObserver(function(){
+                var modal = document.querySelector('.fixed.inset-0.z-50');
+                if (modal && !observed) {
+                    observed = true;
+                    // Delay slightly to ensure inputs exist
+                    setTimeout(getCoordsSimple, 200);
+                }
+                if (!modal) {
+                    observed = false;
+                }
+            });
+            obs.observe(document.documentElement, {subtree:true, childList:true});
+        })();
+    </script>
 
     <!-- Notification Toast -->
     <div id="notification" class="fixed top-4 right-4 z-50 hidden">

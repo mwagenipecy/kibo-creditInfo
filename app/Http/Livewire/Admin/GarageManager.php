@@ -28,7 +28,7 @@ class GarageManager extends Component
     public $city = '';
     public $state = '';
     public $zip_code = '';
-    public $country = 'USA';
+    public $country = 'Tanzania';
     public $latitude = '';
     public $longitude = '';
     public $phone = '';
@@ -40,6 +40,10 @@ class GarageManager extends Component
     public $image = null;
     public $is_active = true;
     public $featured = false;
+
+    // Delete confirmation modal
+    public $showDeleteConfirm = false;
+    public $garageIdPendingDelete = null;
 
     public $availableServices = [
         'Oil Change',
@@ -188,6 +192,23 @@ class GarageManager extends Component
         }
         
         $this->showModal = true;
+
+        // Server-side: ensure fields are filled even if browser geolocation fails
+        if (empty($this->latitude) || empty($this->longitude)) {
+            $defaultLat = -6.792354; // Dar es Salaam
+            $defaultLng = 39.208328;
+            $this->latitude = number_format($defaultLat, 8);
+            $this->longitude = number_format($defaultLng, 8);
+            // Reverse geocode to fill address/city/state
+            $this->reverseGeocode($defaultLat, $defaultLng);
+        }
+
+        // Best-effort client geolocation (non-blocking)
+        try {
+            $this->dispatchBrowserEvent('getCurrentLocation');
+        } catch (\Exception $e) {
+            \Log::warning('Unable to dispatch geolocation event: ' . $e->getMessage());
+        }
     }
 
     public function closeModal()
@@ -215,7 +236,12 @@ class GarageManager extends Component
                 'q' => $fullAddress,
                 'format' => 'json',
                 'limit' => 1,
-                'countrycodes' => strtolower($this->country === 'USA' ? 'us' : $this->country),
+                // Map country to ISO2 for Nominatim countrycodes
+                'countrycodes' => strtolower(match (strtoupper($this->country)) {
+                    'TANZANIA' => 'TZ',
+                    'USA', 'UNITED STATES', 'UNITED STATES OF AMERICA' => 'US',
+                    default => $this->country,
+                }),
                 'addressdetails' => 1
             ]);
 
@@ -382,6 +408,29 @@ class GarageManager extends Component
             Log::error('Error deleting garage: ' . $e->getMessage());
             $this->showNotification('error', 'Error deleting garage.');
         }
+    }
+
+    public function confirmDelete($garageId)
+    {
+        $this->garageIdPendingDelete = $garageId;
+        $this->showDeleteConfirm = true;
+    }
+
+    public function cancelDelete()
+    {
+        $this->showDeleteConfirm = false;
+        $this->garageIdPendingDelete = null;
+    }
+
+    public function performDelete()
+    {
+        if (!$this->garageIdPendingDelete) {
+            $this->showNotification('error', 'No garage selected for deletion.');
+            return;
+        }
+        $this->delete($this->garageIdPendingDelete);
+        $this->showDeleteConfirm = false;
+        $this->garageIdPendingDelete = null;
     }
 
     public function toggleStatus($garageId)

@@ -37,7 +37,9 @@ class User extends Authenticatable
         'institution_id',
         'address',
         'phone_number',
-        'status'
+        'status',
+        'shop_id',
+        
         // add this line to the array
     ];
 

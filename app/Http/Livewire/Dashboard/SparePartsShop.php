@@ -29,17 +29,28 @@ class SparePartsShop extends Component
 
     public function loadData()
     {
-        $shopId = Auth::user()->shop_id ?? 1; // Fallback to 1 if shop_id is null
+        // Strictly scope to the authenticated user's shop. If none, return empty stats to avoid leakage.
+        $shopId = Auth::user()->shop_id ?? 0;
 
-        // Basic statistics
-        $this->totalRequests = SparePartRequest::whereDoesntHave('quotes', function($query) use ($shopId) {
-            $query->where('shop_id', $shopId);
-        })->count();
+        if (!$shopId) {
+            $this->totalRequests = 0;
+            $this->pendingRequests = 0;
+            $this->totalQuotes = 0;
+            $this->paidQuotes = 0;
+            $this->pendingQuotes = 0;
+            $this->totalParts = 0;
+            $this->lowStockParts = 0;
+            $this->recentRequests = collect();
+            $this->recentQuotes = collect();
+            $this->topSellingParts = collect();
+            $this->monthlyStats = collect();
+            return;
+        }
 
-        $this->pendingRequests = SparePartRequest::where('status', 'pending')
-            ->whereDoesntHave('quotes', function($query) use ($shopId) {
-                $query->where('shop_id', $shopId);
-            })->count();
+        // Basic statistics (global, not bound to shop)
+        $this->totalRequests = SparePartRequest::count();
+
+        $this->pendingRequests = SparePartRequest::where('status', 'pending')->count();
 
         $this->totalQuotes = SparePartQuote::where('shop_id', $shopId)->count();
 
@@ -55,24 +66,25 @@ class SparePartsShop extends Component
         $this->totalParts = SparePart::where('shop_id', $shopId)->count();
         $this->lowStockParts = 0; // No stock tracking available with current schema
 
-        // Recent requests (last 5)
-        $this->recentRequests = SparePartRequest::with(['make', 'model'])
-            ->whereDoesntHave('quotes', function($query) use ($shopId) {
-                $query->where('shop_id', $shopId);
-            })
+        // Recent requests (last 5) - global view, not bound to shop
+        $this->recentRequests = SparePartRequest::with(['make:id,name', 'model:id,name'])
             ->orderBy('created_at', 'desc')
             ->limit(5)
             ->get();
 
         // Recent quotes (last 5)
-        $this->recentQuotes = SparePartQuote::with(['sparePartRequest.make', 'sparePartRequest.model'])
+        $this->recentQuotes = SparePartQuote::with([
+                'sparePartRequest:id,make_id,model_id,created_at',
+                'sparePartRequest.make:id,name',
+                'sparePartRequest.model:id,name'
+            ])
             ->where('shop_id', $shopId)
             ->orderBy('created_at', 'desc')
             ->limit(5)
             ->get();
 
         // Top selling parts (by quote count)
-        $this->topSellingParts = SparePartQuote::with('sparePartRequest')
+        $this->topSellingParts = SparePartQuote::with('sparePartRequest:id')
             ->where('shop_id', $shopId)
             ->select('spare_part_request_id', DB::raw('count(*) as quote_count'))
             ->groupBy('spare_part_request_id')

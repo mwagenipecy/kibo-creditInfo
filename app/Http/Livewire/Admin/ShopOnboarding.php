@@ -10,6 +10,8 @@ use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\DB;
+
 
 class ShopOnboarding extends Component
 {
@@ -144,6 +146,7 @@ class ShopOnboarding extends Component
     {
         $this->validate();
 
+        DB::beginTransaction();
         try {
             // Create the shop
             $shop = Shop::create([
@@ -165,15 +168,19 @@ class ShopOnboarding extends Component
                 'phone' => $this->supervisor_phone,
                 'password' => Hash::make($password),
                 'shop_id' => $shop->id,
-                'role' => 'shop_supervisor',
+                'department' => 6,
+                'status' => 'ACTIVE',
             ]);
 
             session()->flash('success', "Shop created successfully! Supervisor credentials: Email: {$this->supervisor_email}, Password: {$password}");
             
+            DB::commit();
             $this->resetForm();
             $this->currentView = 'list';
 
         } catch (\Exception $e) {
+
+            DB::rollBack();
             session()->flash('error', 'Error creating shop: ' . $e->getMessage());
         }
     }

@@ -26,6 +26,12 @@ class CFCompanyOffers extends Component
     public $cfCompletedApplication = null;
     public $cf_completion_notes = '';
 
+    // View quotation modal
+    public $showViewQuotationModal = false;
+    public $viewQuotation = null;
+    public $showEditQuotationModal = false;
+    public $editQuotation = null;
+
     // Quotation form properties
     public $tra_reference_number = '';
     public $import_duty = 0;
@@ -81,6 +87,9 @@ class CFCompanyOffers extends Component
     {
         $this->activeTab = $tab;
         $this->resetPage();
+        // Reset filters that could hide data when switching tabs
+        $this->statusFilter = '';
+        $this->searchTerm = '';
     }
 
     public function updatedStatusFilter()
@@ -98,6 +107,54 @@ class CFCompanyOffers extends Component
         $this->selectedApplication = ImportDutyApplication::findOrFail($applicationId);
         $this->resetQuotationForm();
         $this->showQuotationModal = true;
+    }
+
+    public function openEditQuotation($quotationId)
+    {
+        $quotation = CFQuotation::where('cf_company_id', $this->cfCompany->id)->findOrFail($quotationId);
+        $this->editQuotation = $quotation;
+        $this->selectedApplication = ImportDutyApplication::findOrFail($quotation->application_id);
+
+        // Prefill form fields from existing quotation
+        $this->tra_reference_number = $quotation->tra_reference_number;
+        $this->import_duty = $quotation->import_duty;
+        $this->vat_amount = $quotation->vat_amount;
+        $this->railway_development_levy = $quotation->railway_development_levy;
+        $this->excise_duty = $quotation->excise_duty;
+        $this->service_levy = $quotation->service_levy;
+        $this->other_charges = $quotation->other_charges;
+        $this->clearing_fee = $quotation->clearing_fee;
+        $this->forwarding_fee = $quotation->forwarding_fee;
+        $this->documentation_fee = $quotation->documentation_fee;
+        $this->port_charges = $quotation->port_charges;
+        $this->transportation_fee = $quotation->transportation_fee;
+        $this->storage_charges = $quotation->storage_charges;
+        $this->other_service_fees = $quotation->other_service_fees;
+        $this->estimated_clearance_days = $quotation->estimated_clearance_days;
+        $this->validity_days = $quotation->validity_days;
+        $this->payment_terms = $quotation->payment_terms;
+        $this->special_notes = $quotation->special_notes;
+
+        $this->showEditQuotationModal = true;
+    }
+
+    public function openViewQuotation($quotationId)
+    {
+        $this->viewQuotation = CFQuotation::where('cf_company_id', $this->cfCompany->id)->findOrFail($quotationId);
+        $this->showViewQuotationModal = true;
+    }
+
+    public function closeViewQuotationModal()
+    {
+        $this->showViewQuotationModal = false;
+        $this->viewQuotation = null;
+    }
+
+    public function closeEditQuotationModal()
+    {
+        $this->showEditQuotationModal = false;
+        $this->editQuotation = null;
+        $this->resetValidation();
     }
 
     public function closeQuotationModal()
@@ -279,7 +336,8 @@ class CFCompanyOffers extends Component
                 break;
         }
 
-        if ($this->statusFilter) {
+        // In "my-quotations" tab, don't restrict by application status filter (it can hide user's quotations)
+        if ($this->statusFilter && $this->activeTab !== 'my-quotations') {
             $query->where('status', $this->statusFilter);
         }
 
@@ -293,7 +351,8 @@ class CFCompanyOffers extends Component
         }
 
         return $query->with(['cfQuotations' => function($q) {
-            $q->where('cf_company_id', $this->cfCompany->id);
+            $q->where('cf_company_id', $this->cfCompany->id)
+              ->orderBy('created_at', 'desc');
         }])->orderBy('created_at', 'desc')->paginate(10);
     }
 

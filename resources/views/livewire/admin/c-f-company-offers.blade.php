@@ -258,9 +258,9 @@
                                 </button>
                                 @elseif($myQuotation)
                                 <div class="flex space-x-2">
-                                    <button class="text-green-600 hover:text-green-900">View</button>
+                                    <button wire:click="openViewQuotation({{ $myQuotation->id }})" class="text-green-600 hover:text-green-900">View</button>
                                     @if($myQuotation->status === 'SUBMITTED')
-                                    <button class="text-blue-600 hover:text-blue-900">Edit</button>
+                                    <button wire:click="openEditQuotation({{ $myQuotation->id }})" class="text-blue-600 hover:text-blue-900">Edit</button>
                                     @endif
                                     @if($myQuotation->status === 'SELECTED' && in_array($application->status, ['APPROVED', 'PROCESSING']))
                                     <button wire:click="openCfCompletedModal({{ $application->id }})" 
@@ -357,34 +357,97 @@
                             @error('tra_reference_number') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                         </div>
 
-                        <!-- Duties and Taxes Section -->
+                        <!-- Duties and Taxes Section (TZS) -->
                         <div class="bg-blue-50 p-4 rounded-lg">
                             <h4 class="font-medium text-gray-900 mb-4">Duties and Taxes (TZS)</h4>
                             <div class="grid grid-cols-2 gap-4">
                                 <div>
+                                    <label class="block text-sm font-medium text-gray-700">Import Duty *</label>
+                                    <input type="number" step="0.01" wire:model="import_duty" class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-green-500 focus:border-green-500">
+                                    @error('import_duty') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">VAT Amount *</label>
+                                    <input type="number" step="0.01" wire:model="vat_amount" class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-green-500 focus:border-green-500">
+                                    @error('vat_amount') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Railway Development Levy *</label>
+                                    <input type="number" step="0.01" wire:model="railway_development_levy" class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-green-500 focus:border-green-500">
+                                    @error('railway_development_levy') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Excise Duty</label>
+                                    <input type="number" step="0.01" wire:model="excise_duty" class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-green-500 focus:border-green-500">
+                                    @error('excise_duty') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Service Levy</label>
+                                    <input type="number" step="0.01" wire:model="service_levy" class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-green-500 focus:border-green-500">
+                                    @error('service_levy') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Other Charges</label>
+                                    <input type="number" step="0.01" wire:model="other_charges" class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-green-500 focus:border-green-500">
+                                    @error('other_charges') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Service Fees Section (TZS) -->
+                        <div class="bg-purple-50 p-4 rounded-lg">
+                            <h4 class="font-medium text-gray-900 mb-4">Service Fees (TZS)</h4>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Clearing Fee *</label>
+                                    <input type="number" step="0.01" wire:model="clearing_fee" class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-green-500 focus:border-green-500">
+                                    @error('clearing_fee') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Forwarding Fee *</label>
+                                    <input type="number" step="0.01" wire:model="forwarding_fee" class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-green-500 focus:border-green-500">
+                                    @error('forwarding_fee') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Documentation Fee *</label>
+                                    <input type="number" step="0.01" wire:model="documentation_fee" class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-green-500 focus:border-green-500">
+                                    @error('documentation_fee') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                                </div>
+                                <div>
                                     <label class="block text-sm font-medium text-gray-700">Port Charges</label>
-                                    <input type="number" step="0.01" wire:model="port_charges" 
-                                           class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-green-500 focus:border-green-500">
+                                    <input type="number" step="0.01" wire:model="port_charges" class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-green-500 focus:border-green-500">
                                     @error('port_charges') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                                 </div>
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700">Transportation Fee</label>
-                                    <input type="number" step="0.01" wire:model="transportation_fee" 
-                                           class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-green-500 focus:border-green-500">
+                                    <input type="number" step="0.01" wire:model="transportation_fee" class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-green-500 focus:border-green-500">
                                     @error('transportation_fee') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                                 </div>
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700">Storage Charges</label>
-                                    <input type="number" step="0.01" wire:model="storage_charges" 
-                                           class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-green-500 focus:border-green-500">
+                                    <input type="number" step="0.01" wire:model="storage_charges" class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-green-500 focus:border-green-500">
                                     @error('storage_charges') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                                 </div>
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700">Other Service Fees</label>
-                                    <input type="number" step="0.01" wire:model="other_service_fees" 
-                                           class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-green-500 focus:border-green-500">
+                                    <input type="number" step="0.01" wire:model="other_service_fees" class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-green-500 focus:border-green-500">
                                     @error('other_service_fees') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                                 </div>
+                            </div>
+                        </div>
+
+                        <!-- Live Summary -->
+                        @php
+                            $totalDutiesTaxes = ($import_duty ?? 0) + ($vat_amount ?? 0) + ($railway_development_levy ?? 0) + ($excise_duty ?? 0) + ($service_levy ?? 0) + ($other_charges ?? 0);
+                            $totalServiceFees = ($clearing_fee ?? 0) + ($forwarding_fee ?? 0) + ($documentation_fee ?? 0) + ($port_charges ?? 0) + ($transportation_fee ?? 0) + ($storage_charges ?? 0) + ($other_service_fees ?? 0);
+                            $grandTotal = $totalDutiesTaxes + $totalServiceFees;
+                        @endphp
+                        <div class="bg-green-50 p-4 rounded-lg">
+                            <h4 class="font-medium text-gray-900 mb-3">Summary (TZS)</h4>
+                            <div class="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
+                                <div class="flex items-center justify-between"><span class="text-gray-600">Total Duties & Taxes</span><span class="font-semibold">{{ number_format($totalDutiesTaxes, 2) }}</span></div>
+                                <div class="flex items-center justify-between"><span class="text-gray-600">Total Service Fees</span><span class="font-semibold">{{ number_format($totalServiceFees, 2) }}</span></div>
+                                <div class="flex items-center justify-between md:col-span-1 col-span-2"><span class="text-gray-800">Grand Total</span><span class="font-bold text-green-700">{{ number_format($grandTotal, 2) }}</span></div>
                             </div>
                         </div>
 
@@ -459,6 +522,222 @@
     </div>
     @endif
 
+    <!-- Edit Quotation Modal -->
+    @if($showEditQuotationModal && $editQuotation)
+    <div class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+        <div class="relative top-20 mx-auto p-5 border w-11/12 max-w-4xl shadow-lg rounded-md bg-white">
+            <div class="mt-3">
+                <!-- Modal Header -->
+                <div class="flex justify-between items-center pb-4 border-b">
+                    <h3 class="text-lg font-medium text-gray-900">Edit Quotation</h3>
+                    <button wire:click="closeEditQuotationModal" class="text-gray-400 hover:text-gray-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+
+                @if($selectedApplication)
+                <!-- Application Details -->
+                <div class="bg-gray-50 p-4 rounded-lg mt-4">
+                    <h4 class="font-medium text-gray-900 mb-2">Application Details</h4>
+                    <div class="grid grid-cols-2 gap-4 text-sm">
+                        <div>
+                            <span class="text-gray-500">Application Number:</span>
+                            <span class="font-medium ml-2">{{ $selectedApplication->application_number }}</span>
+                        </div>
+                        <div>
+                            <span class="text-gray-500">Applicant:</span>
+                            <span class="font-medium ml-2">{{ $selectedApplication->applicant_name }}</span>
+                        </div>
+                        <div>
+                            <span class="text-gray-500">Vehicle:</span>
+                            <span class="font-medium ml-2">{{ $selectedApplication->vehicle_make }} {{ $selectedApplication->vehicle_model }} ({{ $selectedApplication->vehicle_year }})</span>
+                        </div>
+                        <div>
+                            <span class="text-gray-500">CIF Value:</span>
+                            <span class="font-medium ml-2">${{ number_format($selectedApplication->cif_value_usd, 2) }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quotation Form -->
+                <form wire:submit.prevent="submitQuotation" class="mt-6">
+                    <div class="space-y-6">
+                        <!-- TRA Reference -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">TRA Reference Number *</label>
+                            <input type="text" wire:model="tra_reference_number" 
+                                   class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-green-500 focus:border-green-500"
+                                   placeholder="Enter TRA reference number">
+                            @error('tra_reference_number') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                        </div>
+
+                        <!-- Duties and Taxes Section (TZS) -->
+                        <div class="bg-blue-50 p-4 rounded-lg">
+                            <h4 class="font-medium text-gray-900 mb-4">Duties and Taxes (TZS)</h4>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Import Duty *</label>
+                                    <input type="number" step="0.01" wire:model="import_duty" class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-green-500 focus:border-green-500">
+                                    @error('import_duty') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">VAT Amount *</label>
+                                    <input type="number" step="0.01" wire:model="vat_amount" class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-green-500 focus:border-green-500">
+                                    @error('vat_amount') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Railway Development Levy *</label>
+                                    <input type="number" step="0.01" wire:model="railway_development_levy" class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-green-500 focus:border-green-500">
+                                    @error('railway_development_levy') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Excise Duty</label>
+                                    <input type="number" step="0.01" wire:model="excise_duty" class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-green-500 focus:border-green-500">
+                                    @error('excise_duty') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Service Levy</label>
+                                    <input type="number" step="0.01" wire:model="service_levy" class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-green-500 focus:border-green-500">
+                                    @error('service_levy') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Other Charges</label>
+                                    <input type="number" step="0.01" wire:model="other_charges" class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-green-500 focus:border-green-500">
+                                    @error('other_charges') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Service Fees Section (TZS) -->
+                        <div class="bg-purple-50 p-4 rounded-lg">
+                            <h4 class="font-medium text-gray-900 mb-4">Service Fees (TZS)</h4>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Clearing Fee *</label>
+                                    <input type="number" step="0.01" wire:model="clearing_fee" class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-green-500 focus:border-green-500">
+                                    @error('clearing_fee') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Forwarding Fee *</label>
+                                    <input type="number" step="0.01" wire:model="forwarding_fee" class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-green-500 focus:border-green-500">
+                                    @error('forwarding_fee') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Documentation Fee *</label>
+                                    <input type="number" step="0.01" wire:model="documentation_fee" class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-green-500 focus:border-green-500">
+                                    @error('documentation_fee') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Port Charges</label>
+                                    <input type="number" step="0.01" wire:model="port_charges" class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-green-500 focus:border-green-500">
+                                    @error('port_charges') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Transportation Fee</label>
+                                    <input type="number" step="0.01" wire:model="transportation_fee" class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-green-500 focus:border-green-500">
+                                    @error('transportation_fee') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Storage Charges</label>
+                                    <input type="number" step="0.01" wire:model="storage_charges" class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-green-500 focus:border-green-500">
+                                    @error('storage_charges') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Other Service Fees</label>
+                                    <input type="number" step="0.01" wire:model="other_service_fees" class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-green-500 focus:border-green-500">
+                                    @error('other_service_fees') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Live Summary -->
+                        @php
+                            $totalDutiesTaxes = ($import_duty ?? 0) + ($vat_amount ?? 0) + ($railway_development_levy ?? 0) + ($excise_duty ?? 0) + ($service_levy ?? 0) + ($other_charges ?? 0);
+                            $totalServiceFees = ($clearing_fee ?? 0) + ($forwarding_fee ?? 0) + ($documentation_fee ?? 0) + ($port_charges ?? 0) + ($transportation_fee ?? 0) + ($storage_charges ?? 0) + ($other_service_fees ?? 0);
+                            $grandTotal = $totalDutiesTaxes + $totalServiceFees;
+                        @endphp
+                        <div class="bg-green-50 p-4 rounded-lg">
+                            <h4 class="font-medium text-gray-900 mb-3">Summary (TZS)</h4>
+                            <div class="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
+                                <div class="flex items-center justify-between"><span class="text-gray-600">Total Duties & Taxes</span><span class="font-semibold">{{ number_format($totalDutiesTaxes, 2) }}</span></div>
+                                <div class="flex items-center justify-between"><span class="text-gray-600">Total Service Fees</span><span class="font-semibold">{{ number_format($totalServiceFees, 2) }}</span></div>
+                                <div class="flex items-center justify-between md:col-span-1 col-span-2"><span class="text-gray-800">Grand Total</span><span class="font-bold text-green-700">{{ number_format($grandTotal, 2) }}</span></div>
+                            </div>
+                        </div>
+
+                        <!-- Terms and Timeline Section -->
+                        <div class="bg-yellow-50 p-4 rounded-lg">
+                            <h4 class="font-medium text-gray-900 mb-4">Terms and Timeline</h4>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Estimated Clearance Days *</label>
+                                    <input type="number" min="1" max="30" wire:model="estimated_clearance_days" 
+                                           class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-green-500 focus:border-green-500">
+                                    @error('estimated_clearance_days') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Quotation Validity (Days) *</label>
+                                    <input type="number" min="3" max="30" wire:model="validity_days" 
+                                           class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-green-500 focus:border-green-500">
+                                    @error('validity_days') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                                </div>
+                            </div>
+                            <div class="mt-4">
+                                <label class="block text-sm font-medium text-gray-700">Payment Terms *</label>
+                                <input type="text" wire:model="payment_terms" 
+                                       class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-green-500 focus:border-green-500"
+                                       placeholder="e.g., Payment required before clearance">
+                                @error('payment_terms') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                            </div>
+                            <div class="mt-4">
+                                <label class="block text-sm font-medium text-gray-700">Special Notes</label>
+                                <textarea wire:model="special_notes" rows="3" 
+                                          class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-green-500 focus:border-green-500"
+                                          placeholder="Any special conditions or notes..."></textarea>
+                                @error('special_notes') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                            </div>
+                        </div>
+
+                        <!-- Total Summary -->
+                        <div class="bg-gray-100 p-4 rounded-lg">
+                            <h4 class="font-medium text-gray-900 mb-2">Quotation Summary</h4>
+                            <div class="space-y-2 text-sm">
+                                <div class="flex justify-between">
+                                    <span>Total Duties & Taxes:</span>
+                                    <span class="font-medium">TZS {{ number_format(($import_duty ?? 0) + ($vat_amount ?? 0) + ($railway_development_levy ?? 0) + ($excise_duty ?? 0) + ($service_levy ?? 0) + ($other_charges ?? 0)) }}</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span>Total Service Fees:</span>
+                                    <span class="font-medium">TZS {{ number_format(($clearing_fee ?? 0) + ($forwarding_fee ?? 0) + ($documentation_fee ?? 0) + ($port_charges ?? 0) + ($transportation_fee ?? 0) + ($storage_charges ?? 0) + ($other_service_fees ?? 0)) }}</span>
+                                </div>
+                                <div class="flex justify-between border-t pt-2 text-lg font-bold">
+                                    <span>Grand Total:</span>
+                                    <span class="text-green-600">TZS {{ number_format(($import_duty ?? 0) + ($vat_amount ?? 0) + ($railway_development_levy ?? 0) + ($excise_duty ?? 0) + ($service_levy ?? 0) + ($other_charges ?? 0) + ($clearing_fee ?? 0) + ($forwarding_fee ?? 0) + ($documentation_fee ?? 0) + ($port_charges ?? 0) + ($transportation_fee ?? 0) + ($storage_charges ?? 0) + ($other_service_fees ?? 0)) }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Modal Footer -->
+                    <div class="flex justify-end space-x-3 pt-6 border-t mt-6">
+                        <button type="button" wire:click="closeEditQuotationModal" 
+                                class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                            Cancel
+                        </button>
+                        <button type="submit" 
+                                class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                            Submit Quotation
+                        </button>
+                    </div>
+                </form>
+                @endif
+            </div>
+        </div>
+    </div>
+    @endif
+
     <!-- CF Mark as Completed Modal -->
     @if($showCfCompletedModal && $cfCompletedApplication)
     <div class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
@@ -504,6 +783,37 @@
                         </div>
                     </form>
                 </div>
+            </div>
+        </div>
+    </div>
+    @endif
+
+    <!-- View Quotation Modal -->
+    @if($showViewQuotationModal && $viewQuotation)
+    <div class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+        <div class="relative top-20 mx-auto p-5 border w-11/12 max-w-3xl shadow-lg rounded-md bg-white">
+            <div class="flex justify-between items-center pb-4 border-b">
+                <h3 class="text-lg font-medium text-gray-900">Quotation Details</h3>
+                <button wire:click="closeViewQuotationModal" class="text-gray-400 hover:text-gray-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                <div><span class="text-gray-500">Quotation #:</span> <span class="font-medium ml-2">{{ $viewQuotation->quotation_number }}</span></div>
+                <div><span class="text-gray-500">TRA Ref:</span> <span class="font-medium ml-2">{{ $viewQuotation->tra_reference_number }}</span></div>
+                <div><span class="text-gray-500">Total Duties & Taxes:</span> <span class="font-medium ml-2">TZS {{ number_format($viewQuotation->total_duties_taxes, 2) }}</span></div>
+                <div><span class="text-gray-500">Total Service Fees:</span> <span class="font-medium ml-2">TZS {{ number_format($viewQuotation->total_service_fees, 2) }}</span></div>
+                <div class="md:col-span-2"><span class="text-gray-700">Grand Total:</span> <span class="font-bold text-green-700 ml-2">TZS {{ number_format($viewQuotation->grand_total, 2) }}</span></div>
+                <div><span class="text-gray-500">Estimated Days:</span> <span class="font-medium ml-2">{{ $viewQuotation->estimated_clearance_days }}</span></div>
+                <div><span class="text-gray-500">Validity:</span> <span class="font-medium ml-2">{{ $viewQuotation->validity_days }} days</span></div>
+                <div class="md:col-span-2"><span class="text-gray-500">Payment Terms:</span> <span class="font-medium ml-2">{{ $viewQuotation->payment_terms }}</span></div>
+                @if($viewQuotation->special_notes)
+                <div class="md:col-span-2"><span class="text-gray-500">Notes:</span> <span class="font-medium ml-2">{{ $viewQuotation->special_notes }}</span></div>
+                @endif
+                <div class="md:col-span-2"><span class="text-gray-500">Status:</span> <span class="font-medium ml-2">{{ ucfirst(str_replace('_', ' ', $viewQuotation->status)) }}</span></div>
             </div>
         </div>
     </div>

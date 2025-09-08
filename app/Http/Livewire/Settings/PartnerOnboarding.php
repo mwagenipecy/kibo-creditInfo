@@ -855,7 +855,8 @@ public function render()
                     'email' => 'required|email|max:255',
                     'contactPersonName' => 'required|string|max:255',
                     'contactPersonPhone' => 'required|string',
-                    'contactPersonEmail' => 'required|email|max:255',
+                    // Ensure contact person email is unique for new user account creation
+                    'contactPersonEmail' => 'required|email|unique:users,email|max:255',
                 ]);
 
                 return;
@@ -1120,7 +1121,22 @@ public function render()
             ];
 
             $userService= new UserService();
-            $user = $userService->createUser($data, true);
+            // If a user with the same email exists, update profile and resend credentials
+            $existingUser = User::where('email', $lender->contact_person_email)->first();
+            if ($existingUser) {
+                $existingUser->name = $lender->contact_person_name;
+                $existingUser->phone_number = $lender->contact_person_phone;
+                $existingUser->department = 2;
+                $existingUser->status = 'ACTIVE';
+                $existingUser->institution_id = $lender->id;
+                $existingUser->save();
+
+                // Reset password and send credentials
+                $userService->resetPassword($existingUser);
+                $user = $existingUser;
+            } else {
+                $user = $userService->createUser($data, true);
+            }
 
 
 
@@ -1262,7 +1278,22 @@ public function render()
             ];
 
             $userService= new UserService();
-            $user = $userService->createUser($data, true);
+            // If a user with the same email exists, update profile and resend credentials
+            $existingUser = User::where('email', $dealer->contact_person_email)->first();
+            if ($existingUser) {
+                $existingUser->name = $dealer->contact_person_name;
+                $existingUser->phone_number = $dealer->contact_person_phone;
+                $existingUser->department = 3;
+                $existingUser->status = 'ACTIVE';
+                $existingUser->institution_id = $dealer->id;
+                $existingUser->save();
+
+                // Reset password and send credentials
+                $userService->resetPassword($existingUser);
+                $user = $existingUser;
+            } else {
+                $user = $userService->createUser($data, true);
+            }
 
 
 
