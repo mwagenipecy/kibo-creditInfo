@@ -1,267 +1,181 @@
 <div>
 {{-- resources/views/livewire/marketplace.blade.php --}}
-<div class="min-h-screen bg-gradient-to-br from-green-50 to-white">
+<div class="min-h-screen bg-gray-50">
     {{-- Header --}}
     <div class="bg-green-600 shadow-sm border-b">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-            <div class="text-start">
-                <h1 class="text-4xl font-bold text-white  mb-2">Spare Parts Marketplace</h1>
-                <p class="text-lg text-white ">Find quality spare parts from verified shops near you</p>
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+            <div class="text-center">
+                <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-2 sm:mb-4">Spare Parts Request</h1>
+                <p class="text-green-100 text-sm sm:text-base md:text-lg">Submit your request and get quotes from verified shops</p>
             </div>
         </div>
     </div>
 
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {{-- Location Success Message --}}
-        @if (session()->has('location_success'))
-            <div class="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded mb-6">
-                {{ session('location_success') }}
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+        {{-- Success Message --}}
+        @if (session()->has('success'))
+            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6">
+                {{ session('success') }}
             </div>
         @endif
 
-        <div class="flex flex-col lg:flex-row gap-8">
-            {{-- Sidebar Filters --}}
-            <div class="lg:w-1/4">
-                <div class="bg-white rounded-lg shadow-md p-6 sticky top-6">
-                    <h2 class="text-xl font-semibold text-gray-900 mb-6">Filters</h2>
-                    
-                    {{-- Location Filter --}}
-                    <div class="mb-6">
-                        <label class="block text-sm font-medium text-gray-700 mb-3">Location</label>
-                        @if(!$locationCaptured)
-                            <button wire:click="getCurrentLocation" 
-                                    class="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg transition duration-200 flex items-center justify-center">
-                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                                          d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                                          d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                </svg>
-                                Find Nearby
-                            </button>
-                        @else
-                            <div class="text-sm text-green-600 mb-2">
-                                ✓ Showing parts within {{ $maxDistance }}km
-                            </div>
-                            <input type="range" wire:model="maxDistance" min="5" max="100" step="5" 
-                                   class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
-                            <div class="flex justify-between text-xs text-gray-500 mt-1">
-                                <span>5km</span>
-                                <span>{{ $maxDistance }}km</span>
-                                <span>100km</span>
-                            </div>
-                        @endif
-                    </div>
+        {{-- Error Message --}}
+        @if (session()->has('error'))
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
+                {{ session('error') }}
+            </div>
+        @endif
 
-                    {{-- Search --}}
-                    <div class="mb-6">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Search</label>
-                        <input type="text" wire:model="search" placeholder="Search spare parts..." 
-                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
-                    </div>
-
-                    {{-- Category Filter --}}
-                    <div class="mb-6">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Category</label>
-                        <select wire:model="categoryFilter" 
-                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
-                            <option value="">All Categories</option>
-                            @foreach($categories as $category)
-                                <option value="{{ $category->id }}">
-                                    {{ $category->name }} ({{ $category->spare_parts_count }})
-                                </option>
+        {{-- Simple Request Form --}}
+        <div class="bg-white rounded-lg shadow-sm p-6 sm:p-8">
+            <h2 class="text-xl sm:text-2xl font-bold text-gray-900 mb-6">Request Spare Parts</h2>
+            
+            <form wire:submit.prevent="submitRequest">
+                {{-- Row 1: Vehicle Information --}}
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 mb-6">
+                    {{-- Vehicle Make --}}
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Vehicle Make *</label>
+                        <select wire:model="selectedMake" 
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                            <option value="">Select Make</option>
+                            @foreach($makes as $make)
+                                <option value="{{ $make->id }}">{{ $make->name }}</option>
                             @endforeach
                         </select>
+                        @error('selectedMake') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                     </div>
 
-                    {{-- Brand Filter --}}
-                    @if($brands->count() > 0)
-                        <div class="mb-6">
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Brand</label>
-                            <select wire:model="brandFilter" 
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
-                                <option value="">All Brands</option>
-                                @foreach($brands as $brand)
-                                    <option value="{{ $brand->id }}">{{ $brand->name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                    @endif
-
-                    {{-- Price Range --}}
-                    <div class="mb-6">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Price Range</label>
-                        <div class="grid grid-cols-2 gap-2">
-                            <input type="number" wire:model="priceMin" placeholder="Min" 
-                                   class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
-                            <input type="number" wire:model="priceMax" placeholder="Max" 
-                                   class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
-                        </div>
+                    {{-- Vehicle Model --}}
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Vehicle Model *</label>
+                        <select wire:model="selectedModel" 
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent" 
+                                {{ !$selectedMake ? 'disabled' : '' }}>
+                            <option value="">Select Model</option>
+                            @foreach($models as $model)
+                                <option value="{{ $model->id }}">{{ $model->name }}</option>
+                            @endforeach
+                        </select>
+                        @error('selectedModel') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                     </div>
 
-                    {{-- Clear Filters --}}
-                    <button wire:click="clearFilters" 
-                            class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2 px-4 rounded-lg transition duration-200">
-                        Clear All Filters
+                    {{-- Year --}}
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Year *</label>
+                        <select wire:model="selectedYear" 
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                            <option value="">Select Year</option>
+                            @foreach($years as $year)
+                                <option value="{{ $year }}">{{ $year }}</option>
+                            @endforeach
+                        </select>
+                        @error('selectedYear') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                    </div>
+                </div>
+
+                {{-- Row 2: Part Information --}}
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-6">
+                    {{-- Part Name --}}
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Part Name *</label>
+                        <input type="text" wire:model="partName" 
+                               placeholder="e.g., Brake Pads, Oil Filter"
+                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                        @error('partName') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                    </div>
+
+                    {{-- Part Condition --}}
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Part Condition *</label>
+                        <select wire:model="partCondition" 
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                            <option value="">Select Condition</option>
+                            <option value="all">All (New & Used)</option>
+                            <option value="new">New Only</option>
+                            <option value="used">Used Only</option>
+                        </select>
+                        @error('partCondition') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                    </div>
+                </div>
+
+                {{-- Row 3: Contact Information --}}
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-6">
+                    {{-- Customer Name --}}
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Your Name *</label>
+                        <input type="text" wire:model="customerName" 
+                               placeholder="Enter your full name"
+                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                        @error('customerName') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                    </div>
+
+                    {{-- Customer Email --}}
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Email Address *</label>
+                        <input type="email" wire:model="customerEmail" 
+                               placeholder="Enter your email"
+                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                        @error('customerEmail') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                    </div>
+                </div>
+
+                {{-- Row 4: Additional Information --}}
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-6">
+                    {{-- Part Number --}}
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Part Number (Optional)</label>
+                        <input type="text" wire:model="partNumber" 
+                               placeholder="e.g., BP123, OF456"
+                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                        @error('partNumber') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                    </div>
+
+                    {{-- Part Size --}}
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Part Size (Optional)</label>
+                        <input type="text" wire:model="partSize" 
+                               placeholder="e.g., 10mm, 14mm, Standard"
+                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                        @error('partSize') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                    </div>
+                </div>
+
+                {{-- Description --}}
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Additional Details (Optional)</label>
+                    <textarea wire:model="additionalNotes" rows="3" 
+                              placeholder="Any additional information about the part you need..."
+                              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent"></textarea>
+                    @error('additionalNotes') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                </div>
+
+                {{-- Submit Button --}}
+                <div class="text-center">
+                    <button type="submit" 
+                            wire:loading.attr="disabled"
+                            class="bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-6 sm:px-8 rounded-md transition duration-200 disabled:opacity-50 w-full sm:w-auto">
+                        <span wire:loading.remove>Submit Request</span>
+                        <span wire:loading>Submitting...</span>
                     </button>
                 </div>
-            </div>
+            </form>
+        </div>
 
-            {{-- Main Content --}}
-            <div class="lg:w-3/4">
-                {{-- Sort Controls --}}
-                <div class="bg-white rounded-lg shadow-md p-4 mb-6">
-                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                        <div class="text-sm text-gray-600">
-                            Showing {{ $spareParts->firstItem() ?? 0 }} - {{ $spareParts->lastItem() ?? 0 }} 
-                            of {{ $spareParts->total() }} results
-                        </div>
-                        
-                        <div class="flex items-center gap-4">
-                            <span class="text-sm text-gray-600">Sort by:</span>
-                            <div class="flex gap-2">
-                                <button wire:click="sortBy('created_at')" 
-                                        class="px-3 py-1 text-sm rounded {{ $sortBy === 'created_at' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600' }}">
-                                    Newest
-                                    @if($sortBy === 'created_at')
-                                        @if($sortDirection === 'asc') ↑ @else ↓ @endif
-                                    @endif
-                                </button>
-                                <button wire:click="sortBy('price')" 
-                                        class="px-3 py-1 text-sm rounded {{ $sortBy === 'price' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600' }}">
-                                    Price
-                                    @if($sortBy === 'price')
-                                        @if($sortDirection === 'asc') ↑ @else ↓ @endif
-                                    @endif
-                                </button>
-                                @if($locationCaptured)
-                                    <button wire:click="sortBy('distance')" 
-                                            class="px-3 py-1 text-sm rounded {{ $sortBy === 'distance' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600' }}">
-                                        Distance
-                                        @if($sortBy === 'distance')
-                                            @if($sortDirection === 'asc') ↑ @else ↓ @endif
-                                        @endif
-                                    </button>
-                                @endif
-                            </div>
-                        </div>
+        {{-- Available Shops --}}
+        <div class="mt-6 sm:mt-8 bg-white rounded-lg shadow-sm p-4 sm:p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-3 sm:mb-4">Available Shops</h3>
+            <p class="text-gray-600 mb-4 text-sm sm:text-base">Your request will be sent to these verified shops:</p>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+                @foreach($shops as $shop)
+                    <div class="border border-gray-200 rounded-lg p-3 sm:p-4">
+                        <h4 class="font-medium text-gray-900 text-sm sm:text-base">{{ $shop->name }}</h4>
+                        <p class="text-xs sm:text-sm text-gray-600 mt-1">{{ $shop->email }}</p>
                     </div>
-                </div>
-
-                {{-- Spare Parts Grid --}}
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-                    @forelse($spareParts as $part)
-                        <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition duration-200 group">
-                            {{-- Image --}}
-                            <div class="aspect-w-16 aspect-h-12 bg-gray-200 relative">
-                                @if($part->preview_image)
-                                    <img src="{{ Storage::url($part->preview_image) }}" 
-                                         alt="{{ $part->unit }}" 
-                                         class="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-200">
-                                @else
-                                    <div class="w-full h-48 bg-gray-200 flex items-center justify-center">
-                                        <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                                                  d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                                        </svg>
-                                    </div>
-                                @endif
-                                
-                                {{-- Distance Badge --}}
-                                @if(isset($part->distance))
-                                    <div class="absolute top-2 right-2 bg-green-600 text-white text-xs px-2 py-1 rounded-full">
-                                        {{ number_format($part->distance, 1) }}km
-                                    </div>
-                                @endif
-                            </div>
-
-                            {{-- Content --}}
-                            <div class="p-4">
-                                <div class="flex items-start justify-between mb-2">
-                                    <h3 class="font-semibold text-gray-900 text-lg">{{ $part->unit }}</h3>
-                                    <span class="text-xl font-bold text-green-600">
-                                        Tzs - {{ number_format($part->price, 2) }}
-                                    </span>
-                                </div>
-                                
-                                <div class="space-y-1 text-sm text-gray-600 mb-3">
-                                    <div>
-                                        <span class="font-medium">Category:</span> {{ $part->spareCategory->name }}
-                                    </div>
-                                    @if($part->spareBrand)
-                                        <div>
-                                            <span class="font-medium">Brand:</span> {{ $part->spareBrand->name }}
-                                        </div>
-                                    @endif
-                                    <div>
-                                        <span class="font-medium">Shop:</span> {{ $part->shop->name }}
-                                    </div>
-                                    <div class="flex items-center text-xs">
-                                        <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                                                  d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
-                                        </svg>
-                                        {{ Str::limit($part->shop->address, 30) }}
-                                    </div>
-                                </div>
-
-                                <div class="flex items-center justify-between">
-                                    <span class="text-xs bg-gray-100 px-2 py-1 rounded">
-                                        {{ ucfirst(str_replace('_', ' ', $part->price_type)) }}
-                                    </span>
-                                    
-                                    <a href="{{ route('spare-part.detail', $part->id) }}" 
-                                       class="bg-green-600 hover:bg-green-700 text-white text-sm font-medium py-2 px-4 rounded transition duration-200">
-                                        View Details
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    @empty
-                        <div class="col-span-full">
-                            <div class="text-center py-12">
-                                <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                                          d="M9.172 16.172a4 4 0 015.656 0M9 12h6m-6-4h6m2 5.291A7.962 7.962 0 0112 15c-2.34 0-4.5-.772-6.25-2.091C4.77 11.49 4 10.51 4 9.5c0-.828.43-1.613 1.172-2.172"/>
-                                </svg>
-                                <h3 class="mt-2 text-sm font-medium text-gray-900">No spare parts found</h3>
-                                <p class="mt-1 text-sm text-gray-500">Try adjusting your search criteria or filters.</p>
-                                <button wire:click="clearFilters" 
-                                        class="mt-4 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded transition duration-200">
-                                    Clear Filters
-                                </button>
-                            </div>
-                        </div>
-                    @endforelse
-                </div>
-
-                {{-- Pagination --}}
-                {{ $spareParts->links() }}
+                @endforeach
             </div>
         </div>
     </div>
-
-    <script>
-        window.addEventListener('get-user-location', () => {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(
-                    (position) => {
-                        @this.updateUserLocation(position.coords.latitude, position.coords.longitude);
-                    },
-                    (error) => {
-                        alert('Error getting location: ' + error.message);
-                    },
-                    {
-                        enableHighAccuracy: true,
-                        timeout: 10000,
-                        maximumAge: 0
-                    }
-                );
-            } else {
-                alert('Geolocation is not supported by this browser.');
-            }
-        });
-    </script>
 </div>
-
 </div>

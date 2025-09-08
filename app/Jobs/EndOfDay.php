@@ -69,6 +69,9 @@ class EndOfDay implements ShouldQueue
 
         if($source_prev_balance<=0){
 
+            Log::info('no enough balance');
+        
+
         }else{
 
             // debit amount

@@ -405,20 +405,20 @@
 
 
  <!-- Top Dealers Section - Clear and Professional -->
-<section class="py-10 bg-white">
-    <div class="container mx-auto px-4">
+<!-- <section class="py-10 bg-white">
+    <div class="container mx-auto px-4"> -->
         <!-- Simple Header -->
-        <div class="flex justify-between items-center mb-6">
+        <!-- <div class="flex justify-between items-center mb-6">
             <h2 class="text-xl font-bold text-gray-800">Featured Dealers</h2>
             <a href="#" class="text-sm font-medium text-green-600 hover:text-green-700">View All Dealers →</a>
-        </div>
+        </div> -->
         
         <!-- Dealers Row -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <!-- <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             @foreach($topDealers as $dealer)
-            <div class="bg-white border border-gray-200 rounded-md overflow-hidden">
+            <div class="bg-white border border-gray-200 rounded-md overflow-hidden"> -->
                 <!-- Header with Location -->
-                <div class="p-4 border-b border-gray-100">
+                <!-- <div class="p-4 border-b border-gray-100">
                     <div class="flex justify-between items-start">
                         <div>
                             <h3 class="font-medium text-gray-900">{{ $dealer->name }}</h3>
@@ -432,10 +432,10 @@
                         </div>
                         <img src="{{ asset('/cars/icon.avif') }}" alt="{{ $dealer->name }}" class="w-10 h-10 rounded-full object-cover border border-gray-200">
                     </div>
-                </div>
+                </div> -->
                 
                 <!-- Stats -->
-                <div class="flex divide-x divide-gray-100">
+                <!-- <div class="flex divide-x divide-gray-100">
                     <div class="flex-1 p-3 text-center">
                         <div class="text-sm font-medium text-gray-900">{{ $dealer->dealerCarCount() }}</div>
                         <div class="text-xs text-gray-500">Vehicles</div>
@@ -449,17 +449,17 @@
                         </div>
                         <div class="text-xs text-gray-500">Rating</div>
                     </div>
-                </div>
+                </div> -->
                 
                 <!-- Action Link -->
-                <a href="{{ route('vehicle.list') }}" class="block text-center py-2 text-sm font-medium text-green-600 hover:text-green-700 hover:bg-green-50 transition-colors duration-150 border-t border-gray-100">
+                <!-- <a href="{{ route('vehicle.list') }}" class="block text-center py-2 text-sm font-medium text-green-600 hover:text-green-700 hover:bg-green-50 transition-colors duration-150 border-t border-gray-100">
                     Browse Inventory
                 </a>
             </div>
             @endforeach
         </div>
     </div>
-</section>
+</section> -->
 
 
 

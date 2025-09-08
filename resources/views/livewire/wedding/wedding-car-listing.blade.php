@@ -1,22 +1,33 @@
 <div>
 <div class="bg-white w-full">
     <!-- Hero Section -->
-    <div class="bg-gradient-to-r from-green-600 via-green-600 to-green-600 text-white py-8">
+    <div class="bg-gradient-to-r from-green-600 via-green-600 to-green-600 text-white py-12">
         <div class="container mx-auto px-4 text-start">
             <h1 class="text-4xl md:text-6xl font-bold mb-4">
-                  Car Rentals 
+                Premium Car Rentals
             </h1>
-            <p class="text-xl md:text-2xl mb-2 text-green-100">
-                Make your special day unforgettable with our luxury  cars
+            <p class="text-xl md:text-2xl mb-4 text-green-100">
+                Experience luxury and comfort with our premium vehicle collection
             </p>
-            <div class="flex justify-start space-x-2 text-green-100">
-                <span></span>
-                <span>Premium Collection</span>
-                <span>•</span>
-                <span>Professional Service</span>
-                <span>•</span>
-                <span>Memorable Experience</span>
-                <span></span>
+            <div class="flex flex-wrap justify-start gap-4 text-green-100">
+                <div class="flex items-center">
+                    <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                    </svg>
+                    <span>Premium Collection</span>
+                </div>
+                <div class="flex items-center">
+                    <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span>Professional Service</span>
+                </div>
+                <div class="flex items-center">
+                    <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                    </svg>
+                    <span>Memorable Experience</span>
+                </div>
             </div>
         </div>
     </div>
@@ -24,13 +35,14 @@
     <!-- Enhanced Search Section -->
     <section class="bg-gradient-to-b from-gray-50 to-white py-8">
         <div class="container mx-auto px-4">
-            <div class="max-w-6xl mx-auto bg-white rounded-xl  border border-gray-100 overflow-hidden">
+            <div class="max-w-6xl mx-auto bg-white rounded-xl border border-gray-100 overflow-hidden shadow-lg">
                 <!-- Heading -->
                 <div class="bg-gradient-to-r from-green-50 to-green-50 py-6 px-6 border-b border-gray-100">
                     <div class="flex items-start justify-start">
-                        <span class="text-2xl mr-3"></span>
-                        <h2 class="text-xl font-bold text-gray-800">Find Your Dream Wedding Car</h2>
-                        <span class="text-2xl ml-3"></span>
+                        <svg class="w-6 h-6 mr-3 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                        <h2 class="text-xl font-bold text-gray-800">Find Your Perfect Rental Vehicle</h2>
                     </div>
                 </div>
                 
@@ -115,24 +127,24 @@
         </div>
     </section>
 
-    <!-- Wedding Cars Grid -->
+    <!-- Rental Cars Grid -->
     <section class="py-12 bg-white">
         <div class="container mx-auto px-4">
             <!-- Results Header -->
             <div class="flex justify-between items-center mb-8">
                 <h2 class="text-2xl font-bold text-gray-800">
-                    Available Wedding Cars
-                    <span class="text-green-500">({{ $weddingCars->total() }} cars)</span>
+                    Available Rental Vehicles
+                    <span class="text-green-500">({{ $weddingCars->total() }} vehicles)</span>
                 </h2>
                 <div class="text-sm text-gray-600">
-                    Showing {{ $weddingCars->count() }} of {{ $weddingCars->total() }} cars
+                    Showing {{ $weddingCars->count() }} of {{ $weddingCars->total() }} vehicles
                 </div>
             </div>
             
             @if($weddingCars->count() > 0)
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
                     @foreach($weddingCars as $car)
-                        <div class="bg-white rounded-xl  border border-gray-100 overflow-hidden group  hover:border-green-200 transition duration-300">
+                        <div class="bg-white rounded-xl border border-gray-100 overflow-hidden group hover:border-green-200 transition duration-300 shadow-sm hover:shadow-lg">
                             <!-- Car Image -->
                             <div class="relative aspect-[16/10] overflow-hidden">
                                 @php
@@ -149,7 +161,9 @@
                                 <div class="absolute top-3 left-3 flex flex-col gap-2">
                                     @if($car->is_featured)
                                         <span class="inline-flex items-center px-2.5 py-1 bg-gradient-to-r from-green-600 to-green-500 text-white text-xs font-bold rounded-full shadow-lg">
-                                            <span class="mr-1">⭐</span>
+                                            <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                            </svg>
                                             PREMIUM
                                         </span>
                                     @endif
@@ -158,10 +172,13 @@
                                     </span>
                                 </div>
                                 
-                                <!-- Wedding Badge -->
+                                <!-- Rental Badge -->
                                 <div class="absolute top-3 right-3">
                                     <span class="inline-flex items-center px-2.5 py-1 bg-white bg-opacity-90 text-green-600 text-xs font-bold rounded-full shadow-md">
-                                         WEDDING
+                                        <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
+                                        </svg>
+                                        Car Rental
                                     </span>
                                 </div>
                                 
@@ -258,9 +275,14 @@
                 <!-- Empty State -->
                 <div class="text-center py-16">
                     <div class="max-w-md mx-auto">
-                        <div class="text-6xl mb-4">💒</div>
-                        <h3 class="text-xl font-medium text-gray-900 mb-2">No Wedding Cars Found</h3>
-                        <p class="text-gray-500 mb-6">We couldn't find any wedding cars matching your criteria. Try adjusting your search filters.</p>
+                        <div class="w-24 h-24 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
+                            <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM15 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 00-1 1v10a1 1 0 001 1h1.05a2.5 2.5 0 014.9 0H11a1 1 0 001-1v-1h3.05a2.5 2.5 0 014.9 0H20a1 1 0 001-1V5a1 1 0 00-1-1H3z" />
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-medium text-gray-900 mb-2">No Rental Vehicles Found</h3>
+                        <p class="text-gray-500 mb-6">We couldn't find any vehicles matching your criteria. Try adjusting your search filters.</p>
                         <button wire:click="$set('search', '')" 
                             class="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition duration-300">
                             Clear Filters
@@ -271,28 +293,40 @@
         </div>
     </section>
     
-    <!-- Wedding Services Info -->
+    <!-- Rental Services Info -->
     <section class="py-16 bg-gradient-to-r from-green-50 to-green-50">
         <div class="container mx-auto px-4 text-center">
-            <h2 class="text-3xl font-bold text-gray-800 mb-8">Why Choose Our Wedding Cars?</h2>
+            <h2 class="text-3xl font-bold text-gray-800 mb-8">Why Choose Our Rental Service?</h2>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div class="bg-white p-6 rounded-xl shadow-md">
+                    <div class="w-12 h-12 mx-auto mb-4 bg-green-100 rounded-full flex items-center justify-center">
+                        <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                        </svg>
+                    </div>
                     <h3 class="text-xl font-semibold mb-2">Premium Collection</h3>
-                    <p class="text-gray-600">Luxury and elegant cars perfect for your special day</p>
+                    <p class="text-gray-600">Luxury and elegant vehicles perfect for any occasion</p>
                 </div>
                 <div class="bg-white p-6 rounded-xl shadow-md">
+                    <div class="w-12 h-12 mx-auto mb-4 bg-green-100 rounded-full flex items-center justify-center">
+                        <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                    </div>
                     <h3 class="text-xl font-semibold mb-2">Professional Chauffeur</h3>
                     <p class="text-gray-600">Experienced drivers dressed for the occasion</p>
                 </div>
                 <div class="bg-white p-6 rounded-xl shadow-md">
-                    <!-- <div class="text-4xl mb-4">💐</div> -->
-                    <h3 class="text-xl font-semibold mb-2">Wedding Decoration</h3>
-                    <p class="text-gray-600">Beautiful floral arrangements and ribbons included</p>
+                    <div class="w-12 h-12 mx-auto mb-4 bg-green-100 rounded-full flex items-center justify-center">
+                        <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">Premium Service</h3>
+                    <p class="text-gray-600">Beautiful arrangements and professional service included</p>
                 </div>
             </div>
         </div>
     </section>
 </div>
-
-
 </div>

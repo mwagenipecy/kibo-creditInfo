@@ -3,146 +3,149 @@
 namespace App\Http\Livewire\Web;
 
 use Livewire\Component;
-use Livewire\WithPagination;
-use App\Models\SparePart;
-use App\Models\SpareCategory;
-use App\Models\SpareBrand;
-use Illuminate\Support\Facades\DB;
+use App\Models\Make;
+use App\Models\VehicleModel;
+use App\Models\Shop;
+use App\Models\SparePartRequest;
+use App\Jobs\SendSparePartRequestEmails;
+use Illuminate\Support\Facades\Log;
 
 class Marketplace extends Component
 {
-    use WithPagination;
+    public $selectedMake = '';
+    public $selectedModel = '';
+    public $selectedYear = '';
+    public $partName = '';
+    public $partNumber = '';
+    public $partSize = '';
+    public $partCondition = '';
+    public $additionalNotes = '';
+    public $customerName = '';
+    public $customerEmail = '';
 
-    public $search = '';
-    public $categoryFilter = '';
-    public $brandFilter = '';
-    public $priceMin = '';
-    public $priceMax = '';
-    public $sortBy = 'created_at';
-    public $sortDirection = 'desc';
-    
-    // Location-based search
-    public $userLatitude = '';
-    public $userLongitude = '';
-    public $maxDistance = 50; // kilometers
-    public $locationCaptured = false;
-
-    protected $paginationTheme = 'bootstrap';
+    public $makes;
+    public $models = [];
+    public $years = [];
+    public $shops;
 
     public function mount()
     {
-        $this->sortBy = 'created_at';
-        $this->sortDirection = 'desc';
+        $this->loadMakes();
+        $this->loadYears();
+        $this->loadShops();
     }
 
-    public function updatedCategoryFilter()
+    public function loadMakes()
     {
-        $this->brandFilter = '';
-        $this->resetPage();
+        $this->makes = Make::orderBy('name')->get();
     }
 
-    public function updatedSearch()
+    public function loadYears()
     {
-        $this->resetPage();
+        $currentYear = date('Y');
+        $this->years = range($currentYear, $currentYear - 30);
     }
 
-    public function updatedPriceMin()
+    public function loadShops()
     {
-        $this->resetPage();
+        $this->shops = Shop::where('status', 'active')->get();
     }
 
-    public function updatedPriceMax()
+    public function updatedSelectedMake($value)
     {
-        $this->resetPage();
-    }
-
-    public function sortBy($field)
-    {
-        if ($this->sortBy === $field) {
-            $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
-        } else {
-            $this->sortBy = $field;
-            $this->sortDirection = 'asc';
+        $this->selectedModel = '';
+        $this->models = [];
+        
+        if ($value) {
+            $this->models = VehicleModel::where('make_id', $value)
+                ->orderBy('name')
+                ->get();
         }
-        $this->resetPage();
     }
 
-    public function getCurrentLocation()
+    public function submitRequest()
     {
-        $this->dispatchBrowserEvent('get-user-location');
+        $this->validate($this->rules());
+
+        try {
+            // Create the spare part request
+            $request = SparePartRequest::create([
+                'make_id' => $this->selectedMake,
+                'model_id' => $this->selectedModel,
+                'year' => $this->selectedYear,
+                'part_name' => $this->partName,
+                'part_number' => $this->partNumber,
+                'part_size' => $this->partSize,
+                'part_condition' => $this->partCondition,
+                'additional_notes' => $this->additionalNotes,
+                'customer_name' => $this->customerName,
+                'customer_email' => $this->customerEmail,
+                'customer_phone' => null, // No phone number required
+                'status' => 'pending',
+            ]);
+
+            // Set expiration date (7 days from now)
+            $request->setExpiration();
+
+            // Dispatch job to send emails asynchronously
+            SendSparePartRequestEmails::dispatch($request, $this->shops);
+
+            // Reset form
+            $this->resetForm();
+
+            session()->flash('success', 'Your request has been submitted successfully! Shops will contact you with quotes via email.');
+
+        } catch (\Exception $e) {
+            Log::error('Failed to create spare part request', [
+                'error' => $e->getMessage(),
+                'data' => [
+                    'selectedMake' => $this->selectedMake,
+                    'selectedModel' => $this->selectedModel,
+                    'selectedYear' => $this->selectedYear,
+                    'partName' => $this->partName,
+                    'partCondition' => $this->partCondition,
+                    'customerName' => $this->customerName,
+                    'customerEmail' => $this->customerEmail,
+                ]
+            ]);
+
+            session()->flash('error', 'Failed to submit request. Please try again.');
+        }
     }
 
-    public function updateUserLocation($latitude, $longitude)
+    public function resetForm()
     {
-        $this->userLatitude = $latitude;
-        $this->userLongitude = $longitude;
-        $this->locationCaptured = true;
-        session()->flash('location_success', 'Location captured! Showing nearby spare parts.');
-        $this->resetPage();
+        $this->selectedMake = '';
+        $this->selectedModel = '';
+        $this->selectedYear = '';
+        $this->partName = '';
+        $this->partNumber = '';
+        $this->partSize = '';
+        $this->partCondition = '';
+        $this->additionalNotes = '';
+        $this->customerName = '';
+        $this->customerEmail = '';
+        $this->models = [];
     }
 
-    public function clearFilters()
+    protected function rules()
     {
-        $this->reset(['search', 'categoryFilter', 'brandFilter', 'priceMin', 'priceMax']);
-        $this->resetPage();
+        return [
+            'selectedMake' => 'required',
+            'selectedModel' => 'required',
+            'selectedYear' => 'required',
+            'partName' => 'required|string|max:255',
+            'partCondition' => 'required|in:all,new,used',
+            'customerName' => 'required|string|max:255',
+            'customerEmail' => 'required|email|max:255',
+            'partNumber' => 'nullable|string|max:100',
+            'partSize' => 'nullable|string|max:100',
+            'additionalNotes' => 'nullable|string',
+        ];
     }
 
     public function render()
     {
-        $categories = SpareCategory::withCount('spareParts')->orderBy('name')->get();
-        $brands = collect();
-        
-        if ($this->categoryFilter) {
-            $brands = SpareBrand::where('spare_category_id', $this->categoryFilter)
-                ->withCount('spareModels')
-                ->orderBy('name')
-                ->get();
-        }
-
-        $query = SparePart::with(['spareCategory', 'spareBrand', 'spareModel', 'shop'])
-            ->when($this->search, function($q) {
-                $q->where(function($query) {
-                    $query->where('unit', 'like', '%' . $this->search . '%')
-                          ->orWhere('description', 'like', '%' . $this->search . '%')
-                          ->orWhereHas('spareCategory', function($cat) {
-                              $cat->where('name', 'like', '%' . $this->search . '%');
-                          })
-                          ->orWhereHas('spareBrand', function($brand) {
-                              $brand->where('name', 'like', '%' . $this->search . '%');
-                          });
-                });
-            })
-            ->when($this->categoryFilter, function($q) {
-                $q->where('spare_category_id', $this->categoryFilter);
-            })
-            ->when($this->brandFilter, function($q) {
-                $q->where('spare_brand_id', $this->brandFilter);
-            })
-            ->when($this->priceMin, function($q) {
-                $q->where('price', '>=', $this->priceMin);
-            })
-            ->when($this->priceMax, function($q) {
-                $q->where('price', '<=', $this->priceMax);
-            });
-
-        // Add location-based filtering if user location is available
-        if ($this->locationCaptured && $this->userLatitude && $this->userLongitude) {
-            $query->join('shops', 'spare_parts.shop_id', '=', 'shops.id')
-                  ->whereNotNull('shops.latitude')
-                  ->whereNotNull('shops.longitude')
-                  ->selectRaw('spare_parts.*, shops.name as shop_name, shops.latitude as shop_latitude, shops.longitude as shop_longitude,
-                              ( 6371 * acos( cos( radians(?) ) * cos( radians( shops.latitude ) ) * cos( radians( shops.longitude ) - radians(?) ) + sin( radians(?) ) * sin( radians( shops.latitude ) ) ) ) AS distance', 
-                              [$this->userLatitude, $this->userLongitude, $this->userLatitude])
-                  ->having('distance', '<=', $this->maxDistance)
-                  ->orderBy('distance');
-        }
-
-        $spareParts = $query->orderBy($this->sortBy, $this->sortDirection)->paginate(12);
-
-        return view('livewire.web.marketplace', [
-            'spareParts' => $spareParts,
-            'categories' => $categories,
-            'brands' => $brands
-        ]);
+        return view('livewire.web.marketplace');
     }
 }

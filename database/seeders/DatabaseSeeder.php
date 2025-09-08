@@ -14,17 +14,12 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-
-        // $this->call([
-        //     DashboardTableSeeder::class,
-        // ]);
-
-
-      //  $this->call( CarSeeder::class );
-
-     // $this->call(GarageSeeder::class);
-
-     $this->call(SpareCategoryBrandModelSeeder::class);
-
+        $this->call([
+            AdminUserSeeder::class,
+            // DashboardTableSeeder::class,
+            // CarSeeder::class,
+            // GarageSeeder::class,
+            // SpareCategoryBrandModelSeeder::class,
+        ]);
     }
 }

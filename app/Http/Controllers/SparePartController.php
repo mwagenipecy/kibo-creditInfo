@@ -19,4 +19,17 @@ class SparePartController extends Controller
 
         return view('pages.web.spare_part_details', ['id' => $id]);
     }
+
+    public function requestForm()
+    {
+        return view('pages.web.spare_part_request');
+    }
+
+    public function quoteForm($requestId, $shopId)
+    {
+        return view('pages.web.spare_part_quote', [
+            'requestId' => $requestId,
+            'shopId' => $shopId
+        ]);
+    }
 }

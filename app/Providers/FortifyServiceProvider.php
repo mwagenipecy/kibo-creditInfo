@@ -69,16 +69,14 @@ class FortifyServiceProvider extends ServiceProvider
             public function toResponse($request)
             {
                 $user = Auth::user();
-
-                
                 
                 // If user's email is not verified, redirect to OTP page
-               // if (is_null($user->email_verified_at)) {
+                if (is_null($user->email_verified_at)) {
                     return redirect()->route('otp-page');
-               // }
+                }
                 
                 // Otherwise redirect to intended location or dashboard
-              //  return redirect()->intended(route('CyberPoint-Pro'));
+                return redirect()->intended(route('CyberPoint-Pro'));
             }
         });
 

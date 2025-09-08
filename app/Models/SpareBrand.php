@@ -13,7 +13,7 @@ class SpareBrand extends Model
 
     public function category()
 {
-    return $this->belongsTo(SpareCategory::class);
+    return $this->belongsTo(SpareCategory::class, 'spare_category_id');
 }
 
 

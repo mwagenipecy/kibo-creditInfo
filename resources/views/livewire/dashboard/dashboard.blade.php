@@ -32,6 +32,14 @@
 
                         <livewire:dashboard.front-desk/>
 
+                        @elseif(auth()->user()->department == 5)
+
+                        <livewire:dashboard.clearance-forwarding/>
+
+                        @elseif(auth()->user()->department == 6)
+
+                        <livewire:dashboard.spare-parts-shop/>
+
                         @endif 
                         
                            

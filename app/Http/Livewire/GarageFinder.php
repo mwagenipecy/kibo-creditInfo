@@ -4,21 +4,18 @@ namespace App\Http\Livewire;
 
 use App\Models\Garage;
 use Livewire\Component;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
 class GarageFinder extends Component
 {
-    public $userLocation = '';
-    public $userLatitude = null;
-    public $userLongitude = null;
-    public $searchRadius = 10;
     public $selectedServices = [];
-    public $sortBy = 'distance';
+    public $sortBy = 'rating';
     public $garages = [];
     public $selectedGarage = null;
     public $isLoading = false;
     public $searchPerformed = false;
+    public $showServiceDropdown = false;
+    public $serviceSearch = '';
 
     public $availableServices = [
         'Oil Change',
@@ -30,146 +27,73 @@ class GarageFinder extends Component
         'Battery Service',
         'Alignment',
         'Inspection',
-        'Towing'
+        'Towing',
+        'OBD diagnostics',
+        'Suspension Repair',
+        'Exhaust System',
+        'Fuel System',
+        'Electrical Repair',
+        'Cooling System',
+        'Detailing',
+        'Windshield Replacement',
+        'Bodywork',
+        'Paintless Dent Repair',
+        'Hybrid/Electric Vehicle Service',
+        'Performance Upgrades',
+        'Custom Modifications',
+        'Fleet Services',
+        'Roadside Assistance',
+        'Pre-purchase Inspection',
+        'Warranty Repairs',
+        'Emissions Testing',
     ];
 
     public function mount()
     {
         $this->garages = [];
-        $this->loadNearbyGarages();
-    }
-
-    public function updatedUserLocation()
-    {
-        if (strlen($this->userLocation) >= 3) {
-            $this->geocodeUserLocation();
-        }
-    }
-
-    public function updatedSearchRadius()
-    {
-        $this->loadNearbyGarages();
+        $this->loadGarages();
     }
 
     public function updatedSelectedServices()
     {
-        $this->loadNearbyGarages();
+        $this->loadGarages();
     }
 
     public function updatedSortBy()
     {
-        $this->loadNearbyGarages();
+        $this->loadGarages();
     }
 
-    public function geocodeUserLocation()
+    public function updatedServiceSearch()
     {
-        if (empty($this->userLocation)) {
-            return;
+        // This will automatically update the filtered services
+    }
+
+    public function toggleServiceDropdown()
+    {
+        $this->showServiceDropdown = !$this->showServiceDropdown;
+    }
+
+    public function getFilteredServicesProperty()
+    {
+        if (empty($this->serviceSearch)) {
+            return $this->availableServices;
         }
 
-        $this->isLoading = true;
-
-        try {
-            // Using Google Geocoding API
-            $googleApiKey = config('services.google.maps_api_key');
-            
-            if ($googleApiKey) {
-                $response = Http::get('https://maps.googleapis.com/maps/api/geocode/json', [
-                    'address' => $this->userLocation,
-                    'key' => $googleApiKey
-                ]);
-
-                if ($response->successful() && $response->json()['status'] === 'OK') {
-                    $result = $response->json()['results'][0];
-                    $this->userLatitude = $result['geometry']['location']['lat'];
-                    $this->userLongitude = $result['geometry']['location']['lng'];
-                    
-                    // Update location display with formatted address
-                    $this->userLocation = $result['formatted_address'];
-                    
-                    $this->loadNearbyGarages();
-                    $this->showNotification('success', 'Location found! Showing nearby garages.');
-                }
-            } else {
-                // Fallback to OpenStreetMap
-                $response = Http::get('https://nominatim.openstreetmap.org/search', [
-                    'q' => $this->userLocation,
-                    'format' => 'json',
-                    'limit' => 1
-                ]);
-
-                if ($response->successful() && count($response->json()) > 0) {
-                    $result = $response->json()[0];
-                    $this->userLatitude = $result['lat'];
-                    $this->userLongitude = $result['lon'];
-                    
-                    $this->loadNearbyGarages();
-                    $this->showNotification('success', 'Location found! Showing nearby garages.');
-                }
-            }
-        } catch (\Exception $e) {
-            Log::error('Geocoding error: ' . $e->getMessage());
-            $this->showNotification('error', 'Could not find location. Please try again.');
-        } finally {
-            $this->isLoading = false;
-        }
+        return collect($this->availableServices)
+            ->filter(function ($service) {
+                return str_contains(strtolower($service), strtolower($this->serviceSearch));
+            })
+            ->values()
+            ->toArray();
     }
 
-    public function useCurrentLocation()
-    {
-        $this->isLoading = true;
-        $this->dispatchBrowserEvent('getCurrentLocation');
-    }
-
-    public function setCurrentLocation($latitude, $longitude)
-    {
-        $this->userLatitude = $latitude;
-        $this->userLongitude = $longitude;
-        $this->isLoading = false;
-        
-        // Reverse geocode to get address
-        $this->reverseGeocode($latitude, $longitude);
-        
-        $this->loadNearbyGarages();
-        $this->showNotification('success', 'Using your current location!');
-    }
-
-    private function reverseGeocode($lat, $lng)
-    {
-        try {
-            $googleApiKey = config('services.google.maps_api_key');
-            
-            if ($googleApiKey) {
-                $response = Http::get('https://maps.googleapis.com/maps/api/geocode/json', [
-                    'latlng' => "$lat,$lng",
-                    'key' => $googleApiKey
-                ]);
-
-                if ($response->successful() && $response->json()['status'] === 'OK') {
-                    $result = $response->json()['results'][0];
-                    $this->userLocation = $result['formatted_address'];
-                }
-            }
-        } catch (\Exception $e) {
-            Log::error('Reverse geocoding error: ' . $e->getMessage());
-        }
-    }
-
-    public function loadNearbyGarages()
+    public function loadGarages()
     {
         $this->isLoading = true;
         
         try {
             $query = Garage::where('is_active', true);
-
-            if ($this->userLatitude && $this->userLongitude) {
-                // Add distance calculation
-                $query = $query->selectRaw("
-                    *,
-                    (6371 * acos(cos(radians(?)) * cos(radians(latitude)) * cos(radians(longitude) - radians(?)) + sin(radians(?)) * sin(radians(latitude)))) AS distance
-                ", [$this->userLatitude, $this->userLongitude, $this->userLatitude])
-                ->having('distance', '<=', $this->searchRadius);
-            }
 
             if (!empty($this->selectedServices)) {
                 $query = $query->where(function ($q) {
@@ -181,17 +105,17 @@ class GarageFinder extends Component
 
             // Apply sorting
             switch ($this->sortBy) {
-                case 'distance':
-                    if ($this->userLatitude && $this->userLongitude) {
-                        $query = $query->orderBy('distance', 'asc');
-                    }
-                    break;
                 case 'rating':
                     $query = $query->orderBy('rating', 'desc');
+                    break;
+                case 'featured':
+                    $query = $query->orderBy('featured', 'desc')->orderBy('rating', 'desc');
                     break;
                 case 'name':
                     $query = $query->orderBy('name', 'asc');
                     break;
+                default:
+                    $query = $query->orderBy('rating', 'desc');
             }
 
             $this->garages = $query->get()->toArray();
@@ -220,20 +144,45 @@ class GarageFinder extends Component
     {
         $garage = Garage::findOrFail($garageId);
         
-        // Use Google Maps with coordinates (no API key needed for this URL format)
-        $url = "https://www.google.com/maps/place/@{$garage->latitude},{$garage->longitude}";
+        // Build the Google Maps URL with multiple options for better accuracy
+        $baseUrl = "https://www.google.com/maps/dir/";
         
-
-      return redirect()->to($url);
+        // If we have coordinates, use them for precise location
+        if ($garage->latitude && $garage->longitude) {
+            $destination = "{$garage->latitude},{$garage->longitude}";
+        } else {
+            // Fallback to address if coordinates are not available
+            $destination = urlencode($garage->full_address);
+        }
+        
+        // Add garage name for better context
+        $garageName = urlencode($garage->name);
+        $url = "{$baseUrl}{$destination}/{$garageName}";
+        
+        // Open in new tab/window
+        $this->dispatchBrowserEvent('openDirections', [
+            'url' => $url,
+            'garageName' => $garage->name
+        ]);
+        
+        $this->showNotification('info', "Opening directions to {$garage->name} in Google Maps...");
     }
 
     public function clearFilters()
     {
         $this->selectedServices = [];
-        $this->searchRadius = 10;
-        $this->sortBy = 'distance';
-        $this->loadNearbyGarages();
+        $this->sortBy = 'rating';
+        $this->serviceSearch = '';
+        $this->loadGarages();
         $this->showNotification('info', 'Filters cleared!');
+    }
+
+    public function removeService($service)
+    {
+        $this->selectedServices = array_filter($this->selectedServices, function($item) use ($service) {
+            return $item !== $service;
+        });
+        $this->loadGarages();
     }
 
     private function showNotification($type, $message)

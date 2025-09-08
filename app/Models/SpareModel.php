@@ -13,7 +13,7 @@ class SpareModel extends Model
 
     public function brand()
 {
-    return $this->belongsTo(SpareBrand::class);
+    return $this->belongsTo(SpareBrand::class, 'spare_brand_id');
 }
 
 

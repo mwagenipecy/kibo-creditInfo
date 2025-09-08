@@ -49,7 +49,7 @@ class OTP extends Mailable
 
         return $this->view('emails.otp')
             ->with(['name' => $name,'otp'=>$otp,'link'=>$link])
-            ->subject('');
+            ->subject('KiboAuto - Email Verification Code');
     }
 
 }

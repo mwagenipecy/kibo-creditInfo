@@ -1,24 +1,25 @@
 <div>
 {{-- resources/views/livewire/import-duty-application-form.blade.php --}}
+    <!-- Header -->
+    <div class="w-full bg-green-600 text-white py-8 px-6 text-center">
+        <h1 class="text-3xl font-bold text-white mb-2">Apply for Import Duty Financing</h1>
+        <p class="text-green-100">Get financing for your vehicle import duties through our network of clearing & forwarding companies and lenders.</p>
+        
+        <!-- Progress Bar -->
+        <div class="mt-6 max-w-2xl mx-auto">
+            <div class="flex items-center justify-between text-sm text-green-100 mb-2">
+                <span>Step {{ $currentStep }} of {{ $totalSteps }}</span>
+                <span>{{ round(($currentStep / $totalSteps) * 100) }}% Complete</span>
+            </div>
+            <div class="w-full bg-green-700 rounded-full h-2">
+                <div class="bg-white h-2 rounded-full transition-all duration-300" style="width: {{ ($currentStep / $totalSteps) * 100 }}%"></div>
+            </div>
+        </div>
+    </div>
+
 <div class="bg-gray-50 min-h-screen py-8">
     <div class="container mx-auto px-4">
         <div class="max-w-4xl mx-auto">
-            <!-- Header -->
-            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
-                <h1 class="text-3xl font-bold text-gray-900 mb-2">Apply for Import Duty Financing</h1>
-                <p class="text-gray-600">Get financing for your vehicle import duties through our network of clearing & forwarding companies and lenders.</p>
-                
-                <!-- Progress Bar -->
-                <div class="mt-6">
-                    <div class="flex items-center justify-between text-sm text-gray-500 mb-2">
-                        <span>Step {{ $currentStep }} of {{ $totalSteps }}</span>
-                        <span>{{ round(($currentStep / $totalSteps) * 100) }}% Complete</span>
-                    </div>
-                    <div class="w-full bg-gray-200 rounded-full h-2">
-                        <div class="bg-green-600 h-2 rounded-full transition-all duration-300" style="width: {{ ($currentStep / $totalSteps) * 100 }}%"></div>
-                    </div>
-                </div>
-            </div>
 
             @if (session()->has('success'))
                 <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">

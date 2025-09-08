@@ -40,13 +40,15 @@ class OTP extends Component
         
         // Check if user is already verified
         if (!is_null($user->email_verified_at)) {
+            // Redirect department 4 (Client/Borrower) to loan list
+            if ($user->department == 4) {
+                return redirect()->route('application.list');
+            }
             return redirect()->route('CyberPoint-Pro');
         }
         
-        // If no OTP exists, generate one
-        if (!Session::has('otp_code')) {
-            $this->generateAndSendOTP();
-        }
+        // Always generate and send OTP when component mounts
+        $this->generateAndSendOTP();
         
         // Initialize timer
         $this->updateOtpExpiry();
@@ -85,8 +87,13 @@ class OTP extends Component
             // Send OTP via email
             $link = route('otp-page');
             Mail::to($user->email)->send(new OTPMail($link, $user->name, $otp));
+            \Log::info('OTP email sent successfully to: ' . $user->email . ' with OTP: ' . $otp);
         } catch (\Exception $e) {
             \Log::error('Failed to send OTP email: ' . $e->getMessage());
+            // Still show the OTP in test mode even if email fails
+            if (app()->environment('local', 'testing')) {
+                Session::flash('test_otp', $otp);
+            }
         }
 
         // Uncomment when SMS service is ready
@@ -147,33 +154,29 @@ class OTP extends Component
        // dd($stored_otp, $expiry, $this->full_otp); // run fine to here 
     
         if (Carbon::now()->isAfter($expiry)) {
-
-
             $this->addError('otp', 'OTP has expired. Please request a new code.');
             $this->clearOtpInputs();
-            
-        }else{
-
-            if ($this->full_otp !== $stored_otp) {
-                $this->addError('otp', 'Invalid verification code. Please try again.');
-                $this->clearOtpInputs();
-               
-            }else{
-
-
-                   // Mark verified
-                    $user = Auth::user();
-                    $user->email_verified_at = Carbon::now();
-                    $user->save();
-                    Session::forget(['otp_code', 'otp_expiry']);
-                    session()->flash('success', 'Your account has been successfully verified!');
-                    return redirect()->route('CyberPoint-Pro');
-
-
-            }
-
-
+            return;
         }
+
+        if ($this->full_otp !== $stored_otp) {
+            $this->addError('otp', 'Invalid verification code. Please try again.');
+            $this->clearOtpInputs();
+            return;
+        }
+
+        // Mark verified
+        $user = Auth::user();
+        $user->email_verified_at = Carbon::now();
+        $user->save();
+        Session::forget(['otp_code', 'otp_expiry']);
+        session()->flash('success', 'Your account has been successfully verified!');
+        
+        // Redirect department 4 (Client/Borrower) to loan list
+        if ($user->department == 4) {
+            return redirect()->route('application.list');
+        }
+        return redirect()->route('CyberPoint-Pro');
 
     
 
@@ -189,6 +192,14 @@ class OTP extends Component
        // $this->dispatchBrowserEvent('clear-otp-fields');
     }
     
+    // Logout user
+    public function logout()
+    {
+        Auth::logout();
+        Session::flush();
+        return redirect()->route('login');
+    }
+
     // Resend OTP
     public function resendOTP()
     {
