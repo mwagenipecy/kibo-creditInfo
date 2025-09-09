@@ -118,7 +118,9 @@ Route::middleware(['auth:sanctum', 'verified', OTPMiddleware::class, ClientMiddl
     
     // Main system/dashboard routes
     Route::get('/System', \App\Http\Livewire\System::class)->name('System');
-    Route::get('/CyberPoint-Pro', \App\Http\Livewire\System::class)->name('CyberPoint-Pro');
+    Route::get('/CyberPoint-Pro', \App\Http\Livewire\System::class)
+        ->middleware('deny.department4')
+        ->name('CyberPoint-Pro');
 
 
     // import duty routes
@@ -137,25 +139,7 @@ Route::middleware(['auth:sanctum', 'verified', OTPMiddleware::class, ClientMiddl
 // =================================================================
 
 Route::fallback(function() {
-    if (Auth::check()) {
-        $user = Auth::user();
-        
-        // If email not verified, go to OTP page
-        if (is_null($user->email_verified_at)) {
-            return redirect()->route('otp-page');
-        }
-        
-        // If department 4 (Client/Borrower) or department 10 (client), go to application list
-        if ($user->department == 4 || $user->department == 10) {
-            return redirect()->route('application.list');
-        }
-        
-        // Otherwise go to main dashboard
-        return redirect()->route('CyberPoint-Pro');
-    }
-    
-    // Not authenticated - show 404
-    return view('pages/utility/404');
+    abort(404);
 });
 
 // Document download routes

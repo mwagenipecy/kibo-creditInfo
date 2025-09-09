@@ -61,6 +61,10 @@ class LenderDashboard extends Component
     public $showCompletedModal = false;
     public $completedApplication = null;
     public $completion_notes = '';
+    
+    // Application details modal
+    public $showDetailsModal = false;
+    public $detailsApplication = null;
 
     protected $rules = [
         'down_payment_required' => 'required|numeric|min:0',
@@ -71,12 +75,34 @@ class LenderDashboard extends Component
         'legal_fee' => 'nullable|numeric|min:0',
         'other_fees' => 'nullable|numeric|min:0',
         'minimum_income_required' => 'nullable|numeric|min:0',
-        'employment_type_required' => 'required|string',
-        'collateral_required' => 'nullable|string',
+        'employment_type_required' => 'nullable|string',
+        'collateral_required' => 'nullable|string|max:500',
+        'guarantor_required' => 'boolean',
+        'additional_requirements' => 'nullable|string|max:1000',
         'validity_hours' => 'required|integer|min:12|max:168',
         'conditions' => 'nullable|string|max:1000',
         'completion_notes' => 'required|string|max:500',
     ];
+
+    protected function getOfferValidationRules(): array
+    {
+        return [
+            'down_payment_required' => 'required|numeric|min:0',
+            'interest_rate_annual' => 'required|numeric|min:0|max:50',
+            'loan_tenure_months' => 'required|integer|min:12|max:84',
+            'processing_fee' => 'nullable|numeric|min:0',
+            'insurance_fee' => 'nullable|numeric|min:0',
+            'legal_fee' => 'nullable|numeric|min:0',
+            'other_fees' => 'nullable|numeric|min:0',
+            'minimum_income_required' => 'nullable|numeric|min:0',
+            'employment_type_required' => 'nullable|string',
+            'collateral_required' => 'nullable|string|max:500',
+            'guarantor_required' => 'boolean',
+            'additional_requirements' => 'nullable|string|max:1000',
+            'validity_hours' => 'required|integer|min:12|max:168',
+            'conditions' => 'nullable|string|max:1000',
+        ];
+    }
 
     public function mount()
     {
@@ -191,6 +217,19 @@ class LenderDashboard extends Component
         $this->completedApplication = null;
         $this->completion_notes = '';
     }
+    
+    public function viewApplicationDetails($applicationId)
+    {
+        $this->detailsApplication = ImportDutyApplication::with(['cfQuotations', 'lenderFinancingOffers', 'selectedCFCompany'])
+            ->findOrFail($applicationId);
+        $this->showDetailsModal = true;
+    }
+    
+    public function closeDetailsModal()
+    {
+        $this->showDetailsModal = false;
+        $this->detailsApplication = null;
+    }
 
     public function markAsCompleted()
     {
@@ -281,6 +320,14 @@ class LenderDashboard extends Component
         $this->calculateTotalFees();
     }
 
+    public function updated($propertyName)
+    {
+        // Clear validation errors for the updated field
+        if ($this->getErrorBag()->has($propertyName)) {
+            $this->getErrorBag()->forget($propertyName);
+        }
+    }
+
     protected function calculateLoanDetails()
     {
         if (!$this->selectedApplication || !$this->selectedApplication->cfQuotations->first()) {
@@ -327,10 +374,30 @@ class LenderDashboard extends Component
 
     public function submitOffer()
     {
-        $this->validate();
+        try {
+            // Validate only offer fields (exclude completion_notes)
+            $this->validate($this->getOfferValidationRules());
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            session()->flash('error', 'Please correct the errors below and try again.');
+            return;
+        }
 
         try {
+            if (!$this->selectedApplication) {
+                // Surface error inside the form
+                $this->addError('selectedApplication', 'No application selected. Please close and reopen the offer modal.');
+                session()->flash('error', 'No application selected. Please close and reopen the offer modal.');
+                return;
+            }
+
             $selectedQuotation = $this->selectedApplication->cfQuotations->first();
+            if (!$selectedQuotation) {
+                // Surface error inside the form
+                $this->addError('cf_quotation', 'No CF quotation found for this application. Ensure a quotation is selected.');
+                session()->flash('error', 'No CF quotation found for this application. Ensure a quotation is selected.');
+                return;
+            }
+
             $totalFinancingAmount = $selectedQuotation->grand_total;
 
             if ($this->isEditing && $this->editingOffer) {
@@ -348,13 +415,13 @@ class LenderDashboard extends Component
                     'legal_fee' => $this->legal_fee ?? 0,
                     'other_fees' => $this->other_fees ?? 0,
                     'total_fees' => $this->total_fees,
-                    'minimum_income_required' => $this->minimum_income_required,
-                    'employment_type_required' => $this->employment_type_required,
-                    'collateral_required' => $this->collateral_required,
+                    'minimum_income_required' => $this->minimum_income_required ?? 0,
+                    'employment_type_required' => $this->employment_type_required ?? 'Any',
+                    'collateral_required' => $this->collateral_required ?? '',
                     'guarantor_required' => $this->guarantor_required,
-                    'additional_requirements' => $this->additional_requirements,
+                    'additional_requirements' => $this->additional_requirements ?? '',
                     'validity_hours' => $this->validity_hours,
-                    'conditions' => $this->conditions,
+                    'conditions' => $this->conditions ?? '',
                     'expires_at' => now()->addHours($this->validity_hours),
                 ]);
 
@@ -396,15 +463,15 @@ class LenderDashboard extends Component
                     'legal_fee' => $this->legal_fee ?? 0,
                     'other_fees' => $this->other_fees ?? 0,
                     'total_fees' => $this->total_fees,
-                    'minimum_income_required' => $this->minimum_income_required,
-                    'employment_type_required' => $this->employment_type_required,
-                    'collateral_required' => $this->collateral_required,
+                    'minimum_income_required' => $this->minimum_income_required ?? 0,
+                    'employment_type_required' => $this->employment_type_required ?? 'Any',
+                    'collateral_required' => $this->collateral_required ?? '',
                     'guarantor_required' => $this->guarantor_required,
-                    'additional_requirements' => $this->additional_requirements,
+                    'additional_requirements' => $this->additional_requirements ?? '',
                     'status' => 'SUBMITTED',
                     'priority_order' => $priorityOrder,
                     'validity_hours' => $this->validity_hours,
-                    'conditions' => $this->conditions,
+                    'conditions' => $this->conditions ?? '',
                     'submitted_at' => now(),
                     'expires_at' => now()->addHours($this->validity_hours),
                     'response_deadline' => now()->addHours(72),
@@ -421,8 +488,12 @@ class LenderDashboard extends Component
             $this->closeOfferModal();
 
         } catch (\Exception $e) {
-            session()->flash('error', 'An error occurred while submitting the offer.');
-            \Log::error('Lender offer submission error: ' . $e->getMessage());
+            $message = 'An error occurred while submitting the offer.';
+            session()->flash('error', $message);
+            \Log::error('Lender offer submission error: ' . $e->getMessage(), [
+                'application_id' => optional($this->selectedApplication)->id,
+                'lender_id' => optional($this->lender)->id,
+            ]);
         }
     }
 

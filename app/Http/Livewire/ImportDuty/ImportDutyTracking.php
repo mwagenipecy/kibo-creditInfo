@@ -176,7 +176,7 @@ class ImportDutyTracking extends Component
         $lenders = \App\Models\Lender::where('status', 'APPROVED')->get();
         
         foreach ($lenders as $lender) {
-            \App\Jobs\NotifyLenderNewApplication::dispatch($lender, $this->application);
+         //   \App\Jobs\NotifyLenderNewApplication::dispatch($lender, $this->application);
         }
     }
 
