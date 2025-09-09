@@ -32,6 +32,10 @@ class VehicleList extends Component
     public $vehicleId = null;
     public $is_wedding_car = false;
     public $is_for_sale = false;
+    
+    // Delete confirmation modal
+    public $showDeleteModal = false;
+    public $vehicleToDelete = null;
 
     public $rent_price=0;
 
@@ -160,6 +164,11 @@ class VehicleList extends Component
         ];
         
         foreach ($vehicleImages as $image) {
+            // Ensure the image has required properties
+            if (!is_object($image) || !isset($image->view) || !isset($image->id)) {
+                continue;
+            }
+            
             if ($image->view === 'front') {
                 $this->existingImages['front'] = $image;
             } elseif ($image->view === 'side') {
@@ -315,17 +324,34 @@ class VehicleList extends Component
         }
     }
     
-    // Delete a vehicle
-    public function deleteVehicle($id)
+    // Show delete confirmation modal
+    public function confirmDelete($id)
+    {
+        $this->vehicleToDelete = $id;
+        $this->showDeleteModal = true;
+    }
+    
+    // Cancel delete
+    public function cancelDelete()
+    {
+        $this->showDeleteModal = false;
+        $this->vehicleToDelete = null;
+    }
+    
+    // Delete a vehicle (after confirmation)
+    public function deleteVehicle()
     {
         try {
-            $vehicle = Vehicle::findOrFail($id);
+            $vehicle = Vehicle::findOrFail($this->vehicleToDelete);
             
             // Mark as deleted instead of actual deletion
             $vehicle->status = 'deleted';
             $vehicle->save();
             
-            session()->flash('success', 'Vehicle deleted successfully');
+            $this->showDeleteModal = false;
+            $this->vehicleToDelete = null;
+            
+            session()->flash('success', 'Vehicle marked as deleted successfully');
             
         } catch (\Exception $e) {
             session()->flash('error', 'Failed to delete vehicle. ' . $e->getMessage());
@@ -356,14 +382,16 @@ class VehicleList extends Component
                 $this->existingImages['back'] = null;
             } else {
                 // Remove from additional images array
-                $this->existingImages['additional'] = array_filter(
-                    $this->existingImages['additional'], 
-                    function($img) use ($id) {
-                        return $img->id !== $id;
-                    }
-                );
-                // Re-index the array
-                $this->existingImages['additional'] = array_values($this->existingImages['additional']);
+                if (isset($this->existingImages['additional']) && is_array($this->existingImages['additional'])) {
+                    $this->existingImages['additional'] = array_filter(
+                        $this->existingImages['additional'], 
+                        function($img) use ($id) {
+                            return is_object($img) && isset($img->id) && $img->id !== $id;
+                        }
+                    );
+                    // Re-index the array
+                    $this->existingImages['additional'] = array_values($this->existingImages['additional']);
+                }
             }
             
             session()->flash('success', 'Image removed successfully');

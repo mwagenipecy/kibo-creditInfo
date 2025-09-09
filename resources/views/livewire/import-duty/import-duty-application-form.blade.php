@@ -80,6 +80,46 @@
                                       placeholder="Your full address"></textarea>
                             @error('address') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                         </div>
+                        
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-gray-700 mb-3">Application Type *</label>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <label class="relative flex cursor-pointer rounded-lg p-4 focus:outline-none border-2 {{ $application_type === 'PURCHASED' ? 'border-green-500 bg-green-50' : 'border-gray-200' }}">
+                                    <input type="radio" wire:model="application_type" value="PURCHASED" class="sr-only">
+                                    <div class="flex w-full items-center justify-between">
+                                        <div class="flex items-center">
+                                            <div class="text-sm">
+                                                <div class="font-medium text-gray-900">I Already Bought the Car</div>
+                                                <div class="text-gray-500">I have already purchased the vehicle and have all documents</div>
+                                            </div>
+                                        </div>
+                                        <div class="text-green-600">
+                                            <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                </label>
+                                
+                                <label class="relative flex cursor-pointer rounded-lg p-4 focus:outline-none border-2 {{ $application_type === 'WANT_TO_BUY' ? 'border-green-500 bg-green-50' : 'border-gray-200' }}">
+                                    <input type="radio" wire:model="application_type" value="WANT_TO_BUY" class="sr-only">
+                                    <div class="flex w-full items-center justify-between">
+                                        <div class="flex items-center">
+                                            <div class="text-sm">
+                                                <div class="font-medium text-gray-900">I Want to Buy a Car</div>
+                                                <div class="text-gray-500">I found a car online and want to apply for financing</div>
+                                            </div>
+                                        </div>
+                                        <div class="text-green-600">
+                                            <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                </label>
+                            </div>
+                            @error('application_type') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                        </div>
                     </div>
                 </div>
                 @endif
@@ -88,6 +128,67 @@
                 @if($currentStep === 2)
                 <div>
                     <h2 class="text-xl font-semibold text-gray-900 mb-4">Vehicle Information</h2>
+                    
+                    @if($application_type === 'WANT_TO_BUY')
+                    <!-- Car URL Section -->
+                    <div class="mb-8 p-6 bg-blue-50 border border-blue-200 rounded-lg">
+                        <h3 class="text-lg font-medium text-blue-900 mb-4">Car Listing Information</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <label for="car_listing_url" class="block text-sm font-medium text-gray-700 mb-1">Car Listing URL *</label>
+                                <div class="flex space-x-2">
+                                    <input type="url" wire:model="car_listing_url" id="car_listing_url" 
+                                           class="flex-1 rounded-lg border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-200" 
+                                           placeholder="https://example.com/car-listing">
+                                    <button type="button" wire:click="extractCarDetails" 
+                                            wire:loading.attr="disabled"
+                                            class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50">
+                                        <div wire:loading wire:target="extractCarDetails" class="flex items-center">
+                                            <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                                            Extracting...
+                                        </div>
+                                        <span wire:loading.remove wire:target="extractCarDetails">Extract Details</span>
+                                    </button>
+                                </div>
+                                @error('car_listing_url') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                                <p class="text-sm text-gray-500 mt-1">Paste the URL of the car listing you want to buy</p>
+                            </div>
+                            
+                            @if($extracted_car_image)
+                            <div class="mt-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Extracted Car Image</label>
+                                <div class="relative inline-block">
+                                    <img src="{{ asset('storage/' . $extracted_car_image) }}" 
+                                         alt="Extracted car image" 
+                                         class="w-48 h-32 object-cover rounded-lg border border-gray-200">
+                                    <button type="button" wire:click="clearExtractedDetails" 
+                                            class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600">
+                                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                            @endif
+                            
+                            @if(!empty($extracted_car_details))
+                            <div class="mt-4 p-4 bg-green-50 border border-green-200 rounded-lg">
+                                <h4 class="font-medium text-green-900 mb-2">Extracted Car Details</h4>
+                                <div class="grid grid-cols-2 gap-2 text-sm">
+                                    @foreach($extracted_car_details as $key => $value)
+                                        @if($value)
+                                            <div>
+                                                <span class="font-medium text-green-800">{{ ucfirst(str_replace('_', ' ', $key)) }}:</span>
+                                                <span class="text-green-700">{{ $value }}</span>
+                                            </div>
+                                        @endif
+                                    @endforeach
+                                </div>
+                            </div>
+                            @endif
+                        </div>
+                    </div>
+                    @endif
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
@@ -122,6 +223,7 @@
                             @error('vehicle_color') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                         </div>
 
+                        @if($application_type === 'PURCHASED')
                         <div>
                             <label for="vehicle_vin" class="block text-sm font-medium text-gray-700 mb-1">VIN Number *</label>
                             <input type="text" wire:model="vehicle_vin" id="vehicle_vin" 
@@ -129,6 +231,7 @@
                                    placeholder="17-character VIN">
                             @error('vehicle_vin') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                         </div>
+                        @endif
 
                         <div>
                             <label for="cif_value_usd" class="block text-sm font-medium text-gray-700 mb-1">CIF Value (USD) *</label>
@@ -175,9 +278,28 @@
                 <!-- Step 3: Document Upload -->
                 @if($currentStep === 3)
                 <div>
+                    @if($application_type === 'PURCHASED')
                     <h2 class="text-xl font-semibold text-gray-900 mb-4">Required Documents</h2>
                     <p class="text-gray-600 mb-6">Please upload the following documents. All files must be in PDF, JPG, or PNG format and under 5MB.</p>
+                    @else
+                    <h2 class="text-xl font-semibold text-gray-900 mb-4">Document Information</h2>
+                    <div class="p-6 bg-yellow-50 border border-yellow-200 rounded-lg">
+                        <div class="flex">
+                            <svg class="h-5 w-5 text-yellow-400 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                            </svg>
+                            <div>
+                                <h3 class="font-medium text-yellow-900">No Documents Required Yet</h3>
+                                <p class="text-sm text-yellow-800 mt-1">
+                                    Since you haven't purchased the car yet, you don't need to upload documents at this stage. 
+                                    Once you select a CF company and they help you purchase the vehicle, you'll need to provide the required documents.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
                     
+                    @if($application_type === 'PURCHASED')
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="border-2 border-dashed border-gray-300 rounded-lg p-4 hover:border-green-400 transition-colors">
                             <label for="bill_of_lading" class="block text-sm font-medium text-gray-700 mb-2">Bill of Lading *</label>
@@ -250,6 +372,7 @@
                             <li>• Ensure all information is visible and complete</li>
                         </ul>
                     </div>
+                    @endif
                 </div>
                 @endif
 

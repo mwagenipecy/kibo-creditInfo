@@ -35,6 +35,10 @@ class ImportDutyApplication extends Model
         'port_of_entry',
         'expected_arrival_date',
         'status',
+        'application_type',
+        'car_listing_url',
+        'extracted_car_image',
+        'extracted_car_details',
         'selected_cf_company_id',
         'selected_lender_id',
         'total_duty_amount',
@@ -62,6 +66,7 @@ class ImportDutyApplication extends Model
         'approved_at' => 'datetime',
         'expected_arrival_date' => 'date',
         'shipping_documents' => 'array',
+        'extracted_car_details' => 'array',
     ];
 
     public function cfQuotations(): HasMany

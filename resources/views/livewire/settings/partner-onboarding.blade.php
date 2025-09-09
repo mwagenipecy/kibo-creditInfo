@@ -669,7 +669,7 @@
                                     <div class="space-y-4">
                                         <div>
                                             <label for="name" class="block text-sm font-medium text-gray-700">Institution Name</label>
-                                            <input type="text" id="name" wire:model.defer="name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-500 focus:ring-opacity-50" required>
+                                            <input type="text" id="name" wire:model="name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-500 focus:ring-opacity-50" required>
                                             @error('name') 
                                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                             @enderror
@@ -678,7 +678,7 @@
                                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                             <div>
                                                 <label for="businessRegistrationNumber" class="block text-sm font-medium text-gray-700">Business Registration Number</label>
-                                                <input type="number" id="businessRegistrationNumber" wire:model.defer="businessRegistrationNumber" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-500 focus:ring-opacity-50" required>
+                                                <input type="number" id="businessRegistrationNumber" wire:model="businessRegistrationNumber" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-500 focus:ring-opacity-50" required>
                                                 @error('businessRegistrationNumber') 
                                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                                 @enderror
@@ -686,7 +686,7 @@
                                             
                                             <div>
                                                 <label for="taxIdentificationNumber" class="block text-sm font-medium text-gray-700">Tax Identification Number</label>
-                                                <input type="number" id="taxIdentificationNumber" wire:model.defer="taxIdentificationNumber" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-500 focus:ring-opacity-50" required>
+                                                <input type="number" id="taxIdentificationNumber" wire:model="taxIdentificationNumber" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-500 focus:ring-opacity-50" required>
                                                 @error('taxIdentificationNumber') 
                                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                                 @enderror
@@ -696,7 +696,7 @@
                                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                             <div>
                                                 <label for="phoneNumber" class="block text-sm font-medium text-gray-700">Phone Number</label>
-                                                <input type="text" id="phoneNumber" wire:model.defer="phoneNumber" placeholder="+255XXXXXXXXX" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-500 focus:ring-opacity-50" required>
+                                                <input type="text" id="phoneNumber" wire:model="phoneNumber" placeholder="+255XXXXXXXXX" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-500 focus:ring-opacity-50" required>
                                                 @error('phoneNumber') 
                                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                                 @enderror
@@ -704,7 +704,7 @@
                                             
                                             <div>
                                                 <label for="email" class="block text-sm font-medium text-gray-700">Email Address</label>
-                                                <input type="email" id="email" wire:model.defer="email" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-500 focus:ring-opacity-50" required>
+                                                <input type="email" id="email" wire:model="email" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-500 focus:ring-opacity-50" required>
                                                 @error('email') 
                                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                                 @enderror
@@ -713,7 +713,7 @@
                                         
                                         <div>
                                             <label for="website" class="block text-sm font-medium text-gray-700">Website (Optional)</label>
-                                            <input type="url" id="website" wire:model.defer="website" placeholder="https://example.com" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-500 focus:ring-opacity-50">
+                                            <input type="url" id="website" wire:model="website" placeholder="https://example.com" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-500 focus:ring-opacity-50">
                                         </div>
                                     </div>
                                 </div>
@@ -743,7 +743,7 @@
                                             
                                             <div>
                                                 <label for="city" class="block text-sm font-medium text-gray-700">City/District</label>
-                                                <select id="city" wire:model.defer="city" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-500 focus:ring-opacity-50" required>
+                                                <select id="city" wire:model="city" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-500 focus:ring-opacity-50" required>
                                                     <option value="">Select City/District</option>
                                                     @foreach($cities as $cityName)
                                                         <option value="{{ $cityName }}">{{ $cityName }}</option>
@@ -757,7 +757,7 @@
                                         
                                         <div>
                                             <label for="address" class="block text-sm font-medium text-gray-700">Street Address</label>
-                                            <input type="text" id="address" wire:model.defer="address" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-500 focus:ring-opacity-50" required>
+                                            <input type="text" id="address" wire:model="address" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-500 focus:ring-opacity-50" required>
                                             @error('address') 
                                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                             @enderror
@@ -766,12 +766,12 @@
                                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                             <div>
                                                 <label for="postalCode" class="block text-sm font-medium text-gray-700">Postal Code (Optional)</label>
-                                                <input type="text" id="postalCode" wire:model.defer="postalCode" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-500 focus:ring-opacity-50">
+                                                <input type="text" id="postalCode" wire:model="postalCode" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-500 focus:ring-opacity-50">
                                             </div>
                                             
                                             <div>
                                                 <label for="country" class="block text-sm font-medium text-gray-700">Country</label>
-                                                <input type="text" id="country" wire:model.defer="country" value="Tanzania" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-500 focus:ring-opacity-50 bg-gray-100" readonly>
+                                                <input type="text" id="country" wire:model="country" value="Tanzania" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-500 focus:ring-opacity-50 bg-gray-100" readonly>
                                             </div>
                                         </div>
                                     </div>
@@ -790,7 +790,7 @@
                                     <div class="space-y-4">
                                         <div>
                                             <label for="contactPersonName" class="block text-sm font-medium text-gray-700">Full Name</label>
-                                            <input type="text" id="contactPersonName" wire:model.defer="contactPersonName" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-500 focus:ring-opacity-50" required>
+                                            <input type="text" id="contactPersonName" wire:model="contactPersonName" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-500 focus:ring-opacity-50" required>
                                             @error('contactPersonName') 
                                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                             @enderror
@@ -798,7 +798,7 @@
                                         
                                         <div>
                                             <label for="contactPersonPosition" class="block text-sm font-medium text-gray-700">Position</label>
-                                            <input type="text" id="contactPersonPosition" wire:model.defer="contactPersonPosition" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-500 focus:ring-opacity-50">
+                                            <input type="text" id="contactPersonPosition" wire:model="contactPersonPosition" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-500 focus:ring-opacity-50">
                                             @error('contactPersonPosition') 
                                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                             @enderror
@@ -808,7 +808,7 @@
                                     <div class="space-y-4">
                                         <div>
                                             <label for="contactPersonPhone" class="block text-sm font-medium text-gray-700">Phone Number</label>
-                                            <input type="text" id="contactPersonPhone" wire:model.defer="contactPersonPhone" placeholder="+255XXXXXXXXX" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-500 focus:ring-opacity-50" required>
+                                            <input type="text" id="contactPersonPhone" wire:model="contactPersonPhone" placeholder="+255XXXXXXXXX" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-500 focus:ring-opacity-50" required>
                                             @error('contactPersonPhone') 
                                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                             @enderror
@@ -816,7 +816,7 @@
                                         
                                         <div>
                                             <label for="contactPersonEmail" class="block text-sm font-medium text-gray-700">Email Address</label>
-                                            <input type="email" id="contactPersonEmail" wire:model.defer="contactPersonEmail" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-500 focus:ring-opacity-50" required>
+                                            <input type="email" id="contactPersonEmail" wire:model="contactPersonEmail" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-500 focus:ring-opacity-50" required>
                                             @error('contactPersonEmail') 
                                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                             @enderror
@@ -839,7 +839,7 @@
                                 <div class="space-y-4">
                                     <div>
                                         <label for="lenderType" class="block text-sm font-medium text-gray-700">Lender Type</label>
-                                        <select id="lenderType" wire:model.defer="lenderType" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-500 focus:ring-opacity-50" required>
+                                        <select id="lenderType" wire:model="lenderType" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-500 focus:ring-opacity-50" required>
                                             <option value="">Select Type</option>
                                             <option value="Bank">Bank</option>
                                             <option value="Microfinance">Microfinance Institution</option>
@@ -854,7 +854,7 @@
                                     
                                     <div>
                                         <label for="financialLicenseNumber" class="block text-sm font-medium text-gray-700">Financial License Number</label>
-                                        <input type="text" id="financialLicenseNumber" wire:model.defer="financialLicenseNumber" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-500 focus:ring-opacity-50">
+                                        <input type="text" id="financialLicenseNumber" wire:model="financialLicenseNumber" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-500 focus:ring-opacity-50">
                                         @error('financialLicenseNumber') 
                                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                         @enderror
@@ -875,7 +875,7 @@
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div>
                                             <label for="minimumLoanAmount" class="block text-sm font-medium text-gray-700">Minimum Loan Amount (TZS)</label>
-                                            <input type="number" id="minimumLoanAmount" wire:model.defer="minimumLoanAmount" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-500 focus:ring-opacity-50" required>
+                                            <input type="number" id="minimumLoanAmount" wire:model="minimumLoanAmount" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-500 focus:ring-opacity-50" required>
                                             @error('minimumLoanAmount') 
                                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                             @enderror
@@ -883,7 +883,7 @@
                                         
                                         <div>
                                             <label for="maximumLoanAmount" class="block text-sm font-medium text-gray-700">Maximum Loan Amount (TZS)</label>
-                                            <input type="number" id="maximumLoanAmount" wire:model.defer="maximumLoanAmount" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-500 focus:ring-opacity-50" required>
+                                            <input type="number" id="maximumLoanAmount" wire:model="maximumLoanAmount" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-500 focus:ring-opacity-50" required>
                                             @error('maximumLoanAmount') 
                                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                             @enderror
@@ -893,7 +893,7 @@
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div>
                                             <label for="interestRateRange" class="block text-sm font-medium text-gray-700">Interest Rate Range (%)</label>
-                                            <input type="text" id="interestRateRange" wire:model.defer="interestRateRange" placeholder="e.g., 12-18" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-500 focus:ring-opacity-50">
+                                            <input type="text" id="interestRateRange" wire:model="interestRateRange" placeholder="e.g., 12-18" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-500 focus:ring-opacity-50">
                                             @error('interestRateRange') 
                                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                             @enderror
@@ -901,7 +901,7 @@
                                         
                                         <div>
                                             <label for="loanTermsRange" class="block text-sm font-medium text-gray-700">Loan Terms Range (months)</label>
-                                            <input type="text" id="loanTermsRange" wire:model.defer="loanTermsRange" placeholder="e.g., 6-36" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-500 focus:ring-opacity-50">
+                                            <input type="text" id="loanTermsRange" wire:model="loanTermsRange" placeholder="e.g., 6-36" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-500 focus:ring-opacity-50">
                                             @error('loanTermsRange') 
                                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                             @enderror
@@ -921,7 +921,7 @@
                                 <div class="space-y-4">
                                     <div>
                                         <label for="bankAccountDetails" class="block text-sm font-medium text-gray-700">Bank Account Details</label>
-                                        <textarea id="bankAccountDetails" wire:model.defer="bankAccountDetails" rows="3" placeholder="Bank name, Account number, Branch, etc." class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-500 focus:ring-opacity-50"></textarea>
+                                        <textarea id="bankAccountDetails" wire:model="bankAccountDetails" rows="3" placeholder="Bank name, Account number, Branch, etc." class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-500 focus:ring-opacity-50"></textarea>
                                         @error('bankAccountDetails') 
                                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                         @enderror
@@ -932,19 +932,19 @@
                                             <label for="paymentMethods" class="block text-sm font-medium text-gray-700">Accepted Payment Methods</label>
                                             <div class="mt-2 space-y-2">
                                                 <div class="flex items-center">
-                                                    <input id="paymentMethod1" name="paymentMethods[]" type="checkbox" wire:model.defer="paymentMethods" value="Bank Transfer" class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded">
+                                                    <input id="paymentMethod1" name="paymentMethods[]" type="checkbox" wire:model="paymentMethods" value="Bank Transfer" class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded">
                                                     <label for="paymentMethod1" class="ml-2 block text-sm text-gray-700">Bank Transfer</label>
                                                 </div>
                                                 <div class="flex items-center">
-                                                    <input id="paymentMethod2" name="paymentMethods[]" type="checkbox" wire:model.defer="paymentMethods" value="Mobile Money" class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded">
+                                                    <input id="paymentMethod2" name="paymentMethods[]" type="checkbox" wire:model="paymentMethods" value="Mobile Money" class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded">
                                                     <label for="paymentMethod2" class="ml-2 block text-sm text-gray-700">Mobile Money</label>
                                                 </div>
                                                 <div class="flex items-center">
-                                                    <input id="paymentMethod3" name="paymentMethods[]" type="checkbox" wire:model.defer="paymentMethods" value="Cheque" class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded">
+                                                    <input id="paymentMethod3" name="paymentMethods[]" type="checkbox" wire:model="paymentMethods" value="Cheque" class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded">
                                                     <label for="paymentMethod3" class="ml-2 block text-sm text-gray-700">Cheque</label>
                                                 </div>
                                                 <div class="flex items-center">
-                                                    <input id="paymentMethod4" name="paymentMethods[]" type="checkbox" wire:model.defer="paymentMethods" value="Cash" class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded">
+                                                    <input id="paymentMethod4" name="paymentMethods[]" type="checkbox" wire:model="paymentMethods" value="Cash" class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded">
                                                     <label for="paymentMethod4" class="ml-2 block text-sm text-gray-700">Cash</label>
                                                 </div>
                                             </div>
@@ -952,7 +952,7 @@
                                         
                                         <div>
                                             <label for="settlementPeriod" class="block text-sm font-medium text-gray-700">Settlement Period (days)</label>
-                                            <input type="number" id="settlementPeriod" wire:model.defer="settlementPeriod" placeholder="e.g., 3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-500 focus:ring-opacity-50">
+                                            <input type="number" id="settlementPeriod" wire:model="settlementPeriod" placeholder="e.g., 3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-500 focus:ring-opacity-50">
                                             @error('settlementPeriod') 
                                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                             @enderror
@@ -994,7 +994,7 @@
                     
                     @if ($businessRegistrationDoc)
                         <span class="ml-2 text-sm text-green-600">File selected: {{ $businessRegistrationDoc->getClientOriginalName() }}</span>
-                    @elseif ($isEditMode && !$businessRegistrationDoc && isset($existingBusinessRegistrationDoc))
+                    @elseif ($isEditMode && !$businessRegistrationDoc && !empty($existingBusinessRegistrationDoc))
                         <span class="ml-2 text-sm text-gray-600">Current file will be retained</span>
                     @else
                         <span class="ml-2 text-sm text-gray-500">Required</span>
@@ -1002,7 +1002,7 @@
                 </div>
 
                 <!-- Preview/Download Section for Business Registration -->
-                @if ($isEditMode && isset($existingBusinessRegistrationDoc) && !$businessRegistrationDoc)
+                @if ($isEditMode && !empty($existingBusinessRegistrationDoc) && !$businessRegistrationDoc)
                     <div class="mt-2 p-3 bg-gray-50 rounded-md border">
                         <div class="flex items-center justify-between">
                             <div class="flex items-center">
@@ -1023,7 +1023,7 @@
                                     Preview
                                 </button>
                                 <!-- Download Button -->
-                                <a href="{{ route('document.download', ['type' => 'businessRegistrationDoc', 'id' => $recordId ?? 0]) }}" 
+                                <a href="{{ route('document.download', ['type' => 'business_registration', 'id' => $lenderId ?? $carDealerId ?? 0]) }}" 
                                    class="inline-flex items-center px-2 py-1 text-xs font-medium text-green-600 bg-green-100 rounded hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-green-500">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -1054,7 +1054,7 @@
                     </label>
                     @if ($taxClearanceDoc)
                         <span class="ml-2 text-sm text-green-600">File selected: {{ $taxClearanceDoc->getClientOriginalName() }}</span>
-                    @elseif ($isEditMode && !$taxClearanceDoc && isset($existingTaxClearanceDoc))
+                    @elseif ($isEditMode && !$taxClearanceDoc && !empty($existingTaxClearanceDoc))
                         <span class="ml-2 text-sm text-gray-600">Current file will be retained</span>
                     @else
                         <span class="ml-2 text-sm text-gray-500">Required</span>
@@ -1062,7 +1062,7 @@
                 </div>
 
                 <!-- Preview/Download Section for Tax Clearance -->
-                @if ($isEditMode && isset($existingTaxClearanceDoc) && !$taxClearanceDoc)
+                @if ($isEditMode && !empty($existingTaxClearanceDoc) && !$taxClearanceDoc)
                     <div class="mt-2 p-3 bg-gray-50 rounded-md border">
                         <div class="flex items-center justify-between">
                             <div class="flex items-center">
@@ -1081,7 +1081,7 @@
                                     </svg>
                                     Preview
                                 </button>
-                                <a href="{{ route('document.download', ['type' => 'taxClearanceDoc', 'id' => $recordId ?? 0]) }}" 
+                                <a href="{{ route('document.download', ['type' => 'tax_clearance', 'id' => $lenderId ?? $carDealerId ?? 0]) }}" 
                                    class="inline-flex items-center px-2 py-1 text-xs font-medium text-green-600 bg-green-100 rounded hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-green-500">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -1112,7 +1112,7 @@
                     </label>
                     @if ($financialLicenseDoc)
                         <span class="ml-2 text-sm text-green-600">File selected: {{ $financialLicenseDoc->getClientOriginalName() }}</span>
-                    @elseif ($isEditMode && !$financialLicenseDoc && isset($existingFinancialLicenseDoc))
+                    @elseif ($isEditMode && !$financialLicenseDoc && !empty($existingFinancialLicenseDoc))
                         <span class="ml-2 text-sm text-gray-600">Current file will be retained</span>
                     @else
                         <span class="ml-2 text-sm text-gray-500">Required</span>
@@ -1120,7 +1120,7 @@
                 </div>
 
                 <!-- Preview/Download Section for Financial License -->
-                @if ($isEditMode && isset($existingFinancialLicenseDoc) && !$financialLicenseDoc)
+                @if ($isEditMode && !empty($existingFinancialLicenseDoc) && !$financialLicenseDoc)
                     <div class="mt-2 p-3 bg-gray-50 rounded-md border">
                         <div class="flex items-center justify-between">
                             <div class="flex items-center">
@@ -1139,7 +1139,7 @@
                                     </svg>
                                     Preview
                                 </button>
-                                <a href="{{ route('document.download', ['type' => 'financialLicenseDoc', 'id' => $recordId ?? 0]) }}" 
+                                <a href="{{ route('document.download', ['type' => 'financial_license', 'id' => $lenderId ?? $carDealerId ?? 0]) }}" 
                                    class="inline-flex items-center px-2 py-1 text-xs font-medium text-green-600 bg-green-100 rounded hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-green-500">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -1195,7 +1195,7 @@
                                     </svg>
                                     Preview
                                 </button>
-                                <a href="{{ route('document.download', ['type' => 'logo', 'id' => $recordId ?? 0]) }}" 
+                                <a href="{{ route('document.download', ['type' => 'logo', 'id' => $lenderId ?? $carDealerId ?? 0]) }}" 
                                    class="inline-flex items-center px-2 py-1 text-xs font-medium text-green-600 bg-green-100 rounded hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-green-500">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -1226,7 +1226,7 @@
                     </label>
                     @if ($additionalDoc)
                         <span class="ml-2 text-sm text-green-600">File selected: {{ $additionalDoc->getClientOriginalName() }}</span>
-                    @elseif ($isEditMode && !$additionalDoc && isset($existingAdditionalDoc))
+                    @elseif ($isEditMode && !$additionalDoc && !empty($existingAdditionalDoc))
                         <span class="ml-2 text-sm text-gray-600">Current file will be retained</span>
                     @else
                         <span class="ml-2 text-sm text-gray-500">Optional</span>
@@ -1234,7 +1234,7 @@
                 </div>
 
                 <!-- Preview/Download Section for Additional Documents -->
-                @if ($isEditMode && isset($existingAdditionalDoc) && !$additionalDoc)
+                @if ($isEditMode && !empty($existingAdditionalDoc) && !$additionalDoc)
                     <div class="mt-2 p-3 bg-gray-50 rounded-md border">
                         <div class="flex items-center justify-between">
                             <div class="flex items-center">
@@ -1253,7 +1253,7 @@
                                     </svg>
                                     Preview
                                 </button>
-                                <a href="{{ route('document.download', ['type' => 'additionalDoc', 'id' => $recordId ?? 0]) }}" 
+                                <a href="{{ route('document.download', ['type' => 'additional', 'id' => $lenderId ?? $carDealerId ?? 0]) }}" 
                                    class="inline-flex items-center px-2 py-1 text-xs font-medium text-green-600 bg-green-100 rounded hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-green-500">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -1357,7 +1357,7 @@
                     </button>
                     
                     @if($previewDocumentPath)
-                        <a href="{{ route('document.download', ['type' => $previewDocumentType, 'id' => $recordId ?? 0]) }}" 
+                        <a href="{{ route('document.download', ['type' => $previewDocumentType, 'id' => $lenderId ?? $carDealerId ?? 0]) }}" 
                            class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -1544,7 +1544,7 @@
             <div class="mt-4">
                 <div class="flex items-start">
                     <div class="flex items-center h-5">
-                        <input id="termsAccepted" wire:model.defer="termsAccepted" type="checkbox" class="focus:ring-green-500 h-4 w-4 text-green-600 border-gray-300 rounded">
+                        <input id="termsAccepted" wire:model="termsAccepted" type="checkbox" class="focus:ring-green-500 h-4 w-4 text-green-600 border-gray-300 rounded">
                     </div>
                     <div class="ml-3 text-sm">
                         <label for="termsAccepted" class="font-medium text-gray-700">I agree to the terms and conditions</label>
@@ -1694,21 +1694,21 @@
                                                                         <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
                                                                             <div>
                                                                             <label for="name" class="block text-sm font-medium text-gray-700">Business Name</label>
-                                                                            <input  type="text"  id="name"   wire:model.defer="name"  class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-500 focus:ring-opacity-50"  required >
+                                                                            <input  type="text"  id="name"   wire:model="name"  class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-500 focus:ring-opacity-50"  required >
                                                                             @error('name') 
                                                                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                                                             @enderror
                                                                             </div>
                                                                             <div>
                                                                             <label for="businessRegistrationNumber" class="block text-sm font-medium text-gray-700">Business Registration Number</label>
-                                                                            <input  type="text"  id="businessRegistrationNumber"   wire:model.defer="businessRegistrationNumber"  class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-500 focus:ring-opacity-50"  required >
+                                                                            <input  type="text"  id="businessRegistrationNumber"   wire:model="businessRegistrationNumber"  class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-500 focus:ring-opacity-50"  required >
                                                                             @error('businessRegistrationNumber') 
                                                                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                                                             @enderror
                                                                             </div>
                                                                             <div>
                                                                             <label for="taxIdentificationNumber" class="block text-sm font-medium text-gray-700">Tax Identification Number</label>
-                                                                            <input  type="text"  id="taxIdentificationNumber"   wire:model.defer="taxIdentificationNumber"  class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-500 focus:ring-opacity-50"   required >
+                                                                            <input  type="text"  id="taxIdentificationNumber"   wire:model="taxIdentificationNumber"  class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-500 focus:ring-opacity-50"   required >
                                                                             @error('taxIdentificationNumber') 
                                                                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                                                             @enderror
@@ -1717,7 +1717,7 @@
                                                                             <label for="website" class="block text-sm font-medium text-gray-700">Website <span class="text-gray-500 text-xs">(Optional)</span></label>
                                                                             <div class="mt-1 flex rounded-md shadow-sm">
                                                                                 <span class="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">https://</span>
-                                                                                <input  type="text"    id="website"   wire:model.defer="website"  placeholder="www.example.com"   class="flex-1 block w-full rounded-none rounded-r-md border-gray-300 focus:border-green-500 focus:ring focus:ring-green-500 focus:ring-opacity-50">
+                                                                                <input  type="text"    id="website"   wire:model="website"  placeholder="www.example.com"   class="flex-1 block w-full rounded-none rounded-r-md border-gray-300 focus:border-green-500 focus:ring focus:ring-green-500 focus:ring-opacity-50">
                                                                             </div>
                                                                             @error('website') 
                                                                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -1742,7 +1742,7 @@
                                                                             <label for="address" class="block text-sm font-medium text-gray-700">Street Address</label>
                                                                             <textarea 
                                                                             id="address" 
-                                                                            wire:model.defer="address" 
+                                                                            wire:model="address" 
                                                                             rows="2" 
                                                                             class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-500 focus:ring-opacity-50"
                                                                             required
@@ -1757,7 +1757,7 @@
                                                                             <input 
                                                                                 type="text" 
                                                                                 id="city" 
-                                                                                wire:model.defer="city"
+                                                                                wire:model="city"
                                                                                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-500 focus:ring-opacity-50" 
                                                                                 required
                                                                                 >
@@ -1770,7 +1770,7 @@
                                                                             <input 
                                                                                 type="text" 
                                                                                 id="region" 
-                                                                                wire:model.defer="region"
+                                                                                wire:model="region"
                                                                                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-500 focus:ring-opacity-50" 
                                                                                 required
                                                                                 >
@@ -1783,7 +1783,7 @@
                                                                             <input 
                                                                                 type="text" 
                                                                                 id="postalCode" 
-                                                                                wire:model.defer="postalCode"
+                                                                                wire:model="postalCode"
                                                                                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-500 focus:ring-opacity-50"
                                                                                 >
                                                                             @error('postalCode') 
@@ -1795,7 +1795,7 @@
                                                                             <label for="country" class="block text-sm font-medium text-gray-700">Country</label>
                                                                             <select 
                                                                             id="country" 
-                                                                            wire:model.defer="country" 
+                                                                            wire:model="country" 
                                                                             class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-500 focus:ring-opacity-50"
                                                                             >
                                                                             <option value="Tanzania">Tanzania</option>
@@ -1828,7 +1828,7 @@
                                                                             <input 
                                                                                 type="tel" 
                                                                                 id="phoneNumber" 
-                                                                                wire:model.defer="phoneNumber"
+                                                                                wire:model="phoneNumber"
                                                                                 class="block w-full rounded-md border-gray-300 focus:border-green-500 focus:ring focus:ring-green-500 focus:ring-opacity-50 pl-10" 
                                                                                 placeholder="+255 XXX XXX XXX"
                                                                                 required
@@ -1852,7 +1852,7 @@
                                                                             <input 
                                                                                 type="email" 
                                                                                 id="email" 
-                                                                                wire:model.defer="email"
+                                                                                wire:model="email"
                                                                                 class="block w-full rounded-md border-gray-300 focus:border-green-500 focus:ring focus:ring-green-500 focus:ring-opacity-50 pl-10" 
                                                                                 placeholder="business@example.com"
                                                                                 required
@@ -1877,7 +1877,7 @@
                                                                             <input 
                                                                                 type="text" 
                                                                                 id="contactPersonName" 
-                                                                                wire:model.defer="contactPersonName"
+                                                                                wire:model="contactPersonName"
                                                                                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-500 focus:ring-opacity-50" 
                                                                                 required
                                                                                 >
@@ -1890,7 +1890,7 @@
                                                                             <input 
                                                                                 type="text" 
                                                                                 id="contactPersonPosition" 
-                                                                                wire:model.defer="contactPersonPosition"
+                                                                                wire:model="contactPersonPosition"
                                                                                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-500 focus:ring-opacity-50"
                                                                                 placeholder="e.g. Sales Manager"
                                                                                 >
@@ -1904,7 +1904,7 @@
                                                                                 <input 
                                                                                     type="tel" 
                                                                                     id="contactPersonPhone" 
-                                                                                    wire:model.defer="contactPersonPhone"
+                                                                                    wire:model="contactPersonPhone"
                                                                                     class="block w-full rounded-md border-gray-300 focus:border-green-500 focus:ring focus:ring-green-500 focus:ring-opacity-50 pl-10" 
                                                                                     placeholder="+255 XXX XXX XXX"
                                                                                     required
@@ -1927,7 +1927,7 @@
                                                                                 <input 
                                                                                     type="email" 
                                                                                     id="contactPersonEmail" 
-                                                                                    wire:model.defer="contactPersonEmail"
+                                                                                    wire:model="contactPersonEmail"
                                                                                     class="block w-full rounded-md border-gray-300 focus:border-green-500 focus:ring focus:ring-green-500 focus:ring-opacity-50 pl-10" 
                                                                                     placeholder="contact@example.com"
                                                                                     required
@@ -1968,7 +1968,7 @@
                                     <label for="dealerType" class="block text-sm font-medium text-gray-700">Dealer Type</label>
                                     <select 
                                     id="dealerType" 
-                                    wire:model.defer="dealerType" 
+                                    wire:model="dealerType" 
                                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-500 focus:ring-opacity-50" 
                                     required
                                     >
@@ -1989,7 +1989,7 @@
                                     <input 
                                         type="number" 
                                         id="establishedYear" 
-                                        wire:model.defer="establishedYear" 
+                                        wire:model="establishedYear" 
                                         min="1900" 
                                         max="{{ date('Y') }}" 
                                         class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-500 focus:ring-opacity-50" 
@@ -2004,7 +2004,7 @@
                                     <input 
                                         type="number" 
                                         id="inventorySize" 
-                                        wire:model.defer="inventorySize" 
+                                        wire:model="inventorySize" 
                                         min="1" 
                                         class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-500 focus:ring-opacity-50" 
                                         required
@@ -2024,7 +2024,7 @@
                                         <input 
                                             id="brand-{{ $loop->index }}" 
                                             type="checkbox" 
-                                            wire:model.defer="selectedBrands" 
+                                            wire:model="selectedBrands" 
                                             value="{{ $brand }}" 
                                             class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
                                             >
@@ -2052,7 +2052,7 @@
                         <!-- Showroom Address -->
                         <div>
                             <label for="showroomAddress" class="block text-sm font-medium text-gray-700">Showroom Address</label>
-                            <textarea   id="showroomAddress"   wire:model.defer="showroomAddress"  rows="2"  class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-500 focus:ring-opacity-50"  placeholder="If different from main business address"  ></textarea>
+                            <textarea   id="showroomAddress"   wire:model="showroomAddress"  rows="2"  class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-500 focus:ring-opacity-50"  placeholder="If different from main business address"  ></textarea>
                             @error('showroomAddress') 
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
@@ -2060,7 +2060,7 @@
                         <!-- Service Center -->
                         <div>
                             <label for="serviceCenter" class="block text-sm font-medium text-gray-700">Service Center Details</label>
-                            <textarea  id="serviceCenter"  wire:model.defer="serviceCenter"  rows="2"    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-500 focus:ring-opacity-50"   placeholder="Location and capabilities of your service center"></textarea>
+                            <textarea  id="serviceCenter"  wire:model="serviceCenter"  rows="2"    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-500 focus:ring-opacity-50"   placeholder="Location and capabilities of your service center"></textarea>
                             @error('serviceCenter') 
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
@@ -2095,7 +2095,7 @@
 
 
                                 <div class="flex items-start p-2 border border-gray-200 rounded-md hover:bg-gray-50">
-                                    <input  id="{{ $service['id'] }}"  type="checkbox"   wire:model.defer="servicesOffered"  value="{{ $service['value'] }}"  class="h-5 w-5 text-green-600 focus:ring-green-500 border-gray-300 rounded mt-0.5" >
+                                    <input  id="{{ $service['id'] }}"  type="checkbox"   wire:model="servicesOffered"  value="{{ $service['value'] }}"  class="h-5 w-5 text-green-600 focus:ring-green-500 border-gray-300 rounded mt-0.5" >
                                     <label for="{{ $service['id'] }}" class="ml-2 block">
                                         <div class="flex items-center">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-500 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -2645,7 +2645,7 @@
                            <input 
                               id="terms" 
                               type="checkbox" 
-                              wire:model.defer="acceptTerms"
+                              wire:model="acceptTerms"
                               class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
                               required
                               >

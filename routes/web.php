@@ -158,4 +158,8 @@ Route::fallback(function() {
     return view('pages/utility/404');
 });
 
+// Document download routes
+Route::get('document/download/{type}/{id}', [App\Http\Controllers\DocumentController::class, 'download'])->name('document.download');
+Route::get('document/preview/{type}/{id}', [App\Http\Controllers\DocumentController::class, 'preview'])->name('document.preview');
+
 // =================================================================

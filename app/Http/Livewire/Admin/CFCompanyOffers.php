@@ -296,7 +296,7 @@ class CFCompanyOffers extends Component
         } catch (\Exception $e) {
 
 
-            dd("error", $e->getMessage());
+            // dd("error", $e->getMessage());
             session()->flash('error', 'An error occurred while submitting the quotation.');
             \Log::error('CF quotation submission error: ' . $e->getMessage());
         }
