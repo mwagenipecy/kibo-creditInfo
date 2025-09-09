@@ -21,7 +21,7 @@
     <!-- Scripts -->
     <script src="{{ mix('js/app.js') }}" defer></script>
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    
+
     <!-- Additional Styles for Fixed Navbar -->
     <style>
         /* Add padding to body equal to navbar height to prevent content from hiding behind fixed navbar */
@@ -29,7 +29,7 @@
             padding-top: 4rem;
             scroll-behavior: smooth;
         }
-        
+
         /* Fixed navbar styling */
         .navbar-fixed {
             position: fixed;
@@ -39,12 +39,12 @@
             z-index: 1030;
             transition: all 0.3s ease;
         }
-        
+
         /* Shadow for navbar on scroll */
         .navbar-shadow {
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
-        
+
         /* Mobile menu overlay */
         .mobile-menu-overlay {
             background-color: rgba(0, 0, 0, 0.5);
@@ -55,12 +55,12 @@
             left: 0;
             z-index: 1029;
         }
-        
+
         /* Smooth transitions */
         .transition-300 {
             transition: all 0.3s ease;
         }
-        
+
         /* Improve button hover interactions */
         .hover-effect:hover {
             transform: translateY(-2px);
@@ -82,11 +82,11 @@
                 transform: translateY(0);
             }
         }
-        
+
         .dropdown-animation {
             animation: dropdown 0.2s ease forwards;
         }
-        
+
         /* Custom dropdown styles */
         .dropdown-menu {
             min-width: 200px;
@@ -94,25 +94,25 @@
             background: rgba(255, 255, 255, 0.95);
             border: 1px solid rgba(0, 0, 0, 0.1);
         }
-        
+
         .mega-menu {
             min-width: 600px;
         }
-        
+
         /* Hover effects for navigation items */
         .nav-item:hover .dropdown-menu {
             display: block;
         }
-        
+
         /* Custom scrollbar for mobile menu */
         .mobile-menu::-webkit-scrollbar {
             width: 4px;
         }
-        
+
         .mobile-menu::-webkit-scrollbar-track {
             background: #f1f1f1;
         }
-        
+
         .mobile-menu::-webkit-scrollbar-thumb {
             background: #16a34a;
             border-radius: 2px;
@@ -122,9 +122,9 @@
 <body class="font-sans antialiased bg-gray-50">
     <div class="min-h-screen">
         <!-- Header -->
-   
-        <header class="bg-white w-full fixed top-0 left-0 right-0 z-50" 
-        x-data="{ scrolled: false, mobileMenuOpen: false }" 
+
+        <header class="bg-white w-full fixed top-0 left-0 right-0 z-50"
+        x-data="{ scrolled: false, mobileMenuOpen: false }"
         x-init="window.addEventListener('scroll', () => { scrolled = window.scrollY > 20 })"
         :class="{ 'shadow-lg backdrop-blur-sm bg-white/95': scrolled, 'py-1': scrolled, 'py-2': !scrolled }">
     <div class="container mx-auto transition-all duration-300" :class="{ 'py-2': scrolled, 'py-2': !scrolled }">
@@ -133,10 +133,10 @@
             <div class="flex-shrink-0 transition-all duration-300" :class="{ 'scale-95': scrolled }">
                 <a href="{{ route('home.page') }}" class="flex items-center hover:opacity-90 transition-opacity duration-300 group">
                     <div class="relative">
-                        <img 
-                            src="{{ asset('/InstitutionLogo/carLogo.png') }}" 
-                            alt="KiboMarket Logo" 
-                            class="h-10 w-auto sm:h-12 object-contain transition-transform duration-300 transform group-hover:scale-105" 
+                        <img
+                            src="{{ asset('/InstitutionLogo/carLogo.png') }}"
+                            alt="KiboMarket Logo"
+                            class="h-10 w-auto sm:h-12 object-contain transition-transform duration-300 transform group-hover:scale-105"
                         />
                         <span class="absolute -top-1 -right-1 h-3 w-3 bg-green-500 rounded-full shadow-lg shadow-green-500/30 hidden sm:block"></span>
                     </div>
@@ -154,7 +154,7 @@
                     <span>Home</span>
                     <span class="absolute -bottom-[2px] left-1/2 w-0 h-[3px] bg-green-500 group-hover:w-4/5 group-hover:-translate-x-1/2 transition-all duration-300 ease-out rounded-full @if(Route::is('home.page')) w-4/5 -translate-x-1/2 @endif"></span>
                 </a>
-                
+
                 <!-- Vehicles Dropdown -->
                 <div class="relative nav-item group">
                     <button class="flex items-center text-gray-700 @if(Route::is('vehicle.*')) text-green-600 @endif hover:text-green-600 px-3 py-2 rounded-md text-base font-medium transition-colors duration-300">
@@ -265,6 +265,8 @@
                                 Loan Calculator
                             </div>
                         </a>
+                        @auth
+
                         <a href="{{ route('import.duty') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-600 transition-colors duration-200">
                             <div class="flex items-center">
                                 <svg class="h-4 w-4 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -273,6 +275,7 @@
                                 Import Duty Financing
                             </div>
                         </a>
+                        @endauth
                         <!-- <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-600 transition-colors duration-200">
                             <div class="flex items-center">
                                 <svg class="h-4 w-4 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -303,13 +306,13 @@
                     <span>Insurance</span>
                     <span class="absolute -bottom-[2px] left-1/2 w-0 h-[3px] bg-green-500 group-hover:w-4/5 group-hover:-translate-x-1/2 transition-all duration-300 ease-out rounded-full @if(Route::is('insurance.index')) w-4/5 -translate-x-1/2 @endif"></span>
                 </a>
-                
+
                 <!-- About Us -->
                 <!-- <a href="{{ route('about.us') }}" class="group relative text-gray-700 @if(Route::is('about.us')) text-green-600 @endif hover:text-green-600 px-3 py-2 rounded-md text-base font-medium transition-colors duration-300">
                     <span>About Us</span>
                     <span class="absolute -bottom-[2px] left-1/2 w-0 h-[3px] bg-green-500 group-hover:w-4/5 group-hover:-translate-x-1/2 transition-all duration-300 ease-out rounded-full @if(Route::is('about.us')) w-4/5 -translate-x-1/2 @endif"></span>
                 </a> -->
-                
+
                 <!-- Contact -->
                 <!-- <a href="{{ route('contact.page') }}" class="group relative text-gray-700 @if(Route::is('contact.page')) text-green-600 @endif hover:text-green-600 px-3 py-2 rounded-md text-base font-medium transition-colors duration-300">
                     <span>Contact</span>
@@ -339,33 +342,33 @@
                                 </div>
                                 <div class="absolute bottom-0 right-0 h-2.5 w-2.5 bg-green-500 border-2 border-white rounded-full"></div>
                             </div>
-                            
+
                             <div class="flex flex-col items-start leading-tight">
                                 <span class="text-sm font-medium text-gray-700 group-hover:text-green-600 transition-colors duration-300">{{ Auth::user()->name }}</span>
                                 <span class="text-xs text-gray-500">My Account</span>
                             </div>
-                            
+
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-500 group-hover:text-green-500 transition-transform duration-200" :class="{'rotate-180': open}" viewBox="0 0 20 20" fill="currentColor">
                                 <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
                             </svg>
                         </button>
-                        
-                        <div x-show="open" 
+
+                        <div x-show="open"
                             x-transition:enter="transition ease-out duration-200"
                             x-transition:enter-start="opacity-0 scale-95"
                             x-transition:enter-end="opacity-100 scale-100"
                             x-transition:leave="transition ease-in duration-150"
                             x-transition:leave-start="opacity-100 scale-100"
                             x-transition:leave-end="opacity-0 scale-95"
-                            class="origin-top-right absolute right-0 mt-2 w-52 rounded-xl shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-20 border border-gray-100" 
+                            class="origin-top-right absolute right-0 mt-2 w-52 rounded-xl shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-20 border border-gray-100"
                             style="display: none;">
-                            
+
                             <!-- User Info Section -->
                             <div class="px-4 py-3 border-b border-gray-100">
                                 <p class="text-sm text-gray-500">Signed in as</p>
                                 <p class="text-sm font-medium text-gray-900 truncate">{{ Auth::user()->email }}</p>
                             </div>
-                            
+
                             <!-- Dashboard Link -->
 
                             @if(auth()->user()->department==1 || auth()->user()->department==2 || auth()->user()->department==3)
@@ -378,7 +381,7 @@
                                     </a>
 
 
-                                    @else 
+                                    @else
 
 
                             <a href="{{ route('application.list') }}" class="block px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-green-600 transition-colors duration-300">
@@ -401,12 +404,12 @@
                                 </div>
                             </a>
 
-                            @endif 
+                            @endif
 
                             <!-- Logout -->
                             <div class="border-t border-gray-100 mt-1 pt-1">
-                                <a href="{{ route('logout') }}" 
-                                    onclick="event.preventDefault(); document.getElementById('logout-form').submit();" 
+                                <a href="{{ route('logout') }}"
+                                    onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
                                     class="block px-4 py-2.5 text-sm text-gray-700 hover:bg-red-50 hover:text-red-600 transition-colors duration-300">
                                     <div class="flex items-center">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -425,30 +428,30 @@
             </div>
 
             <!-- Enhanced Mobile Menu Button -->
-            <button 
-                type="button" 
-                @click="mobileMenuOpen = !mobileMenuOpen" 
+            <button
+                type="button"
+                @click="mobileMenuOpen = !mobileMenuOpen"
                 class="md:hidden inline-flex items-center justify-center p-2 rounded-lg text-gray-700 hover:text-green-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-500 transition-colors duration-300"
                 aria-expanded="false"
                 :aria-expanded="mobileMenuOpen.toString()">
                 <span class="sr-only">Toggle menu</span>
-                <svg 
-                    x-show="!mobileMenuOpen" 
-                    class="h-6 w-6" 
-                    xmlns="http://www.w3.org/2000/svg" 
-                    fill="none" 
-                    viewBox="0 0 24 24" 
-                    stroke="currentColor" 
+                <svg
+                    x-show="!mobileMenuOpen"
+                    class="h-6 w-6"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
                     aria-hidden="true">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
                 </svg>
-                <svg 
-                    x-show="mobileMenuOpen" 
-                    class="h-6 w-6" 
-                    xmlns="http://www.w3.org/2000/svg" 
-                    fill="none" 
-                    viewBox="0 0 24 24" 
-                    stroke="currentColor" 
+                <svg
+                    x-show="mobileMenuOpen"
+                    class="h-6 w-6"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
                     aria-hidden="true"
                     style="display: none;">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -458,21 +461,21 @@
     </div>
 
     <!-- Enhanced Mobile Menu Container -->
-    <div 
+    <div
         x-show="mobileMenuOpen"
-        x-transition:enter="transition ease-out duration-200" 
-        x-transition:enter-start="opacity-0 transform -translate-y-2" 
-        x-transition:enter-end="opacity-100 transform translate-y-0" 
-        x-transition:leave="transition ease-in duration-150" 
-        x-transition:leave-start="opacity-100 transform translate-y-0" 
+        x-transition:enter="transition ease-out duration-200"
+        x-transition:enter-start="opacity-0 transform -translate-y-2"
+        x-transition:enter-end="opacity-100 transform translate-y-0"
+        x-transition:leave="transition ease-in duration-150"
+        x-transition:leave-start="opacity-100 transform translate-y-0"
         x-transition:leave-end="opacity-0 transform -translate-y-2"
         class="lg:hidden bg-white border-t border-gray-100 shadow-lg mobile-menu max-h-screen overflow-y-auto"
         style="display: none;">
-        
-        <nav class="px-4 pt-3 pb-4 space-y-1" x-data="{ 
-            vehiclesOpen: false, 
-            sparePartsOpen: false, 
-            loanServicesOpen: false 
+
+        <nav class="px-4 pt-3 pb-4 space-y-1" x-data="{
+            vehiclesOpen: false,
+            sparePartsOpen: false,
+            loanServicesOpen: false
         }">
             <!-- Home -->
             <a href="{{ route('home.page') }}" @click="mobileMenuOpen = false" class="flex items-center py-3 px-4 text-base font-medium rounded-lg text-gray-900 hover:bg-gray-50 hover:text-green-600 @if(Route::is('home.page')) bg-green-50 text-green-600 @endif transition-colors duration-300">
@@ -481,7 +484,7 @@
                 </svg>
                 Home
             </a>
-            
+
             <!-- Vehicles Dropdown -->
             <div class="space-y-1">
                 <button @click="vehiclesOpen = !vehiclesOpen" class="flex items-center justify-between w-full py-3 px-4 text-base font-medium rounded-lg text-gray-900 hover:bg-gray-50 hover:text-green-600 @if(Route::is('vehicle.*')) bg-green-50 text-green-600 @endif transition-colors duration-300">
@@ -586,12 +589,15 @@
                         </svg>
                         Loan Calculator
                     </a>
+                    @auth
+
                     <a href="{{ route('import.duty') }}" @click="mobileMenuOpen = false" class="flex items-center py-2 px-4 text-sm text-gray-600 hover:bg-gray-50 hover:text-green-600 transition-colors duration-200 rounded-lg">
                         <svg class="h-4 w-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
                         </svg>
                         Import Duty Financing
                     </a>
+                    @endauth
                     <!-- <a href="#" @click="mobileMenuOpen = false" class="flex items-center py-2 px-4 text-sm text-gray-600 hover:bg-gray-50 hover:text-green-600 transition-colors duration-200 rounded-lg">
                         <svg class="h-4 w-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
@@ -609,7 +615,7 @@
 
             <!-- Garages -->
             <a href="{{ route('garage.list') }}" @click="mobileMenuOpen = false" class="flex items-center py-3 px-4 text-base font-medium rounded-lg text-gray-900 hover:bg-gray-50 hover:text-green-600 @if(Route::is('garage.list')) bg-green-50 text-green-600 @endif transition-colors duration-300">
-                <svg class="h-5 w-5 mr-3 @if(Route::is('garage.list')) text-green-500 @else text-gray-400 @endif" 
+                <svg class="h-5 w-5 mr-3 @if(Route::is('garage.list')) text-green-500 @else text-gray-400 @endif"
                 data-slot="icon" fill="none" stroke-width="1.5" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M11.42 15.17 17.25 21A2.652 2.652 0 0 0 21 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 1 1-3.586-3.586l6.837-5.63m5.108-.233c.55-.164 1.163-.188 1.743-.14a4.5 4.5 0 0 0 4.486-6.336l-3.276 3.277a3.004 3.004 0 0 1-2.25-2.25l3.276-3.276a4.5 4.5 0 0 0-6.336 4.486c.091 1.076-.071 2.264-.904 2.95l-.102.085m-1.745 1.437L5.909 7.5H4.5L2.25 3.75l1.5-1.5L7.5 4.5v1.409l4.26 4.26m-1.745 1.437 1.745-1.437m6.615 8.206L15.75 15.75M4.867 19.125h.008v.008h-.008v-.008Z"></path>
                 </svg>
@@ -623,7 +629,7 @@
                 </svg>
                 Insurance
             </a>
-            
+
             <!-- About Us -->
             <a href="{{ route('about.us') }}" @click="mobileMenuOpen = false" class="flex items-center py-3 px-4 text-base font-medium rounded-lg text-gray-900 hover:bg-gray-50 hover:text-green-600 @if(Route::is('about.us')) bg-green-50 text-green-600 @endif transition-colors duration-300">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 @if(Route::is('about.us')) text-green-500 @else text-gray-400 @endif" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -631,7 +637,7 @@
                 </svg>
                 About Us
             </a>
-            
+
             <!-- Contact -->
             <a href="{{ route('contact.page') }}" @click="mobileMenuOpen = false" class="flex items-center py-3 px-4 text-base font-medium rounded-lg text-gray-900 hover:bg-gray-50 hover:text-green-600 @if(Route::is('contact.page')) bg-green-50 text-green-600 @endif transition-colors duration-300">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 @if(Route::is('contact.page')) text-green-500 @else text-gray-400 @endif" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -640,7 +646,7 @@
                 Contact
             </a>
         </nav>
-        
+
         <!-- Enhanced Mobile Auth Section -->
         <div class="border-t border-gray-200 pt-4 pb-5 px-4 bg-gray-50">
             @guest
@@ -686,7 +692,7 @@
                         Dashboard
                     </a>
 
-                   @else 
+                   @else
                     <a href="{{ route('application.list') }}" @click="mobileMenuOpen = false" class="flex items-center px-4 py-2.5 rounded-lg text-base font-medium bg-white shadow-sm text-gray-900 hover:text-green-600 transition-colors duration-300">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
@@ -701,10 +707,10 @@
                         Account Settings
                     </a>
 
-                    @endif 
-                    
-                    <a href="{{ route('logout') }}" 
-                        onclick="event.preventDefault(); document.getElementById('logout-form-mobile').submit();" 
+                    @endif
+
+                    <a href="{{ route('logout') }}"
+                        onclick="event.preventDefault(); document.getElementById('logout-form-mobile').submit();"
                         @click="mobileMenuOpen = false"
                         class="flex items-center px-4 py-2.5 rounded-lg text-base font-medium bg-white shadow-sm text-gray-900 hover:text-red-600 transition-colors duration-300">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -726,13 +732,13 @@
     body {
         padding-top: 5rem; /* Adjust based on your header height */
     }
-    
+
     @media (min-width: 768px) {
         body {
             padding-top: 5.5rem; /* Slightly larger for desktop */
         }
     }
-    
+
     /* Glow effect for green elements */
     .shadow-green {
         box-shadow: 0 0 15px rgba(16, 185, 129, 0.5);
@@ -744,7 +750,7 @@
             @yield('main-section')
         </main>
 
-        
+
         <!-- Footer -->
         <footer class="bg-gray-900 text-white">
             <div class="container mx-auto px-4 py-12">
@@ -752,10 +758,10 @@
                     <!-- Company Info -->
                     <div>
                         <div class="flex items-center mb-4">
-                        <img 
-                            src="{{ asset('/InstitutionLogo/carLogo.png') }}" 
-                            alt="KiboMarket Logo" 
-                            class="h-10 w-auto sm:h-12 object-contain transition-transform duration-300 transform group-hover:scale-105" 
+                        <img
+                            src="{{ asset('/InstitutionLogo/carLogo.png') }}"
+                            alt="KiboMarket Logo"
+                            class="h-10 w-auto sm:h-12 object-contain transition-transform duration-300 transform group-hover:scale-105"
                         />
                             <span class="ml-2 text-2xl font-bold">KiboMarket</span>
                         </div>
@@ -783,7 +789,7 @@
                             </a>
                         </div>
                     </div>
-                    
+
                     <!-- Quick Links -->
                     <div>
                         <h3 class="text-lg font-semibold mb-4">Quick Links</h3>
@@ -796,7 +802,7 @@
                             <li><a href="{{ route('contact.page') }}" class="text-gray-400 hover:text-white">Contact</a></li>
                         </ul>
                     </div>
-                    
+
                     <!-- Vehicle Categories -->
                     <div>
                         <h3 class="text-lg font-semibold mb-4">Vehicle Categories</h3>
@@ -809,7 +815,7 @@
                             <li><a href="#" class="text-gray-400 hover:text-white">Commercial Vehicles</a></li>
                         </ul>
                     </div>
-                    
+
                     <!-- Contact Information -->
                     <div>
                         <h3 class="text-lg font-semibold mb-4">Contact Us</h3>
@@ -842,7 +848,7 @@
                         </ul>
                     </div>
                 </div>
-                
+
                 <!-- Newsletter Subscription -->
                 <div class="mt-10 pt-8 border-t border-gray-800">
                     <div class="flex flex-col md:flex-row justify-between items-center">
@@ -858,7 +864,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <!-- Copyright -->
                 <div class="mt-10 pt-6 border-t border-gray-800 text-center text-gray-400 text-sm">
                     <p>&copy; {{ date('Y') }} KiboMarket. All rights reserved.</p>
@@ -870,9 +876,9 @@
                 </div>
             </div>
         </footer>
-        
+
         <!-- Flash Messages -->
-        <div x-data="{ show: false, message: '' }" 
+        <div x-data="{ show: false, message: '' }"
              x-on:flash-message.window="message = $event.detail.message; show = true; setTimeout(() => { show = false }, 5000)"
              x-show="show"
              x-transition:enter="transform ease-out duration-300 transition"
@@ -909,7 +915,7 @@
     </div>
 
     @livewireScripts
-    
+
     <script>
         // Default Alpine.js and Livewire initialization
         document.addEventListener('livewire:load', function () {
