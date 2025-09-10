@@ -70,5 +70,7 @@ class Kernel extends HttpKernel
         'client' => \App\Http\Middleware\ClientMiddleware::class,
         'otp' => \App\Http\Middleware\OTPMiddleware::class, 
 
+        'deny.department4' => \App\Http\Middleware\DenyDepartmentFour::class,
+
     ];
 }

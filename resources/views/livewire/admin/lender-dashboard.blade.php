@@ -203,10 +203,16 @@
                             $selectedQuotation = $application->cfQuotations->first();
                             $myOffer = $application->lenderFinancingOffers->first();
                         @endphp
-                        <tr class="hover:bg-gray-50">
+                        <tr class="hover:bg-gray-50 {{ $application->application_type === 'WANT_TO_BUY' ? 'bg-blue-50' : '' }}">
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div>
-                                    <div class="text-sm font-medium text-gray-900">{{ $application->application_number }}</div>
+                                    <div class="flex items-center space-x-2">
+                                        <div class="text-sm font-medium text-gray-900">{{ $application->application_number }}</div>
+                                        <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full 
+                                            {{ $application->application_type === 'PURCHASED' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800' }}">
+                                            {{ $application->application_type === 'PURCHASED' ? 'Already Bought' : 'Want to Buy' }}
+                                        </span>
+                                    </div>
                                     <div class="text-sm text-gray-500">{{ $application->applicant_name }}</div>
                                     <div class="text-sm text-gray-500">{{ $application->created_at->format('M d, Y') }}</div>
                                 </div>
@@ -215,7 +221,23 @@
                                 <div>
                                     <div class="text-sm font-medium text-gray-900">{{ $application->vehicle_make }} {{ $application->vehicle_model }}</div>
                                     <div class="text-sm text-gray-500">{{ $application->vehicle_year }} • {{ $application->vehicle_color }}</div>
-                                    <div class="text-xs text-gray-400 font-mono">VIN: {{ substr($application->vehicle_vin, 0, 8) }}***</div>
+                                    
+                                    @if($application->application_type === 'PURCHASED' && $application->vehicle_vin)
+                                        <div class="text-xs text-gray-400 font-mono">VIN: {{ substr($application->vehicle_vin, 0, 8) }}***</div>
+                                    @elseif($application->application_type === 'WANT_TO_BUY')
+                                        <div class="text-xs text-blue-600">
+                                            <a href="{{ $application->car_listing_url }}" target="_blank" class="hover:underline">
+                                                View Car Listing →
+                                            </a>
+                                        </div>
+                                        @if($application->extracted_car_image)
+                                            <div class="mt-1">
+                                                <img src="{{ asset('storage/' . $application->extracted_car_image) }}" 
+                                                     alt="Car Image" 
+                                                     class="w-16 h-12 object-cover rounded border border-gray-200">
+                                            </div>
+                                        @endif
+                                    @endif
                                 </div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
@@ -268,6 +290,12 @@
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                 <div class="flex space-x-2">
+                                    <!-- View Details Button -->
+                                    <button wire:click="viewApplicationDetails({{ $application->id }})" 
+                                            class="text-blue-600 hover:text-blue-900 font-medium">
+                                        Details
+                                    </button>
+                                    
                                     @if($activeTab === 'import-duty-requests' && !$myOffer && $selectedQuotation)
                                         <button wire:click="openOfferModal({{ $application->id }})" 
                                                 class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded text-sm font-medium">
@@ -276,7 +304,7 @@
                                     @elseif($myOffer)
                                         <button wire:click="viewOffer({{ $myOffer->id }})" 
                                                 class="text-green-600 hover:text-green-900 font-medium">
-                                            View
+                                            View Offer
                                         </button>
                                         @if($myOffer->status === 'SUBMITTED')
                                             <button wire:click="editOffer({{ $myOffer->id }})" 
@@ -344,6 +372,18 @@
                     </button>
                 </div>
 
+                <!-- In-modal Flash Messages -->
+                @if (session()->has('success'))
+                    <div class="mt-4 bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded">
+                        {{ session('success') }}
+                    </div>
+                @endif
+                @if (session()->has('error'))
+                    <div class="mt-4 bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded">
+                        {{ session('error') }}
+                    </div>
+                @endif
+
                 <!-- Application Details -->
                 <div class="bg-gray-50 p-4 rounded-lg mt-4">
                     <h4 class="font-medium text-gray-900 mb-2">Application Summary</h4>
@@ -369,6 +409,42 @@
                     </div>
                 </div>
 
+                <!-- Error Summary -->
+                @if ($errors->any())
+                    <div class="bg-red-50 border border-red-200 rounded-md p-4 mb-6">
+                        <div class="flex">
+                            <div class="flex-shrink-0">
+                                <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                            <div class="ml-3">
+                                <h3 class="text-sm font-medium text-red-800">Please correct the following errors:</h3>
+                                <div class="mt-2 text-sm text-red-700">
+                                    <ul class="list-disc list-inside space-y-1">
+                                        @foreach ($errors->all() as $error)
+                                            <li>{{ $error }}</li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @endif
+
+                <!-- Required Fields Notice -->
+                <div class="bg-blue-50 border border-blue-200 rounded-md p-4 mt-6">
+                    <div class="flex">
+                        <svg class="h-5 w-5 text-blue-500 mt-0.5 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9 8a1 1 0 112 0v4a1 1 0 11-2 0V8zm1-5a1 1 0 100 2 1 1 0 000-2z" clip-rule="evenodd" />
+                        </svg>
+                        <div>
+                            <p class="text-sm text-blue-900 font-medium">Required fields</p>
+                            <p class="text-sm text-blue-800 mt-1">Please fill the following fields to submit an offer: <span class="font-medium">Down Payment</span>, <span class="font-medium">Annual Interest Rate</span>, <span class="font-medium">Loan Tenure</span>, and <span class="font-medium">Offer Validity</span>. All other fields are optional.</p>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Financing Offer Form -->
                 <form wire:submit.prevent="submitOffer" class="mt-6">
                     <div class="space-y-6">
@@ -379,14 +455,20 @@
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700">Down Payment Required (TZS) *</label>
                                     <input type="number" step="0.01" wire:model="down_payment_required" 
-                                           class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-green-500 focus:border-green-500">
-                                    @error('down_payment_required') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                                           class="mt-1 block w-full border @error('down_payment_required') border-red-300 @else border-gray-300 @enderror rounded-md px-3 py-2 focus:outline-none focus:ring-green-500 focus:border-green-500"
+                                           placeholder="0.00">
+                                    @error('down_payment_required') 
+                                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                    @enderror
                                 </div>
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700">Annual Interest Rate (%) *</label>
                                     <input type="number" step="0.01" min="0" max="50" wire:model="interest_rate_annual" 
-                                           class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-green-500 focus:border-green-500">
-                                    @error('interest_rate_annual') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                                           class="mt-1 block w-full border @error('interest_rate_annual') border-red-300 @else border-gray-300 @enderror rounded-md px-3 py-2 focus:outline-none focus:ring-green-500 focus:border-green-500"
+                                           placeholder="18.0">
+                                    @error('interest_rate_annual') 
+                                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                    @enderror
                                 </div>
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700">Loan Tenure (Months) *</label>
@@ -420,30 +502,35 @@
 
                         <!-- Fees Section -->
                         <div class="bg-yellow-50 p-4 rounded-lg">
-                            <h4 class="font-medium text-gray-900 mb-4">Additional Fees (TZS)</h4>
+                            <h4 class="font-medium text-gray-900 mb-4">Additional Fees (TZS) <span class="text-sm text-gray-500 font-normal">(Optional)</span></h4>
+                            <p class="text-sm text-gray-600 mb-4">Specify any additional fees that will be charged to the borrower.</p>
                             <div class="grid grid-cols-2 gap-4">
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700">Processing Fee</label>
                                     <input type="number" step="0.01" min="0" wire:model="processing_fee" 
-                                           class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-green-500 focus:border-green-500">
+                                           class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-green-500 focus:border-green-500"
+                                           placeholder="0.00">
                                     @error('processing_fee') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                                 </div>
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700">Insurance Fee</label>
                                     <input type="number" step="0.01" min="0" wire:model="insurance_fee" 
-                                           class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-green-500 focus:border-green-500">
+                                           class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-green-500 focus:border-green-500"
+                                           placeholder="0.00">
                                     @error('insurance_fee') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                                 </div>
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700">Legal Fee</label>
                                     <input type="number" step="0.01" min="0" wire:model="legal_fee" 
-                                           class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-green-500 focus:border-green-500">
+                                           class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-green-500 focus:border-green-500"
+                                           placeholder="0.00">
                                     @error('legal_fee') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                                 </div>
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700">Other Fees</label>
                                     <input type="number" step="0.01" min="0" wire:model="other_fees" 
-                                           class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-green-500 focus:border-green-500">
+                                           class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-green-500 focus:border-green-500"
+                                           placeholder="0.00">
                                     @error('other_fees') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                                 </div>
                             </div>
@@ -451,18 +538,21 @@
 
                         <!-- Requirements Section -->
                         <div class="bg-blue-50 p-4 rounded-lg">
-                            <h4 class="font-medium text-gray-900 mb-4">Eligibility Requirements</h4>
+                            <h4 class="font-medium text-gray-900 mb-4">Eligibility Requirements <span class="text-sm text-gray-500 font-normal">(Optional)</span></h4>
+                            <p class="text-sm text-gray-600 mb-4">Specify any eligibility requirements for this financing offer.</p>
                             <div class="grid grid-cols-2 gap-4">
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700">Minimum Monthly Income (TZS)</label>
                                     <input type="number" step="0.01" min="0" wire:model="minimum_income_required" 
-                                           class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-green-500 focus:border-green-500">
+                                           class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-green-500 focus:border-green-500"
+                                           placeholder="0.00">
                                     @error('minimum_income_required') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700">Employment Type Required *</label>
+                                    <label class="block text-sm font-medium text-gray-700">Employment Type Required</label>
                                     <select wire:model="employment_type_required" 
                                             class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-green-500 focus:border-green-500">
+                                        <option value="">Select employment type (optional)</option>
                                         <option value="Formal Employment">Formal Employment</option>
                                         <option value="Self Employed">Self Employed</option>
                                         <option value="Business Owner">Business Owner</option>
@@ -474,7 +564,7 @@
                                     <label class="block text-sm font-medium text-gray-700">Collateral Required</label>
                                     <input type="text" wire:model="collateral_required" 
                                            class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-green-500 focus:border-green-500"
-                                           placeholder="Describe any collateral requirements">
+                                           placeholder="Describe any collateral requirements (optional)">
                                     @error('collateral_required') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                                 </div>
                                 <div class="col-span-2">
@@ -487,7 +577,7 @@
                                     <label class="block text-sm font-medium text-gray-700">Additional Requirements</label>
                                     <textarea wire:model="additional_requirements" rows="3" 
                                               class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-green-500 focus:border-green-500"
-                                              placeholder="Any additional eligibility requirements..."></textarea>
+                                              placeholder="Any additional eligibility requirements (optional)..."></textarea>
                                     @error('additional_requirements') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                                 </div>
                             </div>
@@ -495,12 +585,13 @@
 
                         <!-- Terms and Conditions -->
                         <div class="bg-purple-50 p-4 rounded-lg">
-                            <h4 class="font-medium text-gray-900 mb-4">Terms and Conditions</h4>
+                            <h4 class="font-medium text-gray-900 mb-4">Terms and Conditions <span class="text-sm text-gray-500 font-normal">(Optional)</span></h4>
+                            <p class="text-sm text-gray-600 mb-4">Add any special terms or conditions for this financing offer.</p>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700">Special Conditions</label>
                                 <textarea wire:model="conditions" rows="3" 
                                           class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-green-500 focus:border-green-500"
-                                          placeholder="Any special terms or conditions for this offer..."></textarea>
+                                          placeholder="Any special terms or conditions for this offer (optional)..."></textarea>
                                 @error('conditions') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                             </div>
                         </div>
@@ -542,12 +633,24 @@
                     <!-- Modal Footer -->
                     <div class="flex justify-end space-x-3 pt-6 border-t mt-6">
                         <button type="button" wire:click="closeOfferModal" 
-                                class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                                class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                                wire:loading.attr="disabled">
                             Cancel
                         </button>
                         <button type="submit" 
-                                class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
-                            {{ $isEditing ? 'Update Offer' : 'Submit Offer' }}
+                                class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                                wire:loading.attr="disabled"
+                                wire:target="submitOffer">
+                            <span wire:loading.remove wire:target="submitOffer">
+                                {{ $isEditing ? 'Update Offer' : 'Submit Offer' }}
+                            </span>
+                            <span wire:loading wire:target="submitOffer" class="flex items-center">
+                                <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                {{ $isEditing ? 'Updating...' : 'Submitting...' }}
+                            </span>
                         </button>
                     </div>
                 </form>
@@ -766,6 +869,201 @@
                             </button>
                         </div>
                     </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
+
+    <!-- Application Details Modal -->
+    @if($showDetailsModal && $detailsApplication)
+    <div class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+        <div class="relative top-10 mx-auto p-5 border w-11/12 max-w-4xl shadow-lg rounded-md bg-white">
+            <div class="mt-3">
+                <!-- Modal Header -->
+                <div class="flex justify-between items-center pb-4 border-b">
+                    <div>
+                        <h3 class="text-lg font-medium text-gray-900">Application Details</h3>
+                        <p class="text-sm text-gray-500">{{ $detailsApplication->application_number }}</p>
+                    </div>
+                    <button wire:click="closeDetailsModal" class="text-gray-400 hover:text-gray-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Application Content -->
+                <div class="mt-6 space-y-6">
+                    <!-- Application Type & Status -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <h4 class="font-medium text-gray-900 mb-2">Application Type</h4>
+                            <span class="inline-flex px-3 py-1 text-sm font-semibold rounded-full 
+                                {{ $detailsApplication->application_type === 'PURCHASED' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800' }}">
+                                {{ $detailsApplication->application_type === 'PURCHASED' ? 'Already Bought the Car' : 'Want to Buy a Car' }}
+                            </span>
+                        </div>
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <h4 class="font-medium text-gray-900 mb-2">Current Status</h4>
+                            <span class="inline-flex px-3 py-1 text-sm font-semibold rounded-full {{ $detailsApplication->getStatusBadgeClass() }}">
+                                {{ $detailsApplication->getCurrentStepText() }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Applicant Information -->
+                    <div class="bg-white border border-gray-200 rounded-lg p-4">
+                        <h4 class="font-medium text-gray-900 mb-3">Applicant Information</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                            <div><span class="font-medium">Name:</span> {{ $detailsApplication->applicant_name }}</div>
+                            <div><span class="font-medium">Email:</span> {{ $detailsApplication->email }}</div>
+                            <div><span class="font-medium">Phone:</span> {{ $detailsApplication->phone_number }}</div>
+                            <div><span class="font-medium">National ID:</span> {{ $detailsApplication->national_id }}</div>
+                            <div class="md:col-span-2"><span class="font-medium">Address:</span> {{ $detailsApplication->address }}</div>
+                        </div>
+                    </div>
+
+                    <!-- Vehicle Information -->
+                    <div class="bg-white border border-gray-200 rounded-lg p-4">
+                        <h4 class="font-medium text-gray-900 mb-3">Vehicle Information</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                            <div><span class="font-medium">Make:</span> {{ $detailsApplication->vehicle_make }}</div>
+                            <div><span class="font-medium">Model:</span> {{ $detailsApplication->vehicle_model }}</div>
+                            <div><span class="font-medium">Year:</span> {{ $detailsApplication->vehicle_year }}</div>
+                            <div><span class="font-medium">Color:</span> {{ $detailsApplication->vehicle_color }}</div>
+                            @if($detailsApplication->vehicle_vin)
+                                <div><span class="font-medium">VIN:</span> {{ $detailsApplication->vehicle_vin }}</div>
+                            @endif
+                            @if($detailsApplication->vehicle_mileage)
+                                <div><span class="font-medium">Mileage:</span> {{ $detailsApplication->vehicle_mileage }} km</div>
+                            @endif
+                            @if($detailsApplication->vehicle_engine_size)
+                                <div><span class="font-medium">Engine:</span> {{ $detailsApplication->vehicle_engine_size }}</div>
+                            @endif
+                        </div>
+                        
+                        <!-- Car URL and Image for WANT_TO_BUY applications -->
+                        @if($detailsApplication->application_type === 'WANT_TO_BUY')
+                            <div class="mt-4 pt-4 border-t border-gray-200">
+                                <h5 class="font-medium text-gray-900 mb-2">Car Listing Information</h5>
+                                <div class="space-y-3">
+                                    @if($detailsApplication->car_listing_url)
+                                        <div>
+                                            <span class="font-medium text-sm">Listing URL:</span>
+                                            <a href="{{ $detailsApplication->car_listing_url }}" target="_blank" 
+                                               class="text-blue-600 hover:text-blue-800 text-sm ml-2">
+                                                View Car Listing →
+                                            </a>
+                                        </div>
+                                    @endif
+                                    
+                                    @if($detailsApplication->extracted_car_image)
+                                        <div>
+                                            <span class="font-medium text-sm">Car Image:</span>
+                                            <div class="mt-2">
+                                                <img src="{{ asset('storage/' . $detailsApplication->extracted_car_image) }}" 
+                                                     alt="Car Image" 
+                                                     class="w-32 h-24 object-cover rounded border border-gray-200">
+                                            </div>
+                                        </div>
+                                    @endif
+                                    
+                                    @if($detailsApplication->extracted_car_details && !empty($detailsApplication->extracted_car_details))
+                                        <div>
+                                            <span class="font-medium text-sm">Extracted Details:</span>
+                                            <div class="mt-2 grid grid-cols-2 gap-2 text-xs">
+                                                @foreach($detailsApplication->extracted_car_details as $key => $value)
+                                                    @if($value)
+                                                        <div>
+                                                            <span class="font-medium">{{ ucfirst(str_replace('_', ' ', $key)) }}:</span>
+                                                            <span class="text-gray-600">{{ $value }}</span>
+                                                        </div>
+                                                    @endif
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+                        @endif
+                    </div>
+
+                    <!-- Financial Information -->
+                    <div class="bg-white border border-gray-200 rounded-lg p-4">
+                        <h4 class="font-medium text-gray-900 mb-3">Financial Information</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                            <div><span class="font-medium">CIF Value (USD):</span> ${{ number_format($detailsApplication->cif_value_usd, 2) }}</div>
+                            <div><span class="font-medium">CIF Value (TZS):</span> TZS {{ number_format($detailsApplication->cif_value_tzs, 2) }}</div>
+                            <div><span class="font-medium">Exchange Rate:</span> {{ $detailsApplication->currency_rate }}</div>
+                            @if($detailsApplication->down_payment)
+                                <div><span class="font-medium">Down Payment:</span> TZS {{ number_format($detailsApplication->down_payment) }}</div>
+                            @endif
+                            <div><span class="font-medium">Loan Tenure:</span> {{ $detailsApplication->loan_tenure_months }} months</div>
+                        </div>
+                    </div>
+
+                    <!-- CF Quotation Information -->
+                    @if($detailsApplication->cfQuotations->count() > 0)
+                        @php $selectedQuotation = $detailsApplication->cfQuotations->first(); @endphp
+                        <div class="bg-white border border-gray-200 rounded-lg p-4">
+                            <h4 class="font-medium text-gray-900 mb-3">CF Company Quotation</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                                <div><span class="font-medium">CF Company:</span> {{ $selectedQuotation->cfCompany->name ?? 'N/A' }}</div>
+                                <div><span class="font-medium">Total Amount:</span> TZS {{ number_format($selectedQuotation->grand_total) }}</div>
+                                <div><span class="font-medium">Clearance Days:</span> {{ $selectedQuotation->estimated_clearance_days }} days</div>
+                                <div><span class="font-medium">Status:</span> 
+                                    <span class="px-2 py-1 text-xs font-semibold rounded-full 
+                                        {{ $selectedQuotation->status === 'SELECTED' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800' }}">
+                                        {{ ucfirst($selectedQuotation->status) }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+
+                    <!-- Lender Offers -->
+                    @if($detailsApplication->lenderFinancingOffers->count() > 0)
+                        <div class="bg-white border border-gray-200 rounded-lg p-4">
+                            <h4 class="font-medium text-gray-900 mb-3">Lender Offers</h4>
+                            <div class="space-y-3">
+                                @foreach($detailsApplication->lenderFinancingOffers as $offer)
+                                    <div class="border border-gray-200 rounded-lg p-3">
+                                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                                            <div><span class="font-medium">Lender:</span> {{ $offer->lender->name ?? 'N/A' }}</div>
+                                            <div><span class="font-medium">Interest Rate:</span> {{ $offer->interest_rate_annual }}% APR</div>
+                                            <div><span class="font-medium">Monthly Payment:</span> TZS {{ number_format($offer->monthly_installment) }}</div>
+                                            <div><span class="font-medium">Loan Amount:</span> TZS {{ number_format($offer->loan_amount) }}</div>
+                                            <div><span class="font-medium">Tenure:</span> {{ $offer->loan_tenure_months }} months</div>
+                                            <div><span class="font-medium">Status:</span> 
+                                                <span class="px-2 py-1 text-xs font-semibold rounded-full 
+                                                    @if($offer->status === 'ACCEPTED') bg-green-100 text-green-800
+                                                    @elseif($offer->status === 'REJECTED') bg-red-100 text-red-800
+                                                    @elseif($offer->status === 'EXPIRED') bg-gray-100 text-gray-800
+                                                    @else bg-yellow-100 text-yellow-800 @endif">
+                                                    {{ ucfirst(str_replace('_', ' ', $offer->status)) }}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
+                </div>
+
+                <!-- Modal Footer -->
+                <div class="flex justify-end space-x-3 pt-6 border-t mt-6">
+                    <button wire:click="closeDetailsModal" 
+                            class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                        Close
+                    </button>
+                    @if($activeTab === 'import-duty-requests' && !$detailsApplication->lenderFinancingOffers->where('lender_id', $lender->id)->first() && $detailsApplication->cfQuotations->count() > 0)
+                        <button wire:click="openOfferModal({{ $detailsApplication->id }})" 
+                                class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                            Submit Offer
+                        </button>
+                    @endif
                 </div>
             </div>
         </div>

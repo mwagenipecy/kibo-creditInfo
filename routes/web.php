@@ -118,7 +118,9 @@ Route::middleware(['auth:sanctum', 'verified', OTPMiddleware::class, ClientMiddl
 
     // Main system/dashboard routes
     Route::get('/System', \App\Http\Livewire\System::class)->name('System');
-    Route::get('/CyberPoint-Pro', \App\Http\Livewire\System::class)->name('CyberPoint-Pro');
+    Route::get('/CyberPoint-Pro', \App\Http\Livewire\System::class)
+        ->middleware('deny.department4')
+        ->name('CyberPoint-Pro');
 
 
     // import duty routes
@@ -159,6 +161,9 @@ Route::fallback(function() {
 
     // Not authenticated - show 404
     return view('pages/utility/404');
+
+    abort(404);
+
 });
 
 
