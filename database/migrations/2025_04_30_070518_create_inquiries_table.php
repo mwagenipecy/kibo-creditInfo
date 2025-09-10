@@ -15,6 +15,13 @@ return new class extends Migration
     {
         Schema::create('inquiries', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('vehicle_id')->constrained('vehicles')->onDelete('cascade');
+            $table->foreignId('dealer_id')->nullable();
+            $table->string('name');
+            $table->string('email');
+            $table->string('phone');
+            $table->text('message');
+            $table->string('status')->default('pending'); // pending, contacted, closed
             $table->timestamps();
         });
     }

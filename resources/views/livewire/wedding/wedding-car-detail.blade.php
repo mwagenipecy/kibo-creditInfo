@@ -18,7 +18,7 @@
                             <svg class="w-6 h-6 text-green-200" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                 <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
                             </svg>
-                            <a href="{{ route('wedding.vehicles') }}" class="ml-1 text-sm font-medium text-white hover:text-green-200 md:ml-2">Wedding Cars</a>
+                            <a href="{{ route('wedding.vehicles') }}" class="ml-1 text-sm font-medium text-white hover:text-green-200 md:ml-2">Car Rentals</a>
                         </div>
                     </li>
                     <li aria-current="page">
@@ -68,7 +68,7 @@
                             </h1>
                             <div class="flex items-center mb-4">
                                 <span class="bg-gradient-to-r from-green-600 to-green-600 text-white px-4 py-1 rounded-full text-sm font-medium mr-3">
-                                Car rental Special
+                                Premium Rental
                                 </span>
                                 @if($vehicle->is_featured)
                                     <span class="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm font-medium">
@@ -228,7 +228,7 @@
                 @if($vehicle->description)
                 <div class="mb-10 bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
                     <div class="bg-gradient-to-r from-green-50 to-green-50 px-6 py-4 border-b border-gray-100">
-                        <h2 class="text-xl font-bold text-gray-800">About This  Car Rental </h2>
+                        <h2 class="text-xl font-bold text-gray-800">About This Vehicle</h2>
                     </div>
                     <div class="p-6">
                         <p class="text-gray-700 leading-relaxed">{{ $vehicle->description }}</p>
@@ -240,8 +240,11 @@
                 @if($similarCars->count() > 0)
                 <div class="mb-10">
                     <h2 class="text-xl font-bold text-gray-900 mb-6 flex items-center">
-                        <span class="text-2xl mr-3">💒</span>
-                        Similar  Cars
+                        <svg class="w-6 h-6 mr-3 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM15 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 00-1 1v10a1 1 0 001 1h1.05a2.5 2.5 0 014.9 0H11a1 1 0 001-1v-1h3.05a2.5 2.5 0 014.9 0H20a1 1 0 001-1V5a1 1 0 00-1-1H3z" />
+                        </svg>
+                        Similar Rental Vehicles
                     </h2>
                     
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -502,7 +505,7 @@
                                 
                                 $message = "Hello! I'm interested in renting your " . $vehicle->year . " " . 
                                           optional($vehicle->make)->name . " " . optional($vehicle->model)->name . 
-                                          " for my wedding. Can you please provide more details about availability and pricing?";
+                                          ". Can you please provide more details about availability and pricing?";
                                 
                                 $encodedMessage = urlencode($message);
                                 $whatsappUrl = "https://wa.me/{$phoneNumber}?text={$encodedMessage}";
@@ -524,7 +527,7 @@
                                         {{ optional($vehicle->dealer)->contact_person_phone }}
                                     </p>
                                     <p class="text-xs text-gray-500">
-                                        {{ optional($vehicle->dealer)->contact_person_name ?? ' Car Specialist' }}
+                                        {{ optional($vehicle->dealer)->contact_person_name ?? 'Rental Specialist' }}
                                     </p>
                                 </div>
                             @endif
@@ -532,12 +535,15 @@
                     </div>
                 </div>
 
-                <!-- Wedding Services Info -->
+                <!-- Rental Services Info -->
                 <div class="bg-gradient-to-br from-green-600 to-green-600 text-white rounded-xl shadow-lg overflow-hidden">
                     <div class="p-6">
                         <h3 class="text-lg font-bold mb-4 flex items-center">
-                            <span class="text-2xl mr-3">💒</span>
-                            Wedding Car Services
+                            <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM15 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 00-1 1v10a1 1 0 001 1h1.05a2.5 2.5 0 014.9 0H11a1 1 0 001-1v-1h3.05a2.5 2.5 0 014.9 0H20a1 1 0 001-1V5a1 1 0 00-1-1H3z" />
+                            </svg>
+                            Premium Rental Services
                         </h3>
                         <div class="space-y-3 text-sm">
                             <div class="flex items-center">
@@ -574,7 +580,7 @@
                         
                         <div class="mt-4 p-4 bg-white/20 rounded-lg">
                             <p class="text-sm">
-                                <strong>💡 Pro Tip:</strong> Book early to secure your preferred date and get the best package deals for your special day!
+                                <strong>Pro Tip:</strong> Book early to secure your preferred date and get the best package deals for your rental!
                             </p>
                         </div>
                     </div>
@@ -582,27 +588,43 @@
 
                 <!-- Trust Badges -->
                 <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-                    <h3 class="text-lg font-semibold text-gray-800 mb-4 text-center">Why Couples Choose Us</h3>
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4 text-center">Why Customers Choose Us</h3>
                     <div class="grid grid-cols-2 gap-4 text-center">
                         <div>
-                            <div class="text-2xl mb-2">🏆</div>
+                            <div class="w-8 h-8 mx-auto mb-2 bg-green-100 rounded-full flex items-center justify-center">
+                                <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                                </svg>
+                            </div>
                             <div class="text-sm font-medium text-gray-900">Premium Quality</div>
                             <div class="text-xs text-gray-500">Luxury vehicles only</div>
                         </div>
                         <div>
-                            <div class="text-2xl mb-2">⭐</div>
+                            <div class="w-8 h-8 mx-auto mb-2 bg-green-100 rounded-full flex items-center justify-center">
+                                <svg class="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                </svg>
+                            </div>
                             <div class="text-sm font-medium text-gray-900">5-Star Service</div>
-                            <div class="text-xs text-gray-500">Rated by couples</div>
+                            <div class="text-xs text-gray-500">Rated by customers</div>
                         </div>
                         <div>
-                            <div class="text-2xl mb-2">🛡️</div>
+                            <div class="w-8 h-8 mx-auto mb-2 bg-green-100 rounded-full flex items-center justify-center">
+                                <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </div>
                             <div class="text-sm font-medium text-gray-900">Fully Insured</div>
                             <div class="text-xs text-gray-500">Complete coverage</div>
                         </div>
                         <div>
-                            <div class="text-2xl mb-2">💝</div>
+                            <div class="w-8 h-8 mx-auto mb-2 bg-green-100 rounded-full flex items-center justify-center">
+                                <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                                </svg>
+                            </div>
                             <div class="text-sm font-medium text-gray-900">Special Packages</div>
-                            <div class="text-xs text-gray-500">Wedding exclusive</div>
+                            <div class="text-xs text-gray-500">Premium exclusive</div>
                         </div>
                     </div>
                 </div>

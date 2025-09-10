@@ -56,15 +56,17 @@ class ProcessCallback implements ShouldQueue
                 'json' => $requestBody,
             ];
 
+
             $response = $client->request("POST", $this->call_back_url, $options);
             $statusCode = $response->getStatusCode();
             $reasonPhrase = $response->getReasonPhrase();
+
+
 
         } catch (GuzzleException $e) {
 
             // Handle the error and retry the API call if needed
             return null;
-
         }
         return null;
     }

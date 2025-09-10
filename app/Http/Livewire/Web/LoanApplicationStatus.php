@@ -33,20 +33,23 @@ class LoanApplicationStatus extends Component
         // }
         
         // Get the loan product
-        $this->loanProduct = LoanProduct::find($this->application->loanProductId);
+        // $this->loanProduct = LoanProduct::find($this->application->loanProductId);
         
-        $vehicleId=$this->application->vehicle_id;
+        // $vehicleId=$this->application->vehicle_id;
 
-        // get model and make
-        $vehicle = Vehicle::findOrFail($vehicleId);
-        // get interest rate
-        $this->interest_rate= LenderFinancingCriteria::where('lender_id', $this->application->lender_id)
-            ->where('make_id', $vehicle->make_id)
-            ->where('model_id', $vehicle->model_id)
-            ->value('interest_rate');
+
+        // dd(  $this->application);
+
+        // // get model and make
+        // $vehicle = Vehicle::findOrFail($vehicleId);
+        // // get interest rate
+        // $this->interest_rate= LenderFinancingCriteria::where('lender_id', $this->application->lender_id)
+        //     ->where('make_id', $vehicle->make_id)
+        //     ->where('model_id', $vehicle->model_id)
+        //     ->value('interest_rate');
 
         // Calculate monthly payment
-        $this->calculateMonthlyPayment();
+        // $this->calculateMonthlyPayment();
     }
     
     /**
@@ -81,8 +84,8 @@ class LoanApplicationStatus extends Component
     {
         return view('livewire.web.loan-application-status', [
             'application' => $this->application,
-            'loanProduct' => $this->loanProduct,
-            'monthlyPayment' => $this->monthlyPayment,
+            'loanProduct' => [],
+            'monthlyPayment' =>[],
         ]);
     }
 

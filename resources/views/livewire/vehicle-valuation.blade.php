@@ -11,10 +11,16 @@
                 <div>
                     <strong>Error:</strong> {{ $error }}
                 </div>
-                <button wire:click="refreshSession" 
-                        class="ml-4 px-3 py-1 text-xs bg-red-600 text-white rounded hover:bg-red-700">
-                    Refresh Session
-                </button>
+                <div class="ml-4 space-x-2">
+                    <button wire:click="testTraConnection" 
+                            class="px-3 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700">
+                        Test TRA
+                    </button>
+                    <button wire:click="refreshSession" 
+                            class="px-3 py-1 text-xs bg-red-600 text-white rounded hover:bg-red-700">
+                        Refresh Session
+                    </button>
+                </div>
             </div>
         </div>
     @endif
@@ -162,9 +168,19 @@
                 Reset Form
             </button>
             
+            <button type="button" wire:click="testTraConnection" 
+                    wire:loading.attr="disabled"
+                    class="px-6 py-3 bg-green-600 text-white font-medium rounded-md shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-50">
+                @if($loading)
+                    Testing...
+                @else
+                    🔗 Test TRA
+                @endif
+            </button>
+            
             <button type="button" wire:click="refreshSession" 
                     class="px-6 py-3 bg-yellow-500 text-white font-medium rounded-md shadow-sm hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2">
-                Refresh Session
+                🔄 Refresh Session
             </button>
         </div>
     </form>

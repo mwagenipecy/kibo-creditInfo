@@ -61,7 +61,7 @@ public function render()
 {
     $makes = Make::withCount('vehicles')->orderBy('name')->get();
     $models = $this->selectedMake ? VehicleModel::where('make_id', $this->selectedMake)
-    ->where('status', 'active')
+   // ->where('status', 'active')
     ->withCount('vehicles')->orderBy('name')->get() : [];
 
     // Only fetch featured vehicles if not already set by search

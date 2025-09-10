@@ -14,7 +14,8 @@ class Shop extends Model
         'shop_type',
         'latitude',
         'longitude',
-        'address'
+        'address',
+        'status'
     ];
 
     public function spareParts()

@@ -7,6 +7,7 @@ use Livewire\Component;
 use Livewire\WithFileUploads;
 use App\Models\ImportDutyApplication;
 use App\Models\ClearingForwardingCompany;
+use App\Services\CarListingExtractor;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 
@@ -20,6 +21,12 @@ class ImportDutyApplicationForm extends Component
     public $email;
     public $national_id;
     public $address;
+    
+    // Application Type
+    public $application_type = 'PURCHASED'; // PURCHASED or WANT_TO_BUY
+    public $car_listing_url;
+    public $extracted_car_image;
+    public $extracted_car_details = [];
 
     // Vehicle Information
     public $vehicle_make;
@@ -53,17 +60,19 @@ class ImportDutyApplicationForm extends Component
         'email' => 'required|email|max:255',
         'national_id' => 'required|string|max:50',
         'address' => 'required|string',
+        'application_type' => 'required|in:PURCHASED,WANT_TO_BUY',
+        'car_listing_url' => 'required_if:application_type,WANT_TO_BUY|nullable|url|max:500',
         'vehicle_make' => 'required|string|max:100',
         'vehicle_model' => 'required|string|max:100',
         'vehicle_year' => 'required|integer|min:1990',
-        'vehicle_vin' => 'required|string|max:50',
+        'vehicle_vin' => 'required_if:application_type,PURCHASED|nullable|string|max:50',
         'vehicle_color' => 'required|string|max:50',
         'cif_value_usd' => 'required|numeric|min:1000',
         'expected_arrival_date' => 'nullable|date|after:today',
-        'bill_of_lading' => 'required|file|mimes:pdf,jpg,jpeg,png|max:5120',
-        'commercial_invoice' => 'required|file|mimes:pdf,jpg,jpeg,png|max:5120',
-        'packing_list' => 'required|file|mimes:pdf,jpg,jpeg,png|max:5120',
-        'certificate_of_origin' => 'required|file|mimes:pdf,jpg,jpeg,png|max:5120',
+        'bill_of_lading' => 'required_if:application_type,PURCHASED|nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
+        'commercial_invoice' => 'required_if:application_type,PURCHASED|nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
+        'packing_list' => 'required_if:application_type,PURCHASED|nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
+        'certificate_of_origin' => 'required_if:application_type,PURCHASED|nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
         'down_payment' => 'nullable|numeric|min:0',
         'loan_tenure_months' => 'required|integer|min:12|max:84',
     ];
@@ -105,29 +114,96 @@ class ImportDutyApplicationForm extends Component
                     'email' => 'required|email|max:255',
                     'national_id' => 'required|string|max:50',
                     'address' => 'required|string',
+                    'application_type' => 'required|in:PURCHASED,WANT_TO_BUY',
                 ]);
                 break;
             
             case 2:
-                $this->validate([
+                $rules = [
                     'vehicle_make' => 'required|string|max:100',
                     'vehicle_model' => 'required|string|max:100',
                     'vehicle_year' => 'required|integer|min:1990|max:' . (date('Y') + 1),
-                    'vehicle_vin' => 'required|string|max:50',
                     'vehicle_color' => 'required|string|max:50',
                     'cif_value_usd' => 'required|numeric|min:1000',
-                ]);
+                ];
+                
+                if ($this->application_type === 'PURCHASED') {
+                    $rules['vehicle_vin'] = 'required|string|max:50';
+                } else {
+                    $rules['car_listing_url'] = 'required|url|max:500';
+                }
+                
+                $this->validate($rules);
                 break;
             
             case 3:
-                $this->validate([
-                    'bill_of_lading' => 'required|file|mimes:pdf,jpg,jpeg,png|max:5120',
-                    'commercial_invoice' => 'required|file|mimes:pdf,jpg,jpeg,png|max:5120',
-                    'packing_list' => 'required|file|mimes:pdf,jpg,jpeg,png|max:5120',
-                    'certificate_of_origin' => 'required|file|mimes:pdf,jpg,jpeg,png|max:5120',
-                ]);
+                if ($this->application_type === 'PURCHASED') {
+                    $this->validate([
+                        'bill_of_lading' => 'required|file|mimes:pdf,jpg,jpeg,png|max:5120',
+                        'commercial_invoice' => 'required|file|mimes:pdf,jpg,jpeg,png|max:5120',
+                        'packing_list' => 'required|file|mimes:pdf,jpg,jpeg,png|max:5120',
+                        'certificate_of_origin' => 'required|file|mimes:pdf,jpg,jpeg,png|max:5120',
+                    ]);
+                }
                 break;
         }
+    }
+    
+    /**
+     * Extract car details from URL
+     */
+    public function extractCarDetails()
+    {
+        if (empty($this->car_listing_url)) {
+            session()->flash('error', 'Please enter a car listing URL first.');
+            return;
+        }
+        
+        try {
+            $extractor = new CarListingExtractor();
+            $result = $extractor->extractFromUrl($this->car_listing_url);
+            
+            if ($result['success']) {
+                $this->extracted_car_details = $result['car_details'];
+                $this->extracted_car_image = $result['image_path'];
+                
+                // Auto-fill vehicle details if extracted
+                if (isset($result['car_details']['make'])) {
+                    $this->vehicle_make = $result['car_details']['make'];
+                }
+                if (isset($result['car_details']['model'])) {
+                    $this->vehicle_model = $result['car_details']['model'];
+                }
+                if (isset($result['car_details']['year'])) {
+                    $this->vehicle_year = $result['car_details']['year'];
+                }
+                if (isset($result['car_details']['color'])) {
+                    $this->vehicle_color = $result['car_details']['color'];
+                }
+                if (isset($result['car_details']['mileage'])) {
+                    $this->vehicle_mileage = $result['car_details']['mileage'];
+                }
+                if (isset($result['car_details']['engine_size'])) {
+                    $this->vehicle_engine_size = $result['car_details']['engine_size'];
+                }
+                
+                session()->flash('success', 'Car details extracted successfully! Please review and complete any missing information.');
+            } else {
+                session()->flash('error', 'Failed to extract car details: ' . $result['error']);
+            }
+        } catch (\Exception $e) {
+            session()->flash('error', 'An error occurred while extracting car details: ' . $e->getMessage());
+        }
+    }
+    
+    /**
+     * Clear extracted car details
+     */
+    public function clearExtractedDetails()
+    {
+        $this->extracted_car_details = [];
+        $this->extracted_car_image = null;
+        $this->car_listing_url = null;
     }
 
     public function submitApplication()
@@ -165,6 +241,10 @@ class ImportDutyApplicationForm extends Component
                 'email' => $this->email,
                 'national_id' => $this->national_id,
                 'address' => $this->address,
+                'application_type' => $this->application_type,
+                'car_listing_url' => $this->car_listing_url,
+                'extracted_car_image' => $this->extracted_car_image,
+                'extracted_car_details' => $this->extracted_car_details,
                 'vehicle_make' => $this->vehicle_make,
                 'vehicle_model' => $this->vehicle_model,
                 'vehicle_year' => $this->vehicle_year,

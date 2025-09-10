@@ -180,13 +180,14 @@
         <!-- Companies Table -->
         <div class="bg-white shadow overflow-hidden rounded-lg">
             @if($companies->count() > 0)
-            <table class="min-w-full divide-y divide-gray-200">
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200" style="min-width: 1200px;">
                 <thead class="bg-gray-50">
                     <tr>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Company</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">TRA License</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Details</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Performance</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
@@ -195,19 +196,65 @@
                 <tbody class="bg-white divide-y divide-gray-200">
                     @foreach($companies as $company)
                     <tr class="hover:bg-gray-50">
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full {{ $company->getStatusBadgeClass() }}">
-                                {{ $company->status }}
-                            </span>
+                        <td class="px-6 py-4 align-top">
+                            <div class="font-semibold text-gray-900">{{ $company->company_name ?? $company->name }}</div>
+                            <div class="text-xs text-gray-600 mt-1">Reg No: {{ $company->registration_number ?? '-' }}</div>
+                            <div class="text-xs text-gray-600">TRA License: {{ $company->tra_license_number ?? '-' }}</div>
                             @if($company->verified_at)
-                            <div class="text-xs text-gray-500 mt-1">
-                                Verified {{ $company->verified_at->format('M d, Y') }}
+                            <div class="text-xs text-green-600 mt-1">Verified {{ $company->verified_at->format('M d, Y') }}</div>
+                            @endif
+                        </td>
+                        <td class="px-6 py-4 align-top">
+                            <div class="text-sm text-gray-900">{{ $company->contact_person_name ?? '-' }} <span class="text-xs text-gray-500">{{ $company->contact_person_position }}</span></div>
+                            <div class="text-xs text-gray-600">📞 {{ $company->phone_number ?? '-' }}</div>
+                            <div class="text-xs text-gray-600 truncate">✉️ {{ $company->email ?? '-' }}</div>
+                            @if($company->website)
+                            <a href="{{ $company->website }}" target="_blank" class="text-xs text-green-600 hover:text-green-800">🌐 Website</a>
+                            @endif
+                        </td>
+                        <td class="px-6 py-4 align-top">
+                            <div class="text-sm text-gray-900">{{ $company->region ?? '-' }}, {{ $company->city ?? '-' }}</div>
+                            <div class="text-xs text-gray-600">Address: {{ $company->physical_address ?? '-' }}</div>
+                            <div class="text-xs text-gray-600">PO Box: {{ $company->postal_address ?? '-' }}</div>
+                        </td>
+                        <td class="px-6 py-4 align-top">
+                            <div class="text-xs text-gray-600">Years: {{ $company->years_in_operation ?? '-' }}</div>
+                            <div class="text-xs text-gray-600">Avg Clearance: {{ $company->average_clearance_time_days ?? '-' }} days</div>
+                            <div class="text-xs text-gray-600">Languages: {{ $company->languages_supported ?? '-' }}</div>
+                            <div class="text-xs text-gray-600">Hours: {{ $company->operating_hours ?? '-' }}</div>
+                            @php
+                                $specs = is_array($company->specializations) ? $company->specializations : (json_decode($company->specializations, true) ?: []);
+                                $ports = is_array($company->service_ports) ? $company->service_ports : (json_decode($company->service_ports, true) ?: []);
+                            @endphp
+                            @if(!empty($specs))
+                            <div class="mt-2">
+                                <div class="text-xs font-semibold text-gray-700 mb-1">Specializations</div>
+                                <div class="flex flex-wrap gap-1">
+                                    @foreach($specs as $s)
+                                        <span class="px-2 py-0.5 rounded-full bg-green-100 text-green-800 text-xs">{{ is_string($s) ? $s : ($s['label'] ?? $s['value'] ?? '-') }}</span>
+                                    @endforeach
+                                </div>
+                            </div>
+                            @endif
+                            @if(!empty($ports))
+                            <div class="mt-2">
+                                <div class="text-xs font-semibold text-gray-700 mb-1">Service Ports</div>
+                                <div class="flex flex-wrap gap-1">
+                                    @foreach($ports as $p)
+                                        <span class="px-2 py-0.5 rounded-full bg-blue-100 text-blue-800 text-xs">{{ is_string($p) ? $p : ($p['label'] ?? $p['value'] ?? '-') }}</span>
+                                    @endforeach
+                                </div>
                             </div>
                             @endif
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
+                        <td class="px-6 py-4 whitespace-nowrap align-top">
+                            <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full {{ $company->getStatusBadgeClass() }}">
+                                {{ $company->status }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap align-top">
                             <div class="flex items-center">
-                                @if($company->rating > 0)
+                                @if(($company->rating ?? 0) > 0)
                                 <div class="flex items-center">
                                     <div class="flex text-yellow-400">
                                         @for($i = 1; $i <= 5; $i++)
@@ -223,7 +270,7 @@
                                 @endif
                             </div>
                             <div class="text-xs text-gray-500 mt-1">
-                                {{ $company->total_applications_handled }} applications handled
+                                {{ $company->total_applications_handled ?? 0 }} applications handled
                             </div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
@@ -257,7 +304,8 @@
                     </tr>
                     @endforeach
                 </tbody>
-            </table>
+                </table>
+            </div>
             
             <!-- Pagination -->
             <div class="bg-white px-4 py-3 border-t border-gray-200 sm:px-6">

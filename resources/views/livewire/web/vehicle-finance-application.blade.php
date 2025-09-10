@@ -1,28 +1,65 @@
 <div>
 
-<div class="min-h-screen bg-gradient-to-br from-green-50 to-white py-8">
-    <div class="container mx-auto px-4">
-        <!-- Progress Bar -->
-        <div class="max-w-4xl mx-auto mb-8">
-            <div class="bg-white rounded-lg shadow-lg p-6">
-                <div class="flex items-center justify-between mb-4">
-                    <h1 class="text-2xl font-bold text-green-800">Vehicle Finance Application</h1>
-                    <span class="text-sm text-gray-500">Step {{ $currentStep }} of {{ $totalSteps }}</span>
-                </div>
+<div class="min-h-screen bg-gradient-to-br from-green-50 to-white">
+    <!-- Enhanced Header -->
+    <div class="bg-green-600 shadow-sm border-b-4 border-green-500">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <div class="text-center">
+                <h1 class="text-3xl font-bold text-white mb-2">Vehicle Finance Application</h1>
+                <p class="text-lg text-white mb-6">Get pre-approved for your dream vehicle in minutes</p>
                 
-                <div class="w-full bg-gray-200 rounded-full h-2 mb-4">
-                    <div class="bg-gradient-to-r from-green-500 to-green-600 h-2 rounded-full transition-all duration-300" 
-                         style="width: {{ ($currentStep / $totalSteps) * 100 }}%"></div>
-                </div>
-                
-                <div class="flex justify-between text-xs text-gray-500">
-                    <span class="{{ $currentStep >= 1 ? 'text-green-600 font-semibold' : '' }}">Insurance</span>
-                    <span class="{{ $currentStep >= 2 ? 'text-green-600 font-semibold' : '' }}">Vehicle</span>
-                    <span class="{{ $currentStep >= 3 ? 'text-green-600 font-semibold' : '' }}">Personal</span>
-                    <span class="{{ $currentStep >= 4 ? 'text-green-600 font-semibold' : '' }}">Lender & Docs</span>
+                <!-- Enhanced Progress Indicator -->
+                <div class="max-w-4xl mx-auto">
+                    <div class="flex items-center justify-between mb-4">
+                        @for($i = 1; $i <= $totalSteps; $i++)
+                            <div class="flex items-center {{ $i < $totalSteps ? 'flex-1' : '' }}">
+                                <div class="flex items-center">
+                                    <div class="w-10 h-10 rounded-full flex items-center justify-center text-sm font-semibold transition-all duration-300
+                                        {{ $currentStep > $i ? 'bg-green-600 text-white' : ($currentStep == $i ? 'bg-green-600 text-white ring-4 ring-green-200' : 'bg-gray-200 text-gray-500') }}">
+                                        @if($currentStep > $i)
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                            </svg>
+                                        @else
+                                            {{ $i }}
+                                        @endif
+                                    </div>
+                                    <div class="ml-3 text-left">
+                                        <div class="text-sm font-medium {{ $currentStep >= $i ? 'text-white' : 'text-green-100' }}">
+                                            @switch($i)
+                                                @case(1) Insurance Verification @break
+                                                @case(2) Vehicle Details @break
+                                                @case(3) Personal Information @break
+                                                @case(4) Lender & Documents @break
+                                            @endswitch
+                                        </div>
+                                        <div class="text-xs {{ $currentStep >= $i ? 'text-white' : 'text-green-200' }}">
+                                            @switch($i)
+                                                @case(1) Verify your vehicle insurance @break
+                                                @case(2) Tell us about your vehicle @break
+                                                @case(3) Your personal details @break
+                                                @case(4) Choose lender & upload docs @break
+                                            @endswitch
+                                        </div>
+                                    </div>
+                                </div>
+                                @if($i < $totalSteps)
+                                    <div class="flex-1 mx-4">
+                                        <div class="h-0.5 bg-green-300">
+                                            <div class="h-0.5 bg-white transition-all duration-500" 
+                                                 style="width: {{ $currentStep > $i ? '100%' : '0%' }}"></div>
+                                        </div>
+                                    </div>
+                                @endif
+                            </div>
+                        @endfor
+                    </div>
                 </div>
             </div>
         </div>
+    </div>
+
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
         <!-- Main Form -->
         <div class="max-w-4xl mx-auto">
@@ -30,174 +67,389 @@
                 
                 <!-- Step 1: Insurance Verification -->
                 @if($currentStep == 1)
-                <div class="p-8">
-                    <div class="text-center mb-8">
-                        <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                            </svg>
+                <div class="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+                    <!-- Step Header -->
+                    <div class="bg-gradient-to-r from-green-600 to-green-700 px-8 py-6">
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 bg-white bg-opacity-20 rounded-full flex items-center justify-center mr-4">
+                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <h2 class="text-2xl font-bold text-white">Insurance Verification</h2>
+                                <p class="text-green-100">Verify your vehicle insurance to proceed with the application</p>
+                            </div>
                         </div>
-                        <h2 class="text-2xl font-bold text-green-800 mb-2">Verify Vehicle Insurance</h2>
-                        <p class="text-gray-600">Enter your vehicle registration number to verify insurance coverage</p>
                     </div>
 
-                    <div class="max-w-md mx-auto">
-                        <div class="mb-6">
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Vehicle Registration Number</label>
-                            <div class="flex">
-                                <input type="text" 
-                                       wire:model="registration_number" 
-                                       placeholder="e.g., T209EMJ"
-                                       class="flex-1 px-4 py-3 border border-gray-300 rounded-l-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 uppercase"
-                                       style="text-transform: uppercase;">
+                    <div class="p-8">
+                        <!-- Help Section -->
+                        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                            <div class="flex items-start">
+                                <svg class="w-5 h-5 text-blue-600 mt-0.5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                                <div>
+                                    <h3 class="text-sm font-semibold text-blue-800 mb-1">Why do we need this?</h3>
+                                    <p class="text-sm text-blue-700">We verify your insurance to ensure your vehicle is properly covered before processing your loan application. This helps us provide you with the best financing options.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="max-w-lg mx-auto">
+                            <div class="mb-6">
+                                <label class="block text-sm font-semibold text-gray-700 mb-3">
+                                    Vehicle Registration Number
+                                    <span class="text-red-500">*</span>
+                                </label>
+                                <div class="relative">
+                                    <input type="text" 
+                                           wire:model="registration_number" 
+                                           placeholder="Enter registration number (e.g., T209EMJ)"
+                                           class="w-full px-4 py-4 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 text-lg font-medium uppercase transition-all duration-200"
+                                           style="text-transform: uppercase;"
+                                           maxlength="10">
+                                    <div class="absolute inset-y-0 right-0 flex items-center pr-3">
+                                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                                        </svg>
+                                    </div>
+                                </div>
+                                @error('registration_number') 
+                                    <div class="mt-2 flex items-center text-red-600 text-sm">
+                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                        </svg>
+                                        {{ $message }}
+                                    </div>
+                                @enderror
+                                
                                 <button wire:click="verifyInsurance" 
-                                        class="px-6 py-3 bg-green-600 text-white rounded-r-lg hover:bg-green-700 disabled:opacity-50 flex items-center"
+                                        class="w-full mt-4 px-6 py-4 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center font-semibold text-lg transition-all duration-200 shadow-lg hover:shadow-xl"
                                         {{ $verification_loading ? 'disabled' : '' }}>
                                     @if($verification_loading)
-                                        <svg class="animate-spin h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24">
+                                        <svg class="animate-spin h-6 w-6 mr-3" fill="none" viewBox="0 0 24 24">
                                             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                         </svg>
-                                        Verifying...
+                                        Verifying Insurance...
                                     @else
-                                        Verify
+                                        <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                        </svg>
+                                        Verify Insurance
                                     @endif
                                 </button>
                             </div>
-                            @error('registration_number') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-                        </div>
 
-                        @if($insurance_verified)
-                        <div class="mb-6 p-4 {{ $insurance_valid ? 'bg-green-50 border border-green-200' : 'bg-red-50 border border-red-200' }} rounded-lg">
-                            <div class="flex items-center mb-3">
-                                @if($insurance_valid)
-                                    <svg class="w-6 h-6 text-green-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                    </svg>
-                                    <h3 class="text-green-800 font-semibold">Insurance Valid</h3>
-                                @else
-                                    <svg class="w-6 h-6 text-red-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z"/>
-                                    </svg>
-                                    <h3 class="text-red-800 font-semibold">Insurance Issue</h3>
+                            @if($insurance_verified)
+                            <div class="mb-6 p-6 {{ $insurance_valid ? 'bg-green-50 border-2 border-green-200' : 'bg-red-50 border-2 border-red-200' }} rounded-xl">
+                                <div class="flex items-center mb-4">
+                                    @if($insurance_valid)
+                                        <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mr-4">
+                                            <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <h3 class="text-lg font-bold text-green-800">Insurance Verified Successfully!</h3>
+                                            <p class="text-green-700">Your vehicle insurance is valid and up to date.</p>
+                                        </div>
+                                    @else
+                                        <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mr-4">
+                                            <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z"/>
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <h3 class="text-lg font-bold text-red-800">Insurance Issue Detected</h3>
+                                            <p class="text-red-700">Please resolve the insurance issue before proceeding.</p>
+                                        </div>
+                                    @endif
+                                </div>
+                                
+                                @if($insurance_data)
+                                <div class="bg-white rounded-lg p-4 border border-gray-200">
+                                    <h4 class="font-semibold text-gray-800 mb-3">Insurance Details</h4>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+                                        <div class="flex justify-between">
+                                            <span class="text-gray-600">Registration:</span>
+                                            <span class="font-medium">{{ $insurance_data['motor']['registrationNumber'] ?? 'N/A' }}</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span class="text-gray-600">Company:</span>
+                                            <span class="font-medium">{{ $insurance_data['company']['companyName'] ?? 'N/A' }}</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span class="text-gray-600">Product:</span>
+                                            <span class="font-medium">{{ $insurance_data['productName'] ?? 'N/A' }}</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span class="text-gray-600">Valid Until:</span>
+                                            <span class="font-medium text-green-600">
+                                                {{ \Carbon\Carbon::createFromTimestampMs($insurance_data['coverNoteEndDate'])->format('d M Y') }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
                                 @endif
                             </div>
-                            
-                            @if($insurance_data)
-                            <div class="space-y-2 text-sm">
-                                <p><span class="font-medium">Registration:</span> {{ $insurance_data['motor']['registrationNumber'] ?? 'N/A' }}</p>
-                                <p><span class="font-medium">Company:</span> {{ $insurance_data['company']['companyName'] ?? 'N/A' }}</p>
-                                <p><span class="font-medium">Product:</span> {{ $insurance_data['productName'] ?? 'N/A' }}</p>
-                                <p><span class="font-medium">Valid Until:</span> 
-                                    {{ \Carbon\Carbon::createFromTimestampMs($insurance_data['coverNoteEndDate'])->format('d M Y') }}
-                                </p>
+                            @endif
+
+                            @if($insurance_valid)
+                            <div class="text-center">
+                                <button wire:click="nextStep" 
+                                        class="px-8 py-4 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all duration-200 flex items-center justify-center mx-auto font-semibold text-lg shadow-lg hover:shadow-xl">
+                                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                                    </svg>
+                                    Continue to Vehicle Details
+                                </button>
                             </div>
                             @endif
-                        </div>
-                        @endif
-
-                        @if($insurance_valid)
-                        <div class="text-center">
-                            <button wire:click="nextStep" 
-                                    class="px-8 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
-                                Continue to Vehicle Details
-                            </button>
-                        </div>
-                        @endif
                     </div>
                 </div>
                 @endif
 
                 <!-- Step 2: Vehicle Information -->
                 @if($currentStep == 2)
-                <div class="p-8">
-                    <div class="text-center mb-8">
-                        <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
-                            </svg>
-                        </div>
-                        <h2 class="text-2xl font-bold text-green-800 mb-2">Vehicle Information</h2>
-                        <p class="text-gray-600">Provide details about the vehicle you want to finance</p>
-                    </div>
-
-                    <div class="grid md:grid-cols-2 gap-6">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Make *</label>
-                            <select wire:model="selected_make_id" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
-                                <option value="">Select Make</option>
-                                @foreach($makes as $make)
-                                <option value="{{ $make->id }}">{{ $make->name }}</option>
-                                @endforeach
-                            </select>
-                            @error('selected_make_id') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-                        </div>
-
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Model *</label>
-                            <select wire:model="selected_model_id" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
-                                <option value="">Select Model</option>
-                                @foreach($models as $model)
-                                <option value="{{ $model->id }}">{{ $model->name }}</option>
-                                @endforeach
-                            </select>
-                            @error('selected_model_id') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-                        </div>
-
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Year of Manufacture *</label>
-                            <input type="number" wire:model="year_of_manufacture" 
-                                   min="1990" max="2025" 
-                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
-                            @error('year_of_manufacture') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-                        </div>
-
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Color *</label>
-                            <input type="text" wire:model="color" 
-                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
-                            @error('color') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-                        </div>
-
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Mileage (KM) *</label>
-                            <input type="number" wire:model="mileage" min="0"
-                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
-                            @error('mileage') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-                        </div>
-
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Purchase Price (TZS) *</label>
-                            <input type="number" wire:model="purchase_price" min="1000"
-                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
-                            @error('purchase_price') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-                        </div>
-
-                        <div class="md:col-span-2">
-                            <label class="block text-sm font-medium text-gray-700 mb-2">VIN/Chassis Number *</label>
-                            <input type="text" wire:model="vin" 
-                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
-                            @error('vin') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                <div class="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+                    <!-- Step Header -->
+                    <div class="bg-gradient-to-r from-green-600 to-green-700 px-8 py-6">
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 bg-white bg-opacity-20 rounded-full flex items-center justify-center mr-4">
+                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <h2 class="text-2xl font-bold text-white">Vehicle Information</h2>
+                                <p class="text-green-100">Tell us about the vehicle you want to finance</p>
+                            </div>
                         </div>
                     </div>
 
-                    @if(count($qualified_lenders) > 0)
-                    <div class="mt-8 p-4 bg-green-50 border border-green-200 rounded-lg">
-                        <h3 class="text-green-800 font-semibold mb-2">{{ count($qualified_lenders) }} Qualified Lenders Found</h3>
-                        <p class="text-green-700 text-sm">Great! We found lenders who can finance this vehicle.</p>
-                    </div>
-                    @endif
+                    <div class="p-8">
+                        <!-- Help Section -->
+                        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                            <div class="flex items-start">
+                                <svg class="w-5 h-5 text-blue-600 mt-0.5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                                <div>
+                                    <h3 class="text-sm font-semibold text-blue-800 mb-1">Vehicle Details Required</h3>
+                                    <p class="text-sm text-blue-700">Please provide accurate vehicle information. This helps us find the best financing options and calculate your loan terms.</p>
+                                </div>
+                            </div>
+                        </div>
 
-                    <div class="flex justify-between mt-8">
-                        <button wire:click="prevStep" 
-                                class="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50">
-                            Previous
-                        </button>
-                        <button wire:click="nextStep" 
-                                class="px-8 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700">
-                            Continue
-                        </button>
+                        <div class="space-y-8">
+                            <!-- Vehicle Make & Model -->
+                            <div class="bg-gray-50 rounded-lg p-6">
+                                <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                                    <svg class="w-5 h-5 text-green-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                                    </svg>
+                                    Vehicle Make & Model
+                                </h3>
+                                <div class="grid md:grid-cols-2 gap-6">
+                                    <div>
+                                        <label class="block text-sm font-semibold text-gray-700 mb-3">
+                                            Vehicle Make
+                                            <span class="text-red-500">*</span>
+                                        </label>
+                                        <select wire:model="selected_make_id" 
+                                                class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200">
+                                            <option value="">Select Vehicle Make</option>
+                                            @foreach($makes as $make)
+                                            <option value="{{ $make->id }}">{{ $make->name }}</option>
+                                            @endforeach
+                                        </select>
+                                        @error('selected_make_id') 
+                                            <div class="mt-2 flex items-center text-red-600 text-sm">
+                                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                                </svg>
+                                                {{ $message }}
+                                            </div>
+                                        @enderror
+                                    </div>
+
+                                    <div>
+                                        <label class="block text-sm font-semibold text-gray-700 mb-3">
+                                            Vehicle Model
+                                            <span class="text-red-500">*</span>
+                                        </label>
+                                        <select wire:model="selected_model_id" 
+                                                class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200"
+                                                {{ empty($selected_make_id) ? 'disabled' : '' }}>
+                                            <option value="">Select Vehicle Model</option>
+                                            @foreach($models as $model)
+                                            <option value="{{ $model->id }}">{{ $model->name }}</option>
+                                            @endforeach
+                                        </select>
+                                        @error('selected_model_id') 
+                                            <div class="mt-2 flex items-center text-red-600 text-sm">
+                                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                                </svg>
+                                                {{ $message }}
+                                            </div>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Vehicle Specifications -->
+                            <div class="bg-gray-50 rounded-lg p-6">
+                                <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                                    <svg class="w-5 h-5 text-green-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+                                    </svg>
+                                    Vehicle Specifications
+                                </h3>
+                                <div class="grid md:grid-cols-2 gap-6">
+                                    <div>
+                                        <label class="block text-sm font-semibold text-gray-700 mb-3">
+                                            Year of Manufacture
+                                            <span class="text-red-500">*</span>
+                                        </label>
+                                        <input type="number" wire:model="year_of_manufacture" 
+                                               min="1990" max="2025" 
+                                               placeholder="e.g., 2020"
+                                               class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200">
+                                        @error('year_of_manufacture') 
+                                            <div class="mt-2 flex items-center text-red-600 text-sm">
+                                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                                </svg>
+                                                {{ $message }}
+                                            </div>
+                                        @enderror
+                                    </div>
+
+                                    <div>
+                                        <label class="block text-sm font-semibold text-gray-700 mb-3">
+                                            Vehicle Color
+                                            <span class="text-red-500">*</span>
+                                        </label>
+                                        <input type="text" wire:model="color" 
+                                               placeholder="e.g., White, Black, Silver"
+                                               class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200">
+                                        @error('color') 
+                                            <div class="mt-2 flex items-center text-red-600 text-sm">
+                                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                                </svg>
+                                                {{ $message }}
+                                            </div>
+                                        @enderror
+                                    </div>
+
+                                    <div>
+                                        <label class="block text-sm font-semibold text-gray-700 mb-3">
+                                            Mileage (KM)
+                                            <span class="text-red-500">*</span>
+                                        </label>
+                                        <input type="number" wire:model="mileage" min="0"
+                                               placeholder="e.g., 50000"
+                                               class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200">
+                                        @error('mileage') 
+                                            <div class="mt-2 flex items-center text-red-600 text-sm">
+                                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                                </svg>
+                                                {{ $message }}
+                                            </div>
+                                        @enderror
+                                    </div>
+
+                                    <div>
+                                        <label class="block text-sm font-semibold text-gray-700 mb-3">
+                                            Purchase Price (TZS)
+                                            <span class="text-red-500">*</span>
+                                        </label>
+                                        <input type="number" wire:model="purchase_price" min="1000"
+                                               placeholder="e.g., 15000000"
+                                               class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200">
+                                        @error('purchase_price') 
+                                            <div class="mt-2 flex items-center text-red-600 text-sm">
+                                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                                </svg>
+                                                {{ $message }}
+                                            </div>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Vehicle Identification -->
+                            <div class="bg-gray-50 rounded-lg p-6">
+                                <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                                    <svg class="w-5 h-5 text-green-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                    </svg>
+                                    Vehicle Identification
+                                </h3>
+                                <div>
+                                    <label class="block text-sm font-semibold text-gray-700 mb-3">
+                                        VIN/Chassis Number
+                                        <span class="text-red-500">*</span>
+                                    </label>
+                                    <input type="text" wire:model="vin" 
+                                           placeholder="Enter 17-character VIN number"
+                                           class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200 uppercase"
+                                           style="text-transform: uppercase;"
+                                           maxlength="17">
+                                    @error('vin') 
+                                        <div class="mt-2 flex items-center text-red-600 text-sm">
+                                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                            </svg>
+                                            {{ $message }}
+                                        </div>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+
+                        @if(count($qualified_lenders) > 0)
+                        <div class="mt-8 p-6 bg-green-50 border-2 border-green-200 rounded-xl">
+                            <div class="flex items-center mb-3">
+                                <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center mr-3">
+                                    <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-bold text-green-800">{{ count($qualified_lenders) }} Qualified Lenders Found</h3>
+                                    <p class="text-green-700">Great! We found lenders who can finance this vehicle.</p>
+                                </div>
+                            </div>
+                        </div>
+                        @endif
+
+                        <!-- Navigation Buttons -->
+                        <div class="flex justify-between mt-8 pt-6 border-t border-gray-200">
+                            <button wire:click="prevStep" 
+                                    class="px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 flex items-center">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                                </svg>
+                                Previous
+                            </button>
+                            <button wire:click="nextStep" 
+                                    class="px-8 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all duration-200 flex items-center shadow-lg hover:shadow-xl">
+                                Continue
+                                <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                </svg>
+                            </button>
+                        </div>
                     </div>
+                </div>
                 </div>
                 @endif
 
@@ -541,6 +793,7 @@
 </div>
 
 <style>
+    /* Enhanced step indicators */
     .step-indicator {
         transition: all 0.3s ease;
     }
@@ -554,7 +807,352 @@
         background: #10b981;
         color: white;
     }
+
+    /* Mobile responsiveness improvements */
+    @media (max-width: 768px) {
+        .step-indicator {
+            flex-direction: column;
+            text-align: center;
+        }
+        
+        .step-indicator .step-content {
+            margin-left: 0;
+            margin-top: 0.5rem;
+        }
+        
+        .step-indicator .step-line {
+            display: none;
+        }
+        
+        .form-section {
+            padding: 1rem;
+        }
+        
+        .form-grid {
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+        
+        .navigation-buttons {
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .navigation-buttons button {
+            width: 100%;
+        }
+    }
+
+    /* Enhanced form styling */
+    .form-input {
+        transition: all 0.2s ease;
+    }
+    
+    .form-input:focus {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.15);
+    }
+    
+    .form-section {
+        transition: all 0.3s ease;
+    }
+    
+    .form-section:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Loading animations */
+    .loading-pulse {
+        animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+    
+    @keyframes pulse {
+        0%, 100% {
+            opacity: 1;
+        }
+        50% {
+            opacity: .5;
+        }
+    }
+
+    /* Success animations */
+    .success-bounce {
+        animation: bounce 0.6s ease-in-out;
+    }
+    
+    @keyframes bounce {
+        0%, 20%, 53%, 80%, 100% {
+            transform: translate3d(0,0,0);
+        }
+        40%, 43% {
+            transform: translate3d(0, -8px, 0);
+        }
+        70% {
+            transform: translate3d(0, -4px, 0);
+        }
+        90% {
+            transform: translate3d(0, -2px, 0);
+        }
+    }
+
+    /* Enhanced button styles */
+    .btn-primary {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        transition: all 0.3s ease;
+    }
+    
+    .btn-primary:hover {
+        background: linear-gradient(135deg, #059669 0%, #047857 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(16, 185, 129, 0.3);
+    }
+    
+    .btn-secondary {
+        transition: all 0.3s ease;
+    }
+    
+    .btn-secondary:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    /* File upload enhancements */
+    .file-upload-area {
+        border: 2px dashed #d1d5db;
+        transition: all 0.3s ease;
+    }
+    
+    .file-upload-area:hover {
+        border-color: #10b981;
+        background-color: #f0fdf4;
+    }
+    
+    .file-upload-area.dragover {
+        border-color: #10b981;
+        background-color: #f0fdf4;
+        transform: scale(1.02);
+    }
+
+    /* Progress bar enhancements */
+    .progress-bar {
+        background: linear-gradient(90deg, #10b981 0%, #059669 100%);
+        transition: width 0.5s ease;
+    }
+
+    /* Card hover effects */
+    .card-hover {
+        transition: all 0.3s ease;
+    }
+    
+    .card-hover:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+
+    /* Input focus enhancements */
+    .input-focus:focus {
+        outline: none;
+        border-color: #10b981;
+        box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+    }
+
+    /* Error state styling */
+    .error-state {
+        border-color: #ef4444;
+        box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+    }
+
+    /* Success state styling */
+    .success-state {
+        border-color: #10b981;
+        box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+    }
 </style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Enhanced form interactions
+    const inputs = document.querySelectorAll('input, select, textarea');
+    
+    inputs.forEach(input => {
+        // Add focus/blur effects
+        input.addEventListener('focus', function() {
+            this.classList.add('input-focus');
+        });
+        
+        input.addEventListener('blur', function() {
+            this.classList.remove('input-focus');
+        });
+        
+        // Add error state styling
+        input.addEventListener('invalid', function() {
+            this.classList.add('error-state');
+        });
+        
+        input.addEventListener('input', function() {
+            this.classList.remove('error-state');
+            if (this.checkValidity()) {
+                this.classList.add('success-state');
+            }
+        });
+    });
+
+    // Auto-format registration number
+    const regInput = document.querySelector('input[wire\\:model="registration_number"]');
+    if (regInput) {
+        regInput.addEventListener('input', function() {
+            this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+        });
+    }
+
+    // Auto-format VIN number
+    const vinInput = document.querySelector('input[wire\\:model="vin"]');
+    if (vinInput) {
+        vinInput.addEventListener('input', function() {
+            this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+        });
+    }
+
+    // Format phone number
+    const phoneInput = document.querySelector('input[wire\\:model="phone_number"]');
+    if (phoneInput) {
+        phoneInput.addEventListener('input', function() {
+            let value = this.value.replace(/\D/g, '');
+            if (value.length > 0) {
+                if (value.startsWith('255')) {
+                    value = value.substring(0, 3) + ' ' + value.substring(3);
+                }
+                if (value.length > 7) {
+                    value = value.substring(0, 7) + ' ' + value.substring(7);
+                }
+                if (value.length > 11) {
+                    value = value.substring(0, 11) + ' ' + value.substring(11);
+                }
+            }
+            this.value = value;
+        });
+    }
+
+    // Format National ID
+    const nationalIdInput = document.querySelector('input[wire\\:model="national_id"]');
+    if (nationalIdInput) {
+        nationalIdInput.addEventListener('input', function() {
+            let value = this.value.replace(/\D/g, '');
+            if (value.length >= 8) {
+                value = value.substring(0, 8) + '-' + value.substring(8);
+            }
+            if (value.length >= 14) {
+                value = value.substring(0, 14) + '-' + value.substring(14);
+            }
+            if (value.length >= 20) {
+                value = value.substring(0, 20) + '-' + value.substring(20);
+            }
+            if (value.length >= 23) {
+                value = value.substring(0, 23);
+            }
+            this.value = value;
+        });
+    }
+
+    // Format currency inputs
+    const currencyInputs = document.querySelectorAll('input[wire\\:model="purchase_price"], input[wire\\:model="monthly_income"], input[wire\\:model="down_payment"]');
+    currencyInputs.forEach(input => {
+        input.addEventListener('input', function() {
+            let value = this.value.replace(/\D/g, '');
+            if (value.length > 0) {
+                value = parseInt(value).toLocaleString('en-US');
+            }
+            this.value = value;
+        });
+    });
+
+    // Enhanced file upload
+    const fileInputs = document.querySelectorAll('input[type="file"]');
+    fileInputs.forEach(input => {
+        const container = input.closest('.file-upload-container');
+        if (container) {
+            const dropZone = container.querySelector('.file-upload-area');
+            
+            if (dropZone) {
+                dropZone.addEventListener('dragover', function(e) {
+                    e.preventDefault();
+                    this.classList.add('dragover');
+                });
+                
+                dropZone.addEventListener('dragleave', function(e) {
+                    e.preventDefault();
+                    this.classList.remove('dragover');
+                });
+                
+                dropZone.addEventListener('drop', function(e) {
+                    e.preventDefault();
+                    this.classList.remove('dragover');
+                    const files = e.dataTransfer.files;
+                    if (files.length > 0) {
+                        input.files = files;
+                        input.dispatchEvent(new Event('change', { bubbles: true }));
+                    }
+                });
+            }
+        }
+    });
+
+    // Smooth scrolling for form sections
+    const formSections = document.querySelectorAll('.form-section');
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('animate-fade-in');
+            }
+        });
+    }, { threshold: 0.1 });
+    
+    formSections.forEach(section => {
+        observer.observe(section);
+    });
+
+    // Add loading states to buttons
+    const buttons = document.querySelectorAll('button[wire\\:click]');
+    buttons.forEach(button => {
+        button.addEventListener('click', function() {
+            if (this.textContent.includes('Verify') || this.textContent.includes('Submit')) {
+                this.classList.add('loading-pulse');
+            }
+        });
+    });
+
+    // Success animations
+    document.addEventListener('livewire:load', function() {
+        Livewire.on('insuranceVerified', () => {
+            const successElement = document.querySelector('.insurance-success');
+            if (successElement) {
+                successElement.classList.add('success-bounce');
+            }
+        });
+    });
+});
+
+// Add CSS for animations
+const style = document.createElement('style');
+style.textContent = `
+    .animate-fade-in {
+        animation: fadeIn 0.6s ease-in-out;
+    }
+    
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+`;
+document.head.appendChild(style);
+</script>
 
 
 

@@ -25,6 +25,10 @@ Route::get('spare-parts/list',[SparePartController::class, 'index'])->name('spar
 
 Route::get('spare-parts/details/{id}',[SparePartController::class, 'viewDetails'])->name('spare-part.detail');
 
+// Spare Part Request Routes
+Route::get('spare-parts/request',[SparePartController::class, 'requestForm'])->name('spare.parts.request');
+Route::get('spare-parts/quote/{requestId}/{shopId}',[SparePartController::class, 'quoteForm'])->name('shop.spare-part-quote');
+
 
 
 
@@ -37,8 +41,8 @@ Route::get('/contact', [WebsiteController::class, 'contactPage'])->name('contact
 Route::get('/client-registration', [WebsiteController::class, 'clientRegistration'])->name('client.registration');
 Route::get('loan-calculator', [WebsiteController::class, 'loanCalculator'])->name('loan.calculator');
 
-Route::get('wedding-vehicles', [WebsiteController::class, 'weddingVehicles'])->name('wedding.vehicles');
-Route::get('wedding-vehicle/{vehicleId}', [WebsiteController::class, 'viewWeddingVehicle'])->name('wedding.car.detail');
+Route::get('rental-vehicles', [WebsiteController::class, 'weddingVehicles'])->name('wedding.vehicles');
+Route::get('rental-vehicle/{vehicleId}', [WebsiteController::class, 'viewWeddingVehicle'])->name('wedding.car.detail');
 
 
 
@@ -141,8 +145,11 @@ Route::fallback(function() {
             return redirect()->route('otp-page');
         }
 
-        // If department 10 (client), go to application list
-        if ($user->department == 10) {
+
+
+        // If department 4 (Client/Borrower) or department 10 (client), go to application list
+        if ($user->department == 4 || $user->department == 10) {
+
             return redirect()->route('application.list');
         }
 
@@ -154,4 +161,12 @@ Route::fallback(function() {
     return view('pages/utility/404');
 });
 
+
 // =================================================================
+
+// Document download routes
+Route::get('document/download/{type}/{id}', [App\Http\Controllers\DocumentController::class, 'download'])->name('document.download');
+Route::get('document/preview/{type}/{id}', [App\Http\Controllers\DocumentController::class, 'preview'])->name('document.preview');
+
+// =================================================================
+

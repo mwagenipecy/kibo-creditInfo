@@ -12,6 +12,7 @@ use App\Models\ActivityLog;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Session;
 use Livewire\Component;
@@ -88,6 +89,12 @@ class PartnerOnboarding extends Component
     public $taxClearanceDoc;
     public $financialLicenseDoc;
     public $additionalDoc;
+
+    // Existing document paths for display
+    public $existingBusinessRegistrationDoc;
+    public $existingTaxClearanceDoc;
+    public $existingFinancialLicenseDoc;
+    public $existingAdditionalDoc;
 
     // For editing mode
     public $isEditMode = false;
@@ -552,6 +559,10 @@ public function render()
         $this->taxClearanceDoc = null;
         $this->financialLicenseDoc = null;
         $this->additionalDoc = null;
+        $this->existingBusinessRegistrationDoc = null;
+        $this->existingTaxClearanceDoc = null;
+        $this->existingFinancialLicenseDoc = null;
+        $this->existingAdditionalDoc = null;
         $this->resetErrorBag();
     }
 
@@ -588,9 +599,14 @@ public function render()
         $this->showroomAddress = null;
         $this->serviceCenter = null;
         $this->inventorySize = null;
+        $this->servicesOffered = [];
         $this->businessRegistrationDoc = null;
         $this->taxClearanceDoc = null;
         $this->additionalDoc = null;
+        $this->existingBusinessRegistrationDoc = null;
+        $this->existingTaxClearanceDoc = null;
+        $this->existingFinancialLicenseDoc = null;
+        $this->existingAdditionalDoc = null;
         $this->resetErrorBag();
     }
 
@@ -601,6 +617,13 @@ public function render()
     {
         $this->showLenderModal = false;
         $this->showCarDealerModal = false;
+        $this->isEditMode = false;
+        
+        // Reset existing document properties
+        $this->existingBusinessRegistrationDoc = null;
+        $this->existingTaxClearanceDoc = null;
+        $this->existingFinancialLicenseDoc = null;
+        $this->existingAdditionalDoc = null;
     }
 
     /**
@@ -611,21 +634,30 @@ public function render()
         // Validate based on current step
         switch ($this->currentStep) {
             case 1:
-                $this->validate([
+                $validationRules = [
                     'name' => 'required|string|max:255',
-                    'businessRegistrationNumber' => 'required|string|max:50',
-                    'taxIdentificationNumber' => 'required|string|max:50',
                     'address' => 'required|string|max:255',
                     'region' => 'required|string|max:100',
                     'city' => 'required|string|max:100',
-                    // Corrected versions:
                     'phoneNumber' => 'required',
                     'contactPersonPhone' => 'required',
-
-                    'email' => 'required|email|max:255',
                     'contactPersonName' => 'required|string|max:255',
-                    'contactPersonEmail' => 'required|email|unique:users,email|max:255',
-                ]);
+                ];
+
+                // Add unique validation rules based on edit mode
+                if ($this->isEditMode && $this->lenderId) {
+                    $validationRules['businessRegistrationNumber'] = 'required|string|max:50|unique:lenders,business_registration_number,' . $this->lenderId;
+                    $validationRules['taxIdentificationNumber'] = 'required|string|max:50|unique:lenders,tax_identification_number,' . $this->lenderId;
+                    $validationRules['email'] = 'required|email|max:255';
+                    $validationRules['contactPersonEmail'] = 'required|email|max:255';
+                } else {
+                    $validationRules['businessRegistrationNumber'] = 'required|string|max:50|unique:lenders,business_registration_number';
+                    $validationRules['taxIdentificationNumber'] = 'required|string|max:50|unique:lenders,tax_identification_number';
+                    $validationRules['email'] = 'required|email|unique:users,email|max:255';
+                    $validationRules['contactPersonEmail'] = 'required|email|unique:users,email|max:255';
+                }
+
+                $this->validate($validationRules);
                 $this->nextStep();
                 return;
 
@@ -670,13 +702,24 @@ public function render()
                     throw new \Exception('Lender not found');
                 }
 
-                // Prepare data for approval
-                $oldData = $lender->toArray();
-                $newData = $this->prepareLenderData($logoPath);
+                // Update lender data
+                $updateData = $this->prepareLenderData($logoPath);
+                $lender->update($updateData);
 
+                // Update documents if new ones are provided
+                if ($this->businessRegistrationDoc || $this->taxClearanceDoc || $this->financialLicenseDoc || $this->additionalDoc) {
+                    $this->savePartnerDocuments($lender->id, 'lender');
+                }
 
+                // Log activity
+                $this->logActivity(
+                    'lender_updated',
+                    'Lender',
+                    $lender->id,
+                    'Updated lender: ' . $this->name
+                );
 
-                Session::flash('message', 'Lender update request submitted for approval');
+                Session::flash('message', 'Lender updated successfully');
             } else {
                 // Create new lender
                 $data = $this->prepareLenderData($logoPath);
@@ -721,9 +764,13 @@ public function render()
             $this->loadPartners();
 
         } catch (\Exception $e) {
-
-            dd($e->getMessage());
-            Session::flash('error', 'Error processing request: ' . $e->getMessage());
+            \Log::error('Lender registration error: ' . $e->getMessage(), [
+                'user_id' => Auth::id(),
+                'lender_data' => $this->prepareLenderData(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            Session::flash('error', 'Error processing lender registration: ' . $e->getMessage());
         }
     }
 
@@ -844,19 +891,30 @@ public function render()
           // Validate based on current step
           switch ($this->currentStep) {
             case 1:
-                $this->validate([
+                $validationRules = [
                     'name' => 'required|string|max:255',
-                    'businessRegistrationNumber' => 'required|string|max:50',
-                    'taxIdentificationNumber' => 'required|string|max:50',
                     'address' => 'required|string|max:255',
                     'region' => 'required|string|max:100',
                     'city' => 'required|string|max:100',
                     'phoneNumber' => 'required|string',
-                    'email' => 'required|email|max:255',
                     'contactPersonName' => 'required|string|max:255',
                     'contactPersonPhone' => 'required|string',
-                    'contactPersonEmail' => 'required|email|max:255',
-                ]);
+                ];
+
+                // Add unique validation rules based on edit mode
+                if ($this->isEditMode && $this->carDealerId) {
+                    $validationRules['businessRegistrationNumber'] = 'required|string|max:50|unique:car_dealers,business_registration_number,' . $this->carDealerId;
+                    $validationRules['taxIdentificationNumber'] = 'required|string|max:50|unique:car_dealers,tax_identification_number,' . $this->carDealerId;
+                    $validationRules['email'] = 'required|email|max:255';
+                    $validationRules['contactPersonEmail'] = 'required|email|max:255';
+                } else {
+                    $validationRules['businessRegistrationNumber'] = 'required|string|max:50|unique:car_dealers,business_registration_number';
+                    $validationRules['taxIdentificationNumber'] = 'required|string|max:50|unique:car_dealers,tax_identification_number';
+                    $validationRules['email'] = 'required|email|unique:users,email|max:255';
+                    $validationRules['contactPersonEmail'] = 'required|email|unique:users,email|max:255';
+                }
+
+                $this->validate($validationRules);
 
                 return;
 
@@ -905,13 +963,24 @@ public function render()
                     throw new \Exception('Car dealer not found');
                 }
 
-                // Prepare data for approval
-                $oldData = $dealer->toArray();
-                $newData = $this->prepareCarDealerData($logoPath);
+                // Update car dealer data
+                $updateData = $this->prepareCarDealerData($logoPath);
+                $dealer->update($updateData);
 
+                // Update documents if new ones are provided
+                if ($this->businessRegistrationDoc || $this->taxClearanceDoc || $this->additionalDoc) {
+                    $this->savePartnerDocuments($dealer->id, 'car_dealer');
+                }
 
+                // Log activity
+                $this->logActivity(
+                    'car_dealer_updated',
+                    'CarDealer',
+                    $dealer->id,
+                    'Updated car dealer: ' . $this->name
+                );
 
-                Session::flash('message', 'Car dealer update request submitted for approval');
+                Session::flash('message', 'Car dealer updated successfully');
             } else {
                 // Create new car dealer
                 $data = $this->prepareCarDealerData($logoPath);
@@ -924,21 +993,20 @@ public function render()
                     $dealer->status = 'PENDING';
                     $dealer->save();
 
-
-
                 }catch(\Exception $e){
-
-                    dd("saved".$e->getMessage());
-
+                    \Log::error('Car dealer save error: ' . $e->getMessage(), [
+                        'user_id' => Auth::id(),
+                        'dealer_data' => $data,
+                        'trace' => $e->getTraceAsString()
+                    ]);
+                    
+                    throw new \Exception('Failed to save car dealer: ' . $e->getMessage());
                 }
 
 
                 try{
-
-
                     // Save documents
                     $this->savePartnerDocuments($dealer->id, 'car_dealer');
-
 
                     // Log activity
                     $this->logActivity(
@@ -948,14 +1016,15 @@ public function render()
                         'Created new car dealer: ' . $this->name
                     );
 
-
-
-
                 }catch(\Exception $e){
-
-                    dd("saved".$e->getMessage());
-
-
+                    \Log::error('Car dealer documents/activity error: ' . $e->getMessage(), [
+                        'user_id' => Auth::id(),
+                        'dealer_id' => $dealer->id ?? null,
+                        'trace' => $e->getTraceAsString()
+                    ]);
+                    
+                    // Don't throw here as the dealer was already saved successfully
+                    Session::flash('warning', 'Car dealer created but there was an issue with documents: ' . $e->getMessage());
                 }
 
 
@@ -1027,6 +1096,43 @@ public function render()
     }
 
     /**
+     * Load existing documents for display in edit mode
+     */
+    private function loadExistingDocuments($partnerId, $partnerType)
+    {
+        $documents = PartnerDocument::where('partner_id', $partnerId)
+            ->where('partner_type', $partnerType)
+            ->get();
+
+        // Reset existing document paths
+        $this->existingBusinessRegistrationDoc = null;
+        $this->existingTaxClearanceDoc = null;
+        $this->existingFinancialLicenseDoc = null;
+        $this->existingAdditionalDoc = null;
+
+        // Load document paths
+        foreach ($documents as $document) {
+            // Use the model's accessor method for URL generation
+            $documentUrl = $document->document_url;
+            
+            switch ($document->document_type) {
+                case 'business_registration':
+                    $this->existingBusinessRegistrationDoc = $documentUrl;
+                    break;
+                case 'tax_clearance':
+                    $this->existingTaxClearanceDoc = $documentUrl;
+                    break;
+                case 'financial_license':
+                    $this->existingFinancialLicenseDoc = $documentUrl;
+                    break;
+                case 'additional':
+                    $this->existingAdditionalDoc = $documentUrl;
+                    break;
+            }
+        }
+    }
+
+    /**
      * Log activity
      */
     private function logActivity($action, $entityType, $entityId, $description = null)
@@ -1084,6 +1190,9 @@ public function render()
         $this->paymentMethods = json_decode($lender->payment_methods) ?: [];
         $this->settlementPeriod = $lender->settlement_period;
 
+        // Load existing documents
+        $this->loadExistingDocuments($lender->id, 'lender');
+
         $this->isEditMode = true;
         $this->currentStep = 1;
         $this->showLenderModal = true;
@@ -1120,7 +1229,22 @@ public function render()
             ];
 
             $userService= new UserService();
-            $user = $userService->createUser($data, true);
+            // If a user with the same email exists, update profile and resend credentials
+            $existingUser = User::where('email', $lender->contact_person_email)->first();
+            if ($existingUser) {
+                $existingUser->name = $lender->contact_person_name;
+                $existingUser->phone_number = $lender->contact_person_phone;
+                $existingUser->department = 2;
+                $existingUser->status = 'ACTIVE';
+                $existingUser->institution_id = $lender->id;
+                $existingUser->save();
+
+                // Reset password and send credentials
+                $userService->resetPassword($existingUser);
+                $user = $existingUser;
+            } else {
+                $user = $userService->createUser($data, true);
+            }
 
 
 
@@ -1219,6 +1343,10 @@ public function render()
         $this->showroomAddress = $dealer->showroom_address;
         $this->serviceCenter = $dealer->service_center;
         $this->inventorySize = $dealer->inventory_size;
+        $this->servicesOffered = json_decode($dealer->services_offered) ?: [];
+
+        // Load existing documents
+        $this->loadExistingDocuments($dealer->id, 'car_dealer');
 
         $this->isEditMode = true;
         $this->currentStep = 1;
@@ -1262,7 +1390,22 @@ public function render()
             ];
 
             $userService= new UserService();
-            $user = $userService->createUser($data, true);
+            // If a user with the same email exists, update profile and resend credentials
+            $existingUser = User::where('email', $dealer->contact_person_email)->first();
+            if ($existingUser) {
+                $existingUser->name = $dealer->contact_person_name;
+                $existingUser->phone_number = $dealer->contact_person_phone;
+                $existingUser->department = 3;
+                $existingUser->status = 'ACTIVE';
+                $existingUser->institution_id = $dealer->id;
+                $existingUser->save();
+
+                // Reset password and send credentials
+                $userService->resetPassword($existingUser);
+                $user = $existingUser;
+            } else {
+                $user = $userService->createUser($data, true);
+            }
 
 
 
@@ -1452,19 +1595,40 @@ protected function validateCurrentStep()
 {
     switch ($this->currentStep) {
         case 1:
-            $this->validate([
+            $validationRules = [
                 'name' => 'required|string|max:255',
-                'businessRegistrationNumber' => 'required|string|max:50',
-                'taxIdentificationNumber' => 'required|string|max:50',
                 'address' => 'required|string',
                 'region' => 'required|string',
                 'city' => 'required|string',
                 'phoneNumber' => 'required',
-                'email' => 'required|email',
                 'contactPersonName' => 'required|string',
                 'contactPersonPhone' => 'required',
-                'contactPersonEmail' => 'required|email',
-            ]);
+            ];
+
+            // Add unique validation rules based on edit mode and active tab
+            if ($this->isEditMode) {
+                if ($this->activeTab == 'lender' && $this->lenderId) {
+                    $validationRules['businessRegistrationNumber'] = 'required|string|max:50|unique:lenders,business_registration_number,' . $this->lenderId;
+                    $validationRules['taxIdentificationNumber'] = 'required|string|max:50|unique:lenders,tax_identification_number,' . $this->lenderId;
+                } elseif ($this->activeTab == 'carDealer' && $this->carDealerId) {
+                    $validationRules['businessRegistrationNumber'] = 'required|string|max:50|unique:car_dealers,business_registration_number,' . $this->carDealerId;
+                    $validationRules['taxIdentificationNumber'] = 'required|string|max:50|unique:car_dealers,tax_identification_number,' . $this->carDealerId;
+                }
+                $validationRules['email'] = 'required|email';
+                $validationRules['contactPersonEmail'] = 'required|email';
+            } else {
+                if ($this->activeTab == 'lender') {
+                    $validationRules['businessRegistrationNumber'] = 'required|string|max:50|unique:lenders,business_registration_number';
+                    $validationRules['taxIdentificationNumber'] = 'required|string|max:50|unique:lenders,tax_identification_number';
+                } else {
+                    $validationRules['businessRegistrationNumber'] = 'required|string|max:50|unique:car_dealers,business_registration_number';
+                    $validationRules['taxIdentificationNumber'] = 'required|string|max:50|unique:car_dealers,tax_identification_number';
+                }
+                $validationRules['email'] = 'required|email|unique:users,email';
+                $validationRules['contactPersonEmail'] = 'required|email|unique:users,email';
+            }
+
+            $this->validate($validationRules);
             break;
 
         case 2:

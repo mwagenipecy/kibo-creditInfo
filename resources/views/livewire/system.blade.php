@@ -88,7 +88,7 @@
 
         @case('18')
 
-        <livewire:shop.spare-parts-management />
+        <livewire:shop.spare-part-requests-management />
 
         @break
 

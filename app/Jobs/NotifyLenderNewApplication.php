@@ -20,7 +20,7 @@ class NotifyLenderNewApplication implements ShouldQueue
     /**
      * Create a new job instance.
      */
-    public function __construct(Lender $lender, Application $application)
+    public function __construct(Lender $lender=null, Application $application=null)
     {
         $this->lender = $lender;
         $this->application = $application;

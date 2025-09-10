@@ -94,6 +94,10 @@ class WebsiteController extends Controller
         
         // If user is already verified, redirect to dashboard
         if ($user->hasVerifiedEmail()) {
+            // Redirect department 4 (Client/Borrower) to loan list
+            if ($user->department == 4) {
+                return redirect()->route('application.list')->with('success', 'Your account is already verified.');
+            }
             return redirect()->route('CyberPoint-Pro')->with('success', 'Your account is already verified.');
         }
         

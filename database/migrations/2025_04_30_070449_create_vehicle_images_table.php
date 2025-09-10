@@ -15,6 +15,11 @@ return new class extends Migration
     {
         Schema::create('vehicle_images', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('vehicle_id')->constrained('vehicles')->onDelete('cascade');
+            $table->string('image_url');
+            $table->boolean('is_featured')->default(false);
+            $table->string('view')->nullable(); // front, back, side, interior, etc.
+            $table->integer('sort_order')->default(0);
             $table->timestamps();
         });
     }

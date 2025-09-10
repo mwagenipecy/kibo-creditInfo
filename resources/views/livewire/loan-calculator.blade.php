@@ -1,11 +1,10 @@
 <div>
 
 <div>
-<div class="max-w-5xl mx-auto px-4 py-8">
     <!-- Header -->
-    <div class="text-center mb-8">
-        <h1 class="text-3xl font-bold text-gray-900 mb-2">Loan Calculator</h1>
-        <p class="text-gray-600">Calculate your loan payments and view detailed payment schedule</p>
+    <div class="w-full bg-green-600 text-white py-8 px-6 text-center">
+        <h1 class="text-3xl font-bold text-white mb-2">Loan Calculator</h1>
+        <p class="text-green-100">Calculate your loan payments and view detailed payment schedule</p>
         
         <!-- Flash Messages -->
         @if (session()->has('message'))
@@ -21,6 +20,7 @@
         @endif
     </div>
 
+<div class="max-w-5xl mx-auto px-4 py-8">
     <!-- Main Content -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
         

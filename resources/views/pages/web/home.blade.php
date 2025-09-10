@@ -3,5 +3,5 @@
 
   <livewire:web.home-page />
 
-  <livewire:vehicle-valuation />
-@endsection
+
+  @endsection
