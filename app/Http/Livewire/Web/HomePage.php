@@ -30,7 +30,9 @@ class HomePage extends Component
     public function searchVehicles()
 {
     // Update the featured vehicles based on search criteria
-    $query = Vehicle::with('dealer')->where('is_featured', true)
+    $query = Vehicle::with('dealer')
+    
+     //->where('is_featured', true)
              ->where('status', 'active');
 
     // Apply search filters
@@ -66,7 +68,8 @@ public function render()
 
     // Only fetch featured vehicles if not already set by search
     if (!isset($this->featuredVehicles)) {
-        $this->featuredVehicles = Vehicle::with('dealer')->where('is_featured', true)
+        $this->featuredVehicles = Vehicle::with('dealer')
+        //->where('is_featured', true)
         ->where('status', 'active')
         ->latest()->take(12)->get();
     }

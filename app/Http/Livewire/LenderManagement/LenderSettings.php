@@ -126,6 +126,7 @@ public function addCriteria()
 {
 
 
+
     $this->validate();
 
     try {
@@ -159,6 +160,8 @@ public function addCriteria()
         $this->showForm = false;
 
     } catch (\Exception $e) {
+
+        dd($e->getMessage());
         session()->flash('error', 'Failed to add criteria. ' . $e->getMessage());
     }
 }
