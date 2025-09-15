@@ -88,10 +88,10 @@
         <div class="mb-6">
             <div class="border-b border-gray-200">
                 <nav class="-mb-px flex space-x-8">
-                    <button class="border-b-2 border-green-500 text-green-600 py-2 px-1 text-sm font-medium">
+                    <button wire:click="setTab('requests')" class="py-2 px-1 text-sm font-medium border-b-2 {{ $activeTab === 'requests' ? 'border-green-500 text-green-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }}">
                         New Requests
                     </button>
-                    <button class="border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 py-2 px-1 text-sm font-medium">
+                    <button wire:click="setTab('quotes')" class="py-2 px-1 text-sm font-medium border-b-2 {{ $activeTab === 'quotes' ? 'border-green-500 text-green-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }}">
                         My Quotes
                     </button>
                 </nav>
@@ -120,6 +120,7 @@
         </div>
 
         {{-- New Requests Table --}}
+        @if($activeTab === 'requests')
         <div class="bg-white rounded-lg shadow-md overflow-hidden mb-6">
             <div class="px-6 py-4 border-b border-gray-200">
                 <h3 class="text-lg font-medium text-gray-900">New Requests</h3>
@@ -157,26 +158,57 @@
                                     </div>
                                 </td>
                                 <td class="px-6 py-4">
-                                    <div>
-                                        <div class="text-sm font-medium text-gray-900">{{ $request->part_name }}</div>
-                                        @if($request->part_number)
-                                            <div class="text-sm text-gray-500">Part #: {{ $request->part_number }}</div>
+                                    <div class="flex items-start gap-3">
+                                        @if($request->images && $request->images->count() > 0)
+                                            <div class="flex -space-x-2">
+                                                @foreach($request->images->take(3) as $img)
+                                                    <img 
+                                                        src="{{ asset('storage/' . $img->path) }}" 
+                                                        alt="image" 
+                                                        class="w-16 h-16 rounded object-cover border border-gray-200"
+                                                    >
+                                                @endforeach
+                                            </div>
                                         @endif
-                                        @if($request->part_condition)
-                                            <div class="text-sm text-gray-500">Condition: {{ ucfirst($request->part_condition) }}</div>
-                                        @endif
+                                        <div>
+                                            <div class="text-sm font-medium text-gray-900">{{ $request->part_name }}</div>
+                                            @if($request->part_number)
+                                                <div class="text-sm text-gray-500">Part #: {{ $request->part_number }}</div>
+                                            @endif
+                                            @if($request->part_condition)
+                                                <div class="text-sm text-gray-500">Condition: {{ ucfirst($request->part_condition) }}</div>
+                                            @endif
+                                        </div>
                                     </div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="text-sm text-gray-900">{{ $request->customer_email }}</div>
+                                    @if($request->customer_phone)
+                                        <div class="text-sm text-gray-500">{{ $request->customer_phone }}</div>
+                                    @endif
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                     {{ $request->created_at->format('M d, Y') }}
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium flex items-center gap-2">
+                                    @if($request->images && $request->images->count() > 0)
+                                        <a 
+                                            href="{{ asset('storage/' . optional($request->images->first())->path) }}" 
+                                            target="_blank"
+                                            class="px-3 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition duration-200"
+                                            title="View Images"
+                                        >
+                                            View Image
+                                        </a>
+                                    @endif
                                     <button wire:click="openQuoteModal({{ $request->id }})" 
-                                            class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm transition duration-200">
-                                        Send Quote
+                                            class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm transition duration-200 inline-flex items-center gap-2"
+                                            wire:loading.attr="disabled">
+                                        <svg wire:loading wire:target="openQuoteModal" class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                                        </svg>
+                                        <span>Send Quote</span>
                                     </button>
                                 </td>
                             </tr>
@@ -201,8 +233,10 @@
                 {{ $requests->links() }}
             </div>
         </div>
+        @endif
 
         {{-- My Quotes Table --}}
+        @if($activeTab === 'quotes')
         <div class="bg-white rounded-lg shadow-md overflow-hidden">
             <div class="px-6 py-4 border-b border-gray-200">
                 <h3 class="text-lg font-medium text-gray-900">My Quotes</h3>
@@ -294,6 +328,7 @@
                 {{ $quotes->links() }}
             </div>
         </div>
+        @endif
 
         {{-- Quote Modal --}}
         @if($showQuoteModal && $selectedRequest)
@@ -384,11 +419,19 @@
                                 Cancel
                             </button>
                             <button type="submit" 
-                                    class="px-6 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition duration-200 flex items-center">
-                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    class="px-6 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition duration-200 flex items-center"
+                                    wire:loading.attr="disabled">
+                                <svg wire:loading class="animate-spin w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                                </svg>
+                                <svg wire:loading.remove class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
                                 </svg>
-                                Submit Quote & Send Email
+                                <span>
+                                    <span wire:loading.remove>Submit Quote & Send Email</span>
+                                    <span wire:loading>Submitting...</span>
+                                </span>
                             </button>
                         </div>
                     </form>
@@ -510,3 +553,39 @@
         @endif
     </div>
 </div>
+
+<!-- Image Preview Modal -->
+@if($previewOpen)
+    <div class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50" wire:click="closePreview">
+        <div class="relative top-10 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-1/2 xl:w-2/3 shadow-lg rounded-md bg-white max-h-screen overflow-y-auto" wire:click.stop>
+            <div class="flex items-center justify-between mb-4 pb-3 border-b">
+                <h3 class="text-xl font-semibold text-gray-900">View Images</h3>
+                <button wire:click="closePreview" class="text-gray-400 hover:text-gray-600 transition duration-200" aria-label="Close">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="flex items-center justify-center">
+                <button class="mr-3 px-3 py-2 text-gray-600 hover:text-gray-800 disabled:opacity-30" wire:click="prevPreview" @disabled(count($previewList) === 0) aria-label="Previous">
+                    ‹
+                </button>
+                <img src="{{ $previewList[$previewIndex] ?? '' }}" alt="Preview" class="max-w-full max-h-[70vh] rounded-md shadow" />
+                <button class="ml-3 px-3 py-2 text-gray-600 hover:text-gray-800 disabled:opacity-30" wire:click="nextPreview" @disabled(count($previewList) === 0) aria-label="Next">
+                    ›
+                </button>
+            </div>
+
+            @if(count($previewList) > 1)
+            <div class="mt-4 grid grid-cols-6 sm:grid-cols-8 md:grid-cols-10 gap-2">
+                @foreach($previewList as $idx => $thumb)
+                    <button class="border {{ $idx === $previewIndex ? 'border-green-600' : 'border-gray-200' }} rounded overflow-hidden" wire:click="openPreview({{ $selectedRequest->id ?? 'null' }}, {{ $idx }})">
+                        <img src="{{ $thumb }}" alt="thumb" class="w-full h-16 object-cover" />
+                    </button>
+                @endforeach
+            </div>
+            @endif
+        </div>
+    </div>
+@endif

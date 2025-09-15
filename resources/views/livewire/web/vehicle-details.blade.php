@@ -328,22 +328,6 @@
                     </h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-gray-50 rounded-xl p-4">
                         <div class="flex justify-between py-3 border-b border-gray-200">
-                            <span class="text-gray-600">Length</span>
-                            <span class="font-medium text-gray-900">{{ $vehicle->length }} mm</span>
-                        </div>
-                        <div class="flex justify-between py-3 border-b border-gray-200">
-                            <span class="text-gray-600">Width</span>
-                            <span class="font-medium text-gray-900">{{ $vehicle->width }} mm</span>
-                        </div>
-                        <div class="flex justify-between py-3 border-b border-gray-200">
-                            <span class="text-gray-600">Height</span>
-                            <span class="font-medium text-gray-900">{{ $vehicle->height }} mm</span>
-                        </div>
-                        <div class="flex justify-between py-3 border-b border-gray-200">
-                            <span class="text-gray-600">Wheelbase</span>
-                            <span class="font-medium text-gray-900">{{ $vehicle->wheelbase }} mm</span>
-                        </div>
-                        <div class="flex justify-between py-3 border-b border-gray-200">
                             <span class="text-gray-600">Seating Capacity</span>
                             <span class="font-medium text-gray-900">{{ $vehicle->seating_capacity }} seats</span>
                         </div>

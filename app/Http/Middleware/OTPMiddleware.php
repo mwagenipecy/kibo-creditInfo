@@ -63,10 +63,9 @@ class OTPMiddleware
 
         $user = Auth::user();
         
-        // Check if user's email is verified (OTP verified)
-        if (is_null($user->email_verified_at)) {
-            // User needs OTP verification, redirect to OTP page
-            Session::flash('warning', 'Please verify your email with OTP to continue.');
+        // Enforce OTP for each authenticated session using a session flag
+        if (!Session::get('otp_verified', false)) {
+            Session::flash('warning', 'Please enter the OTP sent to your email to continue.');
             return redirect()->route('otp-page');
         }
 

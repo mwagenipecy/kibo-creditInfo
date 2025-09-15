@@ -1,66 +1,8 @@
-<div class="fixed bottom-4 right-4 z-40 sm:z-50" 
-     x-data="{ 
-         open: @entangle('isOpen'),
-         minimized: @entangle('isMinimized'),
-         unreadCount: @entangle('unreadCount')
-     }"
-     x-init="
-         // Ensure header is always visible
-         $nextTick(() => {
-             const header = document.getElementById('chat-header');
-             if (header) {
-                 header.style.display = 'flex';
-                 header.style.visibility = 'visible';
-                 header.style.opacity = '1';
-                 header.style.height = '3rem';
-                 header.style.minHeight = '3rem';
-             }
-         });
-         
-         $watch('open', value => {
-             if (value) {
-                 setTimeout(() => {
-                     $dispatch('scrollToBottom');
-                     const input = $refs.chatInput;
-                     if (input) {
-                         input.focus();
-                     }
-                     // Ensure header stays visible
-                     const header = document.getElementById('chat-header');
-                     if (header) {
-                         header.style.display = 'flex';
-                         header.style.visibility = 'visible';
-                         header.style.opacity = '1';
-                         header.style.height = '3rem';
-                         header.style.minHeight = '3rem';
-                     }
-                 }, 200);
-             }
-         });
-         $watch('minimized', value => {
-             if (!value) {
-                 setTimeout(() => {
-                     $dispatch('scrollToBottom');
-                     const input = $refs.chatInput;
-                     if (input) {
-                         input.focus();
-                     }
-                     // Ensure header stays visible
-                     const header = document.getElementById('chat-header');
-                     if (header) {
-                         header.style.display = 'flex';
-                         header.style.visibility = 'visible';
-                         header.style.opacity = '1';
-                         header.style.height = '3rem';
-                         header.style.minHeight = '3rem';
-                     }
-                 }, 200);
-             }
-         });
-     ">
+<div class="fixed bottom-4 right-4 z-40 sm:z-50">
     <div class="flex flex-col items-end space-y-2">
-        <!-- Debug Header - Always Visible -->
-        <div x-show="open" class="w-72 sm:w-80 md:w-96 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-t-2xl px-3 py-2 flex items-center justify-between" style="height: 3rem; z-index: 1000;">
+        <!-- Header -->
+        @if($isOpen)
+        <div id="chat-header" class="w-72 sm:w-80 md:w-96 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-t-2xl px-3 py-2 flex items-center justify-between" style="height: 3rem; z-index: 1000;">
             <div class="flex items-center space-x-2">
                 <div class="h-6 w-6 rounded-full bg-white/20 flex items-center justify-center">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
@@ -77,39 +19,26 @@
                     <option value="en">EN</option>
                     <option value="sw">SW</option>
                 </select>
-                <button @click="minimized = !minimized" class="p-1 rounded hover:bg-white/20" title="Minimize">
+                <button wire:click="minimize" class="p-1 rounded hover:bg-white/20" title="Minimize">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd" />
                     </svg>
                 </button>
-                <button @click="open = false" class="p-1 rounded hover:bg-white/20" title="Close">
+                <button wire:click="$set('isOpen', false)" class="p-1 rounded hover:bg-white/20" title="Close">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
                     </svg>
                 </button>
             </div>
         </div>
+        @endif
 
         <!-- Chat Window -->
-        <div x-show="open" 
-             x-transition:enter="transition ease-out duration-300"
-             x-transition:enter-start="opacity-0 scale-95 translate-y-4"
-             x-transition:enter-end="opacity-100 scale-100 translate-y-0"
-             x-transition:leave="transition ease-in duration-200"
-             x-transition:leave-start="opacity-100 scale-100 translate-y-0"
-             x-transition:leave-end="opacity-0 scale-95 translate-y-4"
-             class="w-72 sm:w-80 md:w-96 bg-white rounded-b-2xl shadow-2xl border border-gray-200 border-t-0"
-             :class="minimized ? 'h-16' : 'h-80 sm:h-96'"
-             x-bind:style="minimized ? 'height: 4rem;' : ''"
-             style="max-height: calc(100vh - 6rem); min-height: 4rem; display: flex; flex-direction: column;">
-            
-         
-
+        @if($isOpen)
+        <div class="w-72 sm:w-80 md:w-96 bg-white rounded-b-2xl shadow-2xl border border-gray-200 border-t-0 {{ $isMinimized ? 'h-16' : 'h-80 sm:h-96' }}" style="max-height: calc(100vh - 6rem); min-height: 4rem; display: flex; flex-direction: column;">
             <!-- Chat Messages -->
-            <div x-show="!minimized" 
-                 class="flex-1 overflow-y-auto p-3 sm:p-4 space-y-2 sm:space-y-3 bg-gray-50"
-                 x-ref="messagesContainer"
-                 style="min-height: 0; flex: 1;">
+            @unless($isMinimized)
+            <div id="chat-messages-container" class="flex-1 overflow-y-auto p-3 sm:p-4 space-y-2 sm:space-y-3 bg-gray-50" style="min-height: 0; flex: 1;">
                 @forelse($messages as $message)
                     <div class="flex {{ $message['sender'] === 'user' ? 'justify-end' : 'justify-start' }}">
                         <div class="max-w-[85%] sm:max-w-[80%] relative">
@@ -149,10 +78,11 @@
                     </div>
                 </div>
             </div>
+            @endunless
 
             <!-- Quick Actions -->
-            <div x-show="!minimized && showQuickActions && count($messages) <= 1" 
-                 class="px-3 sm:px-4 py-2 bg-white border-t border-gray-100 flex-shrink-0">
+            @if(!$isMinimized && $showQuickActions && count($messages) <= 1)
+            <div class="px-3 sm:px-4 py-2 bg-white border-t border-gray-100 flex-shrink-0">
                 <div class="text-xs text-gray-500 mb-2">{{ $language === 'sw' ? 'Haraka:' : 'Quick actions:' }}</div>
                 <div class="flex flex-wrap gap-1">
                     @php
@@ -169,21 +99,19 @@
                     @endforeach
                 </div>
             </div>
+            @endif
 
             <!-- Input Form -->
-            <form wire:submit.prevent="sendMessage" 
-                  class="border-t bg-white p-2 sm:p-3 flex-shrink-0"
-                  x-show="!minimized">
+            @unless($isMinimized)
+            <form wire:submit.prevent="sendMessage" class="border-t bg-white p-2 sm:p-3 flex-shrink-0">
                 <div class="flex items-center space-x-2">
                     <input type="text" 
+                           id="chat-input"
                            wire:model="currentMessage" 
                            placeholder="{{ $language === 'sw' ? 'Andika ujumbe...' : 'Type a message...' }}" 
                            class="flex-1 px-3 py-2 text-xs sm:text-sm border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent" 
                            wire:loading.attr="disabled" 
-                           wire:target="sendMessage"
-                           x-ref="chatInput"
-                           @keydown.enter.prevent="if (!$event.shiftKey) $wire.sendMessage()"
-                           @input="$wire.currentMessage = $event.target.value">
+                           wire:target="sendMessage">
                     <button type="submit" 
                             class="p-2 bg-green-600 hover:bg-green-700 text-white rounded-full disabled:opacity-60 transition-colors" 
                             wire:loading.attr="disabled" 
@@ -195,80 +123,59 @@
                     </button>
                 </div>
             </form>
+            @endunless
         </div>
+        @endif
 
         <!-- Chat Toggle Button -->
-        <button @click="open = !open" 
+        <button wire:click="toggle" 
                 class="relative flex items-center space-x-1 sm:space-x-2 px-3 sm:px-4 py-2 sm:py-3 rounded-full shadow-2xl bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white transition-all duration-200 transform hover:scale-105">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
             </svg>
             <span class="font-medium text-xs sm:text-sm hidden sm:inline">{{ $language === 'sw' ? 'Zungumza Nasi' : 'Chat with us' }}</span>
             <span class="font-medium text-xs sm:hidden">{{ $language === 'sw' ? 'Chat' : 'Chat' }}</span>
-            
-            <!-- Unread Count Badge -->
-            <span x-show="unreadCount > 0" 
-                  x-text="unreadCount"
-                  class="absolute -top-1 -right-1 sm:-top-2 sm:-right-2 bg-red-500 text-white text-xs rounded-full h-4 w-4 sm:h-5 sm:w-5 flex items-center justify-center font-bold">
+            @if($unreadCount > 0)
+            <span class="absolute -top-1 -right-1 sm:-top-2 sm:-right-2 bg-red-500 text-white text-xs rounded-full h-4 w-4 sm:h-5 sm:w-5 flex items-center justify-center font-bold">
+                {{ $unreadCount }}
             </span>
+            @endif
         </button>
     </div>
 </div>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Ensure chat header is always visible
-    function ensureHeaderVisible() {
-        const header = document.getElementById('chat-header');
-        if (header) {
-            header.style.display = 'flex';
-            header.style.visibility = 'visible';
-            header.style.opacity = '1';
-            header.style.height = '3rem';
-            header.style.minHeight = '3rem';
-            header.style.position = 'relative';
-            header.style.zIndex = '100';
-        }
-    }
-
-    // Run immediately
-    ensureHeaderVisible();
-
-    // Run every 100ms to ensure it stays visible
-    setInterval(ensureHeaderVisible, 100);
-
-    // Auto-scroll to bottom when new messages arrive
-    window.livewire.on('scrollToBottom', () => {
+    function scrollToBottom() {
         setTimeout(() => {
-            const container = document.querySelector('[x-ref="messagesContainer"]');
+            const container = document.getElementById('chat-messages-container');
             if (container) {
                 container.scrollTop = container.scrollHeight;
             }
         }, 100);
-    });
+    }
+
+    // Auto-scroll to bottom when new messages arrive
+    window.livewire.on('scrollToBottom', scrollToBottom);
 
     // Focus input when requested
     window.livewire.on('focusChatInput', () => {
         setTimeout(() => {
-            const input = document.querySelector('[x-ref="chatInput"]');
-            if (input) {
+            const input = document.getElementById('chat-input');
+            if (input && !input.disabled) {
                 input.focus();
             }
         }, 100);
     });
 
-    // Auto-focus input when chat opens
-    document.addEventListener('livewire:load', function() {
-        Livewire.hook('message.processed', (message, component) => {
-            if (component.el.querySelector('[x-ref="chatInput"]')) {
-                const input = component.el.querySelector('[x-ref="chatInput"]');
-                if (input && !input.disabled) {
-                    input.focus();
-                }
-            }
-            // Ensure header stays visible after Livewire updates
-            ensureHeaderVisible();
-        });
-    });
+    // Ensure header visible (minimal since Blade controls visibility)
+    setInterval(() => {
+        const header = document.getElementById('chat-header');
+        if (header) {
+            header.style.display = 'flex';
+            header.style.visibility = 'visible';
+            header.style.opacity = '1';
+        }
+    }, 500);
 });
 </script>
 
@@ -314,15 +221,6 @@ document.addEventListener('DOMContentLoaded', function() {
     min-height: 3rem !important;
 }
 
-.fixed.bottom-4.right-4 #chat-header,
-.fixed.bottom-4.right-4 .chat-header {
-    display: flex !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-    position: relative !important;
-    z-index: 100 !important;
-}
-
 /* Mobile responsive adjustments */
 @media (max-width: 640px) {
     .fixed.bottom-4.right-4 {
@@ -331,32 +229,17 @@ document.addEventListener('DOMContentLoaded', function() {
         left: 1rem;
         width: auto;
     }
-    
     .fixed.bottom-4.right-4 > div {
         width: 100%;
         max-width: none;
     }
-    
     .fixed.bottom-4.right-4 .w-72 {
         width: 100%;
     }
-    
-    /* Ensure header is always visible on mobile */
-    .fixed.bottom-4.right-4 .min-h-\[3rem\] {
-        min-height: 3rem;
-        padding: 0.5rem;
-        display: flex !important;
-        visibility: visible !important;
-        opacity: 1 !important;
-    }
-    
-    /* Make sure buttons are touch-friendly */
     .fixed.bottom-4.right-4 button {
         min-height: 2rem;
         min-width: 2rem;
     }
-    
-    /* Ensure language selector is visible */
     .fixed.bottom-4.right-4 select {
         min-width: 3rem;
         font-size: 0.75rem;
@@ -373,13 +256,12 @@ document.addEventListener('DOMContentLoaded', function() {
     transform: scale(1.05);
 }
 
-/* Gradient animations */
+/* Gradient animation */
 @keyframes gradient-shift {
     0% { background-position: 0% 50%; }
     50% { background-position: 100% 50%; }
     100% { background-position: 0% 50%; }
 }
-
 .bg-gradient-to-r {
     background-size: 200% 200%;
     animation: gradient-shift 3s ease infinite;

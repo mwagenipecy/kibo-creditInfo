@@ -324,7 +324,7 @@
 
             <!-- Enhanced Auth Buttons - Desktop/Tablet -->
             <div class="hidden md:flex items-center space-x-3">
-                @guest
+                @if(!Auth::check() || !session('otp_verified'))
                     <a href="{{ route('login') }}" class="relative inline-flex items-center px-4 py-2 border border-green-600 rounded-lg text-sm lg:text-base font-medium text-green-600 bg-white hover:bg-green-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all duration-300 overflow-hidden group">
                         <span class="relative z-10">Login</span>
                         <span class="absolute inset-0 bg-green-100 transform scale-x-0 origin-left group-hover:scale-x-100 transition-transform duration-300"></span>
@@ -426,7 +426,7 @@
                             </div>
                         </div>
                     </div>
-                @endguest
+                @endif
             </div>
 
             <!-- Enhanced Mobile Menu Button -->
@@ -652,7 +652,7 @@
         
         <!-- Enhanced Mobile Auth Section -->
         <div class="border-t border-gray-200 pt-4 pb-5 px-4 bg-gray-50">
-            @guest
+            @if(!Auth::check() || !session('otp_verified'))
                 <div class="space-y-3">
                     <div class="flex justify-center mb-2">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -725,7 +725,7 @@
                         @csrf
                     </form>
                 </div>
-            @endguest
+            @endif
         </div>
     </div>
 </header>

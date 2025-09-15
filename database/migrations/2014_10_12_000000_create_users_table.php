@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('id_number')->nullable();
             $table->string('marital_status')->nullable();
             $table->string('phone_number');
+            $table->string('nida_number')->nullable();
             $table->string('region')->nullable();
             $table->string('district')->nullable();
             $table->string('ward')->nullable();

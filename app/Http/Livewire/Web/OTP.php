@@ -18,11 +18,11 @@ class OTP extends Component
     public $otp3;
     public $otp4;
     public $otp5;
-    public $otp6;
     public $full_otp;
     public $email;
     public $phone;
     public $otpExpiry = 0;
+    public $maskedEmail;
     
     protected $listeners = ['clearOtpFields', 'refreshTimer'];
     
@@ -37,16 +37,28 @@ class OTP extends Component
         $user = Auth::user();
         $this->email = $user->email;
         $this->phone = $user->phone;
-        
-        // Check if user is already verified
-        if (!is_null($user->email_verified_at)) {
-            // Redirect department 4 (Client/Borrower) to loan list
+
+        // Prepare masked email like `sh****.com`
+        try {
+            [$local, $domain] = explode('@', $this->email);
+            $prefix = substr($local, 0, 2);
+            $tld = '';
+            if (strpos($domain, '.') !== false) {
+                $tld = substr(strrchr($domain, '.'), 1); // part after last dot
+            }
+            $this->maskedEmail = $prefix . '****' . ($tld ? ('.' . $tld) : '');
+        } catch (\Throwable $e) {
+            $this->maskedEmail = '****';
+        }
+
+        // If this session is already OTP verified, redirect forward (prevents page from disappearing unexpectedly)
+        if (Session::get('otp_verified', false)) {
             if ($user->department == 4) {
                 return redirect()->route('application.list');
             }
-            return redirect()->route('CyberPoint-Pro');
+            return redirect()->intended(route('CyberPoint-Pro'));
         }
-        
+
         // Always generate and send OTP when component mounts
         $this->generateAndSendOTP();
         
@@ -72,13 +84,18 @@ class OTP extends Component
     {
         $user = Auth::user();
         
-        // Generate 6-digit OTP
-        $otp = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
-        
-        // Store OTP in session with expiry time (10 minutes from now)
+        // Generate 5-digit OTP
+        $otp = str_pad(random_int(0, 99999), 5, '0', STR_PAD_LEFT);
+
+        // Store OTP in session with expiry time (10 minutes)
         $expiry = Carbon::now()->addMinutes(10);
         Session::put('otp_code', $otp);
         Session::put('otp_expiry', $expiry);
+
+        // Persist OTP to database (users table)
+        $user->otp = $otp;
+        $user->otp_time = $expiry; // reuse existing column for expiry time
+        $user->save();
         
         // Update component expiry
         $this->updateOtpExpiry();
@@ -117,39 +134,34 @@ class OTP extends Component
     // Handle the form submission
     public function verifyOTP()
     {
-        // Combine OTP
-
-
-
-        $this->full_otp = $this->otp1 . $this->otp2 . $this->otp3 . $this->otp4 . $this->otp5 . $this->otp6;
+        // If using individual boxes, combine. Otherwise expect single input full_otp
+        if (!$this->full_otp) {
+            $this->full_otp = ($this->otp1 ?? '') . ($this->otp2 ?? '') . ($this->otp3 ?? '') . ($this->otp4 ?? '') . ($this->otp5 ?? '');
+        }
     
 
        // dd($this->full_otp); reach here very fine
         // Validate inputs
         $this->validate([
-            'otp1' => 'required|numeric|digits:1',
-            'otp2' => 'required|numeric|digits:1',
-            'otp3' => 'required|numeric|digits:1',
-            'otp4' => 'required|numeric|digits:1',
-            'otp5' => 'required|numeric|digits:1',
-            'otp6' => 'required|numeric|digits:1',
+            'full_otp' => 'required|numeric|digits:5',
         ]);
 
 
        // dd("here also");   
 
-        // Check session
-        if (!Session::has('otp_code') || !Session::has('otp_expiry')) {
-            $this->addError('otp', 'OTP session has expired. Please request a new code.');
-            $this->clearOtpInputs();
-            return;
-        }
-
-
-        //dd("test"); // code run fine here
-    
+        // Prefer session but fall back to database if needed
         $stored_otp = Session::get('otp_code');
         $expiry = Session::get('otp_expiry');
+        $user = Auth::user();
+        if (!$stored_otp || !$expiry) {
+            $stored_otp = $user->otp;
+            $expiry = $user->otp_time ? Carbon::parse($user->otp_time) : null;
+            if (!$stored_otp || !$expiry) {
+                $this->addError('otp', 'OTP session has expired. Please request a new code.');
+                $this->clearOtpInputs();
+                return;
+            }
+        }
 
        // dd($stored_otp, $expiry, $this->full_otp); // run fine to here 
     
@@ -167,10 +179,28 @@ class OTP extends Component
 
         // Mark verified
         $user = Auth::user();
-        $user->email_verified_at = Carbon::now();
-        $user->save();
+        // Mark this session as OTP verified (mandatory each login)
+        Session::put('otp_verified', true);
+        
+        // Keep legacy email verification if you still want to set it for new accounts
+        if (is_null($user->email_verified_at)) {
+            $user->email_verified_at = Carbon::now();
+            $user->save();
+        }
+        
+        // Clear OTP values from session and database
         Session::forget(['otp_code', 'otp_expiry']);
-        session()->flash('success', 'Your account has been successfully verified!');
+        $user->otp = null;
+        $user->otp_time = null;
+        $user->save();
+        session()->flash('success', 'OTP verified successfully.');
+
+        // Smooth redirect after successful verification
+        if ($user->department == 4) {
+            return redirect()->route('application.list');
+        }
+        
+        return redirect()->intended(route('CyberPoint-Pro'));
         
         // Redirect department 4 (Client/Borrower) to loan list
         if ($user->department == 4) {
@@ -188,15 +218,16 @@ class OTP extends Component
     // Clear OTP input fields
     public function clearOtpInputs()
     {
-        $this->reset(['otp1', 'otp2', 'otp3', 'otp4', 'otp5', 'otp6', 'full_otp']);
+        $this->reset(['otp1', 'otp2', 'otp3', 'otp4', 'otp5', 'full_otp']);
        // $this->dispatchBrowserEvent('clear-otp-fields');
     }
     
     // Logout user
     public function logout()
     {
-        Auth::logout();
-        Session::flush();
+        Auth::guard('web')->logout();
+        Session::invalidate();
+        Session::regenerateToken();
         return redirect()->route('login');
     }
 

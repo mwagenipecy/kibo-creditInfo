@@ -19,6 +19,11 @@ use App\Http\Controllers\EmployerVerificationController;
 
 Route::redirect('/', 'welcome');
 
+// Disable Fortify's GET /register page by redirecting to client registration
+Route::get('/register', function () {
+    return redirect()->route('client.registration');
+});
+
 
 /// spare part routes
 Route::get('spare-parts/list',[SparePartController::class, 'index'])->name('spare.parts.list');
@@ -76,7 +81,7 @@ Route::get('/employer/verification-completed', [EmployerVerificationController::
 // OTP VERIFICATION ROUTES (Auth only - NO OTP middleware)
 // =================================================================
 
-Route::middleware(['auth:sanctum', 'verified'])->group(function () {
+Route::middleware(['auth:sanctum'])->group(function () {
     // OTP verification page - CRITICAL: No OTPMiddleware here to prevent loops
     Route::get('/otp-page', [WebsiteController::class, 'Otp'])->name('otp-page');
     
@@ -147,3 +152,8 @@ Route::get('document/download/{type}/{id}', [App\Http\Controllers\DocumentContro
 Route::get('document/preview/{type}/{id}', [App\Http\Controllers\DocumentController::class, 'preview'])->name('document.preview');
 
 // =================================================================
+
+Route::get('test-page',function(){
+
+    return 404;
+})->name('client.applications');

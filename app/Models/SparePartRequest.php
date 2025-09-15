@@ -53,6 +53,11 @@ class SparePartRequest extends Model
         return $this->hasMany(SparePartQuote::class);
     }
 
+    public function images()
+    {
+        return $this->hasMany(SparePartRequestImage::class);
+    }
+
     public function acceptedQuote()
     {
         return $this->hasOne(SparePartQuote::class)->where('status', 'accepted');

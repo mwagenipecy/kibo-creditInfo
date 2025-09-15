@@ -9,6 +9,8 @@ use App\Actions\Fortify\UpdateUserProfileInformation;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
@@ -58,25 +60,30 @@ class FortifyServiceProvider extends ServiceProvider
             return view('auth.login');
         });
 
-        // Custom register view
+        // Block login for users marked as DELETED
+        Fortify::authenticateUsing(function (Request $request) {
+            $user = User::where('email', $request->email)->first();
+            if ($user && Hash::check($request->password, $user->password)) {
+                if (strtoupper((string)($user->status ?? '')) === 'DELETED') {
+                    return null; // prevent authentication
+                }
+                return $user;
+            }
+            return null;
+        });
+
+        // Disable default Fortify register view (we use client-registration instead)
         Fortify::registerView(function () {
-            return view('auth.register');
+            return redirect()->route('client.registration');
         });
 
 
-        // Custom login response - redirect to OTP if email not verified
+        // Custom login response - always redirect to OTP after successful login
         $this->app->instance(LoginResponse::class, new class implements LoginResponse {
             public function toResponse($request)
             {
-                $user = Auth::user();
-                
-                // If user's email is not verified, redirect to OTP page
-                if (is_null($user->email_verified_at)) {
-                    return redirect()->route('otp-page');
-                }
-                
-                // Otherwise redirect to intended location or dashboard
-                return redirect()->intended(route('CyberPoint-Pro'));
+                // Always go to OTP page to require OTP for every login
+                return redirect()->route('otp-page');
             }
         });
 

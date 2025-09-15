@@ -38,6 +38,14 @@ class SparePartRequestsManagement extends Component
     public $showQuoteDetailsModal = false;
     public $selectedQuote = null;
 
+    // Livewire-driven preview state
+    public $previewOpen = false;
+    public $previewList = [];
+    public $previewIndex = 0;
+
+    // Tabs
+    public $activeTab = 'requests'; // 'requests' | 'quotes'
+
     protected function rules()
     {
         return [
@@ -87,6 +95,45 @@ class SparePartRequestsManagement extends Component
     {
         $this->selectedRequest = SparePartRequest::with(['make', 'model'])->findOrFail($requestId);
         $this->showQuoteModal = true;
+    }
+
+    public function openPreview($requestId, $index = 0)
+    {
+        $request = SparePartRequest::with('images')->find($requestId);
+        if (!$request) {
+            return;
+        }
+        $this->previewList = $request->images->map(function ($img) {
+            return asset('storage/' . $img->path);
+        })->values()->toArray();
+        $this->previewIndex = max(0, min($index, count($this->previewList) - 1));
+        $this->previewOpen = true;
+    }
+
+    public function closePreview()
+    {
+        $this->previewOpen = false;
+        $this->previewList = [];
+        $this->previewIndex = 0;
+    }
+
+    public function nextPreview()
+    {
+        if (count($this->previewList) === 0) return;
+        $this->previewIndex = ($this->previewIndex + 1) % count($this->previewList);
+    }
+
+    public function prevPreview()
+    {
+        if (count($this->previewList) === 0) return;
+        $this->previewIndex = ($this->previewIndex - 1 + count($this->previewList)) % count($this->previewList);
+    }
+
+    public function setTab($tab)
+    {
+        if (in_array($tab, ['requests', 'quotes'])) {
+            $this->activeTab = $tab;
+        }
     }
 
     public function closeQuoteModal()

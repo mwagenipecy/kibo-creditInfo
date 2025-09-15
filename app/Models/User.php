@@ -39,6 +39,7 @@ class User extends Authenticatable
         'phone_number',
         'status',
         'shop_id',
+        'nida_number',
         
         // add this line to the array
     ];

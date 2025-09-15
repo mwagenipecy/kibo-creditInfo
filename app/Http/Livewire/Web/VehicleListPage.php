@@ -292,9 +292,9 @@ class VehicleListPage extends Component
         $makes = Make::distinct('name')->take(10)->orderBy('name')->get();
         $models = VehicleModel::distinct('name')->take(10)->orderBy('name')->get() ;
          
-        $bodyTypes = BodyType::withCount('vehicles')->take(3)->orderBy('name')->get();
-        $fuelTypes = FuelType::withCount('vehicles')-> take(3)->orderBy('name')->get();
-        $transmissions = Transmission::withCount('vehicles')->take(3)->orderBy('name')->get();
+        $bodyTypes = BodyType::withCount('vehicles')->orderBy('name')->get();
+        $fuelTypes = FuelType::orderBy('name')->get();
+        $transmissions = Transmission::withCount('vehicles')->orderBy('name')->get();
         $dealers = CarDealer::withCount('vehicles')->orderBy('name')->get();
         
         return view('livewire.web.vehicle-list-page', [

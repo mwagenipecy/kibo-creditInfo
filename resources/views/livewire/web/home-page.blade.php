@@ -288,7 +288,9 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
                 @foreach($featuredVehicles as $vehicle)
                 
-                <div class="bg-white rounded-lg shadow overflow-hidden group hover:shadow-md transition duration-200">
+                <div class="bg-white rounded-lg shadow overflow-hidden group hover:shadow-md transition duration-200 relative cursor-pointer">
+    <!-- Make whole card clickable -->
+    <a href="{{ route('view.vehicle', $vehicle->id) }}" aria-label="View vehicle details" class="absolute inset-0 z-10"></a>
     <!-- Vehicle Image Section -->
     <div class="relative aspect-[16/9] overflow-hidden">
 

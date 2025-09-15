@@ -90,17 +90,16 @@ class WebsiteController extends Controller
         if (!Auth::check()) {
             return redirect()->route('login')->with('error', 'Please login first.');
         }
-        $user = Auth::user();
-        
-        // If user is already verified, redirect to dashboard
-        if ($user->hasVerifiedEmail()) {
-            // Redirect department 4 (Client/Borrower) to loan list
-            if ($user->department == 4) {
-                return redirect()->route('application.list')->with('success', 'Your account is already verified.');
+        // If this session is already OTP-verified, send user forward
+        if (session('otp_verified')) {
+            $user = Auth::user();
+            if ($user && $user->department == 4) {
+                return redirect()->route('application.list');
             }
-            return redirect()->route('CyberPoint-Pro')->with('success', 'Your account is already verified.');
+            return redirect()->intended(route('CyberPoint-Pro'));
         }
-        
+
+        // Show OTP page when not yet verified in this session
         return view('pages.web.otp');
     }
 

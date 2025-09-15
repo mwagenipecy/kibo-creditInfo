@@ -12,6 +12,11 @@
             </div>
 
             <div>
+                <x-jet-label for="nida_number">{{ __('NIDA Number') }} <span class="text-rose-500">*</span></x-jet-label>
+                <input id="nida_number" class="form-control" type="text" name="nida_number" :value="old('nida_number')" required autocomplete="off" />
+            </div>
+
+            <div>
                 <x-jet-label for="email">{{ __('Email Address') }} <span class="text-rose-500">*</span></x-jet-label>
                 <input id="email" type="email" name="email" :value="old('email')" required />
             </div>

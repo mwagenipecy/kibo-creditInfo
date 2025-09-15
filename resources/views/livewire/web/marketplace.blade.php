@@ -120,6 +120,17 @@
                     </div>
                 </div>
 
+                {{-- Row 3b: Phone --}}
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Phone Number *</label>
+                        <input type="text" wire:model="customerPhone" 
+                               placeholder="e.g., +255712345678"
+                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                        @error('customerPhone') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                    </div>
+                </div>
+
                 {{-- Row 4: Additional Information --}}
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-6">
                     {{-- Part Number --}}
@@ -150,11 +161,36 @@
                     @error('additionalNotes') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                 </div>
 
+                {{-- Images (Optional) --}}
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Attach Images (Optional)</label>
+                    <input type="file" wire:model="images" multiple accept="image/*"
+                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                    @error('images.*') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+
+                    {{-- Previews --}}
+                    <div class="mt-3 grid grid-cols-3 sm:grid-cols-5 gap-2">
+                        @if(is_array($images))
+                            @foreach($images as $photo)
+                                @if($photo)
+                                    <div class="border rounded overflow-hidden cursor-zoom-in" wire:click="openPreview('{{ $photo->temporaryUrl() }}')">
+                                        <img src="{{ $photo->temporaryUrl() }}" class="w-full h-28 object-cover"/>
+                                    </div>
+                                @endif
+                            @endforeach
+                        @endif
+                    </div>
+                </div>
+
                 {{-- Submit Button --}}
                 <div class="text-center">
                     <button type="submit" 
                             wire:loading.attr="disabled"
-                            class="bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-6 sm:px-8 rounded-md transition duration-200 disabled:opacity-50 w-full sm:w-auto">
+                            class="bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-6 sm:px-8 rounded-md transition duration-200 disabled:opacity-50 w-full sm:w-auto flex items-center justify-center gap-2">
+                        <svg wire:loading class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                        </svg>
                         <span wire:loading.remove>Submit Request</span>
                         <span wire:loading>Submitting...</span>
                     </button>
@@ -179,3 +215,16 @@
     </div>
 </div>
 </div>
+
+@if($previewOpen)
+    <div class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75" wire:click="closePreview">
+        <img src="{{ $previewSrc }}" alt="Preview" class="max-w-3xl max-h-[85vh] rounded shadow-lg" wire:click.stop>
+        <button 
+            class="absolute top-4 right-4 text-white bg-black bg-opacity-50 rounded-full p-2"
+            wire:click.stop="closePreview"
+            aria-label="Close preview"
+        >
+            ✕
+        </button>
+    </div>
+@endif

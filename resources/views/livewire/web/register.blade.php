@@ -63,7 +63,7 @@
 
             <div class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
                
-             <form method="POST" action="{{ route('register') }}" class="space-y-6">
+             <form method="POST" action="{{ url('/register') }}" class="space-y-6">
                     @csrf
 
                     <!-- Hidden Department ID -->
@@ -91,6 +91,18 @@
                                     class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm">
                             </div>
                             @error('email')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <!-- NIDA Number -->
+                        <div>
+                            <label for="nida_number" class="block text-sm font-medium text-gray-700">NIDA Number</label>
+                            <div class="mt-1">
+                                <input id="nida_number" type="text" name="nida_number" value="{{ old('nida_number') }}" required autocomplete="off"
+                                    class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm">
+                            </div>
+                            @error('nida_number')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
                         </div>

@@ -514,10 +514,11 @@ input[type=range]::-moz-range-thumb {
     @if($viewType === 'grid' && $vehicles->count() > 0)
     <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
         @foreach($vehicles as $vehicle)
-        <div class="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden hover:shadow-md transition-all duration-200">
+        <div class="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden hover:shadow-md transition-all duration-200 relative cursor-pointer">
+            <a href="{{ route('view.vehicle', $vehicle->id) }}" aria-label="View vehicle details" class="absolute inset-0 z-10"></a>
             <!-- Vehicle Image with Overlays -->
             <div class="relative">
-                <a href="{{ route('vehicle.list', $vehicle->id) }}" class="block relative">
+                <a href="{{ route('view.vehicle', $vehicle->id) }}" class="block relative">
                 
                 @php
                     $frontImage = $vehicle->frontView();
@@ -555,7 +556,7 @@ input[type=range]::-moz-range-thumb {
                 <!-- Title and Essentials -->
                 <div class="mb-2">
                     <h3 class="font-semibold text-gray-800 text-sm leading-tight truncate">
-                        <a href="{{ route('vehicle.list', $vehicle->id) }}" class="hover:text-green-600">
+                        <a href="{{ route('view.vehicle', $vehicle->id) }}" class="hover:text-green-600">
                             {{ optional($vehicle->make)->name }} {{ optional($vehicle->model)->name }} {{ $vehicle->trim }}
                         </a>
                     </h3>
@@ -622,11 +623,12 @@ input[type=range]::-moz-range-thumb {
     @if($viewType === 'list' && $vehicles->count() > 0)
     <div class="space-y-3">
         @foreach($vehicles as $vehicle)
-        <div class="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden hover:shadow-md transition-all duration-200">
+        <div class="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden hover:shadow-md transition-all duration-200 relative cursor-pointer">
+            <a href="{{ route('view.vehicle', $vehicle->id) }}" aria-label="View vehicle details" class="absolute inset-0 z-10"></a>
             <div class="flex flex-col sm:flex-row">
                 <!-- Image Section - Optimized Size -->
                 <div class="sm:w-1/3 lg:w-1/4 relative">
-                    <a href="{{ route('vehicle.list', $vehicle->id) }}" class="block h-full">
+                    <a href="{{ route('view.vehicle', $vehicle->id) }}" class="block h-full">
                         <img 
                             src="{{ asset('//default/car1.jpg')}}" 
                             alt="{{ optional($vehicle->make)->name }} {{ optional($vehicle->model)->name }}" 
@@ -654,7 +656,7 @@ input[type=range]::-moz-range-thumb {
                         <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-2 gap-2">
                             <div>
                                 <h3 class="font-semibold text-gray-800 text-base leading-tight">
-                                    <a href="{{ route('vehicle.list', $vehicle->id) }}" class="hover:text-green-600">
+                                    <a href="{{ route('view.vehicle', $vehicle->id) }}" class="hover:text-green-600">
                                         {{ optional($vehicle->make)->name }} {{ optional($vehicle->model)->name }} {{ $vehicle->trim }}
                                     </a>
                                 </h3>

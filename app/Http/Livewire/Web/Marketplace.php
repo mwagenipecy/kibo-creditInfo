@@ -7,11 +7,14 @@ use App\Models\Make;
 use App\Models\VehicleModel;
 use App\Models\Shop;
 use App\Models\SparePartRequest;
+use App\Models\SparePartRequestImage;
 use App\Jobs\SendSparePartRequestEmails;
 use Illuminate\Support\Facades\Log;
+use Livewire\WithFileUploads;
 
 class Marketplace extends Component
 {
+    use WithFileUploads;
     public $selectedMake = '';
     public $selectedModel = '';
     public $selectedYear = '';
@@ -22,11 +25,17 @@ class Marketplace extends Component
     public $additionalNotes = '';
     public $customerName = '';
     public $customerEmail = '';
+    public $customerPhone = '';
+    public $images = [];
 
     public $makes;
     public $models = [];
     public $years = [];
     public $shops;
+
+    // Livewire-driven image preview state
+    public $previewOpen = false;
+    public $previewSrc = '';
 
     public function mount()
     {
@@ -80,12 +89,32 @@ class Marketplace extends Component
                 'additional_notes' => $this->additionalNotes,
                 'customer_name' => $this->customerName,
                 'customer_email' => $this->customerEmail,
-                'customer_phone' => null, // No phone number required
+                'customer_phone' => $this->customerPhone,
                 'status' => 'pending',
             ]);
 
-            // Set expiration date (7 days from now)
-            $request->setExpiration();
+            // Set expiration date (1 day from now)
+            $request->setExpiration(1);
+
+            // Store uploaded images (optional)
+            if (is_array($this->images) && count($this->images) > 0) {
+                foreach ($this->images as $file) {
+                    try {
+                        if (!$file) { continue; }
+                        $path = $file->store('spare-part-requests', 'public');
+                        SparePartRequestImage::create([
+                            'spare_part_request_id' => $request->id,
+                            'path' => $path,
+                            'original_name' => method_exists($file, 'getClientOriginalName') ? $file->getClientOriginalName() : null,
+                            'mime_type' => method_exists($file, 'getMimeType') ? $file->getMimeType() : null,
+                            'size_bytes' => method_exists($file, 'getSize') ? $file->getSize() : null,
+                        ]);
+                    } catch (\Throwable $e) {
+                        Log::error('Failed to save request image', ['error' => $e->getMessage()]);
+                        // Continue processing other images
+                    }
+                }
+            }
 
             // Dispatch job to send emails asynchronously
             SendSparePartRequestEmails::dispatch($request, $this->shops);
@@ -113,6 +142,19 @@ class Marketplace extends Component
         }
     }
 
+    // Preview controls (no Alpine)
+    public function openPreview($src)
+    {
+        $this->previewSrc = $src;
+        $this->previewOpen = true;
+    }
+
+    public function closePreview()
+    {
+        $this->previewOpen = false;
+        $this->previewSrc = '';
+    }
+
     public function resetForm()
     {
         $this->selectedMake = '';
@@ -125,6 +167,8 @@ class Marketplace extends Component
         $this->additionalNotes = '';
         $this->customerName = '';
         $this->customerEmail = '';
+        $this->customerPhone = '';
+        $this->images = [];
         $this->models = [];
     }
 
@@ -138,6 +182,8 @@ class Marketplace extends Component
             'partCondition' => 'required|in:all,new,used',
             'customerName' => 'required|string|max:255',
             'customerEmail' => 'required|email|max:255',
+            'customerPhone' => 'required|string|max:30',
+            'images.*' => 'nullable|image|max:4096',
             'partNumber' => 'nullable|string|max:100',
             'partSize' => 'nullable|string|max:100',
             'additionalNotes' => 'nullable|string',

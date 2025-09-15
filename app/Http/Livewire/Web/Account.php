@@ -137,8 +137,10 @@ class Account extends Component
             Storage::delete('public/' . $user->profile_photo_path);
         }
         
-        // Logout and delete account
-        Auth::logout();
+        // Logout (use session/web guard) and mark account deleted
+        Auth::guard('web')->logout();
+        request()->session()->invalidate();
+        request()->session()->regenerateToken();
         $user->update([
             'status'=>'DELETED'
         ]);
