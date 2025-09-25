@@ -425,15 +425,265 @@
                                 </div>
                                 <div class="grid grid-cols-2">
                                     <div class="text-sm text-gray-500">Interest Rate</div>
-                                    <div class="text-sm font-medium text-gray-900">{{ $interest_rate }}%
+                                    <div class="text-sm font-medium text-gray-900">
+                                        {{ number_format($interest_rate, 2) }}%
+                                        <span class="text-xs text-orange-600 ml-1">(Approximate)</span>
                                     </div>
                                 </div>
                                 <div class="grid grid-cols-2">
                                     <div class="text-sm text-gray-500">Monthly Payment</div>
-                                    <div class="text-sm font-medium text-gray-900">TZS
-                                        {{ number_format($monthlyPayment) }}</div>
+                                    <div class="text-sm font-medium text-gray-900">
+                                        TZS {{ number_format($monthlyPayment) }}
+                                        <span class="text-xs text-orange-600 ml-1">(Approximate)</span>
+                                    </div>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Detailed Payment Breakdown -->
+                @if($monthlyPayment > 0 && $application->tenure && $application->loan_amount && $interest_rate > 0)
+                @php
+                    $totalPayment = $monthlyPayment * $application->tenure;
+                    $totalInterest = $totalPayment - $application->loan_amount;
+                    $monthlyInterestRate = $interest_rate / 100 / 12;
+                    $interestToPrincipalRatio = ($totalInterest / $application->loan_amount) * 100;
+                @endphp
+                
+                <div class="bg-gradient-to-r from-blue-50 to-green-50 rounded-xl shadow-md p-6 mb-6 border border-blue-200">
+                    <div class="flex items-center mb-6">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-600 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                        </svg>
+                        <h2 class="text-xl font-bold text-gray-800">Payment Breakdown</h2>
+                    </div>
+                    
+                    <!-- Payment Summary Cards -->
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                        <div class="bg-white p-4 rounded-lg border border-gray-200 text-center">
+                            <p class="text-sm text-gray-600 mb-1">Loan Term</p>
+                            <p class="text-xl font-bold text-blue-600">{{ $application->tenure }} months</p>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg border border-gray-200 text-center">
+                            <p class="text-sm text-gray-600 mb-1">Total Payment</p>
+                            <p class="text-xl font-bold text-purple-600">TZS {{ number_format($totalPayment) }}</p>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg border border-gray-200 text-center">
+                            <p class="text-sm text-gray-600 mb-1">Total Interest</p>
+                            <p class="text-xl font-bold text-red-600">TZS {{ number_format($totalInterest) }}</p>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg border border-gray-200 text-center">
+                            <p class="text-sm text-gray-600 mb-1">Interest Ratio</p>
+                            <p class="text-xl font-bold text-orange-600">{{ number_format($interestToPrincipalRatio, 1) }}%</p>
+                        </div>
+                    </div>
+
+                    <!-- Detailed Information -->
+                    <div class="bg-white p-4 rounded-lg border border-gray-200">
+                        <h5 class="font-semibold text-gray-800 mb-4">Detailed Calculations</h5>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="space-y-3">
+                                <div class="flex justify-between items-center py-2 border-b border-gray-100">
+                                    <span class="text-sm text-gray-600">Principal Amount:</span>
+                                    <span class="text-sm font-medium text-green-600">TZS {{ number_format($application->loan_amount) }}</span>
+                                </div>
+                                <div class="flex justify-between items-center py-2 border-b border-gray-100">
+                                    <span class="text-sm text-gray-600">Annual Interest Rate:</span>
+                                    <span class="text-sm font-medium text-blue-600">{{ number_format($interest_rate, 2) }}%</span>
+                                </div>
+                                <div class="flex justify-between items-center py-2 border-b border-gray-100">
+                                    <span class="text-sm text-gray-600">Monthly Interest Rate:</span>
+                                    <span class="text-sm font-medium text-blue-600">{{ number_format($monthlyInterestRate * 100, 3) }}%</span>
+                                </div>
+                                <div class="flex justify-between items-center py-2 border-b border-gray-100">
+                                    <span class="text-sm text-gray-600">Monthly Payment (EMI):</span>
+                                    <span class="text-sm font-medium text-purple-600">TZS {{ number_format($monthlyPayment) }}</span>
+                                </div>
+                            </div>
+                            <div class="space-y-3">
+                                <div class="flex justify-between items-center py-2 border-b border-gray-100">
+                                    <span class="text-sm text-gray-600">Total Repayment:</span>
+                                    <span class="text-sm font-medium">TZS {{ number_format($totalPayment) }}</span>
+                                </div>
+                                <div class="flex justify-between items-center py-2 border-b border-gray-100">
+                                    <span class="text-sm text-gray-600">Total Interest:</span>
+                                    <span class="text-sm font-medium text-red-600">TZS {{ number_format($totalInterest) }}</span>
+                                </div>
+                                <div class="flex justify-between items-center py-2 border-b border-gray-100">
+                                    <span class="text-sm text-gray-600">Interest to Principal Ratio:</span>
+                                    <span class="text-sm font-medium text-orange-600">{{ number_format($interestToPrincipalRatio, 1) }}%</span>
+                                </div>
+                                <div class="flex justify-between items-center py-2 border-b border-gray-100">
+                                    <span class="text-sm text-gray-600">Down Payment:</span>
+                                    <span class="text-sm font-medium text-gray-700">TZS {{ number_format($application->down_payment) }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Payment Schedule Preview -->
+                    <div class="mt-4 bg-gray-50 p-4 rounded-lg border border-gray-200">
+                        <h6 class="font-medium text-gray-700 mb-3">Payment Summary</h6>
+                        <div class="text-sm text-gray-600 space-y-1">
+                            <p><strong>Monthly Payment:</strong> TZS {{ number_format($monthlyPayment) }} for {{ $application->tenure }} months</p>
+                            <p><strong>Total Amount to Pay:</strong> TZS {{ number_format($totalPayment) }}</p>
+                            <p><strong>Interest Cost:</strong> TZS {{ number_format($totalInterest) }} ({{ number_format($interestToPrincipalRatio, 1) }}% of principal)</p>
+                        </div>
+                    </div>
+                </div>
+                @endif
+
+                <!-- Monthly Payment Schedule Preview -->
+                @if($monthlyPayment > 0 && $application->tenure && $application->loan_amount && $interest_rate > 0)
+                <div class="bg-white rounded-xl shadow-md p-6 mb-6">
+                    <div class="flex items-center mb-6">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-green-600 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        <h2 class="text-xl font-bold text-gray-800">Payment Schedule Preview</h2>
+                    </div>
+                    
+                    <!-- Payment Timeline -->
+                    <div class="space-y-4">
+                        <!-- First Payment -->
+                        <div class="flex items-center justify-between p-4 bg-green-50 border border-green-200 rounded-lg">
+                            <div class="flex items-center">
+                                <div class="w-3 h-3 bg-green-500 rounded-full mr-3"></div>
+                                <div>
+                                    <p class="font-medium text-gray-900">Month 1</p>
+                                    <p class="text-sm text-gray-600">First payment due</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <p class="font-bold text-green-600">TZS {{ number_format($monthlyPayment) }}</p>
+                                <p class="text-xs text-gray-500">Monthly EMI</p>
+                            </div>
+                        </div>
+
+                        <!-- Middle Payments -->
+                        <div class="flex items-center justify-between p-4 bg-gray-50 border border-gray-200 rounded-lg">
+                            <div class="flex items-center">
+                                <div class="w-3 h-3 bg-gray-400 rounded-full mr-3"></div>
+                                <div>
+                                    <p class="font-medium text-gray-900">Months 2-{{ $application->tenure - 1 }}</p>
+                                    <p class="text-sm text-gray-600">Regular payments</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <p class="font-bold text-gray-600">TZS {{ number_format($monthlyPayment) }}</p>
+                                <p class="text-xs text-gray-500">Monthly EMI</p>
+                            </div>
+                        </div>
+
+                        <!-- Final Payment -->
+                        <div class="flex items-center justify-between p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                            <div class="flex items-center">
+                                <div class="w-3 h-3 bg-blue-500 rounded-full mr-3"></div>
+                                <div>
+                                    <p class="font-medium text-gray-900">Month {{ $application->tenure }}</p>
+                                    <p class="text-sm text-gray-600">Final payment</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <p class="font-bold text-blue-600">TZS {{ number_format($monthlyPayment) }}</p>
+                                <p class="text-xs text-gray-500">Monthly EMI</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Payment Summary -->
+                    <div class="mt-6 p-4 bg-gradient-to-r from-green-50 to-blue-50 border border-gray-200 rounded-lg">
+                        <h6 class="font-semibold text-gray-800 mb-3">Payment Summary</h6>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                            <div class="text-center">
+                                <p class="text-gray-600">Monthly Payment</p>
+                                <p class="font-bold text-lg text-green-600">TZS {{ number_format($monthlyPayment) }}</p>
+                            </div>
+                            <div class="text-center">
+                                <p class="text-gray-600">Payment Duration</p>
+                                <p class="font-bold text-lg text-blue-600">{{ $application->tenure }} months</p>
+                            </div>
+                            <div class="text-center">
+                                <p class="text-gray-600">Total Amount</p>
+                                <p class="font-bold text-lg text-purple-600">TZS {{ number_format($monthlyPayment * $application->tenure) }}</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Payment Progress Visualization -->
+                        <div class="mt-4 p-4 bg-white border border-gray-200 rounded-lg">
+                            <h6 class="font-medium text-gray-700 mb-3">Payment Breakdown Visualization</h6>
+                            <div class="space-y-3">
+                                <!-- Principal vs Interest -->
+                                @php
+                                    $principalPercentage = ($application->loan_amount / ($monthlyPayment * $application->tenure)) * 100;
+                                    $interestPercentage = 100 - $principalPercentage;
+                                @endphp
+                                <div>
+                                    <div class="flex justify-between text-sm mb-1">
+                                        <span class="text-gray-600">Principal vs Interest</span>
+                                        <span class="text-gray-500">{{ number_format($principalPercentage, 1) }}% / {{ number_format($interestPercentage, 1) }}%</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-3">
+                                        <div class="flex h-3 rounded-full overflow-hidden">
+                                            <div class="bg-green-500" style="width: {{ $principalPercentage }}%"></div>
+                                            <div class="bg-red-500" style="width: {{ $interestPercentage }}%"></div>
+                                        </div>
+                                    </div>
+                                    <div class="flex justify-between text-xs text-gray-500 mt-1">
+                                        <span>Principal: TZS {{ number_format($application->loan_amount) }}</span>
+                                        <span>Interest: TZS {{ number_format($monthlyPayment * $application->tenure - $application->loan_amount) }}</span>
+                                    </div>
+                                </div>
+                                
+                                <!-- Payment Timeline Progress -->
+                                <div>
+                                    <div class="flex justify-between text-sm mb-1">
+                                        <span class="text-gray-600">Payment Progress</span>
+                                        <span class="text-gray-500">0 / {{ $application->tenure }} months</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-2">
+                                        <div class="bg-blue-500 h-2 rounded-full" style="width: 0%"></div>
+                                    </div>
+                                    <p class="text-xs text-gray-500 mt-1">Loan payments will begin after approval</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Important Notes -->
+                    <div class="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                        <div class="flex items-start">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-yellow-500 mt-0.5 mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <div>
+                                <p class="text-sm text-yellow-800 font-medium mb-1">Payment Information</p>
+                                <ul class="text-xs text-yellow-700 space-y-1">
+                                    <li>• Payments are due on the same date each month</li>
+                                    <li>• Late payments may incur additional fees</li>
+                                    <li>• Early payment may be possible with lender approval</li>
+                                    <li>• Final terms will be confirmed upon loan approval</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @endif
+
+                <!-- Loan Information Disclaimer -->
+                <div class="bg-orange-50 border border-orange-200 rounded-xl p-4 mb-6">
+                    <div class="flex items-start">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-orange-500 mt-0.5 mr-3 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                        </svg>
+                        <div>
+                            <h4 class="font-medium text-orange-800 mb-1">Important Notice</h4>
+                            <p class="text-sm text-orange-700">
+                                The interest rate and monthly payment shown above are approximate estimates based on current financing criteria. 
+                                Final rates and payments may vary based on credit approval, loan terms, and other factors. 
+                                Please contact the lender for exact terms and conditions.
+                            </p>
                         </div>
                     </div>
                 </div>

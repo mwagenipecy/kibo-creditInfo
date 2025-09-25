@@ -60,6 +60,8 @@ class LoanApplication extends Component
     
     // Calculated values
     public $estimated_payment = null;
+    public $interest_rate = 0;
+    public $paymentOptions = [];
     
     // File uploads
     public $id_document;
@@ -140,10 +142,26 @@ class LoanApplication extends Component
 
        // dd($this->vehicle->make_id, $this->vehicle->model_id, $lender_id);
 
-        $this->downPaymentPercent = LenderFinancingCriteria::where('lender_id', $lender_id)
+        $criteria = LenderFinancingCriteria::where('lender_id', $lender_id)
                                     ->where('make_id', $this->vehicle->make_id)
                                     ->where('model_id', $this->vehicle->model_id)
-                                    ->first()->min_down_payment_percent ?? 0;
+                                    ->first();
+                                    
+        $this->downPaymentPercent = $criteria->min_down_payment_percent ?? 0;
+        
+        // Get interest rate from criteria
+        if ($criteria) {
+            $this->interest_rate = $criteria->min_interest_rate ?? $criteria->max_interest_rate ?? 0;
+        } else {
+            // Fallback to lender's general interest rate range
+            $lender = $this->lender;
+            if ($lender) {
+                // Parse the interest rate range (e.g., "12-15%")
+                $range = $lender->interest_rate_range ?? '0-0';
+                $rates = explode('-', str_replace('%', '', $range));
+                $this->interest_rate = isset($rates[0]) ? (float)$rates[0] : 0;
+            }
+        }
 
         $this->regions = Region::all();
 
@@ -161,6 +179,11 @@ class LoanApplication extends Component
         
         $this->purchase_price = $this->vehicle->price;
         $this->calculateLoanAmount();
+        
+        // Calculate initial payment options
+        if ($this->loan_amount && $this->interest_rate) {
+            $this->calculatePaymentOptions();
+        }
     }
     
   
@@ -173,6 +196,12 @@ class LoanApplication extends Component
     
     // When loan product changes, calculate estimated payment
     public function updatedLoanProductId()
+    {
+        $this->calculateEstimatedPayment();
+    }
+    
+    // When tenure changes, calculate estimated payment
+    public function updatedTenure()
     {
         $this->calculateEstimatedPayment();
     }
@@ -191,25 +220,24 @@ class LoanApplication extends Component
         if ($this->loanProductId) {
             $this->calculateEstimatedPayment();
         }
+        
+        // Recalculate payment options
+        if ($this->interest_rate) {
+            $this->calculatePaymentOptions();
+        }
     }
     
     protected function calculateEstimatedPayment()
     {
-        if (!$this->loanProductId || !$this->loan_amount) {
-            $this->estimated_payment = null;
-            return;
-        }
-        
-        $loanProduct = LoanProduct::find($this->loanProductId);
-        if (!$loanProduct) {
+        if (!$this->tenure || !$this->loan_amount || !$this->interest_rate) {
             $this->estimated_payment = null;
             return;
         }
         
         // Calculate monthly payment using the loan formula
         $principal = $this->loan_amount;
-        $rate = $loanProduct->interest_rate / 100 / 12; // Monthly interest rate
-        $term = $loanProduct->term; // Months
+        $rate = $this->interest_rate / 100 / 12; // Monthly interest rate
+        $term = $this->tenure; // Months
         
         // Formula: PMT = P * (r * (1+r)^n) / ((1+r)^n - 1)
         if ($rate == 0) {
@@ -220,6 +248,41 @@ class LoanApplication extends Component
         
         // Round to 2 decimal places
         $this->estimated_payment = round($this->estimated_payment, 2);
+        
+        // Calculate payment options for different terms
+        $this->calculatePaymentOptions();
+    }
+    
+    protected function calculatePaymentOptions()
+    {
+        if (!$this->loan_amount || !$this->interest_rate) {
+            $this->paymentOptions = [];
+            return;
+        }
+        
+        $principal = $this->loan_amount;
+        $rate = $this->interest_rate / 100 / 12; // Monthly interest rate
+        $this->paymentOptions = [];
+        
+        // Calculate for each available loan term
+        foreach ($this->loanProducts as $term) {
+            if ($rate == 0) {
+                $monthlyPayment = ($term == 0) ? $principal : $principal / $term;
+            } else {
+                $monthlyPayment = $principal * ($rate * pow(1 + $rate, $term)) / (pow(1 + $rate, $term) - 1);
+            }
+            
+            $totalPayment = $monthlyPayment * $term;
+            $totalInterest = $totalPayment - $principal;
+            
+            $this->paymentOptions[] = [
+                'term' => $term,
+                'monthly_payment' => round($monthlyPayment, 2),
+                'total_payment' => round($totalPayment, 2),
+                'total_interest' => round($totalInterest, 2),
+                'is_selected' => $term == $this->tenure
+            ];
+        }
     }
     
     /**

@@ -26,7 +26,6 @@ class ApplicationSummary extends Component
     public $employerMessageSentDate = null;
 
     public $statusFilter = 'ALL';
-    public $isModalOpen = false;
     public $isImageModalOpen = false;
 
     public $isApplicationModalOpen = false;
@@ -399,15 +398,6 @@ JSON;
         $this->selectedImageIndex = null;
     }
 
-    public function openApplicationModal()
-    {
-        $this->isModalOpen = true;
-    }
-
-    public function closeApplicationModal()
-    {
-        $this->isModalOpen = false;
-    }
 
     // public function acceptApplication($id)
     // {
