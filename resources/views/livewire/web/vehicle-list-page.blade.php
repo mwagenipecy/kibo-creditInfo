@@ -629,11 +629,20 @@ input[type=range]::-moz-range-thumb {
                 <!-- Image Section - Optimized Size -->
                 <div class="sm:w-1/3 lg:w-1/4 relative">
                     <a href="{{ route('view.vehicle', $vehicle->id) }}" class="block h-full">
+                        @php
+                            $frontImage = $vehicle->frontView();
+                        @endphp
                         <img 
-                            src="{{ asset('//default/car1.jpg')}}" 
+                            src="{{ $frontImage ? asset('storage/' . $frontImage->image_url) : asset('default/car1.jpg') }}" 
                             alt="{{ optional($vehicle->make)->name }} {{ optional($vehicle->model)->name }}" 
                             class="w-full h-48 sm:h-full object-cover"
+                            onerror="this.onerror=null;this.src='{{ asset('default/car1.jpg') }}';"
                         >
+                        
+                        <!-- Price Tag - Top Left -->
+                        <div class="absolute top-2 left-2 bg-white py-1 px-2 rounded shadow-sm text-green-600 font-bold text-sm">
+                            TZS {{ number_format($vehicle->price) }}
+                        </div>
                         
                         <!-- Feature Badge - If Featured -->
                         @if($vehicle->is_featured)

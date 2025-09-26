@@ -231,13 +231,25 @@
                                         <span>View Details</span>
                                     </button>
                                     
-                                    <button wire:click="getDirections({{ $garageObj->id }})" 
-                                            class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-semibold flex items-center space-x-2 transition-colors">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/>
-                                        </svg>
-                                        <span>Get Directions</span>
-                                    </button>
+                                    @if($garageObj->latitude && $garageObj->longitude)
+                                        <a href="https://www.google.com/maps/dir/?api=1&destination={{ $garageObj->latitude }},{{ $garageObj->longitude }}" 
+                                           target="_blank"
+                                           class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-semibold flex items-center space-x-2 transition-colors">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/>
+                                            </svg>
+                                            <span>Get Directions</span>
+                                        </a>
+                                    @else
+                                        <a href="https://www.google.com/maps/dir/?api=1&destination={{ urlencode($garageObj->full_address) }}" 
+                                           target="_blank"
+                                           class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-semibold flex items-center space-x-2 transition-colors">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/>
+                                            </svg>
+                                            <span>Get Directions</span>
+                                        </a>
+                                    @endif
                                     
                                     <a href="tel:{{ $garageObj->phone }}" 
                                        class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg text-sm font-semibold flex items-center space-x-2 transition-colors">
@@ -371,13 +383,25 @@
                 </div>
                 
                 <div class="bg-gray-50 px-6 py-4 sm:px-6 sm:flex sm:flex-row-reverse space-y-3 sm:space-y-0">
-                    <button wire:click="getDirections({{ $selectedGarage->id }})" 
-                            class="w-full inline-flex justify-center rounded-lg border border-transparent shadow-sm px-4 py-2 bg-green-600 text-base font-semibold text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:ml-3 sm:w-auto sm:text-sm transition-colors">
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/>
-                        </svg>
-                        Get Directions
-                    </button>
+                    @if($selectedGarage->latitude && $selectedGarage->longitude)
+                        <a href="https://www.google.com/maps/dir/?api=1&destination={{ $selectedGarage->latitude }},{{ $selectedGarage->longitude }}" 
+                           target="_blank"
+                           class="w-full inline-flex justify-center rounded-lg border border-transparent shadow-sm px-4 py-2 bg-green-600 text-base font-semibold text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:ml-3 sm:w-auto sm:text-sm transition-colors">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/>
+                            </svg>
+                            Get Directions
+                        </a>
+                    @else
+                        <a href="https://www.google.com/maps/dir/?api=1&destination={{ urlencode($selectedGarage->full_address) }}" 
+                           target="_blank"
+                           class="w-full inline-flex justify-center rounded-lg border border-transparent shadow-sm px-4 py-2 bg-green-600 text-base font-semibold text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:ml-3 sm:w-auto sm:text-sm transition-colors">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/>
+                            </svg>
+                            Get Directions
+                        </a>
+                    @endif
                     
                     <a href="tel:{{ $selectedGarage->phone }}" 
                        class="w-full inline-flex justify-center rounded-lg border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-semibold text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm transition-colors">
@@ -462,9 +486,24 @@
                 showNotification(event.type, event.message);
             });
             
-            // Listen for directions event
+            // Listen for directions event (new method)
             Livewire.on('openDirections', (event) => {
-                window.open(event.url, '_blank');
+                console.log('Directions event received (new method):', event);
+                
+                // Simple approach - just open the URL directly
+                if (event.url) {
+                    window.open(event.url, '_blank');
+                }
+            });
+            
+            // Listen for directions event (old method)
+            Livewire.on('openDirections', (url, garageName) => {
+                console.log('Directions event received (old method):', url, garageName);
+                
+                // Simple approach - just open the URL directly
+                if (url) {
+                    window.open(url, '_blank');
+                }
             });
         });
     </script>

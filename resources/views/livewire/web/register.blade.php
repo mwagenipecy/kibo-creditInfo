@@ -47,10 +47,10 @@
     </div>
 
     <!-- Right side - Registration Form -->
-    <div class="w-full lg:w-1/2 flex items-center justify-center p-6">
-        <div class="w-full max-w-md">
-            <div class="text-center mb-10">
-                <h2 class="mt-6 text-3xl font-extrabold text-gray-900">
+    <div class="w-full lg:w-1/2 flex items-center justify-center p-8 lg:p-12">
+        <div class="w-full max-w-2xl">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-extrabold text-gray-900">
                     Create your account
                 </h2>
                 <p class="mt-2 text-sm text-gray-600">
@@ -61,7 +61,7 @@
                 </p>
             </div>
 
-            <div class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+            <div class="bg-white py-10 px-6 shadow-xl rounded-2xl border border-gray-100">
                
              <form method="POST" action="{{ url('/register') }}" class="space-y-6">
                     @csrf
@@ -69,86 +69,97 @@
                     <!-- Hidden Department ID -->
                     <input type="hidden" name="department_id" value="10">
 
-                    <!-- Two Column Layout for Form Fields -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <!-- Name -->
-                        <div>
-                            <label for="name" class="block text-sm font-medium text-gray-700">Full Name</label>
-                            <div class="mt-1">
-                                <input id="name" type="text" name="name" value="{{ old('name') }}" required autofocus autocomplete="name"
-                                    class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm">
+                    <!-- Mixed Layout for Form Fields -->
+                    <div class="space-y-6">
+                        <!-- Name and Email in one row -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- Name -->
+                            <div>
+                                <label for="name" class="block text-sm font-medium text-gray-700">Full Name</label>
+                                <div class="mt-1">
+                                    <input id="name" type="text" name="name" value="{{ old('name') }}" required autofocus autocomplete="name"
+                                        class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm">
+                                </div>
+                                @error('name')
+                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
                             </div>
-                            @error('name')
-                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                            @enderror
+
+                            <!-- Email Address -->
+                            <div>
+                                <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+                                <div class="mt-1">
+                                    <input id="email" type="email" name="email" value="{{ old('email') }}" required autocomplete="username"
+                                        class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm">
+                                </div>
+                                @error('email')
+                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>
                         </div>
 
-                        <!-- Email Address -->
-                        <div>
-                            <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
-                            <div class="mt-1">
-                                <input id="email" type="email" name="email" value="{{ old('email') }}" required autocomplete="username"
-                                    class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm">
-                            </div>
-                            @error('email')
-                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                            @enderror
-                        </div>
-
-                        <!-- NIDA Number -->
+                        <!-- NIDA Number - Full width -->
                         <div>
                             <label for="nida_number" class="block text-sm font-medium text-gray-700">NIDA Number</label>
                             <div class="mt-1">
                                 <input id="nida_number" type="text" name="nida_number" value="{{ old('nida_number') }}" required autocomplete="off"
+                                    placeholder="20060329-14129-00001-27" maxlength="23"
                                     class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm">
                             </div>
                             @error('nida_number')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
+                            <p class="mt-1 text-xs text-gray-500">Format: YYYYMMDD-XXXXX-XXXXX-XX (Year must be greater than 1900)</p>
                         </div>
 
-                        <!-- Phone Number -->
-                        <div>
-                            <label for="phone" class="block text-sm font-medium text-gray-700">Phone Number</label>
-                            <div class="mt-1">
-                                <input id="phone" type="text" name="phone_number" value="{{ old('phone') }}" required autocomplete="tel"
-                                    class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm">
+                        <!-- Phone Number and Address in one row -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- Phone Number -->
+                            <div>
+                                <label for="phone" class="block text-sm font-medium text-gray-700">Phone Number</label>
+                                <div class="mt-1">
+                                    <input id="phone" type="text" name="phone_number" value="{{ old('phone') }}" required autocomplete="tel"
+                                        class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm">
+                                </div>
+                                @error('phone')
+                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
                             </div>
-                            @error('phone')
-                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                            @enderror
-                        </div>
 
-                        <!-- Address -->
-                        <div>
-                            <label for="address" class="block text-sm font-medium text-gray-700">Address</label>
-                            <div class="mt-1">
-                                <input id="address" type="text" name="address" value="{{ old('address') }}" required autocomplete="street-address"
-                                    class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm">
+                            <!-- Address -->
+                            <div>
+                                <label for="address" class="block text-sm font-medium text-gray-700">Address</label>
+                                <div class="mt-1">
+                                    <input id="address" type="text" name="address" value="{{ old('address') }}" required autocomplete="street-address"
+                                        class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm">
+                                </div>
+                                @error('address')
+                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
                             </div>
-                            @error('address')
-                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                            @enderror
                         </div>
 
-                        <!-- Password -->
-                        <div>
-                            <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
-                            <div class="mt-1">
-                                <input id="password" type="password" name="password" required autocomplete="new-password"
-                                    class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm">
+                        <!-- Password and Confirm Password in one row -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- Password -->
+                            <div>
+                                <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+                                <div class="mt-1">
+                                    <input id="password" type="password" name="password" required autocomplete="new-password"
+                                        class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm">
+                                </div>
+                                @error('password')
+                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
                             </div>
-                            @error('password')
-                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                            @enderror
-                        </div>
 
-                        <!-- Confirm Password -->
-                        <div>
-                            <label for="password_confirmation" class="block text-sm font-medium text-gray-700">Confirm Password</label>
-                            <div class="mt-1">
-                                <input id="password_confirmation" type="password" name="password_confirmation" required autocomplete="new-password"
-                                    class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm">
+                            <!-- Confirm Password -->
+                            <div>
+                                <label for="password_confirmation" class="block text-sm font-medium text-gray-700">Confirm Password</label>
+                                <div class="mt-1">
+                                    <input id="password_confirmation" type="password" name="password_confirmation" required autocomplete="new-password"
+                                        class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm">
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -240,3 +251,65 @@
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const nidaInput = document.getElementById('nida_number');
+    
+    nidaInput.addEventListener('input', function(e) {
+        let value = e.target.value.replace(/[^0-9]/g, ''); // Remove all non-digits
+        
+        // Limit to 20 digits (excluding hyphens)
+        if (value.length > 20) {
+            value = value.substring(0, 20);
+        }
+        
+        // Format the value as user types
+        let formatted = '';
+        
+        if (value.length > 0) {
+            // First 8 digits (YYYYMMDD)
+            if (value.length <= 8) {
+                formatted = value;
+            } else if (value.length <= 13) {
+                // Add first hyphen after 8 digits
+                formatted = value.substring(0, 8) + '-' + value.substring(8);
+            } else if (value.length <= 18) {
+                // Add second hyphen after 13 digits
+                formatted = value.substring(0, 8) + '-' + value.substring(8, 13) + '-' + value.substring(13);
+            } else {
+                // Add third hyphen after 18 digits
+                formatted = value.substring(0, 8) + '-' + value.substring(8, 13) + '-' + value.substring(13, 18) + '-' + value.substring(18);
+            }
+        }
+        
+        e.target.value = formatted;
+    });
+    
+    // Prevent pasting invalid characters
+    nidaInput.addEventListener('paste', function(e) {
+        e.preventDefault();
+        let pastedData = e.clipboardData.getData('text').replace(/[^0-9]/g, '');
+        
+        if (pastedData.length > 20) {
+            pastedData = pastedData.substring(0, 20);
+        }
+        
+        // Format the pasted data
+        let formatted = '';
+        if (pastedData.length > 0) {
+            if (pastedData.length <= 8) {
+                formatted = pastedData;
+            } else if (pastedData.length <= 13) {
+                formatted = pastedData.substring(0, 8) + '-' + pastedData.substring(8);
+            } else if (pastedData.length <= 18) {
+                formatted = pastedData.substring(0, 8) + '-' + pastedData.substring(8, 13) + '-' + pastedData.substring(13);
+            } else {
+                formatted = pastedData.substring(0, 8) + '-' + pastedData.substring(8, 13) + '-' + pastedData.substring(13, 18) + '-' + pastedData.substring(18);
+            }
+        }
+        
+        e.target.value = formatted;
+    });
+});
+</script>

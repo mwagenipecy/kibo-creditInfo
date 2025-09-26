@@ -142,30 +142,38 @@ class GarageFinder extends Component
 
     public function getDirections($garageId)
     {
-        $garage = Garage::findOrFail($garageId);
-        
-        // Build the Google Maps URL with multiple options for better accuracy
-        $baseUrl = "https://www.google.com/maps/dir/";
-        
-        // If we have coordinates, use them for precise location
-        if ($garage->latitude && $garage->longitude) {
-            $destination = "{$garage->latitude},{$garage->longitude}";
-        } else {
-            // Fallback to address if coordinates are not available
-            $destination = urlencode($garage->full_address);
+        try {
+            $garage = Garage::findOrFail($garageId);
+            
+            // Debug: Log the garage details
+            \Log::info('Getting directions for garage', [
+                'id' => $garage->id,
+                'name' => $garage->name,
+                'latitude' => $garage->latitude,
+                'longitude' => $garage->longitude,
+                'address' => $garage->full_address
+            ]);
+            
+            // Use the improved getDirectionsUrl method from the Garage model
+            $url = $garage->getDirectionsUrl();
+            
+            // Debug: Log the generated URL
+            \Log::info('Generated directions URL', ['url' => $url]);
+            
+            // Open in new tab/window using multiple methods for compatibility
+            $this->dispatchBrowserEvent('openDirections', [
+                'url' => $url,
+                'garageName' => $garage->name
+            ]);
+            
+            // Also try the older Livewire method for compatibility
+            $this->emit('openDirections', $url, $garage->name);
+            
+            $this->showNotification('info', "Opening directions to {$garage->name} in Google Maps...");
+        } catch (\Exception $e) {
+            \Log::error('Error in getDirections', ['error' => $e->getMessage()]);
+            $this->showNotification('error', "Error getting directions: " . $e->getMessage());
         }
-        
-        // Add garage name for better context
-        $garageName = urlencode($garage->name);
-        $url = "{$baseUrl}{$destination}/{$garageName}";
-        
-        // Open in new tab/window
-        $this->dispatchBrowserEvent('openDirections', [
-            'url' => $url,
-            'garageName' => $garage->name
-        ]);
-        
-        $this->showNotification('info', "Opening directions to {$garage->name} in Google Maps...");
     }
 
     public function clearFilters()

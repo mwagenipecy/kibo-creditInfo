@@ -193,12 +193,17 @@ class Garage extends Model
     {
         if ($fromLatitude && $fromLongitude) {
             if ($this->latitude && $this->longitude) {
-                return "https://www.google.com/maps/dir/{$fromLatitude},{$fromLongitude}/{$this->latitude},{$this->longitude}";
+                return "https://www.google.com/maps/dir/?api=1&origin={$fromLatitude},{$fromLongitude}&destination={$this->latitude},{$this->longitude}";
             }
-            return "https://www.google.com/maps/dir/{$fromLatitude},{$fromLongitude}/" . urlencode($this->full_address);
+            return "https://www.google.com/maps/dir/?api=1&origin={$fromLatitude},{$fromLongitude}&destination=" . urlencode($this->full_address);
         }
 
-        return $this->google_maps_url;
+        // Return directions without origin (user's current location will be used)
+        if ($this->latitude && $this->longitude) {
+            return "https://www.google.com/maps/dir/?api=1&destination={$this->latitude},{$this->longitude}";
+        }
+        
+        return "https://www.google.com/maps/dir/?api=1&destination=" . urlencode($this->full_address);
     }
 
     /**
