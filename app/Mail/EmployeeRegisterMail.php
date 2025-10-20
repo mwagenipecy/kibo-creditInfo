@@ -71,7 +71,7 @@ public function build(){
 
 
 
-    return $this->from('MFI@gmail.com','MFI')->subject('Login Information')
+    return $this->from(config('mail.from.address'), config('mail.from.name'))->subject('Employee Registration - KiboAuto')
             ->view('emails.employeeRegister')->with(['link'=>$link,'phone_number'=>$employee->phone,'officer_email'=>$employee->email ,
              'email'=>$this->user_email,'password'=>$this->password,'name'=>$this->name
 

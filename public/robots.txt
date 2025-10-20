@@ -1,2 +1,20 @@
 User-agent: *
-Disallow:
+Allow: /
+
+# Sitemap
+Sitemap: https://kiboauto.co.tz/sitemap.xml
+
+# Disallow admin and private areas
+Disallow: /admin/
+Disallow: /dashboard/
+Disallow: /livewire/
+Disallow: /storage/
+Disallow: /vendor/
+Disallow: /api/
+
+# Allow important pages
+Allow: /welcome
+Allow: /vehicle/list
+Allow: /about-us
+Allow: /contact
+Allow: /client-registration

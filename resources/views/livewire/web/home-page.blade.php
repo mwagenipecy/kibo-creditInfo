@@ -3,6 +3,8 @@
 
 <!-- resources/views/livewire/home-page.blade.php -->
 <div class="bg-white w-full">
+    <!-- SEO H1 Tag - Hidden but accessible for screen readers -->
+    <h1 class="sr-only">KiboAuto - Tanzania's Premier Vehicle Marketplace</h1>
     <!-- Hero Section with Slideshow -->
 <!-- Enhanced Hero Section with Professional Styling and Balanced Height -->
 <div class="relative" 
@@ -283,6 +285,11 @@
     <!-- Featured Vehicles Section -->
     <div class="py-4 bg-white">
         <div class="container mx-auto px-4">
+            <!-- Section Header -->
+            <div class="text-center mb-8">
+                <h2 class="text-2xl font-bold text-gray-900 mb-2">Featured Vehicles in Tanzania</h2>
+                <p class="text-gray-600">Discover our handpicked selection of premium cars, SUVs, and trucks</p>
+            </div>
            
             
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -470,7 +477,7 @@
     <div class="container mx-auto px-4">
         <!-- Clean Header -->
         <div class="flex justify-between items-center border-b border-gray-200 pb-4 mb-6">
-            <h2 class="text-xl font-bold text-gray-800">Our Advantages</h2>
+            <h2 class="text-xl font-bold text-gray-800">Why Choose KiboAuto for Your Vehicle Purchase</h2>
         </div>
         
         <!-- Features Row -->
@@ -522,8 +529,8 @@
     <div class="py-16 bg-gray-50">
         <div class="container mx-auto px-4">
             <div class="text-center mb-12">
-                <h2 class="text-3xl font-bold text-gray-900">What Our Customers Say</h2>
-                <p class="mt-4 text-lg text-gray-600 max-w-3xl mx-auto">Hear from people who found their perfect vehicles through our platform</p>
+                <h2 class="text-3xl font-bold text-gray-900">Customer Reviews - Success Stories from Tanzania</h2>
+                <p class="mt-4 text-lg text-gray-600 max-w-3xl mx-auto">Hear from satisfied customers who found their perfect vehicles through our trusted car marketplace</p>
             </div>
             
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -536,7 +543,7 @@
                     </div>
                     <p class="mt-4 text-gray-600 italic">I found my dream Toyota Land Cruiser on this platform within days of searching. The connection with the dealer was seamless and the entire process was smooth.</p>
                     <div class="mt-6 flex items-center">
-                        <img src="{{ asset('/cars/icon.avif') }}" alt="Customer" class="w-12 h-12 rounded-full object-cover">
+                        <img src="{{ asset('/cars/icon.avif') }}" alt="Michael Johnson - Satisfied KiboAuto Customer" class="w-12 h-12 rounded-full object-cover">
                         <div class="ml-3">
                             <h4 class="text-base font-semibold text-gray-900">Michael Johnson</h4>
                             <div class="flex mt-1">
@@ -561,7 +568,7 @@
                     </div>
                     <p class="mt-4 text-gray-600 italic">As a first-time car buyer, I appreciated the detailed information provided for each vehicle. It made my decision much easier and I'm very happy with my purchase.</p>
                     <div class="mt-6 flex items-center">
-                        <img src="{{ asset('/cars/icon.avif') }}" alt="Customer" class="w-12 h-12 rounded-full object-cover">
+                        <img src="{{ asset('/cars/icon.avif') }}" alt="David Mwangi - Happy Car Buyer from Tanzania" class="w-12 h-12 rounded-full object-cover">
                         <div class="ml-3">
                             <h4 class="text-base font-semibold text-gray-900">David Mwangi</h4>
                             <div class="flex mt-1">
@@ -594,7 +601,7 @@
     </p>
 
     <div class="mt-6 flex items-center">
-        <img src="{{ asset('/cars/icon.avif') }}" alt="Customer" class="w-12 h-12 rounded-full object-cover">
+        <img src="{{ asset('/cars/icon.avif') }}" alt="Aisha Mwakalinga - KiboAuto Customer Success Story" class="w-12 h-12 rounded-full object-cover">
         <div class="ml-3">
             <h4 class="text-base font-semibold text-gray-900">Aisha Mwakalinga</h4>
             <div class="flex mt-1">
@@ -622,8 +629,8 @@
     <!-- Call to Action -->
     <div class="py-16 bg-green-700">
         <div class="container mx-auto px-4 text-center">
-            <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">Ready to Find Your Perfect Vehicle?</h2>
-            <p class="text-xl text-green-100 mb-8 max-w-3xl mx-auto">Browse our extensive collection of quality vehicles from trusted dealers across the country.</p>
+            <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">Start Your Vehicle Search Today</h2>
+            <p class="text-xl text-green-100 mb-8 max-w-3xl mx-auto">Browse our extensive collection of quality cars, SUVs, and trucks from verified dealers across Tanzania.</p>
             <a href="{{ route('vehicle.list') }}" class="inline-block bg-white hover:bg-gray-100 text-green-700 font-bold py-3 px-8 rounded-lg text-lg transition duration-300 transform hover:scale-105 shadow-lg">
                 Start Browsing Now
             </a>

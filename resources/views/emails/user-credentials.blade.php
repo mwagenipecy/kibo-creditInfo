@@ -1,25 +1,56 @@
-@component('mail::message')
-# Your Account Has Been Created
+@extends('emails.layouts.base')
 
-Dear {{ $user->name }},
+@section('title', 'Welcome to KiboAuto - Your Account Credentials')
 
-Your account has been successfully created on **{{ config('app.name') }}**. Below are your login credentials:
+@section('promo-banner')
+ Welcome to KiboAuto! Your account is ready with access to premium automotive services.
+@endsection
 
-@component('mail::panel')
-**Email/Username:** {{ $user->email }}  
-**Password:** {{ $password }}
-@endcomponent
+@section('content')
+<div class="text-center">
+    <h2> Welcome to KiboAuto!</h2>
+    <p>Dear <strong>{{ $user->name }}</strong>,</p>
+    <p>Congratulations! Your account has been successfully created and you now have access to our comprehensive automotive platform.</p>
+</div>
 
-For security reasons, we recommend changing your password after your first login.
+<div class="info-box success">
+    <h3 style="margin-top: 0; color: #155724;"> Your Login Credentials</h3>
+    <div style="background: #ffffff; border: 2px solid #28a745; padding: 20px; border-radius: 8px; margin: 15px 0;">
+        <table class="table" style="margin: 0;">
+            <tr>
+                <td style="background: #f8f9fa; font-weight: bold; color: #495057;">📧 Email/Username:</td>
+                <td style="background: #ffffff; font-family: monospace; color: #28a745;">{{ $user->email }}</td>
+            </tr>
+            <tr>
+                <td style="background: #f8f9fa; font-weight: bold; color: #495057;">Password:</td>
+                <td style="background: #ffffff; font-family: monospace; color: #28a745;">{{ $password }}</td>
+            </tr>
+        </table>
+    </div>
+    <p style="margin: 0; color: #155724;"><strong>🔒 Keep these credentials secure and don't share them with anyone!</strong></p>
+</div>
 
-@component('mail::button', ['url' => $loginUrl, 'color' => 'primary'])
-Login to Your Account
-@endcomponent
+<div class="btn-center">
+    <a href="{{ $loginUrl }}" class="btn btn-success">🚀 Login to Your Account</a>
+</div>
 
-If you have any questions or need assistance, please contact our support team.
+<div class="info-box">
+    <h4>🛡️ Security Recommendations:</h4>
+    <ul style="margin: 0; padding-left: 20px;">
+        <li><strong>Change your password</strong> after your first login for enhanced security</li>
+        <li>Use a strong, unique password that you don't use elsewhere</li>
+        <li>Enable two-factor authentication if available</li>
+        <li>Never share your login credentials with anyone</li>
+    </ul>
+</div>
 
-Thank you,<br>
-{{ config('app.name') }}
 
-<small>This email contains sensitive information. Please do not share it with anyone.</small>
-@endcomponent
+
+<div class="text-center mt-20">
+    <p style="color: #666; font-size: 14px;">
+        Having trouble logging in? Contact our support team for assistance.
+    </p>
+</div>
+
+
+@endsection

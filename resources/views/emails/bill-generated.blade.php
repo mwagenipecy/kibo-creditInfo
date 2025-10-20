@@ -1,110 +1,100 @@
-{{-- resources/views/emails/bill-generated.blade.php --}}
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>New Bill Generated</title>
-    <style>
-        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 20px; background-color: #f4f4f4; }
-        .container { max-width: 600px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-        .header { text-align: center; border-bottom: 2px solidrgba(0, 255, 30, 0.64); padding-bottom: 20px; margin-bottom: 30px; }
-        .logo { font-size: 24px; font-weight: bold; color:rgba(26, 255, 0, 0.63); margin-bottom: 10px; }
-        .bill-info { background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0; }
-        .amount { font-size: 28px; font-weight: bold; color: #28a745; text-align: center; margin: 20px 0; }
-        .details-table { width: 100%; border-collapse: collapse; margin: 20px 0; }
-        .details-table th, .details-table td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
-        .details-table th { background-color:rgb(30, 119, 3); color: white; }
-        .footer { text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd; color: #666; }
-        .btn { display: inline-block; padding: 12px 24px; background:rgba(5, 200, 76, 0.6); color: white; text-decoration: none; border-radius: 5px; margin: 10px 0; }
-        .btn:hover { background:rgba(21, 179, 0, 0.81); }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="header">
-            <div class="logo">Kibo Finance</div>
-            <h2>New Bill Generated</h2>
-        </div>
+@extends('emails.layouts.base')
 
-        <div class="content">
-            <p>Dear {{ $entity->name }},</p>
-            
-            <p>We hope this email finds you well. A new bill has been generated for your account for the billing period {{ $bill->billing_period_start->format('F d, Y') }} to {{ $bill->billing_period_end->format('F d, Y') }}.</p>
+@section('title', 'New Bill Generated - KiboAuto Finance')
 
-            <div class="bill-info">
-                <h3>Bill Summary</h3>
-                <table class="details-table">
-                    <tr>
-                        <th>Bill Number</th>
-                        <td>{{ $bill->bill_number }}</td>
-                    </tr>
-                    <tr>
-                        <th>{{ $entityType }}</th>
-                        <td>{{ $entity->name }}</td>
-                    </tr>
-                    <tr>
-                        <th>Billing Period</th>
-                        <td>{{ $bill->billing_period_start->format('F d, Y') }} - {{ $bill->billing_period_end->format('F d, Y') }}</td>
-                    </tr>
-                    <tr>
-                        <th>Issue Date</th>
-                        <td>{{ $bill->issued_date->format('F d, Y') }}</td>
-                    </tr>
-                    <tr>
-                        <th>Due Date</th>
-                        <td>{{ $bill->due_date->format('F d, Y') }}</td>
-                    </tr>
-                    <tr>
-                        <th>Applications Processed</th>
-                        <td>{{ $bill->billItems->count() }} applications</td>
-                    </tr>
-                </table>
-            </div>
+@section('promo-banner')
+ Your monthly service bill is ready! View details and make payment to continue enjoying our premium services.
+@endsection
 
-            <div class="amount">
-                Total Amount: {{ number_format($bill->total_amount, 0) }} TZS
-            </div>
+@section('content')
+<div class="text-center">
+    <h2>📄 New Bill Generated</h2>
+    <p>Dear <strong>{{ $entity->name }}</strong>,</p>
+    <p>Thank you for using KiboAuto services! We've generated your monthly bill for the period <strong>{{ $bill->billing_period_start->format('F d, Y') }}</strong> to <strong>{{ $bill->billing_period_end->format('F d, Y') }}</strong>.</p>
+</div>
 
-            <div style="background: #e3f2fd; padding: 20px; border-radius: 8px; margin: 20px 0;">
-                <h4 style="margin-top: 0; color: #1565c0;">Amount Breakdown:</h4>
-                <table style="width: 100%;">
-                    <tr>
-                        <td>Subtotal:</td>
-                        <td style="text-align: right; font-weight: bold;">{{ number_format($bill->subtotal, 0) }} TZS</td>
-                    </tr>
-                    <tr>
-                        <td>VAT (18%):</td>
-                        <td style="text-align: right; font-weight: bold;">{{ number_format($bill->tax_amount, 0) }} TZS</td>
-                    </tr>
-                    <tr style="border-top: 2px solid #1565c0;">
-                        <td><strong>Total Amount:</strong></td>
-                        <td style="text-align: right; font-weight: bold; color: #1565c0;">{{ number_format($bill->total_amount, 0) }} TZS</td>
-                    </tr>
-                </table>
-            </div>
+<div class="info-box success">
+    <h3 style="margin-top: 0; color: #155724;"> Bill Summary</h3>
+    <table class="table">
+        <tr>
+            <td style="font-weight: bold;"> Bill Number:</td>
+            <td><strong>{{ $bill->bill_number }}</strong></td>
+        </tr>
+        <tr>
+            <td style="font-weight: bold;"> {{ $entityType }}:</td>
+            <td>{{ $entity->name }}</td>
+        </tr>
+        <tr>
+            <td style="font-weight: bold;">Billing Period:</td>
+            <td>{{ $bill->billing_period_start->format('F d, Y') }} - {{ $bill->billing_period_end->format('F d, Y') }}</td>
+        </tr>
+        <tr>
+            <td style="font-weight: bold;"> Issue Date:</td>
+            <td>{{ $bill->issued_date->format('F d, Y') }}</td>
+        </tr>
+        <tr>
+            <td style="font-weight: bold;"> Due Date:</td>
+            <td style="color: #dc3545; font-weight: bold;">{{ $bill->due_date->format('F d, Y') }}</td>
+        </tr>
+        <tr>
+            <td style="font-weight: bold;"> Applications Processed:</td>
+            <td>{{ $bill->billItems->count() }} applications</td>
+        </tr>
+    </table>
+</div>
 
-            <p><strong>Payment Instructions:</strong></p>
-            <ul>
-                <li>Payment is due by <strong>{{ $bill->due_date->format('F d, Y') }}</strong></li>
-                <li>Please reference bill number <strong>{{ $bill->bill_number }}</strong> when making payment</li>
-                <li>For payment inquiries, please contact our billing department</li>
-            </ul>
+<div class="info-box" style="border-left-color: #28a745; background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);">
+    <h3 style="margin-top: 0; color: #155724; text-align: center;"> Amount Breakdown</h3>
+    <table style="width: 100%; margin: 0;">
+        <tr style="border-bottom: 1px solid #28a745;">
+            <td style="padding: 12px; font-weight: bold;"> Subtotal:</td>
+            <td style="padding: 12px; text-align: right; font-weight: bold; color: #28a745;">{{ number_format($bill->subtotal, 0) }} TZS</td>
+        </tr>
+        <tr style="border-bottom: 1px solid #28a745;">
+            <td style="padding: 12px; font-weight: bold;"> VAT (18%):</td>
+            <td style="padding: 12px; text-align: right; font-weight: bold; color: #28a745;">{{ number_format($bill->tax_amount, 0) }} TZS</td>
+        </tr>
+        <tr style="border-top: 3px solid #28a745; background: rgba(255,255,255,0.5);">
+            <td style="padding: 15px; font-weight: bold; font-size: 18px; color: #155724;"> Total Amount:</td>
+            <td style="padding: 15px; text-align: right; font-weight: bold; font-size: 18px; color: #155724;">{{ number_format($bill->total_amount, 0) }} TZS</td>
+        </tr>
+    </table>
+</div>
 
-           
+<div class="info-box warning">
+    <h4> Payment Instructions:</h4>
+    <ul style="margin: 0; padding-left: 20px;">
+        <li><strong>Payment Due:</strong> {{ $bill->due_date->format('F d, Y') }}</li>
+        <li><strong>Reference Number:</strong> {{ $bill->bill_number }}</li>
+        <li><strong>Payment Methods:</strong> Bank transfer, mobile money, or online payment</li>
+        <li><strong>Late Payment:</strong> May incur additional charges</li>
+    </ul>
+</div>
 
-            <p>Thank you for your continued partnership with Kibo Finance. We appreciate your business and look forward to serving you.</p>
+<div class="btn-center">
+    <a href="#" class="btn btn-success"> Make Payment Now</a>
+    <a href="#" class="btn"> Download Invoice</a>
+</div>
 
-            <p>Best regards,<br>
-            The Kibo Finance Billing Team</p>
-        </div>
-
-        <div class="footer">
-            <p>This is an automated email. Please do not reply directly to this message.</p>
-            <p>If you have any questions about this bill, please contact us at billing@kibofinance.com</p>
-            <p>&copy; {{ date('Y') }} Kibo Finance. All rights reserved.</p>
-        </div>
+<div class="info-box">
+    <h4> Thank You for Your Partnership!</h4>
+    <p>We appreciate your continued trust in KiboAuto services. Your prompt payment helps us maintain the high-quality automotive solutions you've come to expect.</p>
+    
+    <div style="background: rgba(102, 126, 234, 0.1); padding: 15px; border-radius: 8px; margin: 15px 0;">
+        <h5 style="margin: 0 0 10px 0; color: #667eea;"> What's Next?</h5>
+        <ul style="margin: 0; padding-left: 20px;">
+            <li>Complete your payment by the due date</li>
+            <li>Continue enjoying our premium automotive services</li>
+            <li>Contact us if you have any billing questions</li>
+        </ul>
     </div>
-</body>
-</html>
+</div>
+
+<div class="text-center mt-20">
+    <p style="color: #666; font-size: 14px;">
+        Need help with payment or have questions about this bill?<br>
+         Email: billing@kiboauto.com | Phone: +255 XXX XXX XXX
+    </p>
+</div>
+@endsection
 

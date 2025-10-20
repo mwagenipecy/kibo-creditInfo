@@ -60,7 +60,7 @@ class InstitutionRegistrationConfirmationMail extends Mailable
 //    }
 
     public function build(){
-        return $this->from('SACCOSS@gmail.com','SACCOSS name/branch')->subject('Confirmation mail')
+        return $this->from(config('mail.from.address'), config('mail.from.name'))->subject('Institution Registration Confirmation - KiboAuto')
             ->view('emails.institutionConfirmationMail',['data'=>$this->data]);
     }
 }

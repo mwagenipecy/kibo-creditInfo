@@ -53,7 +53,7 @@ class CompanyRegistration extends Mailable
      * @return CompanyRegistration
      */
     public function build(){
-        return $this->from('SACCOSS@gmail.com','SACCOSS name/branch')->subject('user Login details')
+        return $this->from(config('mail.from.address'), config('mail.from.name'))->subject('Company Registration - KiboAuto')
             ->view('emails.companyRegistrationEmail')->with('data',$this->data);
     }
 }

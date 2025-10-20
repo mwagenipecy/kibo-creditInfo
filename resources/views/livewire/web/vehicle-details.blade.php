@@ -627,7 +627,7 @@
                     </div>
                     <div class="ml-3">
                         <p class="text-sm font-medium text-gray-900">Phone</p>
-                        <p class="text-sm text-gray-600 mt-1">{{ optional($vehicle->dealer)->contact_person_phone }}</p>
+                        <p class="text-sm text-gray-600 mt-1">+255 758 586 565</p>
                     </div>
                 </div>
                 
@@ -639,42 +639,17 @@
                     </div>
                     <div class="ml-3">
                         <p class="text-sm font-medium text-gray-900">Email</p>
-                        <p class="text-sm text-gray-600 mt-1">{{ optional($vehicle->dealer)->email }}</p>
+                        <p class="text-sm text-gray-600 mt-1">savannahills25@gmail.com</p>
                     </div>
                 </div>
                 
-                <div class="flex items-start">
-                    <div class="flex-shrink-0 h-10 w-10 rounded-full bg-green-100 flex items-center justify-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                    </div>
-                    <div class="ml-3">
-                        <p class="text-sm font-medium text-gray-900">Opening Hours</p>
-                        <div class="text-sm text-gray-600 mt-1">
-                            <div class="grid grid-cols-2 gap-1">
-                                <span>Monday - Friday:</span>
-                                <span>8:00 AM - 6:00 PM</span>
-                                <span>Saturday:</span>
-                                <span>9:00 AM - 5:00 PM</span>
-                                <span>Sunday:</span>
-                                <span>Closed</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
             
             <!-- Contact Button -->
             <div class="mt-6">
     @php
-        // Format phone number for WhatsApp (remove spaces, hyphens, etc.)
-        $phoneNumber = preg_replace('/[^0-9]/', '', optional($vehicle->dealer)->contact_person_phone ?? '');
-        
-        // If phone number doesn't start with country code, add Tanzania's code (+255)
-        if(strlen($phoneNumber) > 0 && !Str::startsWith($phoneNumber, '255') && Str::startsWith($phoneNumber, '0')) {
-            $phoneNumber = '255' . substr($phoneNumber, 1);
-        }
+        // Static phone number for WhatsApp
+        $phoneNumber = '255758586565';
         
         // Text message template
         $message = "Hello, I'm interested in your " . $vehicle->year . " " . optional($vehicle->make)->name . " " . 
@@ -702,11 +677,10 @@
     @if(!empty(optional($vehicle->dealer)->contact_person_phone))
         <div class="flex justify-between items-center mt-2">
             <p class="text-sm text-gray-600">
-                {{ optional($vehicle->dealer)->contact_person_phone }}
-            </p>
+
+        </p>
             
             <p class="text-xs text-gray-500">
-                {{ optional($vehicle->dealer)->contact_person_name ?? 'Dealer' }}
             </p>
         </div>
     @endif
