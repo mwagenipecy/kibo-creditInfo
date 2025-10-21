@@ -5,7 +5,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'Vehicle Marketplace') }}</title>
+    <title>@yield('title', 'KiboAuto - Tanzania\'s Premier Vehicle Marketplace | Buy & Sell Cars Online')</title>
+    
+    <!-- Meta Description -->
+    <meta name="description" content="@yield('description', 'Find your perfect vehicle on KiboAuto, Tanzania\'s leading car marketplace. Browse thousands of quality cars, SUVs, and trucks from verified dealers. Secure transactions, expert support, and the best deals guaranteed.')">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="{{ url()->current() }}">
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="@yield('og_title', 'KiboAuto - Tanzania\'s Premier Vehicle Marketplace')">
+    <meta property="og:description" content="@yield('og_description', 'Find your perfect vehicle on KiboAuto, Tanzania\'s leading car marketplace. Browse thousands of quality cars, SUVs, and trucks from verified dealers.')">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:image" content="@yield('og_image', asset('cars/66815.jpg'))">
+    <meta property="og:site_name" content="KiboAuto">
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="@yield('og_title', 'KiboAuto - Tanzania\'s Premier Vehicle Marketplace')">
+    <meta name="twitter:description" content="@yield('og_description', 'Find your perfect vehicle on KiboAuto, Tanzania\'s leading car marketplace. Browse thousands of quality cars, SUVs, and trucks from verified dealers.')">
+    <meta name="twitter:image" content="@yield('og_image', asset('cars/66815.jpg'))">
+    
+    <!-- Additional SEO Meta Tags -->
+    <meta name="robots" content="index, follow">
+    <meta name="author" content="KiboAuto">
+    <meta name="keywords" content="@yield('keywords', 'cars Tanzania, vehicles Tanzania, car marketplace, buy cars online, sell cars, Toyota Tanzania, Honda Tanzania, SUVs Tanzania, car dealers Tanzania, automotive Tanzania')">
+    
+    <!-- Schema.org Structured Data -->
+    @yield('schema')
 
     <!-- Fonts -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">

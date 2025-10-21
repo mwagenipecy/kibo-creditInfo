@@ -30,7 +30,8 @@ class sendMail extends Mailable
      */
     public function build()
     {
-        return $this->subject('CYBERPOINT PRO')
+        return $this->from(config('mail.from.address'), config('mail.from.name'))
+                    ->subject('KiboAuto - Important Information')
                     ->view('emails.sendMail')
                     ->with('details', $this->details);
     }

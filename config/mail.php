@@ -92,8 +92,8 @@ return [
     */
 
     'from' => [
-        'address' => env('MAIL_FROM_ADDRESS', 'SaccosManagementSystem@gmail.com'),
-        'name' => env('MAIL_FROM_NAME', 'Administrator'),
+        'address' => env('MAIL_FROM_ADDRESS', 'info@kiboauto.com'),
+        'name' => env('MAIL_FROM_NAME', 'KiboAuto'),
     ],
 
     /*
