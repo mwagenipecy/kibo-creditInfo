@@ -15,11 +15,11 @@
     <!-- Styles -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
-    <link rel="stylesheet" href="{{ mix('css/app.css') }}">
+    {{--<link rel="stylesheet" href="{{ mix('css/app.css') }}">--}}
     @livewireStyles
 
     <!-- Scripts -->
-    <script src="{{ mix('js/app.js') }}" defer></script>
+   {{-- <script src="{{ mix('js/app.js') }}" defer></script>--}}
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
     
     <!-- Additional Styles for Fixed Navbar -->
