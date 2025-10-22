@@ -44,11 +44,13 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     <link rel="stylesheet" href="{{ mix('css/app.css') }}">
+    <!-- Removed Tom Select CSS -->
     @livewireStyles
 
     <!-- Scripts -->
     <script src="{{ mix('js/app.js') }}" defer></script>
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <!-- Removed Tom Select JS -->
     
     <!-- Additional Styles for Fixed Navbar -->
     <style>
@@ -149,9 +151,69 @@
 </head>
 <body class="font-sans antialiased bg-gray-50">
     <div class="min-h-screen">
+        <!-- Top Contact Bar -->
+        <div class="bg-green-600 text-white text-xs sm:text-sm py-2 px-4 fixed top-0 left-0 right-0 z-50">
+            <div class="container mx-auto">
+                <!-- Desktop Layout -->
+                <div class="hidden md:flex justify-between items-center">
+                    <!-- Left Side - Contact Information -->
+                    <div class="flex items-center space-x-6">
+                        <div class="flex items-center space-x-2">
+                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                            </svg>
+                            <span>+255 758 586 565</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                            </svg>
+                            <span>savannahills25@gmail.com</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Right Side - Links -->
+                    <div class="flex items-center space-x-4">
+                        <a href="{{ route('about.us') }}" class="hover:text-green-200 transition-colors duration-200">
+                            About Us
+                        </a>
+                        <a href="{{ route('contact.page') }}" class="hover:text-green-200 transition-colors duration-200">
+                            Contact Us
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Mobile Layout -->
+                <div class="md:hidden flex flex-col space-y-1">
+                    <div class="flex justify-between items-center">
+                        <div class="flex items-center space-x-2">
+                            <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                            </svg>
+                            <span>+255 758 586 565</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <a href="{{ route('about.us') }}" class="hover:text-green-200 transition-colors duration-200 text-xs">
+                                About Us
+                            </a>
+                            <a href="{{ route('contact.page') }}" class="hover:text-green-200 transition-colors duration-200 text-xs">
+                                Contact Us
+                            </a>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                        </svg>
+                        <span class="text-xs">savannahills25@gmail.com</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Header -->
    
-        <header class="bg-white w-full fixed top-0 left-0 right-0 z-50" 
+        <header class="bg-white w-full fixed top-10 left-0 right-0 z-40" 
         x-data="{ scrolled: false, mobileMenuOpen: false }" 
         x-init="window.addEventListener('scroll', () => { scrolled = window.scrollY > 20 })"
         :class="{ 'shadow-lg backdrop-blur-sm bg-white/95': scrolled, 'py-1': scrolled, 'py-2': !scrolled }">
@@ -777,7 +839,7 @@
 </style>
 
         <!-- Page Content -->
-        <main>
+        <main class="pt-2">
             @yield('main-section')
         </main>
 
@@ -955,6 +1017,58 @@
             Livewire.on('flashMessage', function(message) {
                 window.dispatchEvent(new CustomEvent('flash-message', { detail: { message: message } }));
             });
+        });
+        // Removed Tom Select initialization
+        
+        // Enhanced datalist functionality for searchable selects
+        document.addEventListener('DOMContentLoaded', function() {
+            // Handle datalist selection for Make (both home page and marketplace)
+            const makeInputs = document.querySelectorAll('#make');
+            makeInputs.forEach(function(makeInput) {
+                makeInput.addEventListener('input', function() {
+                    const selectedOption = document.querySelector(`#make-options option[value="${this.value}"]`);
+                    if (selectedOption && selectedOption.dataset.id) {
+                        // Update Livewire with the selected make name
+                        this.dispatchEvent(new Event('input', { bubbles: true }));
+                    }
+                });
+            });
+            
+            // Handle datalist selection for Model (both home page and marketplace)
+            const modelInputs = document.querySelectorAll('#model');
+            modelInputs.forEach(function(modelInput) {
+                modelInput.addEventListener('input', function() {
+                    const selectedOption = document.querySelector(`#model-options option[value="${this.value}"]`);
+                    if (selectedOption && selectedOption.dataset.id) {
+                        // Update Livewire with the selected model name
+                        this.dispatchEvent(new Event('input', { bubbles: true }));
+                    }
+                });
+            });
+            
+            // Handle datalist selection for Price Range (home page)
+            const priceInput = document.getElementById('price');
+            if (priceInput) {
+                priceInput.addEventListener('input', function() {
+                    const selectedOption = document.querySelector(`#price-options option[value="${this.value}"]`);
+                    if (selectedOption && selectedOption.dataset.range) {
+                        // Update Livewire with the selected price range name
+                        this.dispatchEvent(new Event('input', { bubbles: true }));
+                    }
+                });
+            }
+            
+            // Handle datalist selection for Year (marketplace)
+            const yearInput = document.getElementById('year');
+            if (yearInput) {
+                yearInput.addEventListener('input', function() {
+                    const selectedOption = document.querySelector(`#year-options option[value="${this.value}"]`);
+                    if (selectedOption) {
+                        // Update Livewire with the selected year name
+                        this.dispatchEvent(new Event('input', { bubbles: true }));
+                    }
+                });
+            }
         });
     </script>
 </body>

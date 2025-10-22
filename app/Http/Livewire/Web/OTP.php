@@ -18,6 +18,7 @@ class OTP extends Component
     public $otp3;
     public $otp4;
     public $otp5;
+    public $otp6;
     public $full_otp;
     public $email;
     public $phone;
@@ -84,8 +85,8 @@ class OTP extends Component
     {
         $user = Auth::user();
         
-        // Generate 5-digit OTP
-        $otp = str_pad(random_int(0, 99999), 5, '0', STR_PAD_LEFT);
+        // Generate 6-digit OTP
+        $otp = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
 
         // Store OTP in session with expiry time (10 minutes)
         $expiry = Carbon::now()->addMinutes(10);
@@ -136,18 +137,13 @@ class OTP extends Component
     {
         // If using individual boxes, combine. Otherwise expect single input full_otp
         if (!$this->full_otp) {
-            $this->full_otp = ($this->otp1 ?? '') . ($this->otp2 ?? '') . ($this->otp3 ?? '') . ($this->otp4 ?? '') . ($this->otp5 ?? '');
+            $this->full_otp = ($this->otp1 ?? '') . ($this->otp2 ?? '') . ($this->otp3 ?? '') . ($this->otp4 ?? '') . ($this->otp5 ?? '') . ($this->otp6 ?? '');
         }
-    
 
-       // dd($this->full_otp); reach here very fine
         // Validate inputs
         $this->validate([
-            'full_otp' => 'required|numeric|digits:5',
+            'full_otp' => 'required|numeric|digits:6',
         ]);
-
-
-       // dd("here also");   
 
         // Prefer session but fall back to database if needed
         $stored_otp = Session::get('otp_code');
@@ -163,8 +159,6 @@ class OTP extends Component
             }
         }
 
-       // dd($stored_otp, $expiry, $this->full_otp); // run fine to here 
-    
         if (Carbon::now()->isAfter($expiry)) {
             $this->addError('otp', 'OTP has expired. Please request a new code.');
             $this->clearOtpInputs();
@@ -218,7 +212,7 @@ class OTP extends Component
     // Clear OTP input fields
     public function clearOtpInputs()
     {
-        $this->reset(['otp1', 'otp2', 'otp3', 'otp4', 'otp5', 'full_otp']);
+        $this->reset(['otp1', 'otp2', 'otp3', 'otp4', 'otp5', 'otp6', 'full_otp']);
        // $this->dispatchBrowserEvent('clear-otp-fields');
     }
     

@@ -14,11 +14,42 @@ class WeddingCarListing extends Component
     public $priceRange = '';
     public $location = '';
     public $search = '';
+    
+    // Name-based properties for searchable selects
+    public $selectedMakeName = '';
+    public $selectedModelName = '';
+    public $priceRangeName = '';
 
     public function searchCars()
     {
         // This method will be called when search button is clicked
         // The filtering will happen in the render method
+    }
+    
+    public function updatedSelectedMakeName()
+    {
+        $make = Make::where('name', $this->selectedMakeName)->first();
+        $this->selectedMake = $make ? $make->id : '';
+        
+        $this->selectedModel = '';
+        $this->selectedModelName = '';
+    }
+    
+    public function updatedSelectedModelName()
+    {
+        $model = \App\Models\VehicleModel::where('name', $this->selectedModelName)->first();
+        $this->selectedModel = $model ? $model->id : '';
+    }
+    
+    public function updatedPriceRangeName()
+    {
+        $priceRanges = [
+            'Under 200K TZS' => '0-200000',
+            '200K - 500K TZS' => '200000-500000',
+            '500K - 1M TZS' => '500000-1000000',
+            'Over 1M TZS' => '1000000-999999999',
+        ];
+        $this->priceRange = $priceRanges[$this->priceRangeName] ?? '';
     }
 
     public function render()
@@ -66,7 +97,7 @@ class WeddingCarListing extends Component
         $makes = Make::orderBy('name')->get();
         $models = $this->selectedMake 
             ? \App\Models\VehicleModel::where('make_id', $this->selectedMake)->orderBy('name')->get()
-            : collect();
+            : \App\Models\VehicleModel::orderBy('name')->get();
 
         return view('livewire.wedding.wedding-car-listing', compact('weddingCars', 'makes', 'models'));
     }
