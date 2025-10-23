@@ -51,46 +51,104 @@
                     <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-4">
                         <!-- Make Dropdown -->
                         <div>
-                            <label for="make" class="block text-sm font-medium text-gray-700 mb-2">Make</label>
-                            <select wire:model="selectedMake" id="make" 
-                                class="w-full rounded-lg border-gray-300 py-3 pl-3 pr-8 text-sm focus:border-green-500 focus:ring-2 focus:ring-green-200 shadow-sm">
-                                <option value="">All Makes</option>
-                                @foreach($makes as $make)
-                                    <option value="{{ $make->id }}">{{ $make->name }}</option>
-                                @endforeach
-                            </select>
+                            <label for="make" class="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                                <svg class="w-3 h-3 mr-1 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM15 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 00-1 1v10a1 1 0 001 1h1.05a2.5 2.5 0 014.9 0H11a1 1 0 001-1v-1h3.05a2.5 2.5 0 014.9 0H20a1 1 0 001-1V5a1 1 0 00-1-1H3z" />
+                                </svg>
+                                Make
+                            </label>
+                            <div class="relative">
+                                <input 
+                                    wire:model="selectedMakeName" 
+                                    id="make" 
+                                    list="make-options"
+                                    placeholder="Search for a make..."
+                                    class="w-full rounded-lg border-2 border-gray-300 py-3 pl-10 pr-4 text-sm focus:border-green-500 focus:ring-2 focus:ring-green-500 focus:ring-opacity-20 shadow-sm transition-all duration-200 hover:border-gray-400"
+                                >
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                    </svg>
+                                </div>
+                                <datalist id="make-options">
+                                    @foreach($makes as $make)
+                                        <option value="{{ $make->name }}" data-id="{{ $make->id }}">{{ $make->name }}</option>
+                                    @endforeach
+                                </datalist>
+                            </div>
                         </div>
                         
                         <!-- Model Dropdown -->
                         <div>
-                            <label for="model" class="block text-sm font-medium text-gray-700 mb-2">Model</label>
-                            <select wire:model="selectedModel" id="model" 
-                                class="w-full rounded-lg border-gray-300 py-3 pl-3 pr-8 text-sm focus:border-green-500 focus:ring-2 focus:ring-green-200 shadow-sm">
-                                <option value="">All Models</option>
-                                @foreach($models as $model)
-                                    <option value="{{ $model->id }}">{{ $model->name }}</option>
-                                @endforeach
-                            </select>
+                            <label for="model" class="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                                <svg class="w-3 h-3 mr-1 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                </svg>
+                                Model
+                            </label>
+                            <div class="relative">
+                                <input 
+                                    wire:model="selectedModelName" 
+                                    id="model" 
+                                    list="model-options"
+                                    placeholder="Search for a model..."
+                                    class="w-full rounded-lg border-2 border-gray-300 py-3 pl-10 pr-4 text-sm focus:border-green-500 focus:ring-2 focus:ring-green-500 focus:ring-opacity-20 shadow-sm transition-all duration-200 hover:border-gray-400"
+                                >
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                    </svg>
+                                </div>
+                                <datalist id="model-options">
+                                    @foreach($models as $model)
+                                        <option value="{{ $model->name }}" data-id="{{ $model->id }}">{{ $model->name }}</option>
+                                    @endforeach
+                                </datalist>
+                            </div>
                         </div>
                         
                         <!-- Price Range -->
                         <div>
-                            <label for="price" class="block text-sm font-medium text-gray-700 mb-2">Daily Rate</label>
-                            <select wire:model="priceRange" id="price" 
-                                class="w-full rounded-lg border-gray-300 py-3 pl-3 pr-8 text-sm focus:border-green-500 focus:ring-2 focus:ring-green-200 shadow-sm">
-                                <option value="">Any Price</option>
-                                <option value="0-200000">Under 200K TZS</option>
-                                <option value="200000-500000">200K - 500K TZS</option>
-                                <option value="500000-1000000">500K - 1M TZS</option>
-                                <option value="1000000-999999999">Over 1M TZS</option>
-                            </select>
+                            <label for="price" class="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                                <svg class="w-3 h-3 mr-1 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+                                </svg>
+                                Daily Rate
+                            </label>
+                            <div class="relative">
+                                <input 
+                                    wire:model="priceRangeName" 
+                                    id="price" 
+                                    list="price-options"
+                                    placeholder="Select price range..."
+                                    class="w-full rounded-lg border-2 border-gray-300 py-3 pl-10 pr-4 text-sm focus:border-green-500 focus:ring-2 focus:ring-green-500 focus:ring-opacity-20 shadow-sm transition-all duration-200 hover:border-gray-400"
+                                >
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                    </svg>
+                                </div>
+                                <datalist id="price-options">
+                                    <option value="Under 200K TZS" data-range="0-200000">Under 200K TZS</option>
+                                    <option value="200K - 500K TZS" data-range="200000-500000">200K - 500K TZS</option>
+                                    <option value="500K - 1M TZS" data-range="500000-1000000">500K - 1M TZS</option>
+                                    <option value="Over 1M TZS" data-range="1000000-999999999">Over 1M TZS</option>
+                                </datalist>
+                            </div>
                         </div>
                         
                         <!-- Location -->
                         <div>
-                            <label for="location" class="block text-sm font-medium text-gray-700 mb-2">Location</label>
+                            <label for="location" class="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                                <svg class="w-3 h-3 mr-1 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                                Location
+                            </label>
                             <input type="text" wire:model="location" id="location" placeholder="Enter city..." 
-                                class="w-full rounded-lg border-gray-300 py-3 px-3 text-sm focus:border-green-500 focus:ring-2 focus:ring-green-200 shadow-sm">
+                                class="w-full rounded-lg border-2 border-gray-300 py-3 px-3 text-sm focus:border-green-500 focus:ring-2 focus:ring-green-500 focus:ring-opacity-20 shadow-sm transition-all duration-200 hover:border-gray-400">
                         </div>
                         
                         <!-- Search Button -->
@@ -103,12 +161,6 @@
                                 Search
                             </button>
                         </div>
-                    </div>
-                    
-                    <!-- Quick Search Bar -->
-                    <div class="mt-4">
-                        <input type="text" wire:model.debounce.500ms="search" placeholder="Quick search by make, model, color, or year..." 
-                            class="w-full rounded-lg border-gray-300 py-3 px-4 text-sm focus:border-green-500 focus:ring-2 focus:ring-green-200 shadow-sm">
                     </div>
                     
                     <!-- Popular Searches -->

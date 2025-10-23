@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
@@ -17,7 +18,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <meta name="color-scheme" content="light only" />
     <style>[x-cloak]{ display:none !important; }</style>
-</head>
+</html>
 <body class="bg-white">
     <div class="min-h-screen flex items-center justify-center">
         <livewire:web.o-t-p />
@@ -25,3 +26,4 @@
     @livewireScripts
 </body>
 </html>
+

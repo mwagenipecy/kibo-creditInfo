@@ -35,41 +35,92 @@
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 mb-6">
                     {{-- Vehicle Make --}}
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Vehicle Make *</label>
-                        <select wire:model="selectedMake" 
-                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent">
-                            <option value="">Select Make</option>
-                            @foreach($makes as $make)
-                                <option value="{{ $make->id }}">{{ $make->name }}</option>
-                            @endforeach
-                        </select>
+                        <label class="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                            <svg class="w-3 h-3 mr-1 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM15 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 00-1 1v10a1 1 0 001 1h1.05a2.5 2.5 0 014.9 0H11a1 1 0 001-1v-1h3.05a2.5 2.5 0 014.9 0H20a1 1 0 001-1V5a1 1 0 00-1-1H3z" />
+                            </svg>
+                            Vehicle Make *
+                        </label>
+                        <div class="relative">
+                            <input 
+                                wire:model="selectedMakeName" 
+                                id="make" 
+                                list="make-options"
+                                placeholder="Search for a make..."
+                                class="w-full rounded-lg border-gray-300 py-2.5 pl-10 pr-4 text-sm focus:border-green-500 focus:ring-2 focus:ring-green-500 focus:ring-opacity-20 shadow-sm transition-all duration-200 hover:border-gray-400"
+                            >
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                </svg>
+                            </div>
+                            <datalist id="make-options">
+                                @foreach($makes as $make)
+                                    <option value="{{ $make->name }}" data-id="{{ $make->id }}">{{ $make->name }}</option>
+                                @endforeach
+                            </datalist>
+                        </div>
                         @error('selectedMake') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                     </div>
 
                     {{-- Vehicle Model --}}
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Vehicle Model *</label>
-                        <select wire:model="selectedModel" 
-                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent" 
-                                {{ !$selectedMake ? 'disabled' : '' }}>
-                            <option value="">Select Model</option>
-                            @foreach($models as $model)
-                                <option value="{{ $model->id }}">{{ $model->name }}</option>
-                            @endforeach
-                        </select>
+                        <label class="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                            <svg class="w-3 h-3 mr-1 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                            Vehicle Model *
+                        </label>
+                        <div class="relative">
+                            <input 
+                                wire:model="selectedModelName" 
+                                id="model" 
+                                list="model-options"
+                                placeholder="Search for a model..."
+                                class="w-full rounded-lg border-gray-300 py-2.5 pl-10 pr-4 text-sm focus:border-green-500 focus:ring-2 focus:ring-green-500 focus:ring-opacity-20 shadow-sm transition-all duration-200 hover:border-gray-400"
+                            >
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                </svg>
+                            </div>
+                            <datalist id="model-options">
+                                @foreach($models as $model)
+                                    <option value="{{ $model->name }}" data-id="{{ $model->id }}">{{ $model->name }}</option>
+                                @endforeach
+                            </datalist>
+                        </div>
                         @error('selectedModel') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                     </div>
 
                     {{-- Year --}}
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Year *</label>
-                        <select wire:model="selectedYear" 
-                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent">
-                            <option value="">Select Year</option>
-                            @foreach($years as $year)
-                                <option value="{{ $year }}">{{ $year }}</option>
-                            @endforeach
-                        </select>
+                        <label class="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                            <svg class="w-3 h-3 mr-1 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            Year *
+                        </label>
+                        <div class="relative">
+                            <input 
+                                wire:model="selectedYearName" 
+                                id="year" 
+                                list="year-options"
+                                placeholder="Select year..."
+                                class="w-full rounded-lg border-gray-300 py-2.5 pl-10 pr-4 text-sm focus:border-green-500 focus:ring-2 focus:ring-green-500 focus:ring-opacity-20 shadow-sm transition-all duration-200 hover:border-gray-400"
+                            >
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                </svg>
+                            </div>
+                            <datalist id="year-options">
+                                @foreach($years as $year)
+                                    <option value="{{ $year }}">{{ $year }}</option>
+                                @endforeach
+                            </datalist>
+                        </div>
                         @error('selectedYear') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                     </div>
                 </div>

@@ -251,6 +251,14 @@
                         <div class="text-gray-500 text-sm mb-1">Engine</div>
                         <div class="font-semibold text-gray-900">{{ $vehicle->engine_size }} cc </div>
                     </div>
+
+
+                    <div class="bg-gray-50 p-4 rounded-lg border border-gray-100 hover:shadow-md transition duration-300">
+                        <div class="text-gray-500 text-sm mb-1"> Vehicle Identification Number ( vin) </div>
+                        <div class="font-semibold text-gray-900">{{ $vehicle->vin }}  </div>
+                    </div>
+
+
                     <div class="bg-gray-50 p-4 rounded-lg border border-gray-100 hover:shadow-md transition duration-300">
                         <div class="text-gray-500 text-sm mb-1">Drive Type</div>
                         <div class="font-semibold text-gray-900">{{ $vehicle->drivetrain }}</div>
@@ -331,10 +339,7 @@
                             <span class="text-gray-600">Seating Capacity</span>
                             <span class="font-medium text-gray-900">{{ $vehicle->seating_capacity }} seats</span>
                         </div>
-                        <div class="flex justify-between py-3 border-b border-gray-200">
-                            <span class="text-gray-600">Cargo Volume</span>
-                            <span class="font-medium text-gray-900">{{ $vehicle->cargo_volume }} liters</span>
-                        </div>
+                       
                     </div>
                 </div>
             </div>
@@ -766,16 +771,16 @@
     <!-- Trade-In Promotion Banner -->
     <div class="bg-gradient-to-r from-green-600 to-green-700 rounded-xl shadow-md overflow-hidden">
         <div class="p-6 text-white">
-            <h3 class="text-lg font-bold mb-2">Trade In Your Vehicle</h3>
+            <h3 class="text-lg font-bold mb-2">sell your car</h3>
             <p class="text-green-100 mb-4">Get an instant offer for your current vehicle and apply it toward this purchase!</p>
             <button class="bg-white text-green-700 hover:bg-green-50 font-medium py-2 px-4 rounded-lg transition duration-300 flex items-center">
-                Get Trade-In Value
+                Sell Your Car Now
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-1" viewBox="0 0 20 20" fill="currentColor">
                     <path fill-rule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
-
-        </svg>
+                </svg>
+            </button>
+        </div>
     </div>
-</div>
 </div>
         </div>
     </div>

@@ -23,9 +23,40 @@ class HomePage extends Component
     public $selectedModel = '';
     public $priceRange = '';
     
-    public function mount()
+    public $selectedMakeName = '';
+    public $selectedModelName = '';
+    public $priceRangeName = '';
+    
+    public function updatedSelectedMakeName()
     {
-        // Initialize any required data
+        // Find the make ID based on the selected name
+        $make = Make::where('name', $this->selectedMakeName)->first();
+        $this->selectedMake = $make ? $make->id : '';
+        
+        // Reset model when make changes
+        $this->selectedModel = '';
+        $this->selectedModelName = '';
+    }
+    
+    public function updatedSelectedModelName()
+    {
+        // Find the model ID based on the selected name
+        $model = VehicleModel::where('name', $this->selectedModelName)->first();
+        $this->selectedModel = $model ? $model->id : '';
+    }
+    
+    public function updatedPriceRangeName()
+    {
+        // Map price range names to their corresponding ranges
+        $priceRanges = [
+            'Under 5M' => '0-5000000',
+            '5M - 15M' => '5000000-15000000',
+            '15M - 30M' => '15000000-30000000',
+            '30M - 50M' => '30000000-50000000',
+            'Over 50M' => '50000000-999999999',
+        ];
+        
+        $this->priceRange = $priceRanges[$this->priceRangeName] ?? '';
     }
     public function searchVehicles()
 {
