@@ -18,6 +18,10 @@ class Marketplace extends Component
     public $selectedMake = '';
     public $selectedModel = '';
     public $selectedYear = '';
+    
+    public $selectedMakeName = '';
+    public $selectedModelName = '';
+    public $selectedYearName = '';
     public $partName = '';
     public $partNumber = '';
     public $partSize = '';
@@ -60,16 +64,35 @@ class Marketplace extends Component
         $this->shops = Shop::where('status', 'active')->get();
     }
 
-    public function updatedSelectedMake($value)
+    public function updatedSelectedMakeName()
     {
+        // Find the make ID based on the selected name
+        $make = Make::where('name', $this->selectedMakeName)->first();
+        $this->selectedMake = $make ? $make->id : '';
+        
+        // Reset model when make changes
         $this->selectedModel = '';
+        $this->selectedModelName = '';
         $this->models = [];
         
-        if ($value) {
-            $this->models = VehicleModel::where('make_id', $value)
+        if ($this->selectedMake) {
+            $this->models = VehicleModel::where('make_id', $this->selectedMake)
                 ->orderBy('name')
                 ->get();
         }
+    }
+    
+    public function updatedSelectedModelName()
+    {
+        // Find the model ID based on the selected name
+        $model = VehicleModel::where('name', $this->selectedModelName)->first();
+        $this->selectedModel = $model ? $model->id : '';
+    }
+    
+    public function updatedSelectedYearName()
+    {
+        // Year name is the same as year value
+        $this->selectedYear = $this->selectedYearName;
     }
 
     public function submitRequest()
@@ -160,6 +183,9 @@ class Marketplace extends Component
         $this->selectedMake = '';
         $this->selectedModel = '';
         $this->selectedYear = '';
+        $this->selectedMakeName = '';
+        $this->selectedModelName = '';
+        $this->selectedYearName = '';
         $this->partName = '';
         $this->partNumber = '';
         $this->partSize = '';

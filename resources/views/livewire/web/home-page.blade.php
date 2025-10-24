@@ -121,13 +121,13 @@
     
     <!-- Enhanced Arrow Navigation - Slightly Reduced Size -->
     <button @click="activeSlide = activeSlide === 0 ? slides.length - 1 : activeSlide - 1" 
-        class="absolute left-6 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center rounded-full bg-black/20 backdrop-blur-sm text-white hover:bg-green-600/70 transition-all duration-300 focus:outline-none border border-white/20 shadow-lg">
+        class="absolute left-6 top-1/2 -translate-y-1/2 w-10 h-8 flex items-center justify-center rounded-full bg-black/20 backdrop-blur-sm text-white hover:bg-green-600/70 transition-all duration-300 focus:outline-none border border-white/20 shadow-lg">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
         </svg>
     </button>
     <button @click="activeSlide = activeSlide === slides.length - 1 ? 0 : activeSlide + 1" 
-        class="absolute right-6 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center rounded-full bg-black/20 backdrop-blur-sm text-white hover:bg-green-600/70 transition-all duration-300 focus:outline-none border border-white/20 shadow-lg">
+        class="absolute right-6 top-1/2 -translate-y-1/2 w-10 h-8 flex items-center justify-center rounded-full bg-black/20 backdrop-blur-sm text-white hover:bg-green-600/70 transition-all duration-300 focus:outline-none border border-white/20 shadow-lg">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
         </svg>
@@ -189,7 +189,7 @@
                             <select 
                                 wire:model="selectedMake" 
                                 id="make" 
-                                class="w-full rounded border-gray-300 py-2 pl-3 pr-8 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:ring-opacity-50 shadow-sm"
+                                class="w-full rounded border-gray-300 py-2 pl-3 pr-8 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:ring-opacity-50 shadow-sm enhanced-select"
                             >
                                 <option value="">All Makes</option>
                                 @foreach($makes as $make)
@@ -207,7 +207,7 @@
                             <select 
                                 wire:model="selectedModel" 
                                 id="model" 
-                                class="w-full rounded border-gray-300 py-2 pl-3 pr-8 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:ring-opacity-50 shadow-sm"
+                                class="w-full rounded border-gray-300 py-2 pl-3 pr-8 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:ring-opacity-50 shadow-sm enhanced-select"
                             >
                                 <option value="">All Models</option>
                                 @foreach($models as $model)
@@ -225,7 +225,7 @@
                             <select 
                                 wire:model="priceRange" 
                                 id="price" 
-                                class="w-full rounded border-gray-300 py-2 pl-3 pr-8 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:ring-opacity-50 shadow-sm"
+                                class="w-full rounded border-gray-300 py-2 pl-3 pr-8 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:ring-opacity-50 shadow-sm enhanced-select"
                             >
                                 <option value="">Any Price</option>
                                 <option value="0-5000000">Under 5M</option>
