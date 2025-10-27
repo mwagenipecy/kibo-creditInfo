@@ -5,7 +5,7 @@ namespace App\Http\Livewire\Shares;
 use Livewire\Component;
 use Illuminate\Support\Facades\Session;
 
-class SharesListByClients extends Component
+class SharesListByMembers extends Component
 {
 
 

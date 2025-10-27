@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Livewire\Test;
+namespace App\Http\Livewire\Reconciliation\Test;
 
 use Livewire\Component;
 

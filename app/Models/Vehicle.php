@@ -13,6 +13,7 @@ class Vehicle extends Model
         'make_id',
         'model_id',
         'dealer_id',
+        'user_id',
         'body_type_id',
         'fuel_type_id',
         'transmission_id',
@@ -93,6 +94,11 @@ class Vehicle extends Model
     public function dealer()
     {
         return $this->belongsTo(CarDealer::class,'dealer_id');
+    }
+    
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
     
     public function bodyType()

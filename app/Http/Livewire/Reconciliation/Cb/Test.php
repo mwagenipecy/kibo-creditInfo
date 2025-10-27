@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Livewire\Cb;
+namespace App\Http\Livewire\Reconciliation\Cb;
 
 use App\Models\Cashbook;
 use App\Models\CashBookNonMatching;

@@ -252,9 +252,9 @@
                 </a>
 
                 <!-- Sell Your Car -->
-                <a href="#" class="group relative text-gray-700 hover:text-green-600 px-3 py-2 rounded-md text-base font-medium transition-colors duration-300">
+                <a href="{{ route('sell.your.car') }}" class="group relative text-gray-700 @if(Route::is('sell.your.car')) text-green-600 @endif hover:text-green-600 px-3 py-2 rounded-md text-base font-medium transition-colors duration-300">
                     <span>Sell Your Car</span>
-                    <span class="absolute -bottom-[2px] left-1/2 w-0 h-[3px] bg-green-500 group-hover:w-4/5 group-hover:-translate-x-1/2 transition-all duration-300 ease-out rounded-full"></span>
+                    <span class="absolute -bottom-[2px] left-1/2 w-0 h-[3px] bg-green-500 group-hover:w-4/5 group-hover:-translate-x-1/2 transition-all duration-300 ease-out rounded-full @if(Route::is('sell.your.car')) w-4/5 -translate-x-1/2 @endif"></span>
                 </a>
 
                 <!-- Spare Parts -->
@@ -548,6 +548,14 @@
                  
                 </div>
             </div>
+
+            <!-- Sell Your Car -->
+            <a href="{{ route('sell.your.car') }}" @click="mobileMenuOpen = false" class="flex items-center py-3 px-4 text-base font-medium rounded-lg text-gray-900 hover:bg-gray-50 hover:text-green-600 @if(Route::is('sell.your.car')) bg-green-50 text-green-600 @endif transition-colors duration-300">
+                <svg class="h-5 w-5 mr-3 @if(Route::is('sell.your.car')) text-green-500 @else text-gray-400 @endif" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                </svg>
+                Sell Your Car
+            </a>
 
             <!-- Spare Parts -->
             <a href="{{ route('spare.parts.list') }}" @click="mobileMenuOpen = false" class="flex items-center py-3 px-4 text-base font-medium rounded-lg text-gray-900 hover:bg-gray-50 hover:text-green-600 @if(Route::is('spare.parts.*')) bg-green-50 text-green-600 @endif transition-colors duration-300">

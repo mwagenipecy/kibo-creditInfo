@@ -13,19 +13,111 @@ use App\Services\SMSService;
 
 class OTP extends Component
 {
-    public $otp1;
-    public $otp2;
-    public $otp3;
-    public $otp4;
-    public $otp5;
-    public $otp6;
-    public $full_otp;
+    public $otp1 = '';
+    public $otp2 = '';
+    public $otp3 = '';
+    public $otp4 = '';
+    public $otp5 = '';
+    public $otp6 = '';
+    public $full_otp = '';
     public $email;
     public $phone;
     public $otpExpiry = 0;
     public $maskedEmail;
     
+    protected $rules = [
+        'otp1' => 'nullable|string|max:1',
+        'otp2' => 'nullable|string|max:1',
+        'otp3' => 'nullable|string|max:1',
+        'otp4' => 'nullable|string|max:1',
+        'otp5' => 'nullable|string|max:1',
+        'otp6' => 'nullable|string|max:1',
+    ];
+    
     protected $listeners = ['clearOtpFields', 'refreshTimer'];
+    
+    // Updated methods for each OTP field to handle paste
+    public function updatedOtp1($value)
+    {
+        $this->handleOtpUpdate($value, 1);
+    }
+    
+    public function updatedOtp2($value)
+    {
+        $this->handleOtpUpdate($value, 2);
+    }
+    
+    public function updatedOtp3($value)
+    {
+        $this->handleOtpUpdate($value, 3);
+    }
+    
+    public function updatedOtp4($value)
+    {
+        $this->handleOtpUpdate($value, 4);
+    }
+    
+    public function updatedOtp5($value)
+    {
+        $this->handleOtpUpdate($value, 5);
+    }
+    
+    public function updatedOtp6($value)
+    {
+        $this->handleOtpUpdate($value, 6);
+    }
+    
+    // Handle OTP field updates (including paste)
+    private function handleOtpUpdate($value, $fieldNumber)
+    {
+        // If value is longer than 1 character, it's likely a paste
+        if (strlen($value) > 1) {
+            $this->handlePaste($value, $fieldNumber);
+            return;
+        }
+        
+        // Single character input
+        if ($value && $fieldNumber < 6) {
+            $this->dispatchBrowserEvent('focus-field', ['field' => $fieldNumber + 1]);
+        }
+        
+        // Check if all fields are filled for auto-verification
+        $this->checkAutoVerification();
+    }
+    
+    // Handle paste operation
+    private function handlePaste($pastedValue, $startField)
+    {
+        // Extract only numbers
+        $numbers = preg_replace('/\D/', '', $pastedValue);
+        
+        if (strlen($numbers) >= 6) {
+            // Fill all fields with pasted numbers
+            $this->otp1 = substr($numbers, 0, 1);
+            $this->otp2 = substr($numbers, 1, 1);
+            $this->otp3 = substr($numbers, 2, 1);
+            $this->otp4 = substr($numbers, 3, 1);
+            $this->otp5 = substr($numbers, 4, 1);
+            $this->otp6 = substr($numbers, 5, 1);
+            
+            // Focus last field
+            $this->dispatchBrowserEvent('focus-field', ['field' => 6]);
+            
+            // Auto-verify
+            $this->dispatchBrowserEvent('auto-verify');
+        }
+    }
+    
+    // Check if all fields are filled and trigger auto-verification
+    private function checkAutoVerification()
+    {
+        $allFilled = !empty($this->otp1) && !empty($this->otp2) && !empty($this->otp3) && 
+                    !empty($this->otp4) && !empty($this->otp5) && !empty($this->otp6);
+        
+        if ($allFilled) {
+            $this->dispatchBrowserEvent('auto-verify');
+        }
+    }
     
     // When component initializes
     public function mount()
@@ -61,7 +153,7 @@ class OTP extends Component
         }
 
         // Always generate and send OTP when component mounts
-        $this->generateAndSendOTP();
+       $this->generateAndSendOTP();
         
         // Initialize timer
         $this->updateOtpExpiry();
@@ -135,15 +227,15 @@ class OTP extends Component
     // Handle the form submission
     public function verifyOTP()
     {
-        // If using individual boxes, combine. Otherwise expect single input full_otp
-        if (!$this->full_otp) {
-            $this->full_otp = ($this->otp1 ?? '') . ($this->otp2 ?? '') . ($this->otp3 ?? '') . ($this->otp4 ?? '') . ($this->otp5 ?? '') . ($this->otp6 ?? '');
-        }
+        // Combine OTP inputs
+        $this->full_otp = trim(($this->otp1 ?? '') . ($this->otp2 ?? '') . ($this->otp3 ?? '') . ($this->otp4 ?? '') . ($this->otp5 ?? '') . ($this->otp6 ?? ''));
 
         // Validate inputs
-        $this->validate([
-            'full_otp' => 'required|numeric|digits:6',
-        ]);
+        if (strlen($this->full_otp) !== 6 || !ctype_digit($this->full_otp)) {
+            $this->addError('otp', 'Please enter a valid 6-digit code.');
+            return;
+        }
+
 
         // Prefer session but fall back to database if needed
         $stored_otp = Session::get('otp_code');
@@ -154,20 +246,20 @@ class OTP extends Component
             $expiry = $user->otp_time ? Carbon::parse($user->otp_time) : null;
             if (!$stored_otp || !$expiry) {
                 $this->addError('otp', 'OTP session has expired. Please request a new code.');
-                $this->clearOtpInputs();
+                // Don't clear inputs on session expiry - let user retry
                 return;
             }
         }
 
         if (Carbon::now()->isAfter($expiry)) {
             $this->addError('otp', 'OTP has expired. Please request a new code.');
-            $this->clearOtpInputs();
+            // Don't clear inputs on expiry - let user retry
             return;
         }
 
         if ($this->full_otp !== $stored_otp) {
             $this->addError('otp', 'Invalid verification code. Please try again.');
-            $this->clearOtpInputs();
+            // Don't clear inputs on invalid OTP - let user correct
             return;
         }
 
@@ -189,31 +281,36 @@ class OTP extends Component
         $user->save();
         session()->flash('success', 'OTP verified successfully.');
 
-        // Smooth redirect after successful verification
+        // Redirect to appropriate page based on user department
         if ($user->department == 4) {
             return redirect()->route('application.list');
         }
         
-        return redirect()->intended(route('CyberPoint-Pro'));
-        
-        // Redirect department 4 (Client/Borrower) to loan list
-        if ($user->department == 4) {
-            return redirect()->route('application.list');
-        }
         return redirect()->route('CyberPoint-Pro');
-
-    
-
-    
-     
     }
     
     
-    // Clear OTP input fields
+    // Clear OTP input fields (only used when explicitly needed)
     public function clearOtpInputs()
     {
-        $this->reset(['otp1', 'otp2', 'otp3', 'otp4', 'otp5', 'otp6', 'full_otp']);
-       // $this->dispatchBrowserEvent('clear-otp-fields');
+        $this->otp1 = '';
+        $this->otp2 = '';
+        $this->otp3 = '';
+        $this->otp4 = '';
+        $this->otp5 = '';
+        $this->otp6 = '';
+        $this->full_otp = '';
+    }
+    
+    // Override to prevent clearing form on validation errors
+    public function resetErrorBag($field = null)
+    {
+        // Don't reset the form when clearing errors
+        if ($field) {
+            $this->resetValidation($field);
+        } else {
+            $this->resetValidation();
+        }
     }
     
     // Logout user
@@ -240,8 +337,7 @@ class OTP extends Component
         // Clear previous OTP
         Session::forget(['otp_code', 'otp_expiry']);
         
-        // Clear input fields
-        $this->clearOtpInputs();
+        // Don't clear input fields - let user keep their input
         
         // Generate new OTP and send
         $this->generateAndSendOTP();
@@ -261,10 +357,18 @@ class OTP extends Component
     
     public function render()
     {
-        $this->updateOtpExpiry();
+        // Only update expiry if it's not already set or if it's expired
+        if ($this->otpExpiry <= 0) {
+            $this->updateOtpExpiry();
+        }
         
-        return view('livewire.web.o-t-p', [
+        return view('livewire.web.otp', [
             'otpExpiry' => $this->otpExpiry
         ]);
     }
+
+
+
+
+
 }

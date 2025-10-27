@@ -126,4 +126,29 @@ class WebsiteController extends Controller
         return view('pages.web.view-wedding-vehicle',['vehicleId'=>$vehicleId]);
    
     }
+
+
+    public function sellYourCar(){
+        return view('pages.web.sell-your-car');
+    }
+
+    public function myVehicles(){
+        return view('pages.web.my-vehicles');
+    }
+
+    public function registerVehicle(){
+        return view('pages.web.register-vehicle');
+    }
+
+    public function editVehicle($id){
+        return view('pages.web.edit-vehicle', compact('id'));
+    }
+    
+    public function myNegotiations(){
+        return view('pages.web.my-negotiations');
+    }
+
+    public function sellFastFree(){
+        return view('pages.web.sell-fast-free');
+    }
 }

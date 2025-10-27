@@ -1,118 +1,271 @@
-<!-- livewire.web.o-t-p.blade.php (Two-column layout like register page) -->
-<div class="min-h-screen bg-gray-100 flex">
-    <!-- Left side - Image Section (same as register page) -->
-   
-
-    <!-- Right side - OTP Verification Form -->
-    <div class="w-full lg:w-full flex  justify-center p-6">
-        <div class="w-full max-w-md">
-            <div class="text-center mb-10">
-                <h2 class="mt-6 text-3xl font-extrabold text-gray-900">
-                    Verify Your Account
-                </h2>
-                <p class="mt-2 text-sm text-gray-600">
-                    Enter the 5-digit code sent to your email
-                </p>
-                @if(!empty($maskedEmail))
-                    <p class="mt-1 text-xs text-gray-500">Code sent to: {{ $maskedEmail }}</p>
-                @endif
+<div>
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+        <div class="bg-white p-6 rounded-lg shadow-lg">
+            <div class="flex items-center space-x-3">
+                <svg class="animate-spin h-8 w-8 text-green-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <span class="text-gray-700 font-medium">Verifying...</span>
             </div>
+        </div>
+    </div>
 
-            <div class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-                <div class="space-y-6">
-                    <!-- Success message for resend -->
-                    <div id="otp-success" class="hidden rounded-md bg-green-50 p-3 border border-green-200">
-                        <p class="text-sm text-green-800" id="otp-success-text">A new verification code has been sent.</p>
-                    </div>
-                    <div>
-                        <label for="full_otp" class="block text-sm font-medium text-gray-700">Verification Code</label>
-                        <div class="mt-1">
-                            <input
-                                type="text"
-                                wire:model.defer="full_otp"
-                                maxlength="5"
-                                class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm"
-                                id="full_otp"
-                                autocomplete="one-time-code"
-                                inputmode="numeric"
-                                pattern="[0-9]*"
-                                placeholder="Enter 5-digit code"
-                                required
-                            >
-                        </div>
-                        @error('full_otp')
-                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                        @enderror
-                    </div>
+    <!-- User Email Display -->
+    <div class="text-center mb-6">
+        <span class="text-gray-600 text-sm">Code sent to: {{ substr(auth()->user()->email, 0, 2) . '****' . substr(auth()->user()->email, strpos(auth()->user()->email, '@')) }}</span>
+    </div>
 
-                    <div class="flex items-center justify-between gap-3">
-                        <button type="button" wire:click="logout" class="text-sm text-gray-600 hover:text-gray-700">
-                            Cancel
-                        </button>
-                        <button type="button" wire:click.prevent="resendOTP" id="resend-btn" class="text-sm text-green-600 hover:text-green-700">
-                            <span wire:loading.remove wire:target="resendOTP">Resend Code</span>
-                            <span wire:loading wire:target="resendOTP">Sending...</span>
-                        </button>
-                        <button wire:click="verifyOTP" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500" wire:loading.attr="disabled">
-                            <span wire:loading.remove wire:target="verifyOTP">Verify Account</span>
-                            <span wire:loading wire:target="verifyOTP">Verifying...</span>
-                        </button>
-                    </div>
-                </div>
+    <!-- Timer Display -->
+    <div id="countdown" class="text-center text-lg font-semibold text-green-600 mb-6">
+        {{ $otpExpiry > 0 ? gmdate('i:s', $otpExpiry) : '00:00' }}
+    </div>
+
+    <!-- Error Messages -->
+    @error('otp')
+        <div class="text-red-600 text-sm text-center mb-4">{{ $message }}</div>
+    @enderror
+
+    <!-- Success/Test Messages -->
+    @if (session('test_otp'))
+        <div class="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded mb-4 text-center">
+            <strong>Test Mode:</strong> Your OTP is: {{ session('test_otp') }}
+        </div>
+    @endif
+
+    <!-- OTP Input Fields -->
+    <div class="mb-8">
+        <label class="block text-sm font-medium text-gray-700 text-center mb-4">Verification Code</label>
+        <div class="flex flex-row justify-center text-center px-2">
+            <input wire:model.live="otp1"
+                   @keydown="handleKeyDown($event, 1)"
+                   class="m-2 border-2 border-gray-300 focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-200 focus:ring-opacity-50 h-14 w-14 text-center rounded-lg text-xl font-bold shadow-sm" 
+                   type="text" 
+                   maxlength="1" 
+                   autocomplete="off" />
+            <input wire:model.live="otp2"
+                   @keydown="handleKeyDown($event, 2)"
+                   class="m-2 border-2 border-gray-300 focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-200 focus:ring-opacity-50 h-14 w-14 text-center rounded-lg text-xl font-bold shadow-sm" 
+                   type="text" 
+                   maxlength="1" 
+                   autocomplete="off" />
+            <input wire:model.live="otp3"
+                   @keydown="handleKeyDown($event, 3)"
+                   class="m-2 border-2 border-gray-300 focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-200 focus:ring-opacity-50 h-14 w-14 text-center rounded-lg text-xl font-bold shadow-sm" 
+                   type="text" 
+                   maxlength="1" 
+                   autocomplete="off" />
+            <input wire:model.live="otp4"
+                   @keydown="handleKeyDown($event, 4)"
+                   class="m-2 border-2 border-gray-300 focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-200 focus:ring-opacity-50 h-14 w-14 text-center rounded-lg text-xl font-bold shadow-sm" 
+                   type="text" 
+                   maxlength="1" 
+                   autocomplete="off" />
+            <input wire:model.live="otp5"
+                   @keydown="handleKeyDown($event, 5)"
+                   class="m-2 border-2 border-gray-300 focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-200 focus:ring-opacity-50 h-14 w-14 text-center rounded-lg text-xl font-bold shadow-sm" 
+                   type="text" 
+                   maxlength="1" 
+                   autocomplete="off" />
+            <input wire:model.live="otp6"
+                   @keydown="handleKeyDown($event, 6)"
+                   class="m-2 border-2 border-gray-300 focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-200 focus:ring-opacity-50 h-14 w-14 text-center rounded-lg text-xl font-bold shadow-sm" 
+                   type="text" 
+                   maxlength="1" 
+                   autocomplete="off" />
+        </div>
+        <p class="text-center text-sm text-gray-500 mt-2">Enter 6-digit code</p>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="space-y-4">
+        <!-- Cancel Button -->
+        <div class="text-center">
+            <div wire:loading wire:target="logout">
+                <button disabled class="px-6 py-2 text-sm font-medium text-gray-500 cursor-not-allowed bg-gray-100 rounded-lg border border-gray-200">
+                    Please wait...
+                </button>
             </div>
+            <div wire:loading.remove wire:target="logout">
+                <button wire:click="logout" 
+                        type="button" 
+                        class="px-6 py-2 text-sm font-medium text-gray-700 bg-white rounded-lg border border-gray-300 hover:bg-gray-50 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors">
+                    Cancel
+                </button>
+            </div>
+        </div>
 
-            <!-- Mobile Version Banner (only shown on small screens) -->
-            <div class="mt-10 lg:hidden bg-green-600 text-white p-6 rounded-lg shadow-md">
-                <h3 class="text-xl font-bold mb-3">Verify Your Account</h3>
-                <p class="mb-4">Complete your account verification to access all features.</p>
-                <ul class="space-y-2 mb-4">
-                    <li class="flex items-center">
-                        <svg class="h-5 w-5 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                        </svg>
-                        Secure account verification
-                    </li>
-                    <li class="flex items-center">
-                        <svg class="h-5 w-5 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                        </svg>
-                        Quick and easy process
-                    </li>
-                </ul>
-                <a href="{{ route('about.us') }}" class="inline-flex items-center justify-center w-full px-4 py-2 border border-transparent text-sm font-medium rounded-md text-green-600 bg-white hover:bg-gray-50">
-                    Learn More
-                    <svg class="ml-2 -mr-1 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+        <!-- Resend OTP Button -->
+        <div class="text-center">
+            <div wire:loading wire:target="resendOTP">
+                <button disabled class="text-gray-500 cursor-not-allowed font-medium">
+                    Please wait...
+                </button>
+            </div>
+            <div wire:loading.remove wire:target="resendOTP">
+                <button wire:click="resendOTP" 
+                        class="text-green-600 hover:text-green-700 cursor-pointer transition-colors font-medium">
+                    Resend Code
+                </button>
+            </div>
+        </div>
+
+        <!-- Verify Button -->
+        <div class="text-center">
+            <div wire:loading wire:target="verifyOTP">
+                <button disabled class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-500 cursor-not-allowed">
+                    <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
-                </a>
-                
+                    Verifying...
+                </button>
+            </div>
+            <div wire:loading.remove wire:target="verifyOTP">
+                <button wire:click="verifyOTP" 
+                        class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors">
+                    Verify Account
+                </button>
             </div>
         </div>
     </div>
 
     <script>
-        // Ensure only numbers
-        document.addEventListener('DOMContentLoaded', function () {
-            var input = document.getElementById('full_otp');
-            if (!input) return;
-            input.addEventListener('input', function () {
-                this.value = this.value.replace(/[^0-9]/g, '').slice(0, 5);
-            });
-            input.focus();
-
-            // Listen for Livewire resend success event and show banner
-            window.addEventListener('otp-resent', function (e) {
-                var box = document.getElementById('otp-success');
-                var text = document.getElementById('otp-success-text');
-                if (text && e && e.detail && e.detail.message) {
-                    text.textContent = e.detail.message;
+        // Handle keyboard input for OTP fields
+        function handleKeyDown(event, fieldNumber) {
+            const key = event.key;
+            
+            // Allow only numbers
+            if (!/^[0-9]$/.test(key) && key !== 'Backspace' && key !== 'Delete' && key !== 'ArrowLeft' && key !== 'ArrowRight' && key !== 'Tab') {
+                event.preventDefault();
+                return;
+            }
+            
+            // Handle numbers
+            if (/^[0-9]$/.test(key)) {
+                event.preventDefault();
+                
+                // Set the value using Livewire
+                @this.set('otp' + fieldNumber, key);
+                
+                // Focus next field
+                if (fieldNumber < 6) {
+                    setTimeout(() => {
+                        const nextField = document.querySelector(`input[wire\\:model\\.live="otp${fieldNumber + 1}"]`);
+                        if (nextField) {
+                            nextField.focus();
+                        }
+                    }, 10);
                 }
-                if (box) {
-                    box.classList.remove('hidden');
-                    setTimeout(function () { box.classList.add('hidden'); }, 4000);
+            }
+            
+            // Handle backspace
+            if (key === 'Backspace' || key === 'Delete') {
+                setTimeout(() => {
+                    const currentField = document.querySelector(`input[wire\\:model\\.live="otp${fieldNumber}"]`);
+                    if (!currentField.value && fieldNumber > 1) {
+                        const prevField = document.querySelector(`input[wire\\:model\\.live="otp${fieldNumber - 1}"]`);
+                        if (prevField) {
+                            prevField.focus();
+                        }
+                    }
+                }, 10);
+            }
+        }
+
+        // Timer countdown using Livewire
+        let timeLeft = {{ $otpExpiry }};
+        const countdownElement = document.getElementById('countdown');
+        
+        if (timeLeft > 0) {
+            const timer = setInterval(() => {
+                timeLeft--;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    countdownElement.textContent = '00:00';
+                    countdownElement.className = 'text-lg font-semibold text-red-600 mb-6';
+                } else {
+                    const minutes = Math.floor(timeLeft / 60);
+                    const seconds = timeLeft % 60;
+                    countdownElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                }
+            }, 1000);
+        }
+
+        // Livewire event listeners
+        document.addEventListener('livewire:load', function () {
+            Livewire.on('otp-sent', (data) => {
+                alert(data.message);
+            });
+            
+            // Handle OTP verification events
+            Livewire.on('otp-verified', (data) => {
+                // Show success message
+                if (data.message) {
+                    alert(data.message);
+                }
+                
+                // Redirect to the specified URL
+                if (data.redirect) {
+                    setTimeout(() => {
+                        window.location.href = data.redirect;
+                    }, 500);
+                }
+            });
+            
+            // Monitor Livewire updates to detect when verification completes
+            Livewire.hook('message.processed', (message, component) => {
+                // Check if we're getting redirected
+                if (component.fingerprint.name === 'web.o-t-p') {
+                    // If the component is trying to redirect, show loading
+                    const loadingOverlay = document.getElementById('loading-overlay');
+                    if (message.response.effects?.redirect) {
+                        if (loadingOverlay) {
+                            loadingOverlay.classList.remove('hidden');
+                        }
+                    }
+                }
+            });
+            
+            // Watch for all fields filled and auto-verify
+            Livewire.hook('message.processed', (message, component) => {
+                if (message.component.fingerprint.name === 'web.o-t-p') {
+                    const otp1 = document.querySelector('input[wire\\:model\\.live="otp1"]').value;
+                    const otp2 = document.querySelector('input[wire\\:model\\.live="otp2"]').value;
+                    const otp3 = document.querySelector('input[wire\\:model\\.live="otp3"]').value;
+                    const otp4 = document.querySelector('input[wire\\:model\\.live="otp4"]').value;
+                    const otp5 = document.querySelector('input[wire\\:model\\.live="otp5"]').value;
+                    const otp6 = document.querySelector('input[wire\\:model\\.live="otp6"]').value;
+                    
+                    if (otp1 && otp2 && otp3 && otp4 && otp5 && otp6) {
+                        // All fields filled, auto-verify after a short delay
+                        setTimeout(() => {
+                            @this.call('verifyOTP');
+                        }, 500);
+                    }
                 }
             });
         });
+        
+        // Auto-focus first input on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const firstInput = document.querySelector('input[wire\\:model\\.live="otp1"]');
+            if (firstInput) {
+                firstInput.focus();
+            }
+            
+            // Add click handler to verify button to show loading overlay
+            const verifyButtons = document.querySelectorAll('button[wire\\:click="verifyOTP"]');
+            verifyButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const loadingOverlay = document.getElementById('loading-overlay');
+                    if (loadingOverlay) {
+                        loadingOverlay.classList.remove('hidden');
+                    }
+                });
+            });
+        });
     </script>
-</div>
 </div>

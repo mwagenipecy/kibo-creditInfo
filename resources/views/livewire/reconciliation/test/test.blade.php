@@ -369,7 +369,7 @@
                                 CASH BOOK NON MATCHING TRANSACTIONS
                             </p>
 
-                            <livewire:cb.cb-table-store/>
+                            <livewire:reconciliation.cb.cb-table-store/>
 
 
 

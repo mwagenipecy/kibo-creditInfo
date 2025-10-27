@@ -59,7 +59,7 @@
 
                 <!-- Individual Criteria Form -->
                 @if($showForm)
-                <div class="bg-gray-50 border border-gray-200 rounded-lg shadow-sm mb-6 overflow-hidden">
+                <div class="bg-gray-50  border border-gray-200 rounded-lg shadow-sm mb-6 overflow-hidden">
                     <div class="bg-gradient-to-r from-gray-50 to-gray-100 px-6 py-3 border-b border-gray-200">
                         <h3 class="text-lg font-semibold text-gray-800">{{ $editMode ? 'Edit' : 'Add' }} Financing Criteria</h3>
                     </div>

@@ -49,6 +49,16 @@ Route::get('loan-calculator', [WebsiteController::class, 'loanCalculator'])->nam
 Route::get('rental-vehicles', [WebsiteController::class, 'weddingVehicles'])->name('wedding.vehicles');
 Route::get('rental-vehicle/{vehicleId}', [WebsiteController::class, 'viewWeddingVehicle'])->name('wedding.car.detail');
 
+Route::get('sell-your-car', [WebsiteController::class, 'sellYourCar'])->name('sell.your.car');
+Route::get('sell-fast-free', [WebsiteController::class, 'sellFastFree'])->name('sell.fast.free');
+
+// User vehicle management routes (authenticated)
+Route::middleware(['auth:sanctum', OTPMiddleware::class])->group(function () {
+    Route::get('my-vehicles', [WebsiteController::class, 'myVehicles'])->name('my.vehicles');
+    Route::get('my-negotiations', [WebsiteController::class, 'myNegotiations'])->name('my.negotiations');
+    Route::get('register-vehicle', [WebsiteController::class, 'registerVehicle'])->name('register.vehicle');
+    Route::get('edit-vehicle/{id}', [WebsiteController::class, 'editVehicle'])->name('edit.vehicle');
+});
 
 
 // Public service pages

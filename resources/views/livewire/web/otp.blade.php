@@ -15,50 +15,46 @@
     @enderror
 
     <!-- Success/Test Messages -->
-    @if (session('test_otp'))
-        <div class="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded mb-4 text-center">
-            <strong>Test Mode:</strong> Your OTP is: {{ session('test_otp') }}
-        </div>
-    @endif
+   
 
     <!-- OTP Input Fields -->
     <div class="mb-8">
         <label class="block text-sm font-medium text-gray-700 text-center mb-4">Verification Code</label>
-        <div id="otp" class="flex flex-row justify-center text-center px-2">
-            <input wire:model="otp1" 
+        <div class="flex flex-row justify-center text-center px-2">
+            <input wire:model.live="otp1" 
+                   @keydown="handleKeyDown($event, 1)"
                    class="m-2 border-2 border-gray-300 focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-200 focus:ring-opacity-50 h-14 w-14 text-center rounded-lg text-xl font-bold shadow-sm" 
                    type="text" 
-                   id="otp1" 
                    maxlength="1" 
                    autocomplete="off" />
-            <input wire:model="otp2" 
+            <input wire:model.live="otp2" 
+                   @keydown="handleKeyDown($event, 2)"
                    class="m-2 border-2 border-gray-300 focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-200 focus:ring-opacity-50 h-14 w-14 text-center rounded-lg text-xl font-bold shadow-sm" 
                    type="text" 
-                   id="otp2" 
                    maxlength="1" 
                    autocomplete="off" />
-            <input wire:model="otp3" 
+            <input wire:model.live="otp3" 
+                   @keydown="handleKeyDown($event, 3)"
                    class="m-2 border-2 border-gray-300 focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-200 focus:ring-opacity-50 h-14 w-14 text-center rounded-lg text-xl font-bold shadow-sm" 
                    type="text" 
-                   id="otp3" 
                    maxlength="1" 
                    autocomplete="off" />
-            <input wire:model="otp4" 
+            <input wire:model.live="otp4" 
+                   @keydown="handleKeyDown($event, 4)"
                    class="m-2 border-2 border-gray-300 focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-200 focus:ring-opacity-50 h-14 w-14 text-center rounded-lg text-xl font-bold shadow-sm" 
                    type="text" 
-                   id="otp4" 
                    maxlength="1" 
                    autocomplete="off" />
-            <input wire:model="otp5" 
+            <input wire:model.live="otp5" 
+                   @keydown="handleKeyDown($event, 5)"
                    class="m-2 border-2 border-gray-300 focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-200 focus:ring-opacity-50 h-14 w-14 text-center rounded-lg text-xl font-bold shadow-sm" 
                    type="text" 
-                   id="otp5" 
                    maxlength="1" 
                    autocomplete="off" />
-            <input wire:model="otp6" 
+            <input wire:model.live="otp6" 
+                   @keydown="handleKeyDown($event, 6)"
                    class="m-2 border-2 border-gray-300 focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-200 focus:ring-opacity-50 h-14 w-14 text-center rounded-lg text-xl font-bold shadow-sm" 
                    type="text" 
-                   id="otp6" 
                    maxlength="1" 
                    autocomplete="off" />
         </div>
@@ -100,80 +96,68 @@
 
         <!-- Verify Button -->
         <div class="text-center">
-            <button wire:click="verifyOTP" 
-                    class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors">
-                Verify Account
-            </button>
+            <div wire:loading wire:target="verifyOTP">
+                <button disabled class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-500 cursor-not-allowed">
+                    <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Verifying...
+                </button>
+            </div>
+            <div wire:loading.remove wire:target="verifyOTP">
+                <button wire:click="verifyOTP" 
+                        class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors">
+                    Verify Account
+                </button>
+            </div>
         </div>
     </div>
 
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            // Auto-focus first input
-            document.getElementById('otp1').focus();
-
-            // OTP Input handling
-            const inputs = document.querySelectorAll('#otp input');
+        // Handle keyboard input for OTP fields
+        function handleKeyDown(event, fieldNumber) {
+            const key = event.key;
             
-            inputs.forEach((input, index) => {
-                input.addEventListener('keydown', function(event) {
-                    // Handle backspace
-                    if (event.key === "Backspace") {
-                        if (input.value === '' && index > 0) {
-                            inputs[index - 1].focus();
+            // Allow only numbers
+            if (!/^[0-9]$/.test(key) && key !== 'Backspace' && key !== 'Delete' && key !== 'ArrowLeft' && key !== 'ArrowRight' && key !== 'Tab') {
+                event.preventDefault();
+                return;
+            }
+            
+            // Handle numbers
+            if (/^[0-9]$/.test(key)) {
+                event.preventDefault();
+                
+                // Set the value using Livewire
+                @this.set('otp' + fieldNumber, key);
+                
+                // Focus next field
+                if (fieldNumber < 6) {
+                    setTimeout(() => {
+                        const nextField = document.querySelector(`input[wire\\:model\\.live="otp${fieldNumber + 1}"]`);
+                        if (nextField) {
+                            nextField.focus();
                         }
-                        input.value = '';
-                        return;
-                    }
-
-                    // Handle number input
-                    if (event.key >= '0' && event.key <= '9') {
-                        input.value = event.key;
-                        
-                        // Auto-focus next input
-                        if (index < inputs.length - 1) {
-                            inputs[index + 1].focus();
-                        } else {
-                            // All inputs filled, trigger verification
-                            setTimeout(() => {
-                                let otpValue = '';
-                                inputs.forEach(inp => otpValue += inp.value);
-                                
-                                if (otpValue.length === 6) {
-                                    // Trigger Livewire method
-                                    @this.call('verifyOTP');
-                                }
-                            }, 100);
+                    }, 10);
+                }
+            }
+            
+            // Handle backspace
+            if (key === 'Backspace' || key === 'Delete') {
+                setTimeout(() => {
+                    const currentField = document.querySelector(`input[wire\\:model\\.live="otp${fieldNumber}"]`);
+                    if (!currentField.value && fieldNumber > 1) {
+                        const prevField = document.querySelector(`input[wire\\:model\\.live="otp${fieldNumber - 1}"]`);
+                        if (prevField) {
+                            prevField.focus();
                         }
                     }
-                });
+                }, 10);
+            }
+        }
 
-                // Handle paste
-                input.addEventListener('paste', function(event) {
-                    event.preventDefault();
-                    const pastedData = event.clipboardData.getData('text');
-                    const numbers = pastedData.replace(/\D/g, '').split('');
-                    
-                    if (numbers.length >= 6) {
-                        inputs.forEach((inp, idx) => {
-                            if (idx < 6) {
-                                inp.value = numbers[idx] || '';
-                            }
-                        });
-                        
-                        // Focus last input
-                        inputs[5].focus();
-                        
-                        // Trigger verification
-                        setTimeout(() => {
-                            @this.call('verifyOTP');
-                        }, 100);
-                    }
-                });
-            });
-        });
-
-        // Timer countdown
+        // Timer countdown using Livewire
         let timeLeft = {{ $otpExpiry }};
         const countdownElement = document.getElementById('countdown');
         
@@ -184,7 +168,7 @@
                 if (timeLeft <= 0) {
                     clearInterval(timer);
                     countdownElement.textContent = '00:00';
-                    countdownElement.className = 'text-lg font-semibold text-red-600 mb-4';
+                    countdownElement.className = 'text-lg font-semibold text-red-600 mb-6';
                 } else {
                     const minutes = Math.floor(timeLeft / 60);
                     const seconds = timeLeft % 60;
@@ -198,6 +182,46 @@
             Livewire.on('otp-sent', (data) => {
                 alert(data.message);
             });
+            
+            // Handle OTP verification redirect
+            Livewire.on('otp-verified', (data) => {
+                // Show success message
+                if (data.message) {
+                    alert(data.message);
+                }
+                
+                // Redirect to the specified URL
+                if (data.redirect) {
+                    window.location.href = data.redirect;
+                }
+            });
+            
+            // Watch for all fields filled and auto-verify
+            Livewire.hook('message.processed', (message, component) => {
+                if (message.component.fingerprint.name === 'web.otp') {
+                    const otp1 = document.querySelector('input[wire\\:model\\.live="otp1"]').value;
+                    const otp2 = document.querySelector('input[wire\\:model\\.live="otp2"]').value;
+                    const otp3 = document.querySelector('input[wire\\:model\\.live="otp3"]').value;
+                    const otp4 = document.querySelector('input[wire\\:model\\.live="otp4"]').value;
+                    const otp5 = document.querySelector('input[wire\\:model\\.live="otp5"]').value;
+                    const otp6 = document.querySelector('input[wire\\:model\\.live="otp6"]').value;
+                    
+                    if (otp1 && otp2 && otp3 && otp4 && otp5 && otp6) {
+                        // All fields filled, auto-verify after a short delay
+                        setTimeout(() => {
+                            @this.call('verifyOTP');
+                        }, 500);
+                    }
+                }
+            });
+        });
+        
+        // Auto-focus first input on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const firstInput = document.querySelector('input[wire\\:model\\.live="otp1"]');
+            if (firstInput) {
+                firstInput.focus();
+            }
         });
     </script>
 </div>

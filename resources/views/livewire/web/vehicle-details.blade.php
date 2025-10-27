@@ -1,6 +1,35 @@
 <div>
 <!-- resources/views/livewire/vehicle-detail.blade.php -->
 <div class="bg-white w-full">
+    <!-- Flash Messages -->
+    @if (session()->has('success'))
+        <div class="container mx-auto px-4 pt-4">
+            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
+                <span class="block sm:inline">{{ session('success') }}</span>
+                <button type="button" onclick="this.parentElement.remove()" class="absolute top-0 bottom-0 right-0 px-4 py-3">
+                    <svg class="fill-current h-6 w-6 text-green-500" role="button" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                        <title>Close</title>
+                        <path d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    @endif
+    
+    @if (session()->has('error'))
+        <div class="container mx-auto px-4 pt-4">
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                <span class="block sm:inline">{{ session('error') }}</span>
+                <button type="button" onclick="this.parentElement.remove()" class="absolute top-0 bottom-0 right-0 px-4 py-3">
+                    <svg class="fill-current h-6 w-6 text-red-500" role="button" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                        <title>Close</title>
+                        <path d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    @endif
+    
     <!-- Breadcrumb -->
     <div class="bg-green-600 py-4 border-b border-gray-200">
         <div class="container mx-auto px-4">
@@ -668,16 +697,42 @@
         $whatsappUrl = "https://wa.me/{$phoneNumber}?text={$encodedMessage}";
     @endphp
 
-    <a href="{{ $whatsappUrl }}" target="_blank" rel="noopener noreferrer" 
-       class="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-4 rounded-lg 
-              transition duration-300 flex items-center justify-center group">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" 
-             class="h-5 w-5 mr-2 fill-current transition-transform duration-300 group-hover:scale-110">
-            <!-- WhatsApp icon (FontAwesome style) -->
-            <path d="M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157zm-157 341.6c-33.2 0-65.7-8.9-94-25.7l-6.7-4-69.8 18.3L72 359.2l-4.4-7c-18.5-29.4-28.2-63.3-28.2-98.2 0-101.7 82.8-184.5 184.6-184.5 49.3 0 95.6 19.2 130.4 54.1 34.8 34.9 56.2 81.2 56.1 130.5 0 101.8-84.9 184.6-186.6 184.6zm101.2-138.2c-5.5-2.8-32.8-16.2-37.9-18-5.1-1.9-8.8-2.8-12.5 2.8-3.7 5.6-14.3 18-17.6 21.8-3.2 3.7-6.5 4.2-12 1.4-32.6-16.3-54-29.1-75.5-66-5.7-9.8 5.7-9.1 16.3-30.3 1.8-3.7.9-6.9-.5-9.7-1.4-2.8-12.5-30.1-17.1-41.2-4.5-10.8-9.1-9.3-12.5-9.5-3.2-.2-6.9-.2-10.6-.2-3.7 0-9.7 1.4-14.8 6.9-5.1 5.6-19.4 19-19.4 46.3 0 27.3 19.9 53.7 22.6 57.4 2.8 3.7 39.1 59.7 94.8 83.8 35.2 15.2 49 16.5 66.6 13.9 10.7-1.6 32.8-13.4 37.4-26.4 4.6-13 4.6-24.1 3.2-26.4-1.3-2.5-5-3.9-10.5-6.6z"/>
-        </svg>
-        Chat on WhatsApp
-    </a>
+    <div class="flex flex-col sm:flex-row gap-3">
+        <!-- WhatsApp Button -->
+        <a href="{{ $whatsappUrl }}" target="_blank" rel="noopener noreferrer" 
+           class="flex-1 bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-4 rounded-lg 
+                  transition-colors duration-200 flex items-center justify-center space-x-2 shadow-sm hover:shadow">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="h-5 w-5 fill-current">
+                <path d="M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157zm-157 341.6c-33.2 0-65.7-8.9-94-25.7l-6.7-4-69.8 18.3L72 359.2l-4.4-7c-18.5-29.4-28.2-63.3-28.2-98.2 0-101.7 82.8-184.5 184.6-184.5 49.3 0 95.6 19.2 130.4 54.1 34.8 34.9 56.2 81.2 56.1 130.5 0 101.8-84.9 184.6-186.6 184.6zm101.2-138.2c-5.5-2.8-32.8-16.2-37.9-18-5.1-1.9-8.8-2.8-12.5 2.8-3.7 5.6-14.3 18-17.6 21.8-3.2 3.7-6.5 4.2-12 1.4-32.6-16.3-54-29.1-75.5-66-5.7-9.8 5.7-9.1 16.3-30.3 1.8-3.7.9-6.9-.5-9.7-1.4-2.8-12.5-30.1-17.1-41.2-4.5-10.8-9.1-9.3-12.5-9.5-3.2-.2-6.9-.2-10.6-.2-3.7 0-9.7 1.4-14.8 6.9-5.1 5.6-19.4 19-19.4 46.3 0 27.3 19.9 53.7 22.6 57.4 2.8 3.7 39.1 59.7 94.8 83.8 35.2 15.2 49 16.5 66.6 13.9 10.7-1.6 32.8-13.4 37.4-26.4 4.6-13 4.6-24.1 3.2-26.4-1.3-2.5-5-3.9-10.5-6.6z"/>
+            </svg>
+            <span class="text-sm">WhatsApp</span>
+        </a>
+        
+        @if(!$isVehicleOwner)
+            @if($vehicle->status == 'on_hold')
+                <!-- Disabled Negotiate Button -->
+                <button disabled
+                        class="flex-1 bg-gray-300 text-gray-500 font-medium py-3 px-4 rounded-lg 
+                               cursor-not-allowed flex items-center justify-center space-x-2"
+                        title="Price negotiation is disabled - Vehicle is on hold">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                    </svg>
+                    <span class="text-sm">Negotiate (On Hold)</span>
+                </button>
+            @else
+                <!-- Negotiate Price Button -->
+                <button wire:click="openNegotiationModal" 
+                        class="flex-1 bg-orange-600 hover:bg-orange-700 text-white font-medium py-3 px-4 rounded-lg 
+                               transition-colors duration-200 flex items-center justify-center space-x-2 shadow-sm hover:shadow">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                    </svg>
+                    <span class="text-sm">Negotiate Price</span>
+                </button>
+            @endif
+        @endif
+    </div>
 
     @if(!empty(optional($vehicle->dealer)->contact_person_phone))
         <div class="flex justify-between items-center mt-2">
@@ -786,8 +841,158 @@
     </div>
 </div>
 
-
-
-
+    <!-- Negotiation Price Modal -->
+    @if($showNegotiationModal)
+        <div class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50" wire:click="closeNegotiationModal">
+            <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-1/2 shadow-lg rounded-md bg-white" wire:click.stop>
+                <div class="mt-3">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-2xl font-bold text-gray-900">Negotiate Price</h3>
+                        <button wire:click="closeNegotiationModal" class="text-gray-400 hover:text-gray-600">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <p class="text-sm text-gray-600 mb-1">Vehicle:</p>
+                            <p class="font-semibold text-gray-900">{{ $vehicle->year }} {{ $vehicle->make->name ?? '' }} {{ $vehicle->model->name ?? '' }}</p>
+                            <p class="text-sm text-gray-600 mt-2">Listed Price:</p>
+                            <p class="text-2xl font-bold text-green-600">TSh {{ number_format($vehicle->price) }}</p>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Your Offer (TSh)</label>
+                            <input type="number" wire:model="offeredPrice" 
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500" 
+                                   placeholder="Enter your offer">
+                            @error('offeredPrice') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                        </div>
+                        
+                        <div class="flex gap-3">
+                            <button wire:click.prevent="submitNegotiation" 
+                                    type="button"
+                                    class="flex-1 bg-green-600 text-white py-3 px-6 rounded-lg hover:bg-green-700 transition-colors">
+                                Send Offer
+                            </button>
+                            <button wire:click.prevent="closeNegotiationModal" 
+                                    type="button"
+                                    class="flex-1 bg-gray-200 text-gray-700 py-3 px-6 rounded-lg hover:bg-gray-300 transition-colors">
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+    
+    <!-- Buyer Negotiation View Modal -->
+    @if($showBuyerNegotiationModal && $buyerNegotiation)
+        <div class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50" wire:click="closeBuyerNegotiationModal">
+            <div class="relative top-10 mx-auto p-5 border w-11/12 md:w-1/2 shadow-lg rounded-md bg-white" wire:click.stop>
+                <div class="flex flex-col h-[600px]">
+                    <!-- Header -->
+                    <div class="flex justify-between items-center mb-4 pb-4 border-b">
+                        <div>
+                            <h3 class="text-lg font-bold text-gray-900">My Price Negotiation</h3>
+                            <p class="text-sm text-gray-600">{{ $vehicle->make->name ?? '' }} {{ $vehicle->model->name ?? '' }}</p>
+                            <p class="text-xs text-gray-500">Status: 
+                                <span class="px-2 py-1 text-xs rounded 
+                                    @if($buyerNegotiation->status == 'pending') bg-yellow-100 text-yellow-800
+                                    @elseif($buyerNegotiation->status == 'accepted') bg-green-100 text-green-800
+                                    @elseif($buyerNegotiation->status == 'rejected') bg-red-100 text-red-800
+                                    @else bg-gray-100 text-gray-800
+                                    @endif">
+                                    {{ ucfirst($buyerNegotiation->status) }}
+                                </span>
+                            </p>
+                        </div>
+                        <button wire:click="closeBuyerNegotiationModal" class="text-gray-400 hover:text-gray-600">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    
+                    <!-- Price Messages -->
+                    <div class="flex-1 overflow-y-auto mb-4 space-y-4 chat-messages" 
+                         id="vehicle-details-chat"
+                         x-data
+                         x-init="setTimeout(() => $el.scrollTop = $el.scrollHeight, 100)"
+                         wire:poll.2s>
+                        @if($buyerNegotiation->messages && $buyerNegotiation->messages->count() > 0)
+                            @foreach($buyerNegotiation->messages as $message)
+                                <div class="flex {{ $message->sender_id == Auth::id() ? 'justify-end' : 'justify-start' }}">
+                                    <div class="max-w-xs md:max-w-md">
+                                        <div class="px-4 py-2 rounded-lg {{ $message->sender_id == Auth::id() ? 'bg-green-600 text-white' : 'bg-gray-200 text-gray-900' }}">
+                                            <p class="text-sm font-medium">{{ $message->message }}</p>
+                                        </div>
+                                        <p class="text-xs text-gray-400 mt-1 {{ $message->sender_id == Auth::id() ? 'text-right' : '' }}">
+                                            {{ $message->created_at->format('M d, H:i') }}
+                                        </p>
+                                    </div>
+                                </div>
+                            @endforeach
+                        @else
+                            <div class="text-center text-gray-500 py-8">
+                                <p>No messages yet.</p>
+                            </div>
+                        @endif
+                    </div>
+                    
+                    <!-- Price Input - Buyer can send counter offers -->
+                    @if($buyerNegotiation->status == 'accepted' || $buyerNegotiation->status == 'pending')
+                        <div class="border-t pt-4 space-y-2">
+                            <!-- Quick keyword buttons -->
+                            <div class="flex gap-2 flex-wrap">
+                                <button wire:click.prevent="sendKeyword('I only have')" 
+                                        class="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded-lg border">
+                                    I only have
+                                </button>
+                                <button wire:click.prevent="sendKeyword('My budget is')" 
+                                        class="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded-lg border">
+                                    My budget is
+                                </button>
+                                <button wire:click.prevent="sendKeyword('Can I pay by installment?')" 
+                                        class="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded-lg border">
+                                    Can I pay by installment?
+                                </button>
+                            </div>
+                            <!-- Price input -->
+                            <div class="flex gap-2">
+                                <input type="number" wire:model="offeredPrice" 
+                                       wire:keydown.enter.prevent="sendNewOffer"
+                                       placeholder="Or enter your custom offer (TSh)..." 
+                                       class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500">
+                                <button wire:click.prevent="sendNewOffer" 
+                                        class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
+                                    Send
+                                </button>
+                            </div>
+                        </div>
+                    @elseif($buyerNegotiation->status == 'rejected')
+                        <div class="border-t pt-4">
+                            <div class="bg-red-50 border border-red-200 rounded-lg p-3">
+                                <p class="text-sm text-red-800">Your offer was rejected. Click below to submit a new offer.</p>
+                                <button wire:click="closeBuyerNegotiationModal" 
+                                        class="mt-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm">
+                                    Submit New Offer
+                                </button>
+                            </div>
+                        </div>
+                    @elseif($buyerNegotiation->status == 'completed')
+                        <div class="border-t pt-4">
+                            <div class="bg-green-50 border border-green-200 rounded-lg p-3">
+                                <p class="text-sm text-green-800">✓ Sale completed! Vehicle is on hold.</p>
+                            </div>
+                        </div>
+                    @endif
+                </div>
+            </div>
+        </div>
+    @endif
 
 </div>
