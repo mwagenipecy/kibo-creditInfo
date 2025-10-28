@@ -722,7 +722,10 @@
                 </button>
             @else
 
-            @if($vehicle->isNotdealer)
+
+
+
+            @if($vehicle->isNotdealer==1)
                 <!-- Negotiate Price Button -->
                 <button wire:click="openNegotiationModal" 
                         class="flex-1 bg-orange-600 hover:bg-orange-700 text-white font-medium py-3 px-4 rounded-lg 
@@ -734,6 +737,8 @@
                 </button>
 
                 @endif 
+
+
             @endif
         @endif
     </div>
