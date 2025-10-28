@@ -80,6 +80,8 @@
                             <tr class="hover:bg-gray-50">
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="flex items-center">
+
+                                    {{ $frontImage->image_url }}
                                         <img 
                                             src="{{ $frontImage ? asset($frontImage->image_url) : asset('/default/default-car.jpg') }}" 
                                             alt="Vehicle"
