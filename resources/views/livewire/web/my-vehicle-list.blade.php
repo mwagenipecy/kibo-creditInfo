@@ -81,9 +81,9 @@
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="flex items-center">
 
-                                    {{ $frontImage->image_url }}
+                                   
                                         <img 
-                                            src="{{ $frontImage ? asset($frontImage->image_url) : asset('/default/default-car.jpg') }}" 
+                                            src="{{ $frontImage ? asset("/storage/".$frontImage->image_url) : asset('/default/default-car.jpg') }}" 
                                             alt="Vehicle"
                                             class="h-12 w-12 rounded-lg object-cover mr-3"
                                         >
