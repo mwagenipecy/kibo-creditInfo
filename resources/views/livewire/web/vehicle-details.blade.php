@@ -721,6 +721,8 @@
                     <span class="text-sm">Negotiate (On Hold)</span>
                 </button>
             @else
+
+            @if($vehicle->isNotdealer)
                 <!-- Negotiate Price Button -->
                 <button wire:click="openNegotiationModal" 
                         class="flex-1 bg-orange-600 hover:bg-orange-700 text-white font-medium py-3 px-4 rounded-lg 
@@ -730,6 +732,8 @@
                     </svg>
                     <span class="text-sm">Negotiate Price</span>
                 </button>
+
+                @endif 
             @endif
         @endif
     </div>
@@ -828,12 +832,12 @@
         <div class="p-6 text-white">
             <h3 class="text-lg font-bold mb-2">sell your car</h3>
             <p class="text-green-100 mb-4">Get an instant offer for your current vehicle and apply it toward this purchase!</p>
-            <button class="bg-white text-green-700 hover:bg-green-50 font-medium py-2 px-4 rounded-lg transition duration-300 flex items-center">
+            <a  href="{{ route('sell.your.car') }}" class="bg-white text-green-700 hover:bg-green-50 font-medium py-2 px-4 rounded-lg transition duration-300 flex items-center">
                 Sell Your Car Now
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-1" viewBox="0 0 20 20" fill="currentColor">
                     <path fill-rule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
                 </svg>
-            </button>
+    </a>
         </div>
     </div>
 </div>

@@ -45,7 +45,7 @@ return [
     ],
 
     'openrouter' => [
-        'key' => env('OPENROUTER_API_KEY'),
+        'key' => env('OPENROUTER_API_KEY', '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'),
     ],
 
 

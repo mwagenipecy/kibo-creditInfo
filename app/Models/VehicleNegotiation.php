@@ -38,3 +38,4 @@ class VehicleNegotiation extends Model
         return $this->hasMany(NegotiationMessage::class, 'negotiation_id');
     }
 }
+

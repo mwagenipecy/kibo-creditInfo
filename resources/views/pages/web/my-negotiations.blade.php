@@ -4,3 +4,4 @@
   <livewire:web.my-negotiations />
 
 @endsection
+

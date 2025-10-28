@@ -86,18 +86,18 @@ class ChatWidget extends Component
     {
         $quickMessages = [
             'en' => [
-                'help' => 'I need help with my account',
-                'loan' => 'Tell me about loan services',
-                'vehicle' => 'I want to buy a vehicle',
-                'spare' => 'I need spare parts',
-                'contact' => 'How can I contact support?'
+                'recommend' => 'What car would you recommend for me?',
+                'budget' => 'What are good cars under $20,000?',
+                'compare' => 'Compare Toyota Camry vs Honda Accord',
+                'fuel' => 'Which cars have the best fuel efficiency?',
+                'luxury' => 'What are the best luxury cars in 2024?'
             ],
             'sw' => [
-                'help' => 'Nahitaji msaada kuhusu akaunti yangu',
-                'loan' => 'Nieleze kuhusu huduma za mkopo',
-                'vehicle' => 'Nataka kununua gari',
-                'spare' => 'Nahitaji vipuri',
-                'contact' => 'Nawezaje kuwasiliana na msaada?'
+                'recommend' => 'Ni gari gani ungependa kunipendekeza?',
+                'budget' => 'Ni magari gani mazuri chini ya dola 20,000?',
+                'compare' => 'Linganisha Toyota Camry na Honda Accord',
+                'fuel' => 'Ni magari gani yanayotumia mafuta vizuri?',
+                'luxury' => 'Ni magari gani bora ya anasa mwaka 2024?'
             ]
         ];
 
@@ -137,23 +137,23 @@ class ChatWidget extends Component
     {
         $welcomeMessages = [
             'en' => [
-                'text' => 'Hello! I\'m KiboAuto AI Assistant. How can I help you today?',
+                'text' => 'Hello! I am KiboAuto Car Consultant AI. I specialize in car consultation worldwide. What car question can I help you with today?',
                 'quick_actions' => [
-                    'help' => 'Account Help',
-                    'loan' => 'Loan Services',
-                    'vehicle' => 'Find Vehicle',
-                    'spare' => 'Spare Parts',
-                    'contact' => 'Contact Support'
+                    'recommend' => 'Car Recommendations',
+                    'budget' => 'Budget Cars',
+                    'compare' => 'Compare Cars',
+                    'fuel' => 'Fuel Efficient',
+                    'luxury' => 'Luxury Cars'
                 ]
             ],
             'sw' => [
-                'text' => 'Hujambo! Mimi ni Msaidizi wa KiboAuto AI. Ninaweza kukusaidiaje leo?',
+                'text' => 'Hujambo! Mimi ni Mshauri wa Magari wa KiboAuto AI. Ninatoa ushauri wa magari duniani kote. Ni swali gani la magari ninaweza kukusaidia leo?',
                 'quick_actions' => [
-                    'help' => 'Msaada wa Akaunti',
-                    'loan' => 'Huduma za Mkopo',
-                    'vehicle' => 'Tafuta Gari',
-                    'spare' => 'Vipuri',
-                    'contact' => 'Msaada wa Mawasiliano'
+                    'recommend' => 'Mapendekezo ya Magari',
+                    'budget' => 'Magari ya Bajeti',
+                    'compare' => 'Linganisha Magari',
+                    'fuel' => 'Yanayotumia Mafuta Vizuri',
+                    'luxury' => 'Magari ya Anasa'
                 ]
             ]
         ];

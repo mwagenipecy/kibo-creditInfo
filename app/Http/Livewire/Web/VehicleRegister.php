@@ -171,6 +171,7 @@ class VehicleRegister extends Component
         $vehicle->trim = $this->trim;
         $vehicle->owners = $this->owners;
         $vehicle->location = $this->location;
+        $vehicle->isNotdealer = true;
         $vehicle->save();
         
         // Handle image uploads
