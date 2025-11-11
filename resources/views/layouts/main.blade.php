@@ -170,10 +170,10 @@
 <body class="font-sans antialiased bg-gray-50">
     <div class="min-h-screen">
         <!-- Top Contact Bar -->
-        <div class="bg-green-600 text-white text-xs sm:text-sm py-1.5 sm:py-2 px-2 sm:px-4 fixed top-0 left-0 right-0 z-50 h-auto min-h-[2.5rem] sm:min-h-[2.5rem]">
+        <div class="hidden md:block bg-green-600 text-white text-xs sm:text-sm py-1.5 sm:py-2 px-2 sm:px-4 fixed top-0 left-0 right-0 z-50 h-auto min-h-[2.5rem] sm:min-h-[2.5rem]">
             <div class="container mx-auto max-w-7xl">
                 <!-- Desktop Layout -->
-                <div class="hidden md:flex justify-between items-center">
+                <div class="flex justify-between items-center">
                     <!-- Left Side - Contact Information -->
                     <div class="flex items-center space-x-4 lg:space-x-6">
                         <div class="flex items-center space-x-2">
@@ -200,42 +200,11 @@
                         </a>
                     </div>
                 </div>
-                
-                <!-- Mobile Layout -->
-                <div class="md:hidden">
-                    <div class="flex flex-col space-y-1.5">
-                        <!-- First Row: Phone and Links -->
-                        <div class="flex items-center justify-between gap-2">
-                            <div class="flex items-center space-x-1.5 min-w-0 flex-1">
-                                <svg class="h-3 w-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                                </svg>
-                                <a href="tel:+255758586565" class="text-xs truncate hover:text-green-200 transition-colors">+255 758 586 565</a>
-                            </div>
-                            <div class="flex items-center space-x-2 flex-shrink-0">
-                                <a href="{{ route('about.us') }}" class="hover:text-green-200 transition-colors duration-200 text-xs whitespace-nowrap">
-                                    About
-                                </a>
-                                <span class="text-green-300">|</span>
-                                <a href="{{ route('contact.page') }}" class="hover:text-green-200 transition-colors duration-200 text-xs whitespace-nowrap">
-                                    Contact
-                                </a>
-                            </div>
-                        </div>
-                        <!-- Second Row: Email -->
-                        <div class="flex items-center space-x-1.5 min-w-0">
-                            <svg class="h-3 w-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                            </svg>
-                            <a href="mailto:savannahills25@gmail.com" class="text-xs truncate hover:text-green-200 transition-colors min-w-0">savannahills25@gmail.com</a>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
 
         <!-- Header -->
-        <header class="bg-white w-full fixed top-[2.5rem] sm:top-10 left-0 right-0 z-40 border-b border-gray-100 shadow-sm" 
+        <header class="bg-white w-full fixed top-0 md:top-10 left-0 right-0 z-40 border-b border-gray-100 shadow-sm" 
         x-data="{ scrolled: false, mobileMenuOpen: false, vehiclesOpen: false, loanServicesOpen: false, servicesOpen: false }" 
         x-init="window.addEventListener('scroll', () => { scrolled = window.scrollY > 20 })"
         :class="{ 'shadow-lg backdrop-blur-sm bg-white/95': scrolled }"
@@ -540,7 +509,7 @@
         x-transition:leave="transition ease-in duration-150" 
         x-transition:leave-start="opacity-100 transform translate-y-0" 
         x-transition:leave-end="opacity-0 transform -translate-y-2"
-        class="lg:hidden fixed top-[6.5rem] sm:top-[7rem] left-0 right-0 bg-white border-t border-gray-100 shadow-xl mobile-menu max-h-[calc(100vh-6.5rem)] sm:max-h-[calc(100vh-7rem)] overflow-y-auto z-50"
+        class="lg:hidden fixed top-[4.5rem] md:top-[7rem] left-0 right-0 bg-white border-t border-gray-100 shadow-xl mobile-menu max-h-[calc(100vh-4.5rem)] md:max-h-[calc(100vh-7rem)] overflow-y-auto z-50"
         style="display: none;">
         
         <nav class="px-4 pt-3 pb-4 space-y-1">
@@ -749,13 +718,13 @@
 
 <!-- Add necessary padding to body to prevent content from being hidden under fixed header -->
 <style>
-    /* Mobile: top bar (~2.5rem) + header (~3.5rem) = ~6rem */
+    /* Mobile: header only (~4rem) - no top bar on mobile */
     body {
-        padding-top: 6rem;
+        padding-top: 4.5rem;
     }
     
     /* Tablet and up: top bar (2.5rem/40px) + header (~4rem) = ~6.5rem */
-    @media (min-width: 640px) {
+    @media (min-width: 768px) {
         body {
             padding-top: 6.5rem;
         }
