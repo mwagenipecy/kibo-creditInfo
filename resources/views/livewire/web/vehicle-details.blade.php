@@ -552,6 +552,9 @@
    
     
     <!-- Financing Options Section -->
+
+    @if($vehicle->isNotdealer!=1)
+
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
         <div class="bg-gradient-to-r from-green-600/10 to-green-600/5 p-6 border-b border-gray-100">
             <h2 class="text-xl font-bold text-gray-900 flex items-center">
@@ -613,6 +616,8 @@
             </div>
         </div>
     </div>
+
+    @endif 
 
 
 
