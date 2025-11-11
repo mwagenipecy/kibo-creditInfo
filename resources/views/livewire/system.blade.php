@@ -113,6 +113,11 @@
 
         @break
 
+        @case('23')
+        
+        <livewire:insurance.insurance-quotation-list />
+
+        @break
 
 
 

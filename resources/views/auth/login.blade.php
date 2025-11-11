@@ -74,8 +74,27 @@
                     </div>
                     <div>
                         <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
-                        <input id="password" type="password" name="password" required autocomplete="current-password"
-                            class="mt-1 appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm">
+                        <div class="mt-1 relative">
+                            <input id="password" type="password" name="password" required autocomplete="current-password"
+                                class="appearance-none block w-full px-3 py-2 pr-16 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm">
+                            <button type="button"
+                                class="absolute inset-y-0 right-0 px-3 text-gray-600 hover:text-gray-800 focus:outline-none"
+                                aria-label="Show password"
+                                aria-pressed="false"
+                                onclick="togglePasswordVisibility('password', this)">
+                                <span class="eye-icon" aria-hidden="true">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                    </svg>
+                                </span>
+                                <span class="eye-off-icon hidden" aria-hidden="true">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.477 0-8.268-2.943-9.542-7a10.05 10.05 0 012.642-4.266m3.09-2.12A9.967 9.967 0 0112 5c4.477 0 8.268 2.943 9.542 7a9.967 9.967 0 01-1.257 2.31M15 12a3 3 0 00-3-3m0 0a3 3 0 013 3m-3-3L3 21m9-12l9 9" />
+                                    </svg>
+                                </span>
+                            </button>
+                        </div>
                     </div>
 
                     <div class="flex items-center justify-between">
@@ -129,6 +148,28 @@ function showWait() {
     if (actionBtn && waitBtn) {
         actionBtn.classList.add('hidden');
         waitBtn.classList.remove('hidden');
+    }
+}
+
+function togglePasswordVisibility(inputId, buttonEl) {
+    var input = document.getElementById(inputId);
+    if (!input) return;
+    var willShow = input.getAttribute('type') === 'password';
+    input.setAttribute('type', willShow ? 'text' : 'password');
+    if (buttonEl) {
+        buttonEl.setAttribute('aria-pressed', willShow ? 'true' : 'false');
+        buttonEl.setAttribute('aria-label', willShow ? 'Hide password' : 'Show password');
+        var eye = buttonEl.querySelector('.eye-icon');
+        var eyeOff = buttonEl.querySelector('.eye-off-icon');
+        if (eye && eyeOff) {
+            if (willShow) {
+                eye.classList.add('hidden');
+                eyeOff.classList.remove('hidden');
+            } else {
+                eye.classList.remove('hidden');
+                eyeOff.classList.add('hidden');
+            }
+        }
     }
 }
 </script>

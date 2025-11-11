@@ -3,10 +3,13 @@
 namespace App\Http\Livewire;
 
 use Livewire\Component;
+use Livewire\WithFileUploads;
 use Illuminate\Support\Facades\Log;
+use App\Models\InsuranceQuoteRequest;
 
 class VehicleInsuranceCalculator extends Component
 {
+    use WithFileUploads;
     // Step 1: Basic inputs
     public $insurableValue = '';
     public $year = '';
@@ -30,6 +33,7 @@ class VehicleInsuranceCalculator extends Component
     public $customerPhone = '';
     public $customerEmail = '';
     public $showContactForm = false;
+    public $filledProposal; // Uploaded filled proposal document
 
     // Vehicle Classes from Excel
     public $vehicleClasses = [
@@ -124,7 +128,9 @@ class VehicleInsuranceCalculator extends Component
         'noPassengers' => 'required|integer|min:0|max:50',
         'customerName' => 'required_if:showContactForm,true|string|max:255',
         'customerPhone' => 'required_if:showContactForm,true|string|max:20',
-        'customerEmail' => 'nullable|email|max:255'
+        'customerEmail' => 'nullable|email|max:255',
+        // File is optional but if provided must be PDF up to 10MB
+        'filledProposal' => 'nullable|file|mimes:pdf|max:10240'
     ];
 
     protected $messages = [
@@ -359,31 +365,32 @@ class VehicleInsuranceCalculator extends Component
         $this->validate([
             'customerName' => 'required|string|max:255',
             'customerPhone' => 'required|string|max:20',
-            'customerEmail' => 'nullable|email|max:255'
+            'customerEmail' => 'nullable|email|max:255',
+            'filledProposal' => 'nullable|file|mimes:pdf|max:10240',
         ]);
 
         try {
-            // Log the inquiry with full details
-            Log::info('Vehicle insurance inquiry submitted', [
-                'customer_details' => [
-                    'name' => $this->customerName,
-                    'phone' => $this->customerPhone,
-                    'email' => $this->customerEmail,
-                    'inquiry_date' => now()->format('Y-m-d H:i:s')
-                ],
-                'vehicle_details' => [
-                    'class' => $this->vehicleClass,
-                    'insurable_value' => $this->insurableValue,
-                    'year' => $this->year,
-                    'passengers' => $this->carryingPassengers,
-                    'no_passengers' => $this->noPassengers
-                ],
-                'insurance_details' => [
-                    'type_of_cover' => $this->typeOfCover,
-                    'claim_status' => $this->claimStatus,
-                    'calculated_premium' => $this->calculationResults['total_premium'] ?? 0,
-                    'premium_breakdown' => $this->calculationResults ?? []
-                ]
+            $storedPath = null;
+            if ($this->filledProposal) {
+                $storedPath = $this->filledProposal->store('insurance_quotes', 'public');
+            }
+
+            $request = InsuranceQuoteRequest::create([
+                'user_id' => auth()->id(),
+                'customer_name' => $this->customerName,
+                'customer_phone' => $this->customerPhone,
+                'customer_email' => $this->customerEmail,
+                'insurable_value' => $this->insurableValue ?: null,
+                'year' => $this->year ?: null,
+                'start_date' => $this->startDate ?: null,
+                'vehicle_class' => $this->vehicleClass ?: null,
+                'type_of_cover' => $this->typeOfCover ?: null,
+                'claim_status' => $this->claimStatus ?: null,
+                'no_passengers' => $this->noPassengers ?: null,
+                'total_premium' => $this->calculationResults['total_premium'] ?? null,
+                'premium_breakdown' => $this->calculationResults ?? null,
+                'document_path' => $storedPath,
+                'status' => 'submitted',
             ]);
 
             // Here you can add email notification, database storage, CRM integration, etc.
@@ -391,7 +398,7 @@ class VehicleInsuranceCalculator extends Component
             
             $this->dispatchBrowserEvent('notify', [
                 'type' => 'success',
-                'message' => 'Your inquiry has been submitted successfully! Our team will contact you within 24 hours with your personalized quote.'
+                'message' => 'Your request was submitted successfully. We will contact you within 24 hours.'
             ]);
 
             $this->closeContactForm();
@@ -414,6 +421,7 @@ class VehicleInsuranceCalculator extends Component
         $this->customerName = '';
         $this->customerPhone = '';
         $this->customerEmail = '';
+        $this->filledProposal = null;
     }
 
     public function resetCalculator()

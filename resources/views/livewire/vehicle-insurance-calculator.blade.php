@@ -443,6 +443,23 @@
                                 @error('customerEmail') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                             </div>
 
+                            <div class="bg-gray-50 border border-gray-200 rounded-lg p-3">
+                                <div class="flex items-start justify-between">
+                                    <div>
+                                        <div class="font-medium text-gray-900">Proposal Form</div>
+                                        <p class="text-xs text-gray-600">Download, fill the form, then upload the filled PDF.</p>
+                                    </div>
+                                    <a href="{{ asset('assuranceForm/Tanzania Proposal Form - Motor Insurance.pdf') }}" download class="inline-flex items-center px-3 py-2 bg-gray-800 text-white text-xs rounded-md hover:bg-gray-900">
+                                        Download PDF
+                                    </a>
+                                </div>
+                                <div class="mt-3">
+                                    <input type="file" wire:model="filledProposal" accept="application/pdf" class="w-full text-sm">
+                                    @error('filledProposal') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                                    <div wire:loading wire:target="filledProposal" class="text-xs text-gray-600 mt-1">Uploading...</div>
+                                </div>
+                            </div>
+
                             @if($calculationResults)
                                 <div class="bg-gray-50 border border-gray-200 rounded-lg p-3">
                                     <div class="text-sm">
