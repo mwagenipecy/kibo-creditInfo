@@ -309,65 +309,6 @@
                     @error('tenure') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
                 </div>
             </div>
-
-            <!-- Loan Terms Summary -->
-            @if($interest_rate > 0 || $loan_amount > 0)
-            <div class="bg-gray-50 p-4 rounded-lg border border-gray-200 mb-4">
-                <h4 class="font-medium text-gray-800 mb-3">Loan Terms Summary</h4>
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    <div class="text-center p-3 bg-white rounded-lg border">
-                        <p class="text-xs text-gray-500 mb-1">Interest Rate</p>
-                        <p class="text-lg font-bold text-blue-600">{{ number_format($interest_rate, 2) }}%</p>
-                        <p class="text-xs text-gray-400">Annual Rate</p>
-                    </div>
-                    <div class="text-center p-3 bg-white rounded-lg border">
-                        <p class="text-xs text-gray-500 mb-1">Loan Amount</p>
-                        <p class="text-lg font-bold text-green-600">TZS {{ number_format($loan_amount) }}</p>
-                        <p class="text-xs text-gray-400">Principal</p>
-                    </div>
-                    <div class="text-center p-3 bg-white rounded-lg border">
-                        <p class="text-xs text-gray-500 mb-1">Loan Term</p>
-                        <p class="text-lg font-bold text-purple-600">{{ $tenure ?: 'Select' }} {{ $tenure ? 'months' : 'term' }}</p>
-                        <p class="text-xs text-gray-400">Duration</p>
-                    </div>
-                    <div class="text-center p-3 bg-white rounded-lg border">
-                        <p class="text-xs text-gray-500 mb-1">Monthly Payment</p>
-                        <p class="text-lg font-bold text-orange-600">
-                            @if($estimated_payment)
-                                TZS {{ number_format($estimated_payment) }}
-                            @else
-                                Select Term
-                            @endif
-                        </p>
-                        <p class="text-xs text-gray-400">EMI</p>
-                    </div>
-                </div>
-                
-                @if($estimated_payment && $tenure && $loan_amount)
-                @php
-                    $totalPayment = $estimated_payment * $tenure;
-                    $totalInterest = $totalPayment - $loan_amount;
-                    $monthlyInterestRate = $interest_rate / 100 / 12;
-                @endphp
-                <div class="mt-4 pt-4 border-t border-gray-200">
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                        <div class="flex justify-between">
-                            <span class="text-gray-600">Total Payment:</span>
-                            <span class="font-medium">TZS {{ number_format($totalPayment) }}</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span class="text-gray-600">Total Interest:</span>
-                            <span class="font-medium text-red-600">TZS {{ number_format($totalInterest) }}</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span class="text-gray-600">Interest Ratio:</span>
-                            <span class="font-medium text-orange-600">{{ number_format(($totalInterest / $loan_amount) * 100, 1) }}%</span>
-                        </div>
-                    </div>
-                </div>
-                @endif
-            </div>
-            @endif
             
             <!-- Application Document Upload -->
             <!-- <div class="mt-4">
