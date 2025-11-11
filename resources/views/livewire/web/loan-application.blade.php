@@ -159,11 +159,10 @@
 
                 <div>
                     <label for="national_id" class="block text-sm font-medium text-gray-700 mb-1">National ID*</label>
-                    <input type="text" id="national_id" wire:model.defer="national_id"
-                    oninput="formatNationalId(this)"
+                    <input readonly type="text" id="national_id" wire:model.defer="national_id"
                     placeholder="20060329-14129-00001-27"
-                    class="w-full rounded-lg border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-200 focus:ring-opacity-50">
-                                    @error('national_id') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+                    class="w-full rounded-lg border-gray-300 shadow-sm bg-gray-50 text-gray-700 cursor-not-allowed focus:border-green-500 focus:ring focus:ring-green-200 focus:ring-opacity-50">
+                    @error('national_id') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
                 </div>
             </div>
 

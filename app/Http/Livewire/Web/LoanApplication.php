@@ -175,6 +175,7 @@ class LoanApplication extends Component
             $this->last_name = $user->last_name;
             $this->email = $user->email;
             $this->phone_number = $user->phone_number;
+            $this->national_id = $user->nida_number ?? '';
         }
         
         $this->purchase_price = $this->vehicle->price;
