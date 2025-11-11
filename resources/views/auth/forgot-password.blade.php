@@ -64,12 +64,25 @@
             </div>
 
             <div class="bg-white py-8 px-6 shadow-xl rounded-2xl border border-gray-100">
-                <form method="POST" action="{{ route('password-reset') }}" class="space-y-6">
+                <form method="POST" action="{{ route('password.email') }}" class="space-y-6">
                     @csrf
                     <div>
                         <label for="email" class="block text-sm font-medium text-gray-700">Email Address</label>
-                        <input id="email" type="email" name="email" value="{{ old('email') }}" required autofocus autocomplete="email"
-                            class="mt-1 appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm">
+                        @php
+                            $emailValue = old('email', request('email', ''));
+                            $isEmailLocked = request()->has('email') && request('email');
+                        @endphp
+                        <input id="email" type="email" name="email" value="{{ $emailValue }}" required autofocus autocomplete="email" 
+                            @if($isEmailLocked) readonly @endif
+                            class="mt-1 appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 @if($isEmailLocked) bg-gray-50 text-gray-700 cursor-not-allowed @else bg-white @endif focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm">
+                        @if($isEmailLocked)
+                            <p class="mt-1 text-xs text-gray-500">
+                                <svg class="inline h-3 w-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/>
+                                </svg>
+                                Email is locked. If this is not your email, please <a href="{{ route('password.request') }}" class="text-green-600 hover:text-green-700 font-medium">start over</a>.
+                            </p>
+                        @endif
                     </div>
 
                     <div>

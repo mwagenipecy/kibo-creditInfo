@@ -103,7 +103,7 @@
                             <label for="remember_me" class="ml-2 block text-sm text-gray-900">Remember me</label>
                         </div>
                         @if (Route::has('password.request'))
-                            <a class="text-sm text-green-600 hover:text-green-700 font-medium" href="{{ route('password.request') }}">
+                            <a class="text-sm text-green-600 hover:text-green-700 font-medium" href="{{ route('password.request') }}" onclick="return passEmailToForgotPassword(event)">
                                 Forgot password?
                             </a>
                         @endif
@@ -171,6 +171,15 @@ function togglePasswordVisibility(inputId, buttonEl) {
             }
         }
     }
+}
+
+function passEmailToForgotPassword(event) {
+    event.preventDefault();
+    const emailInput = document.getElementById('email');
+    const email = emailInput ? emailInput.value : '';
+    const forgotPasswordUrl = '{{ route("password.request") }}' + (email ? '?email=' + encodeURIComponent(email) : '');
+    window.location.href = forgotPasswordUrl;
+    return false;
 }
 </script>
 
