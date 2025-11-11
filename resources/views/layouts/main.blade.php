@@ -54,9 +54,8 @@
     
     <!-- Additional Styles for Fixed Navbar -->
     <style>
-        /* Add padding to body equal to navbar height to prevent content from hiding behind fixed navbar */
+        /* Smooth scroll behavior */
         body {
-            padding-top: 4rem;
             scroll-behavior: smooth;
         }
         
@@ -123,6 +122,14 @@
             backdrop-filter: blur(10px);
             background: rgba(255, 255, 255, 0.95);
             border: 1px solid rgba(0, 0, 0, 0.1);
+            overflow: visible !important;
+            overflow-y: visible !important;
+            max-height: none !important;
+            white-space: nowrap;
+        }
+        
+        .dropdown-menu a {
+            white-space: nowrap;
         }
         
         .mega-menu {
@@ -132,6 +139,17 @@
         /* Hover effects for navigation items */
         .nav-item:hover .dropdown-menu {
             display: block;
+        }
+        
+        /* Ensure navigation container doesn't clip dropdowns */
+        nav {
+            overflow: visible !important;
+        }
+        
+        /* Prevent any parent from clipping dropdowns */
+        header nav,
+        .nav-item {
+            overflow: visible !important;
         }
         
         /* Custom scrollbar for mobile menu */
@@ -152,185 +170,190 @@
 <body class="font-sans antialiased bg-gray-50">
     <div class="min-h-screen">
         <!-- Top Contact Bar -->
-        <div class="bg-green-600 text-white text-xs sm:text-sm py-2 px-4 fixed top-0 left-0 right-0 z-50">
-            <div class="container mx-auto">
+        <div class="bg-green-600 text-white text-xs sm:text-sm py-1.5 sm:py-2 px-2 sm:px-4 fixed top-0 left-0 right-0 z-50 h-auto min-h-[2.5rem] sm:min-h-[2.5rem]">
+            <div class="container mx-auto max-w-7xl">
                 <!-- Desktop Layout -->
                 <div class="hidden md:flex justify-between items-center">
                     <!-- Left Side - Contact Information -->
-                    <div class="flex items-center space-x-6">
+                    <div class="flex items-center space-x-4 lg:space-x-6">
                         <div class="flex items-center space-x-2">
-                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="h-4 w-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                             </svg>
-                            <span>+255 758 586 565</span>
+                            <span class="whitespace-nowrap">+255 758 586 565</span>
                         </div>
                         <div class="flex items-center space-x-2">
-                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="h-4 w-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                             </svg>
-                            <span>savannahills25@gmail.com</span>
+                            <span class="truncate max-w-[200px] lg:max-w-none">savannahills25@gmail.com</span>
                         </div>
                     </div>
                     
                     <!-- Right Side - Links -->
-                    <div class="flex items-center space-x-4">
-                        <a href="{{ route('about.us') }}" class="hover:text-green-200 transition-colors duration-200">
+                    <div class="flex items-center space-x-3 lg:space-x-4 ml-4">
+                        <a href="{{ route('about.us') }}" class="hover:text-green-200 transition-colors duration-200 whitespace-nowrap">
                             About Us
                         </a>
-                        <a href="{{ route('contact.page') }}" class="hover:text-green-200 transition-colors duration-200">
+                        <a href="{{ route('contact.page') }}" class="hover:text-green-200 transition-colors duration-200 whitespace-nowrap">
                             Contact Us
                         </a>
                     </div>
                 </div>
                 
                 <!-- Mobile Layout -->
-                <div class="md:hidden flex flex-col space-y-1">
-                    <div class="flex justify-between items-center">
-                        <div class="flex items-center space-x-2">
-                            <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                <div class="md:hidden">
+                    <div class="flex flex-col space-y-1.5">
+                        <!-- First Row: Phone and Links -->
+                        <div class="flex items-center justify-between gap-2">
+                            <div class="flex items-center space-x-1.5 min-w-0 flex-1">
+                                <svg class="h-3 w-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                                </svg>
+                                <a href="tel:+255758586565" class="text-xs truncate hover:text-green-200 transition-colors">+255 758 586 565</a>
+                            </div>
+                            <div class="flex items-center space-x-2 flex-shrink-0">
+                                <a href="{{ route('about.us') }}" class="hover:text-green-200 transition-colors duration-200 text-xs whitespace-nowrap">
+                                    About
+                                </a>
+                                <span class="text-green-300">|</span>
+                                <a href="{{ route('contact.page') }}" class="hover:text-green-200 transition-colors duration-200 text-xs whitespace-nowrap">
+                                    Contact
+                                </a>
+                            </div>
+                        </div>
+                        <!-- Second Row: Email -->
+                        <div class="flex items-center space-x-1.5 min-w-0">
+                            <svg class="h-3 w-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                             </svg>
-                            <span>+255 758 586 565</span>
+                            <a href="mailto:savannahills25@gmail.com" class="text-xs truncate hover:text-green-200 transition-colors min-w-0">savannahills25@gmail.com</a>
                         </div>
-                        <div class="flex items-center space-x-2">
-                            <a href="{{ route('about.us') }}" class="hover:text-green-200 transition-colors duration-200 text-xs">
-                                About Us
-                            </a>
-                            <a href="{{ route('contact.page') }}" class="hover:text-green-200 transition-colors duration-200 text-xs">
-                                Contact Us
-                            </a>
-                        </div>
-                    </div>
-                    <div class="flex items-center space-x-2">
-                        <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                        </svg>
-                        <span class="text-xs">savannahills25@gmail.com</span>
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- Header -->
-   
-        <header class="bg-white w-full fixed top-10 left-0 right-0 z-40" 
-        x-data="{ scrolled: false, mobileMenuOpen: false }" 
+        <header class="bg-white w-full fixed top-[2.5rem] sm:top-10 left-0 right-0 z-40 border-b border-gray-100 shadow-sm" 
+        x-data="{ scrolled: false, mobileMenuOpen: false, vehiclesOpen: false, loanServicesOpen: false, servicesOpen: false }" 
         x-init="window.addEventListener('scroll', () => { scrolled = window.scrollY > 20 })"
-        :class="{ 'shadow-lg backdrop-blur-sm bg-white/95': scrolled, 'py-1': scrolled, 'py-2': !scrolled }">
-    <div class="container mx-auto transition-all duration-300" :class="{ 'py-2': scrolled, 'py-2': !scrolled }">
-        <div class="flex justify-between items-center px-2 md:px-6">
+        :class="{ 'shadow-lg backdrop-blur-sm bg-white/95': scrolled }"
+        style="overflow: visible !important;">
+    <div class="container mx-auto max-w-7xl transition-all duration-300" style="overflow: visible !important;">
+        <div class="flex justify-between items-center px-2 sm:px-4 md:px-6 py-2 sm:py-2.5 md:py-3" style="overflow: visible !important;">
             <!-- Logo - Enhanced & Optimized -->
-            <div class="flex-shrink-0 transition-all duration-300" :class="{ 'scale-95': scrolled }">
+            <div class="flex-shrink-0 transition-all duration-300 min-w-0">
                 <a href="{{ route('home.page') }}" class="flex items-center hover:opacity-90 transition-opacity duration-300 group">
-                    <div class="relative">
+                    <div class="relative flex-shrink-0">
                         <img 
                             src="{{ asset('/InstitutionLogo/carLogo.png') }}" 
                             alt="KiboMarket Logo" 
-                            class="h-10 w-auto sm:h-12 object-contain transition-transform duration-300 transform group-hover:scale-105" 
+                            class="h-8 w-auto sm:h-10 md:h-12 object-contain transition-transform duration-300 transform group-hover:scale-105" 
                         />
-                        <span class="absolute -top-1 -right-1 h-3 w-3 bg-green-500 rounded-full shadow-lg shadow-green-500/30 hidden sm:block"></span>
+                        <span class="absolute -top-1 -right-1 h-2 w-2 sm:h-3 sm:w-3 bg-green-500 rounded-full shadow-lg shadow-green-500/30 hidden sm:block"></span>
                     </div>
-                    <div class="ml-2.5 flex flex-col leading-none">
-                    <span class="text-xl sm:text-2xl font-bold text-green-700 tracking-tight" style="text-shadow: 0 1px 1px rgba(0,0,0,0.1)">KiboMarket</span>
-                    <span class="text-xs text-gray-500 font-medium hidden sm:block">Premium Vehicle Marketplace</span>
+                    <div class="ml-1.5 sm:ml-2.5 flex flex-col leading-none min-w-0">
+                        <span class="text-base sm:text-xl md:text-2xl font-bold text-green-700 tracking-tight truncate" style="text-shadow: 0 1px 1px rgba(0,0,0,0.1)">KiboMarket</span>
+                        <span class="text-[10px] sm:text-xs text-gray-500 font-medium hidden sm:block">Premium Vehicle Marketplace</span>
                     </div>
                 </a>
             </div>
 
             <!-- Navigation Links - Enhanced Desktop/Tablet -->
-            <nav class="hidden lg:flex items-center space-x-1">
+            <nav class="hidden lg:flex items-center space-x-0.5 xl:space-x-1" style="overflow: visible !important;">
                 <!-- Home -->
-                <a href="{{ route('home.page') }}" class="group relative text-gray-700 @if(Route::is('home.page')) text-green-600 @endif hover:text-green-600 px-3 py-2 rounded-md text-base font-medium transition-colors duration-300">
+                <a href="{{ route('home.page') }}" class="group relative text-gray-700 @if(Route::is('home.page')) text-green-600 @endif hover:text-green-600 px-2 xl:px-3 py-2 rounded-md text-sm xl:text-base font-medium transition-colors duration-300 whitespace-nowrap">
                     <span>Home</span>
                     <span class="absolute -bottom-[2px] left-1/2 w-0 h-[3px] bg-green-500 group-hover:w-4/5 group-hover:-translate-x-1/2 transition-all duration-300 ease-out rounded-full @if(Route::is('home.page')) w-4/5 -translate-x-1/2 @endif"></span>
                 </a>
                 
                 <!-- Buying Car -->
-                <a href="{{ route('vehicle.list') }}" class="group relative text-gray-700 @if(Route::is('vehicle.*')) text-green-600 @endif hover:text-green-600 px-3 py-2 rounded-md text-base font-medium transition-colors duration-300">
+                <a href="{{ route('vehicle.list') }}" class="group relative text-gray-700 @if(Route::is('vehicle.*')) text-green-600 @endif hover:text-green-600 px-2 xl:px-3 py-2 rounded-md text-sm xl:text-base font-medium transition-colors duration-300 whitespace-nowrap">
                     <span>Buying Car</span>
                     <span class="absolute -bottom-[2px] left-1/2 w-0 h-[3px] bg-green-500 group-hover:w-4/5 group-hover:-translate-x-1/2 transition-all duration-300 ease-out rounded-full @if(Route::is('vehicle.*')) w-4/5 -translate-x-1/2 @endif"></span>
                 </a>
 
                 <!-- Sell Your Car -->
-                <a href="{{ route('sell.your.car') }}" class="group relative text-gray-700 @if(Route::is('sell.your.car')) text-green-600 @endif hover:text-green-600 px-3 py-2 rounded-md text-base font-medium transition-colors duration-300">
+                <a href="{{ route('sell.your.car') }}" class="group relative text-gray-700 @if(Route::is('sell.your.car')) text-green-600 @endif hover:text-green-600 px-2 xl:px-3 py-2 rounded-md text-sm xl:text-base font-medium transition-colors duration-300 whitespace-nowrap">
                     <span>Sell Your Car</span>
                     <span class="absolute -bottom-[2px] left-1/2 w-0 h-[3px] bg-green-500 group-hover:w-4/5 group-hover:-translate-x-1/2 transition-all duration-300 ease-out rounded-full @if(Route::is('sell.your.car')) w-4/5 -translate-x-1/2 @endif"></span>
                 </a>
 
                 <!-- Spare Parts -->
-                <a href="{{ route('spare.parts.list') }}" class="group relative text-gray-700 @if(Route::is('spare.parts.*')) text-green-600 @endif hover:text-green-600 px-3 py-2 rounded-md text-base font-medium transition-colors duration-300">
+                <a href="{{ route('spare.parts.list') }}" class="group relative text-gray-700 @if(Route::is('spare.parts.*')) text-green-600 @endif hover:text-green-600 px-2 xl:px-3 py-2 rounded-md text-sm xl:text-base font-medium transition-colors duration-300 whitespace-nowrap">
                     <span>Spare Parts</span>
                     <span class="absolute -bottom-[2px] left-1/2 w-0 h-[3px] bg-green-500 group-hover:w-4/5 group-hover:-translate-x-1/2 transition-all duration-300 ease-out rounded-full @if(Route::is('spare.parts.*')) w-4/5 -translate-x-1/2 @endif"></span>
                 </a>
 
                 <!-- Financing Dropdown -->
                 <div class="relative nav-item group">
-                    <button class="flex items-center text-gray-700 hover:text-green-600 px-3 py-2 rounded-md text-base font-medium transition-colors duration-300">
+                    <button class="flex items-center text-gray-700 hover:text-green-600 px-2 xl:px-3 py-2 rounded-md text-sm xl:text-base font-medium transition-colors duration-300 whitespace-nowrap">
                         <span>Financing</span>
                         <svg class="ml-1 h-4 w-4 transition-transform duration-200 group-hover:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                         </svg>
                         <span class="absolute -bottom-[2px] left-1/2 w-0 h-[3px] bg-green-500 group-hover:w-4/5 group-hover:-translate-x-1/2 transition-all duration-300 ease-out rounded-full"></span>
                     </button>
-                    <div class="absolute left-0 mt-2 dropdown-menu rounded-xl shadow-lg py-2 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-20 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
-                        <a href="{{ route('loan.calculator') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-600 transition-colors duration-200">
+                    <div class="absolute left-0 mt-2 dropdown-menu rounded-xl shadow-2xl py-2 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-[60] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200" style="overflow: visible !important; max-height: none !important; overflow-y: visible !important; overflow-x: visible !important;">
+                        <a href="{{ route('loan.calculator') }}" class="block px-4 py-2.5 text-sm text-gray-700 hover:bg-green-50 hover:text-green-600 transition-colors duration-200 whitespace-nowrap">
                             <div class="flex items-center">
-                                <svg class="h-4 w-4 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="h-4 w-4 mr-3 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
                                 </svg>
-                                Loan Calculator
+                                <span>Loan Calculator</span>
                             </div>
                         </a>
-                        <a href="{{ route('custom.loan.application') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-600 transition-colors duration-200">
+                        <a href="{{ route('custom.loan.application') }}" class="block px-4 py-2.5 text-sm text-gray-700 hover:bg-green-50 hover:text-green-600 transition-colors duration-200 whitespace-nowrap">
                             <div class="flex items-center">
-                                <svg class="h-4 w-4 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="h-4 w-4 mr-3 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                 </svg>
-                                Car Collateral
+                                <span>Car Collateral</span>
                             </div>
                         </a>
-                        <a href="{{ route('import.duty') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-600 transition-colors duration-200">
+                        <a href="{{ route('import.duty') }}" class="block px-4 py-2.5 text-sm text-gray-700 hover:bg-green-50 hover:text-green-600 transition-colors duration-200 whitespace-nowrap">
                             <div class="flex items-center">
-                                <svg class="h-4 w-4 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="h-4 w-4 mr-3 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
                                 </svg>
-                                Import Financing
+                                <span>Import Financing</span>
                             </div>
                         </a>
                     </div>
                 </div>
 
                 <!-- Insurance -->
-                <a href="{{ route('insurance.index') }}" class="group relative text-gray-700 @if(Route::is('insurance.index')) text-green-600 @endif hover:text-green-600 px-3 py-2 rounded-md text-base font-medium transition-colors duration-300">
+                <a href="{{ route('insurance.index') }}" class="group relative text-gray-700 @if(Route::is('insurance.index')) text-green-600 @endif hover:text-green-600 px-2 xl:px-3 py-2 rounded-md text-sm xl:text-base font-medium transition-colors duration-300 whitespace-nowrap">
                     <span>Insurance</span>
                     <span class="absolute -bottom-[2px] left-1/2 w-0 h-[3px] bg-green-500 group-hover:w-4/5 group-hover:-translate-x-1/2 transition-all duration-300 ease-out rounded-full @if(Route::is('insurance.index')) w-4/5 -translate-x-1/2 @endif"></span>
                 </a>
 
                 <!-- Services Dropdown -->
                 <div class="relative nav-item group">
-                    <button class="flex items-center text-gray-700 hover:text-green-600 px-3 py-2 rounded-md text-base font-medium transition-colors duration-300">
+                    <button class="flex items-center text-gray-700 hover:text-green-600 px-2 xl:px-3 py-2 rounded-md text-sm xl:text-base font-medium transition-colors duration-300 whitespace-nowrap">
                         <span>Services</span>
                         <svg class="ml-1 h-4 w-4 transition-transform duration-200 group-hover:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                         </svg>
                         <span class="absolute -bottom-[2px] left-1/2 w-0 h-[3px] bg-green-500 group-hover:w-4/5 group-hover:-translate-x-1/2 transition-all duration-300 ease-out rounded-full"></span>
                     </button>
-                    <div class="absolute left-0 mt-2 dropdown-menu rounded-xl shadow-lg py-2 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-20 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
-                        <a href="{{ route('garage.list') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-600 transition-colors duration-200">
+                    <div class="absolute left-0 mt-2 dropdown-menu rounded-xl shadow-2xl py-2 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-[60] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200" style="overflow: visible !important; max-height: none !important; overflow-y: visible !important; overflow-x: visible !important;">
+                        <a href="{{ route('garage.list') }}" class="block px-4 py-2.5 text-sm text-gray-700 hover:bg-green-50 hover:text-green-600 transition-colors duration-200 whitespace-nowrap">
                             <div class="flex items-center">
-                                <svg class="h-4 w-4 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="h-4 w-4 mr-3 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                                 </svg>
-                                Garage
+                                <span>Garage</span>
                             </div>
                         </a>
-                        <a href="{{ route('wedding.vehicles') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-600 transition-colors duration-200">
+                        <a href="{{ route('wedding.vehicles') }}" class="block px-4 py-2.5 text-sm text-gray-700 hover:bg-green-50 hover:text-green-600 transition-colors duration-200 whitespace-nowrap">
                             <div class="flex items-center">
-                                <svg class="h-4 w-4 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="h-4 w-4 mr-3 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM15 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z" />
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 00-1 1v10a1 1 0 001 1h1.05a2.5 2.5 0 014.9 0H11a1 1 0 001-1v-1h3.05a2.5 2.5 0 014.9 0H20a1 1 0 001-1V5a1 1 0 00-1-1H3z" />
                                 </svg>
-                                Car Rental
+                                <span>Car Rental</span>
                             </div>
                         </a>
                     </div>
@@ -350,34 +373,34 @@
             </nav>
 
             <!-- Enhanced Auth Buttons - Desktop/Tablet -->
-            <div class="hidden md:flex items-center space-x-3">
+            <div class="hidden md:flex items-center space-x-2 lg:space-x-3 flex-shrink-0">
                 @if(!Auth::check() || !session('otp_verified'))
-                    <a href="{{ route('login') }}" class="relative inline-flex items-center px-4 py-2 border border-green-600 rounded-lg text-sm lg:text-base font-medium text-green-600 bg-white hover:bg-green-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all duration-300 overflow-hidden group">
+                    <a href="{{ route('login') }}" class="relative inline-flex items-center px-3 lg:px-4 py-1.5 lg:py-2 border border-green-600 rounded-lg text-xs lg:text-sm xl:text-base font-medium text-green-600 bg-white hover:bg-green-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all duration-300 overflow-hidden group whitespace-nowrap">
                         <span class="relative z-10">Login</span>
                         <span class="absolute inset-0 bg-green-100 transform scale-x-0 origin-left group-hover:scale-x-100 transition-transform duration-300"></span>
                     </a>
-                    <a href="{{ route('client.registration') }}" class="relative inline-flex items-center px-4 py-2 border border-transparent rounded-lg text-sm lg:text-base font-medium text-white transition-all duration-300 shadow-md overflow-hidden group">
+                    <a href="{{ route('client.registration') }}" class="relative inline-flex items-center px-3 lg:px-4 py-1.5 lg:py-2 border border-transparent rounded-lg text-xs lg:text-sm xl:text-base font-medium text-white transition-all duration-300 shadow-md overflow-hidden group whitespace-nowrap">
                         <span class="relative z-10">Register</span>
                         <span class="absolute inset-0 bg-gradient-to-r from-green-600 to-green-500"></span>
                         <span class="absolute inset-0 bg-gradient-to-r from-green-700 to-green-600 transform scale-x-0 origin-left group-hover:scale-x-100 transition-transform duration-300"></span>
                     </a>
                 @else
                     <div class="relative" x-data="{ open: false }">
-                        <button @click="open = !open" @click.away="open = false" class="flex items-center space-x-2 px-3 py-1.5 rounded-lg border border-gray-200 hover:border-green-500 transition-colors duration-300 group focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
+                        <button @click="open = !open" @click.away="open = false" class="flex items-center space-x-1.5 lg:space-x-2 px-2 lg:px-3 py-1.5 rounded-lg border border-gray-200 hover:border-green-500 transition-colors duration-300 group focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 min-w-0">
                             <!-- User Avatar -->
-                            <div class="relative">
-                                <div class="h-8 w-8 rounded-full flex items-center justify-center bg-green-600 text-white font-medium text-sm transition-all duration-300 group-hover:shadow-md group-hover:shadow-green-500/30">
+                            <div class="relative flex-shrink-0">
+                                <div class="h-7 w-7 lg:h-8 lg:w-8 rounded-full flex items-center justify-center bg-green-600 text-white font-medium text-xs lg:text-sm transition-all duration-300 group-hover:shadow-md group-hover:shadow-green-500/30">
                                     {{ substr(Auth::user()->name, 0, 1) }}
                                 </div>
-                                <div class="absolute bottom-0 right-0 h-2.5 w-2.5 bg-green-500 border-2 border-white rounded-full"></div>
+                                <div class="absolute bottom-0 right-0 h-2 w-2 lg:h-2.5 lg:w-2.5 bg-green-500 border-2 border-white rounded-full"></div>
                             </div>
                             
-                            <div class="flex flex-col items-start leading-tight">
-                                <span class="text-sm font-medium text-gray-700 group-hover:text-green-600 transition-colors duration-300">{{ Auth::user()->name }}</span>
-                                <span class="text-xs text-gray-500">My Account</span>
+                            <div class="flex flex-col items-start leading-tight min-w-0 hidden xl:block">
+                                <span class="text-xs lg:text-sm font-medium text-gray-700 group-hover:text-green-600 transition-colors duration-300 truncate max-w-[100px]">{{ Auth::user()->name }}</span>
+                                <span class="text-[10px] lg:text-xs text-gray-500">My Account</span>
                             </div>
                             
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-500 group-hover:text-green-500 transition-transform duration-200" :class="{'rotate-180': open}" viewBox="0 0 20 20" fill="currentColor">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 lg:h-4 lg:w-4 text-gray-500 group-hover:text-green-500 transition-transform duration-200 flex-shrink-0" :class="{'rotate-180': open}" viewBox="0 0 20 20" fill="currentColor">
                                 <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
                             </svg>
                         </button>
@@ -389,8 +412,8 @@
                             x-transition:leave="transition ease-in duration-150"
                             x-transition:leave-start="opacity-100 scale-100"
                             x-transition:leave-end="opacity-0 scale-95"
-                            class="origin-top-right absolute right-0 mt-2 w-52 rounded-xl shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-20 border border-gray-100" 
-                            style="display: none;">
+                            class="origin-top-right absolute right-0 mt-2 w-52 rounded-xl shadow-2xl py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-[60] border border-gray-100" 
+                            style="display: none; overflow: visible !important; max-height: none !important; overflow-y: visible !important; overflow-x: visible !important;">
                             
                             <!-- User Info Section -->
                             <div class="px-4 py-3 border-b border-gray-100">
@@ -460,12 +483,13 @@
             <button 
                 type="button" 
                 @click="mobileMenuOpen = !mobileMenuOpen" 
-                class="md:hidden inline-flex items-center justify-center p-2 rounded-lg text-gray-700 hover:text-green-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-500 transition-colors duration-300"
+                class="lg:hidden inline-flex items-center justify-center p-2 rounded-lg text-gray-700 hover:text-green-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-500 transition-colors duration-300 ml-2 flex-shrink-0"
                 aria-expanded="false"
                 :aria-expanded="mobileMenuOpen.toString()">
                 <span class="sr-only">Toggle menu</span>
                 <svg 
                     x-show="!mobileMenuOpen" 
+                    x-transition
                     class="h-6 w-6" 
                     xmlns="http://www.w3.org/2000/svg" 
                     fill="none" 
@@ -476,6 +500,7 @@
                 </svg>
                 <svg 
                     x-show="mobileMenuOpen" 
+                    x-transition
                     class="h-6 w-6" 
                     xmlns="http://www.w3.org/2000/svg" 
                     fill="none" 
@@ -489,22 +514,36 @@
         </div>
     </div>
 
+    <!-- Mobile Menu Backdrop -->
+    <div 
+        x-show="mobileMenuOpen"
+        x-cloak
+        @click="mobileMenuOpen = false"
+        x-transition:enter="transition-opacity ease-linear duration-200"
+        x-transition:enter-start="opacity-0"
+        x-transition:enter-end="opacity-100"
+        x-transition:leave="transition-opacity ease-linear duration-150"
+        x-transition:leave-start="opacity-100"
+        x-transition:leave-end="opacity-0"
+        class="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-[45]"
+        style="display: none;"
+        aria-hidden="true">
+    </div>
+
     <!-- Enhanced Mobile Menu Container -->
     <div 
         x-show="mobileMenuOpen"
+        x-cloak
         x-transition:enter="transition ease-out duration-200" 
         x-transition:enter-start="opacity-0 transform -translate-y-2" 
         x-transition:enter-end="opacity-100 transform translate-y-0" 
         x-transition:leave="transition ease-in duration-150" 
         x-transition:leave-start="opacity-100 transform translate-y-0" 
         x-transition:leave-end="opacity-0 transform -translate-y-2"
-        class="lg:hidden bg-white border-t border-gray-100 shadow-lg mobile-menu max-h-screen overflow-y-auto"
+        class="lg:hidden fixed top-[6.5rem] sm:top-[7rem] left-0 right-0 bg-white border-t border-gray-100 shadow-xl mobile-menu max-h-[calc(100vh-6.5rem)] sm:max-h-[calc(100vh-7rem)] overflow-y-auto z-50"
         style="display: none;">
         
-        <nav class="px-4 pt-3 pb-4 space-y-1" x-data="{ 
-            loanServicesOpen: false,
-            servicesOpen: false 
-        }">
+        <nav class="px-4 pt-3 pb-4 space-y-1">
             <!-- Home -->
             <a href="{{ route('home.page') }}" @click="mobileMenuOpen = false" class="flex items-center py-3 px-4 text-base font-medium rounded-lg text-gray-900 hover:bg-gray-50 hover:text-green-600 @if(Route::is('home.page')) bg-green-50 text-green-600 @endif transition-colors duration-300">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 @if(Route::is('home.page')) text-green-500 @else text-gray-400 @endif" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -513,41 +552,13 @@
                 Home
             </a>
             
-            <!-- Vehicles Dropdown -->
-            <div class="space-y-1">
-                <button @click="vehiclesOpen = !vehiclesOpen" class="flex items-center justify-between w-full py-3 px-4 text-base font-medium rounded-lg text-gray-900 hover:bg-gray-50 hover:text-green-600 @if(Route::is('vehicle.*')) bg-green-50 text-green-600 @endif transition-colors duration-300">
-                    <div class="flex items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 @if(Route::is('vehicle.*')) text-green-500 @else text-gray-400 @endif" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-                        </svg>
-                        Vehicles
-                    </div>
-                    <svg class="h-4 w-4 transition-transform duration-200" :class="{'rotate-180': vehiclesOpen}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                    </svg>
-                </button>
-                <div x-show="vehiclesOpen" x-transition class="ml-8 space-y-1" style="display: none;">
-                    <a href="{{ route('vehicle.list') }}" @click="mobileMenuOpen = false" class="flex items-center py-2 px-4 text-sm text-gray-600 hover:bg-gray-50 hover:text-green-600 transition-colors duration-200 rounded-lg">
-                        <svg class="h-4 w-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                        </svg>
-                        Browse Vehicles
-                    </a>
-                    <!-- <a href="#" @click="mobileMenuOpen = false" class="flex items-center py-2 px-4 text-sm text-gray-600 hover:bg-gray-50 hover:text-green-600 transition-colors duration-200 rounded-lg">
-                        <svg class="h-4 w-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                        </svg>
-                        Upload Your Vehicle
-                    </a> -->
-                    <!-- <a href="{{ route('custom.loan.application') }}" @click="mobileMenuOpen = false" class="flex items-center py-2 px-4 text-sm text-gray-600 hover:bg-gray-50 hover:text-green-600 transition-colors duration-200 rounded-lg">
-                        <svg class="h-4 w-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                        </svg>
-                        Loan Application
-                    </a> -->
-                 
-                </div>
-            </div>
+            <!-- Buying Car (Mobile - Direct Link) -->
+            <a href="{{ route('vehicle.list') }}" @click="mobileMenuOpen = false" class="flex items-center py-3 px-4 text-base font-medium rounded-lg text-gray-900 hover:bg-gray-50 hover:text-green-600 @if(Route::is('vehicle.*')) bg-green-50 text-green-600 @endif transition-colors duration-300">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 @if(Route::is('vehicle.*')) text-green-500 @else text-gray-400 @endif" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                </svg>
+                Buying Car
+            </a>
 
             <!-- Sell Your Car -->
             <a href="{{ route('sell.your.car') }}" @click="mobileMenuOpen = false" class="flex items-center py-3 px-4 text-base font-medium rounded-lg text-gray-900 hover:bg-gray-50 hover:text-green-600 @if(Route::is('sell.your.car')) bg-green-50 text-green-600 @endif transition-colors duration-300">
@@ -738,19 +749,38 @@
 
 <!-- Add necessary padding to body to prevent content from being hidden under fixed header -->
 <style>
+    /* Mobile: top bar (~2.5rem) + header (~3.5rem) = ~6rem */
     body {
-        padding-top: 5rem; /* Adjust based on your header height */
+        padding-top: 6rem;
     }
     
-    @media (min-width: 768px) {
+    /* Tablet and up: top bar (2.5rem/40px) + header (~4rem) = ~6.5rem */
+    @media (min-width: 640px) {
         body {
-            padding-top: 5.5rem; /* Slightly larger for desktop */
+            padding-top: 6.5rem;
+        }
+    }
+    
+    /* Desktop: top bar (2.5rem/40px) + header (~4.5rem) = ~7rem */
+    @media (min-width: 1024px) {
+        body {
+            padding-top: 7rem;
         }
     }
     
     /* Glow effect for green elements */
     .shadow-green {
         box-shadow: 0 0 15px rgba(16, 185, 129, 0.5);
+    }
+    
+    /* Prevent body scroll when mobile menu is open */
+    body.mobile-menu-open {
+        overflow: hidden;
+    }
+    
+    /* Alpine.js cloak for preventing flash of unstyled content */
+    [x-cloak] {
+        display: none !important;
     }
 </style>
 

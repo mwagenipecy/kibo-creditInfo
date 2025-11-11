@@ -1,6 +1,6 @@
 <div class="min-h-screen bg-gray-50">
     <!-- Header -->
-    <div class="bg-gradient-to-r from-green-600 to-green-700 shadow-sm sticky top-0 z-40">
+    <div class="bg-gradient-to-r from-green-600 to-green-700 shadow-sm">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
             <div class="text-center sm:text-left">
                 <h1 class="text-3xl sm:text-4xl font-bold text-white mb-2">Find Trusted Garages</h1>
@@ -44,7 +44,7 @@
                             </button>
                             
                             @if($showServiceDropdown)
-                                <div class="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                                <div class="absolute z-[55] w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
                                     <!-- Search within services -->
                                     <div class="p-3 border-b border-gray-200">
                                         <input type="text" 
