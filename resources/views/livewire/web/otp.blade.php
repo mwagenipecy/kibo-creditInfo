@@ -17,48 +17,29 @@
     <!-- Success/Test Messages -->
    
 
-    <!-- OTP Input Fields -->
-    <div class="mb-8">
-        <label class="block text-sm font-medium text-gray-700 text-center mb-4">Verification Code</label>
-        <div class="flex flex-row justify-center text-center px-2">
-            <input wire:model.live="otp1" 
-                   @keydown="handleKeyDown($event, 1)"
-                   class="m-2 border-2 border-gray-300 focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-200 focus:ring-opacity-50 h-14 w-14 text-center rounded-lg text-xl font-bold shadow-sm" 
-                   type="text" 
-                   maxlength="1" 
-                   autocomplete="off" />
-            <input wire:model.live="otp2" 
-                   @keydown="handleKeyDown($event, 2)"
-                   class="m-2 border-2 border-gray-300 focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-200 focus:ring-opacity-50 h-14 w-14 text-center rounded-lg text-xl font-bold shadow-sm" 
-                   type="text" 
-                   maxlength="1" 
-                   autocomplete="off" />
-            <input wire:model.live="otp3" 
-                   @keydown="handleKeyDown($event, 3)"
-                   class="m-2 border-2 border-gray-300 focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-200 focus:ring-opacity-50 h-14 w-14 text-center rounded-lg text-xl font-bold shadow-sm" 
-                   type="text" 
-                   maxlength="1" 
-                   autocomplete="off" />
-            <input wire:model.live="otp4" 
-                   @keydown="handleKeyDown($event, 4)"
-                   class="m-2 border-2 border-gray-300 focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-200 focus:ring-opacity-50 h-14 w-14 text-center rounded-lg text-xl font-bold shadow-sm" 
-                   type="text" 
-                   maxlength="1" 
-                   autocomplete="off" />
-            <input wire:model.live="otp5" 
-                   @keydown="handleKeyDown($event, 5)"
-                   class="m-2 border-2 border-gray-300 focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-200 focus:ring-opacity-50 h-14 w-14 text-center rounded-lg text-xl font-bold shadow-sm" 
-                   type="text" 
-                   maxlength="1" 
-                   autocomplete="off" />
-            <input wire:model.live="otp6" 
-                   @keydown="handleKeyDown($event, 6)"
-                   class="m-2 border-2 border-gray-300 focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-200 focus:ring-opacity-50 h-14 w-14 text-center rounded-lg text-xl font-bold shadow-sm" 
-                   type="text" 
-                   maxlength="1" 
-                   autocomplete="off" />
-        </div>
-        <p class="text-center text-sm text-gray-500 mt-2">Enter 6-digit code</p>
+    <!-- OTP Input Field -->
+    <div class="mb-8 max-w-sm mx-auto">
+        <label for="otp_code" class="block text-sm font-medium text-gray-700 text-center mb-4">
+            Verification Code
+        </label>
+        <input
+            id="otp_code"
+            type="number"
+            inputmode="numeric"
+            pattern="[0-9]*"
+            maxlength="6"
+            autocomplete="one-time-code"
+            wire:model.live="full_otp"
+            min="0"
+            max="999999"
+            step="1"
+            class="w-full text-center tracking-widest text-2xl font-semibold px-4 py-3 border-2 border-gray-300 rounded-xl shadow-sm focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-200 transition"
+            placeholder="Enter 6-digit code"
+            oninput="sanitizeOtpInput(this)"
+        />
+        <p class="text-center text-sm text-gray-500 mt-2">
+            Enter the 6-digit code we sent to your email{{ $phone ? ' and phone' : '' }}.
+        </p>
     </div>
 
     <!-- Action Buttons -->
@@ -115,45 +96,10 @@
     </div>
 
     <script>
-        // Handle keyboard input for OTP fields
-        function handleKeyDown(event, fieldNumber) {
-            const key = event.key;
-            
-            // Allow only numbers
-            if (!/^[0-9]$/.test(key) && key !== 'Backspace' && key !== 'Delete' && key !== 'ArrowLeft' && key !== 'ArrowRight' && key !== 'Tab') {
-                event.preventDefault();
-                return;
-            }
-            
-            // Handle numbers
-            if (/^[0-9]$/.test(key)) {
-                event.preventDefault();
-                
-                // Set the value using Livewire
-                @this.set('otp' + fieldNumber, key);
-                
-                // Focus next field
-                if (fieldNumber < 6) {
-                    setTimeout(() => {
-                        const nextField = document.querySelector(`input[wire\\:model\\.live="otp${fieldNumber + 1}"]`);
-                        if (nextField) {
-                            nextField.focus();
-                        }
-                    }, 10);
-                }
-            }
-            
-            // Handle backspace
-            if (key === 'Backspace' || key === 'Delete') {
-                setTimeout(() => {
-                    const currentField = document.querySelector(`input[wire\\:model\\.live="otp${fieldNumber}"]`);
-                    if (!currentField.value && fieldNumber > 1) {
-                        const prevField = document.querySelector(`input[wire\\:model\\.live="otp${fieldNumber - 1}"]`);
-                        if (prevField) {
-                            prevField.focus();
-                        }
-                    }
-                }, 10);
+        function sanitizeOtpInput(input) {
+            const sanitized = (input.value || '').replace(/\D/g, '').slice(0, 6);
+            if (input.value !== sanitized) {
+                input.value = sanitized;
             }
         }
 
@@ -196,29 +142,11 @@
                 }
             });
             
-            // Watch for all fields filled and auto-verify
-            Livewire.hook('message.processed', (message, component) => {
-                if (message.component.fingerprint.name === 'web.otp') {
-                    const otp1 = document.querySelector('input[wire\\:model\\.live="otp1"]').value;
-                    const otp2 = document.querySelector('input[wire\\:model\\.live="otp2"]').value;
-                    const otp3 = document.querySelector('input[wire\\:model\\.live="otp3"]').value;
-                    const otp4 = document.querySelector('input[wire\\:model\\.live="otp4"]').value;
-                    const otp5 = document.querySelector('input[wire\\:model\\.live="otp5"]').value;
-                    const otp6 = document.querySelector('input[wire\\:model\\.live="otp6"]').value;
-                    
-                    if (otp1 && otp2 && otp3 && otp4 && otp5 && otp6) {
-                        // All fields filled, auto-verify after a short delay
-                        setTimeout(() => {
-                            @this.call('verifyOTP');
-                        }, 500);
-                    }
-                }
-            });
         });
         
         // Auto-focus first input on page load
         document.addEventListener('DOMContentLoaded', function() {
-            const firstInput = document.querySelector('input[wire\\:model\\.live="otp1"]');
+            const firstInput = document.getElementById('otp_code');
             if (firstInput) {
                 firstInput.focus();
             }

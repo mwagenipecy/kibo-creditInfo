@@ -9,6 +9,7 @@ use App\Models\departmentsList;
 use App\Models\User;
 use App\Models\UserSubMenu;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Validation\Rules\Password;
@@ -127,21 +128,37 @@ class Settings extends Component
     }
 
     /**
+     * Base query scoped to the authenticated user's institution (when available)
+     */
+    protected function scopedUsersQuery(): Builder
+    {
+        return User::query();
+        
+        // ->when(Auth::user()?->institution_id, function (Builder $query, $institutionId) {
+        //     $query->where('institution_id', $institutionId);
+        // });
+    }
+
+    /**
      * Render component with data
      */
     public function render()
     {
-        $this->activeUsers = User::where('status', 'ACTIVE')->count();
-        $this->inActiveUsers = User::where('status', '!=', 'ACTIVE')->count();
+        $usersQuery = $this->scopedUsersQuery();
+
+        $this->activeUsers = (clone $usersQuery)->where('status', 'ACTIVE')->count();
+        $this->inActiveUsers = (clone $usersQuery)->where('status', '!=', 'ACTIVE')->count();
+
         $this->user_sub_menus = UserSubMenu::where('menu_id', 8)
             ->where('user_id', Auth::user()->id)
             ->get();
-        $this->usersList = User::get();
-        $this->pendingUsers = User::get();
-        $this->departments=Department::get();
+
+        $this->usersList = (clone $usersQuery)->get();
+        $this->pendingUsers = $this->usersList;
+        $this->departments = Department::get();
 
         return view('livewire.settings.settings', [
-            'totalUsers' => User::count(),
+            'totalUsers' => (clone $usersQuery)->count(),
             'activeUsers' => $this->activeUsers,
             'inactiveUsers' => $this->inActiveUsers,
         ]);

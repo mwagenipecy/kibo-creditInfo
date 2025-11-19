@@ -635,10 +635,18 @@
     </div>
 
     <!-- Loading indicator -->
-    <div wire:loading class="fixed inset-0 z-50 flex items-center justify-center bg-gray-500 bg-opacity-25">
-        <div class="bg-white rounded-lg p-4 flex items-center space-x-2">
-            <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-green-600"></div>
-            <span class="text-gray-700">Loading...</span>
+    <div 
+        wire:loading.delay.short
+        wire:target="save,createUser,openModal,closeModal,openUserModal,closeUserModal,updateStatus"
+        class="fixed inset-0 z-50 flex items-center justify-center"
+    >
+        <div class="absolute inset-0 bg-gray-900/30 backdrop-blur-sm"></div>
+        <div class="relative bg-white/90 rounded-2xl shadow-2xl px-6 py-4 flex items-center space-x-3">
+            <div class="animate-spin rounded-full h-8 w-8 border-2 border-green-100 border-t-green-600"></div>
+            <div>
+                <p class="text-sm font-semibold text-gray-900">Please wait...</p>
+                <p class="text-xs text-gray-600">We’re processing your request.</p>
+            </div>
         </div>
     </div>
 </div>

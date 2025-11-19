@@ -10,17 +10,19 @@
 
     <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {{-- Two Cards Section with Background Container --}}
-        <div class="relative" style="height: 600px; margin-bottom: 300px;">
-            {{-- Background Card with Image - Fixed Height --}}
-            <div class="absolute inset-0 overflow-hidden" style="height: 600px; background-image: url('{{ asset('/images/sxv.png') }}'); background-size: cover; background-position: center;">
-                <div class="absolute inset-0 bg-gradient-to-t from-black/50 via-black/30 to-transparent"></div>
+        <div class="relative min-h-[500px] md:min-h-[900px] mb-16 md:mb-32 lg:mb-[300px]">
+            {{-- Background Card with Image --}}
+            <div class="relative h-[320px] sm:h-[400px] md:h-[600px] rounded-3xl overflow-hidden">
+                <div class="absolute inset-0" style="background-image: url('{{ asset('/images/sxv.png') }}'); background-size: cover; background-position: center;">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent"></div>
+                </div>
             </div>
             
             {{-- Content Cards Container - Positioned to overlap --}}
-            <div class="relative grid md:grid-cols-2 gap-6 p-6" style="top: 250px; position: absolute; left: 0; right: 0;">
+            <div class="relative grid gap-6 p-4 sm:p-6 -mt-10 sm:-mt-16 md:mt-0 md:grid-cols-2 md:absolute md:top-[250px] md:left-0 md:right-0">
                 {{-- Card 1: Advertise on Kiboauto --}}
-                <div class="bg-white overflow-hidden transform hover:scale-[1.02] transition-transform duration-300" style="min-height: 550px;">
-                    <div class="p-8 h-full flex flex-col">
+                <div class="bg-white rounded-2xl overflow-hidden transform hover:scale-[1.02] transition-transform duration-300 shadow-lg" style="min-height: 520px;">
+                    <div class="p-6 sm:p-8 h-full flex flex-col">
                         <div class="flex-1">
                             <div class="mb-6">
                                 <h2 class="text-3xl font-bold text-gray-900 mb-2">Advertise on Kiboauto</h2>
@@ -58,8 +60,8 @@
                 </div>
 
                 {{-- Card 2: Sell fast for free --}}
-                <div class="bg-white overflow-hidden transform hover:scale-[1.02] transition-transform duration-300" style="min-height: 500px;">
-                    <div class="p-8 h-full flex flex-col">
+                <div class="bg-white rounded-2xl overflow-hidden transform hover:scale-[1.02] transition-transform duration-300 shadow-lg" style="min-height: 480px;">
+                    <div class="p-6 sm:p-8 h-full flex flex-col">
                         <div class="flex-1">
                             <div class="mb-6">
                                 <h2 class="text-3xl font-bold text-gray-900 mb-2">Sell fast for free</h2>
@@ -99,21 +101,20 @@
         </div>
 
         {{-- Trust Badge Section --}}
-        <div class="relative mb-16 bg-gray-800" style="min-height: 380px;">
-            {{-- Background Image - Takes up most of the space --}}
-            <div class="absolute inset-0 overflow-hidden" style="background-image: url('{{ asset('images/kiboauto.png') }}'); background-size: cover; background-position: center; opacity: 0.4;">
+        <div class="relative mb-16 bg-gray-800 rounded-3xl overflow-hidden">
+            <div class="absolute inset-0 opacity-40" style="background-image: url('{{ asset('images/kiboauto.png') }}'); background-size: cover; background-position: center;">
             </div>
             
             {{-- Content Card Positioned on the Right --}}
-            <div class="relative grid md:grid-cols-3 items-center h-full" style="min-height: 400px;">
+            <div class="relative grid md:grid-cols-3 items-center min-h-[360px]">
               
             {{-- Content Card --}}
-                <div class="md:col-span-2 bg-white rounded-xl shadow-2xl p-4 m-4 md:m-8">
+                <div class="md:col-span-2 bg-white rounded-xl shadow-2xl p-6 sm:p-8 m-4 md:m-8">
                     <div class="text-center mb-6">
                         <h3 class="text-2xl font-bold text-gray-900 mb-2">Join thousands of happy sellers</h3>
                     </div>
                     
-                    <div class="grid md:grid-cols- gap-6 items-center">
+                    <div class="grid gap-6 items-center md:grid-cols-2">
                         {{-- Logo Section --}}
                        
                         {{-- Rating & Review Section --}}
@@ -151,8 +152,8 @@
         </div>
 
         {{-- How It Works Section --}}
-        <div class="bg-white rounded-xl shadow-lg p-8 mb-16">
-            <div class="grid md:grid-cols-2 gap-8">
+        <div class="bg-white rounded-xl shadow-lg p-6 sm:p-8 mb-16">
+            <div class="grid gap-8 md:grid-cols-2">
                 <div>
                     <h3 class="text-2xl font-bold text-gray-900 mb-4">Advertise on Kiboauto</h3>
                     <p class="text-gray-700 mb-4">With Tanzania's largest audience of car buyers, it's highly likely someone is currently searching our website for the car that's sat on your driveway. Speak with potential buyers directly to answers any questions and negotiate price.</p>
@@ -168,24 +169,24 @@
         <div class="mb-16">
             <h2 class="text-3xl font-bold text-gray-900 mb-8 text-center">How to sell your car, fast</h2>
             <div class="space-y-8 max-w-3xl mx-auto">
-                <div class="flex items-start gap-6 pb-8 border-b border-gray-200">
-                    <img src="{{ asset('sellyourcar/camera.svg') }}" alt="Take great photos" class="w-32 h-32 flex-shrink-0">
+                <div class="flex flex-col sm:flex-row items-start gap-6 pb-8 border-b border-gray-200">
+                    <img src="{{ asset('sellyourcar/camera.svg') }}" alt="Take great photos" class="w-24 sm:w-28 md:w-32 h-auto flex-shrink-0 mx-auto sm:mx-0">
                     <div>
                         <h3 class="text-2xl font-semibold text-gray-900 mb-2">Take great photos</h3>
                         <p class="text-gray-600">Taking good-quality photos means that the buyers have an accurate image of the car, and there won't be any issues after the sale.</p>
                     </div>
                 </div>
                 
-                <div class="flex items-start gap-6 pb-8 border-b border-gray-200">
-                    <img src="{{ asset('sellyourcar/keepItSnappy.svg') }}" alt="Keep it snappy" class="w-32 h-32 flex-shrink-0">
+                <div class="flex flex-col sm:flex-row items-start gap-6 pb-8 border-b border-gray-200">
+                    <img src="{{ asset('sellyourcar/keepItSnappy.svg') }}" alt="Keep it snappy" class="w-24 sm:w-28 md:w-32 h-auto flex-shrink-0 mx-auto sm:mx-0">
                     <div>
                         <h3 class="text-2xl font-semibold text-gray-900 mb-2">Keep it snappy</h3>
                         <p class="text-gray-600">There are a few documents you'll need to make sure you have before you sell your car. <a href="#" class="text-green-600 hover:underline">Learn more about documents needed to sell</a></p>
                     </div>
                 </div>
                 
-                <div class="flex items-start gap-6">
-                    <img src="{{ asset('sellyourcar/be-honest.svg') }}" alt="Be honest" class="w-32 h-32 flex-shrink-0">
+                <div class="flex flex-col sm:flex-row items-start gap-6">
+                    <img src="{{ asset('sellyourcar/be-honest.svg') }}" alt="Be honest" class="w-24 sm:w-28 md:w-32 h-auto flex-shrink-0 mx-auto sm:mx-0">
                     <div>
                         <h3 class="text-2xl font-semibold text-gray-900 mb-2">Be honest</h3>
                         <p class="text-gray-600">Make sure your vehicle description is accurate. Mention any faults, like scratches, so buyers know what they're getting ahead of time.</p>
@@ -195,24 +196,24 @@
         </div>
 
         {{-- Guides Section --}}
-        <div class="mb-16 bg-white rounded-xl shadow-lg p-8">
+        <div class="mb-16 bg-white rounded-xl shadow-lg p-6 sm:p-8">
             <h2 class="text-3xl font-bold text-gray-900 mb-8 text-center">Guides to selling your car</h2>
-            <div class="flex flex-col md:flex-row items-stretch justify-center gap-8 max-w-6xl mx-auto">
-                <div class="flex-1 text-center border-r border-gray-300 pr-8 last:border-r-0 last:pr-0">
+            <div class="flex flex-col lg:flex-row items-stretch justify-center gap-6 md:gap-8 max-w-6xl mx-auto">
+                <div class="flex-1 text-center md:border-b lg:border-b-0 lg:border-r border-gray-300 pb-6 lg:pb-0 lg:pr-8">
                     <a href="#" class="block hover:opacity-80 transition-opacity duration-300">
                         <h3 class="text-xl font-semibold text-gray-900 mb-3">Preparing your car</h3>
                         <p class="text-gray-600">From keeping it clean to sorting repairs, here's how to get your car ready for sale.</p>
                     </a>
                 </div>
                 
-                <div class="flex-1 text-center border-r border-gray-300 pr-8 last:border-r-0 last:pr-0">
+                <div class="flex-1 text-center md:border-b lg:border-b-0 lg:border-r border-gray-300 pb-6 lg:pb-0 lg:pr-8">
                     <a href="#" class="block hover:opacity-80 transition-opacity duration-300">
                         <h3 class="text-xl font-semibold text-gray-900 mb-3">Creating your advert</h3>
                         <p class="text-gray-600">Good-quality adverts lead to a fast sale. Read our tips to create an effective advert.</p>
                     </a>
                 </div>
                 
-                <div class="flex-1 text-center border-r border-gray-300 pr-8 last:border-r-0 last:pr-0">
+                <div class="flex-1 text-center md:border-b lg:border-b-0 lg:border-r border-gray-300 pb-6 lg:pb-0 lg:pr-8">
                     <a href="#" class="block hover:opacity-80 transition-opacity duration-300">
                         <h3 class="text-xl font-semibold text-gray-900 mb-3">Taking payment</h3>
                         <p class="text-gray-600">Cash, bank transfer, cheque? Learn the best way to accept payment and keep yourself secure.</p>

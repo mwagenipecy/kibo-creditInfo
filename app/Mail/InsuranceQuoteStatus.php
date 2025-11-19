@@ -37,3 +37,4 @@ class InsuranceQuoteStatus extends Mailable
 }
 
 
+

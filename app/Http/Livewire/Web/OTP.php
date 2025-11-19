@@ -32,6 +32,7 @@ class OTP extends Component
         'otp4' => 'nullable|string|max:1',
         'otp5' => 'nullable|string|max:1',
         'otp6' => 'nullable|string|max:1',
+        'full_otp' => 'nullable|string|max:6',
     ];
     
     protected $listeners = ['clearOtpFields', 'refreshTimer'];
@@ -67,6 +68,16 @@ class OTP extends Component
         $this->handleOtpUpdate($value, 6);
     }
     
+    public function updatedFullOtp($value)
+    {
+        $digits = preg_replace('/\D/', '', $value ?? '');
+        $this->full_otp = substr($digits, 0, 6);
+
+        if (strlen($this->full_otp) === 6) {
+            $this->verifyOTP();
+        }
+    }
+
     // Handle OTP field updates (including paste)
     private function handleOtpUpdate($value, $fieldNumber)
     {
@@ -227,8 +238,11 @@ class OTP extends Component
     // Handle the form submission
     public function verifyOTP()
     {
-        // Combine OTP inputs
-        $this->full_otp = trim(($this->otp1 ?? '') . ($this->otp2 ?? '') . ($this->otp3 ?? '') . ($this->otp4 ?? '') . ($this->otp5 ?? '') . ($this->otp6 ?? ''));
+        // Normalize OTP input
+        if (!$this->full_otp) {
+            $this->full_otp = trim(($this->otp1 ?? '') . ($this->otp2 ?? '') . ($this->otp3 ?? '') . ($this->otp4 ?? '') . ($this->otp5 ?? '') . ($this->otp6 ?? ''));
+        }
+        $this->full_otp = preg_replace('/\D/', '', $this->full_otp ?? '');
 
         // Validate inputs
         if (strlen($this->full_otp) !== 6 || !ctype_digit($this->full_otp)) {

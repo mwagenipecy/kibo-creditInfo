@@ -2,14 +2,12 @@
 
 namespace App\Http\Livewire\Settings;
 
-use App\Models\approvals;
 use App\Models\User;
 use Livewire\Component;
 use Livewire\WithFileUploads;
-use App\Models\NodesList;
 use Mediconesystems\LivewireDatatables\Column;
 use Mediconesystems\LivewireDatatables\Http\Livewire\LivewireDatatable;
-use PhpOffice\PhpSpreadsheet\Calculation\TextData\Search;
+use Illuminate\Support\Facades\Auth;
 
 class Users extends LivewireDatatable
 {
@@ -19,7 +17,11 @@ class Users extends LivewireDatatable
 
     public function builder(): \Illuminate\Database\Eloquent\Builder
     {
-        return User::query(); // You can modify the ordering as per your requirement
+        return User::query();
+        
+        // ->when(Auth::user()?->institution_id, function ($query, $institutionId) {
+        //     $query->where('institution_id', $institutionId);
+        // });
     }
 
     public function columns(): array
@@ -39,9 +41,11 @@ class Users extends LivewireDatatable
                 return view('livewire.settings.table-status', ['status' => $status, 'move' => false]);
             })->label('status')->excludeFromExport(),
 
-            Column::callback(['ID'], function ($id) {
-                return view('livewire.settings.users-list-action', ['id' => $id, 'move' => false]);
-            })->unsortable()->label('Action')->excludeFromExport(),
+            // Column::callback(['id'], function ($id) {
+            //     return view('livewire.settings.users-list-action', ['id' => $id, 'move' => false]);
+            // })->unsortable()->label('Action')->excludeFromExport(),
+
+
         ];
     }
 

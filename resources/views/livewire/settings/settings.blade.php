@@ -57,22 +57,17 @@
                             <svg class="w-3.5 h-3.5 mr-2 text-green-400 dark:text-green-400 flex-shrink-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
                                 <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z"/>
                             </svg>
-                            Total Registered Users: {{ App\Models\User::count() }}
+                            Total Registered Users: {{ number_format($totalUsers ?? 0) }}
                         </li>
                         <li class="flex items-center">
                             <svg class="w-3.5 h-3.5 mr-2 text-green-400 dark:text-green-400 flex-shrink-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
                                 <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z"/>
                             </svg>
-                            Active Users: {{App\Models\User::where('status',"ACTIVE")->count()}}
+                            Active Users: {{ number_format($activeUsers ?? 0) }}
                         </li>
                         <li class="flex items-center">
-                            <svg class="w-3.5 h-3.5 mr-2 text-green-400 dark:text-gray-400 flex-shrink-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z"/>
-                            </svg>
-                            Inactive Users:
-                            <span class="ml-2 bg-green-100 text-green-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-green-400 border border-green-400">
-                                {{App\Models\User::where('status','!=',"ACTIVE")->count()}}
-                            </span>
+                           
+                           
                         </li>
                     </ul>
                 </div>
@@ -174,7 +169,10 @@
 <div class="@if($showCreateNewUser) fixed @else hidden @endif inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
     <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
         <!-- Background overlay -->
-        <div class="fixed inset-0 opacity-50 bg-opacity-75 transition-opacity" wire:click="$set('showCreateNewUser', false)"></div>
+        <div 
+            class="fixed inset-0 bg-gray-900/30 backdrop-blur-sm transition-opacity" 
+            wire:click="$set('showCreateNewUser', false)"
+        ></div>
 
         <!-- Modal panel -->
         <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
