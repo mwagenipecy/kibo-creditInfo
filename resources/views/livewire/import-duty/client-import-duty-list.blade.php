@@ -4,18 +4,18 @@
     <!-- Header -->
     <div class="bg-green-600 shadow">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center py-6">
+            <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between py-6">
                 <div>
                     <h1 class="text-2xl font-bold text-white">My Import Duty Applications</h1>
                     <p class="text-green-100">Track and manage your vehicle import duty financing applications</p>
                 </div>
-                <div class="flex space-x-3">
+                <div class="flex flex-col sm:flex-row gap-3 w-full lg:w-auto">
                     <a href="" 
-                       class="bg-green-500 hover:bg-green-400 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                       class="inline-flex items-center justify-center bg-green-500 hover:bg-green-400 text-white px-4 py-2 rounded-lg font-medium transition-colors w-full sm:w-auto">
                         All Applications
                     </a>
                     <a href="{{ url('import-duty') }}" 
-                       class="bg-white text-green-600 hover:bg-gray-50 px-4 py-2 rounded-lg font-medium transition-colors">
+                       class="inline-flex items-center justify-center bg-white text-green-600 hover:bg-gray-50 px-4 py-2 rounded-lg font-medium transition-colors w-full sm:w-auto">
                         New Application
                     </a>
                 </div>
@@ -60,7 +60,7 @@
         @endif
 
         <!-- Statistics Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             <div class="bg-white overflow-hidden shadow rounded-lg">
                 <div class="p-5">
                     <div class="flex items-center">
@@ -156,11 +156,11 @@
 
         <!-- Filters and Actions -->
         <div class="bg-white shadow rounded-lg mb-6">
-            <div class="px-6 py-4 border-b border-gray-200">
-                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
-                    <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
+            <div class="px-4 sm:px-6 py-4 border-b border-gray-200 space-y-4">
+                <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                    <div class="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4">
                         <!-- Search -->
-                        <div class="relative">
+                        <div class="relative w-full sm:w-64">
                             <input type="text" wire:model.debounce.300ms="searchTerm" 
                                    placeholder="Search applications..." 
                                    class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-green-500 focus:border-green-500">
@@ -172,22 +172,27 @@
                         </div>
 
                         <!-- Status Filter -->
-                        <select wire:model="statusFilter" 
-                                class="block w-full pl-3 pr-10 py-2 text-base border border-gray-300 focus:outline-none focus:ring-green-500 focus:border-green-500 rounded-md">
-                            <option value="">All Statuses</option>
-                            <option value="DRAFT">Draft</option>
-                            <option value="SUBMITTED">Submitted</option>
-                            <option value="CF_QUOTATION">CF Quotations</option>
-                            <option value="CF_SELECTED">CF Selected</option>
-                            <option value="LENDER_REVIEW">Lender Review</option>
-                            <option value="APPROVED">Approved</option>
-                            <option value="REJECTED">Rejected</option>
-                            <option value="COMPLETED">Completed</option>
-                        </select>
+                        <div class="relative w-full sm:w-48">
+                            <select wire:model="statusFilter" 
+                                    class="block w-full pl-3 pr-10 py-2 text-base border border-gray-300 focus:outline-none focus:ring-green-500 focus:border-green-500 rounded-md appearance-none">
+                                <option value="">All Statuses</option>
+                                <option value="DRAFT">Draft</option>
+                                <option value="SUBMITTED">Submitted</option>
+                                <option value="CF_QUOTATION">CF Quotations</option>
+                                <option value="CF_SELECTED">CF Selected</option>
+                                <option value="LENDER_REVIEW">Lender Review</option>
+                                <option value="APPROVED">Approved</option>
+                                <option value="REJECTED">Rejected</option>
+                                <option value="COMPLETED">Completed</option>
+                            </select>
+                            <svg class="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </div>
 
                         @if($statusFilter || $searchTerm)
                         <button wire:click="clearFilters" 
-                                class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                                class="inline-flex items-center justify-center px-3 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
                             Clear
                         </button>
                         @endif
@@ -195,10 +200,10 @@
 
                     <!-- Bulk Actions -->
                     @if(count($selectedApplications) > 0)
-                    <div class="flex items-center space-x-2">
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:space-x-3 gap-2">
                         <span class="text-sm text-gray-700">{{ count($selectedApplications) }} selected</span>
                         <select wire:change="bulkAction($event.target.value)" 
-                                class="block w-full pl-3 pr-10 py-2 text-base border border-gray-300 focus:outline-none focus:ring-green-500 focus:border-green-500 rounded-md">
+                                class="block w-full sm:w-48 pl-3 pr-10 py-2 text-base border border-gray-300 focus:outline-none focus:ring-green-500 focus:border-green-500 rounded-md">
                             <option value="">Bulk Actions</option>
                             <option value="export">Export Selected</option>
                             <option value="archive">Archive Selected</option>
@@ -211,8 +216,10 @@
 
         <!-- Applications Table -->
         <div class="bg-white shadow overflow-hidden rounded-lg">
-            <div class="min-w-full divide-y divide-gray-200">
+            <div class="divide-y divide-gray-200">
                 @if($applications->count() > 0)
+                <div class="hidden lg:block">
+                <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
                         <tr>
@@ -394,6 +401,79 @@
                         @endforeach
                     </tbody>
                 </table>
+                </div>
+                </div>
+
+                <!-- Mobile Cards -->
+                <div class="lg:hidden space-y-4 p-4">
+                    @foreach($applications as $application)
+                    <div class="rounded-xl border border-gray-100 shadow-sm p-4 bg-white space-y-4">
+                        <div class="flex flex-col gap-2">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-xs uppercase text-gray-500">Application</p>
+                                    <p class="text-lg font-semibold text-gray-900">{{ $application->application_number }}</p>
+                                </div>
+                                <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full {{ $application->getStatusBadgeClass() }}">
+                                    {{ $application->getCurrentStepText() }}
+                                </span>
+                            </div>
+                            <p class="text-sm text-gray-500">{{ $application->created_at->format('M d, Y') }} • {{ $application->created_at->diffForHumans() }}</p>
+                        </div>
+                        <div class="space-y-3 text-sm text-gray-700">
+                            <div class="flex justify-between gap-4">
+                                <span class="text-gray-500">Vehicle</span>
+                                <span class="text-right font-medium text-gray-900">{{ $application->vehicle_make }} {{ $application->vehicle_model }} ({{ $application->vehicle_year }})</span>
+                            </div>
+                            <div class="flex justify-between gap-4">
+                                <span class="text-gray-500">CIF Value</span>
+                                <span class="text-right font-semibold text-gray-900">${{ number_format($application->cif_value_usd, 2) }}</span>
+                            </div>
+                            <div>
+                                <div class="flex items-center justify-between text-xs text-gray-600 mb-1">
+                                    <span>{{ $application->getProgressPercentage() }}%</span>
+                                    <span>{{ $application->getCurrentStepText() }}</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-green-600 h-2 rounded-full transition-all duration-300" style="width: {{ $application->getProgressPercentage() }}%"></div>
+                                </div>
+                            </div>
+                            <div class="flex flex-wrap gap-2">
+                                @if($application->cfQuotations->count() > 0)
+                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                                    {{ $application->cfQuotations->count() }} CF Quotes
+                                </span>
+                                @endif
+                                @if($application->lenderOffers->count() > 0)
+                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                    {{ $application->lenderOffers->count() }} Offers
+                                </span>
+                                @endif
+                                @if(in_array($application->status, ['CF_QUOTATION', 'LENDER_REVIEW']))
+                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                    Action Required
+                                </span>
+                                @endif
+                            </div>
+                        </div>
+                        <div class="flex flex-col sm:flex-row gap-3">
+                            <a href="{{ route('import.duty.tracking', $application->id) }}" class="inline-flex w-full sm:w-auto items-center justify-center px-4 py-2 rounded-lg border border-green-200 text-sm font-medium text-green-700 hover:bg-green-50">
+                                View Tracking
+                            </a>
+                            @if($application->status === 'CF_QUOTATION' && $application->cfQuotations->where('status', 'SUBMITTED')->count() > 0)
+                            <a href="" class="inline-flex w-full sm:w-auto items-center justify-center px-4 py-2 rounded-lg border border-purple-200 text-sm font-medium text-purple-700 hover:bg-purple-50">
+                                Compare Quotes
+                            </a>
+                            @endif
+                            @if($application->status === 'LENDER_REVIEW' && $application->lenderOffers->where('status', 'SUBMITTED')->count() > 0)
+                            <a href="" class="inline-flex w-full sm:w-auto items-center justify-center px-4 py-2 rounded-lg border border-blue-200 text-sm font-medium text-blue-700 hover:bg-blue-50">
+                                View Offers
+                            </a>
+                            @endif
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
 
                 <!-- Pagination -->
                 <div class="bg-white px-4 py-3 border-t border-gray-200 sm:px-6">
@@ -438,7 +518,7 @@
         <!-- Quick Stats Summary -->
         <div class="mt-8 bg-white shadow rounded-lg p-6">
             <h3 class="text-lg font-medium text-gray-900 mb-4">Application Summary by Status</h3>
-            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-8 gap-4">
                 <div class="text-center">
                     <div class="text-2xl font-bold text-gray-900">{{ $stats['submitted'] }}</div>
                     <div class="text-sm text-gray-500">Submitted</div>
