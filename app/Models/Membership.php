@@ -13,4 +13,12 @@ class Clientship extends JetstreamClientship
      * @var bool
      */
     public $incrementing = true;
+
+
+
+
+
+
+
+
 }

@@ -85,47 +85,20 @@
 
 
         <!-- Vehicle Add/Edit Form -->
-<div class="bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-2xl border border-gray-100 overflow-hidden">
+<div class="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
     <!-- Header Section -->
     <div class="bg-gradient-to-r from-green-600 to-green-700 px-8 py-6">
         <div class="flex items-center justify-between">
             <div>
-                <h2 class="text-2xl font-bold text-green-800 mb-1">
+                <h2 class="text-3xl text-green-600 font-bold  mb-2 drop-shadow-md">
                     {{ $editMode ? 'Edit Vehicle' : 'Add New Vehicle' }}
                 </h2>
-                <p class="text-green-700 text-sm">
+                <p class="text-green-600 text-sm">
                     {{ $editMode ? 'Update vehicle information and images' : 'Create a new vehicle listing with all details' }}
                 </p>
 
 
 
-                <div class="flex items-center mb-4 mt-4">
-    <input 
-        id="is_wedding_car" 
-        type="checkbox" 
-        wire:model="is_wedding_car"
-        class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm 
-               focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 
-               dark:bg-gray-700 dark:border-gray-600"
-    >
-    <label for="is_wedding_car" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">
-        For Wedding lending purposes
-    </label>
-</div>
-
-<div class="flex items-center">
-    <input 
-        id="is_for_sale" 
-        type="checkbox" 
-        wire:model="is_for_sale"
-        class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm 
-               focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 
-               dark:bg-gray-700 dark:border-gray-600"
-    >
-    <label for="is_for_sale" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">
-        For sale
-    </label>
-</div>
 
 
 
@@ -149,7 +122,7 @@
         <form wire:submit.prevent="{{ $editMode ? 'updateVehicle' : 'addVehicle' }}">
             <!-- Error Messages -->
             @if ($errors->any())
-                <div class="bg-gradient-to-r from-red-50 to-red-100 border-l-4 border-red-400 rounded-lg p-6 mb-8 shadow-sm">
+                <div class="bg-red-50 border-l-4 border-red-400 rounded-lg p-6 mb-8">
                     <div class="flex items-start">
                         <div class="flex-shrink-0">
                             <svg class="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
@@ -171,14 +144,41 @@
                 </div>
             @endif
 
-          
+            <!-- Purpose Selection -->
+            <div class="bg-gray-50 rounded-xl p-6 mb-8 border border-gray-200">
+                <h3 class="text-sm font-semibold text-gray-700 mb-4">Vehicle Purpose</h3>
+                <div class="flex flex-wrap gap-6">
+                    <div class="flex items-center">
+                        <input 
+                            id="is_for_sale" 
+                            type="checkbox" 
+                            wire:model="is_for_sale"
+                            class="w-4 h-4 text-green-600 bg-white border-gray-300 rounded focus:ring-green-500 focus:ring-2"
+                        >
+                        <label for="is_for_sale" class="ml-2 text-sm font-medium text-gray-700">
+                            For Sale
+                        </label>
+                    </div>
+                    <div class="flex items-center">
+                        <input 
+                            id="is_wedding_car" 
+                            type="checkbox" 
+                            wire:model="is_wedding_car"
+                            class="w-4 h-4 text-green-600 bg-white border-gray-300 rounded focus:ring-green-500 focus:ring-2"
+                        >
+                        <label for="is_wedding_car" class="ml-2 text-sm font-medium text-gray-700">
+                            For Wedding Rental
+                        </label>
+                    </div>
+                </div>
+            </div>
 
             <!-- Two Column Form Layout -->
             <div class="grid grid-cols-1 xl:grid-cols-2 gap-8">
                 <!-- Left Column -->
                 <div class="space-y-8">
                     <!-- Basic Details Section -->
-                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200">
+                    <div class="bg-white rounded-xl border border-gray-200 p-6">
                         <div class="flex items-center mb-6">
                             <div class="bg-blue-100 rounded-lg p-2 mr-3">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -191,7 +191,7 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div class="space-y-2">
                                 <label for="make_id" class="block text-sm font-medium text-gray-700">Make*</label>
-                                <select id="make_id" wire:model="vehicle.make_id" class="w-full rounded-xl border-gray-300 shadow-sm focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200 bg-gray-50 focus:bg-white">
+                                <select id="make_id" wire:model="vehicle.make_id" class="w-full rounded-lg border-gray-300 focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200">
                                     <option value="">Select Make</option>
                                     @foreach($makes as $make)
                                         <option value="{{ $make->id }}">{{ $make->name }}</option>
@@ -202,7 +202,7 @@
                             
                             <div class="space-y-2">
                                 <label for="model_id" class="block text-sm font-medium text-gray-700">Model*</label>
-                                <select id="model_id" wire:model="vehicle.model_id" class="w-full rounded-xl border-gray-300 shadow-sm focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200 bg-gray-50 focus:bg-white">
+                                <select id="model_id" wire:model="vehicle.model_id" class="w-full rounded-lg border-gray-300 focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200">
                                     <option value="">Select Model</option>
                                     @foreach($models as $model)
                                         <option value="{{ $model->id }}">{{ $model->name }}</option>
@@ -215,20 +215,20 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
                             <div class="space-y-2">
                                 <label for="trim" class="block text-sm font-medium text-gray-700">Trim</label>
-                                <input type="text" id="trim" wire:model="vehicle.trim" placeholder="e.g., Sport, Limited" class="w-full rounded-xl border-gray-300 shadow-sm focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200 bg-gray-50 focus:bg-white">
+                                <input type="text" id="trim" wire:model="vehicle.trim" placeholder="e.g., Sport, Limited" class="w-full rounded-lg border-gray-300 focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200">
                                 @error('vehicle.trim') <p class="mt-1 text-sm text-red-600 flex items-center"><svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>{{ $message }}</p> @enderror
                             </div>
                             
                             <div class="space-y-2">
                                 <label for="year" class="block text-sm font-medium text-gray-700">Year*</label>
-                                <input type="number" id="year" wire:model="vehicle.year" placeholder="2024" min="1900" max="2030" class="w-full rounded-xl border-gray-300 shadow-sm focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200 bg-gray-50 focus:bg-white">
+                                <input type="number" id="year" wire:model="vehicle.year" placeholder="2024" min="1900" max="2030" class="w-full rounded-lg border-gray-300 focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200">
                                 @error('vehicle.year') <p class="mt-1 text-sm text-red-600 flex items-center"><svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>{{ $message }}</p> @enderror
                             </div>
                         </div>
                     </div>
                     
                     <!-- Specifications Section -->
-                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200">
+                    <div class="bg-white rounded-xl border border-gray-200 p-6">
                         <div class="flex items-center mb-6">
                             <div class="bg-purple-100 rounded-lg p-2 mr-3">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -243,7 +243,7 @@
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div class="space-y-2">
                                     <label for="body_type_id" class="block text-sm font-medium text-gray-700">Body Type*</label>
-                                    <select id="body_type_id" wire:model="vehicle.body_type_id" class="w-full rounded-xl border-gray-300 shadow-sm focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200 bg-gray-50 focus:bg-white">
+                                    <select id="body_type_id" wire:model="vehicle.body_type_id" class="w-full rounded-lg border-gray-300 focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200">
                                         <option value="">Select Body Type</option>
                                         @foreach($bodyTypes as $bodyType)
                                             <option value="{{ $bodyType->id }}">{{ $bodyType->name }}</option>
@@ -254,7 +254,7 @@
                                 
                                 <div class="space-y-2">
                                     <label for="fuel_type_id" class="block text-sm font-medium text-gray-700">Fuel Type*</label>
-                                    <select id="fuel_type_id" wire:model="vehicle.fuel_type_id" class="w-full rounded-xl border-gray-300 shadow-sm focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200 bg-gray-50 focus:bg-white">
+                                    <select id="fuel_type_id" wire:model="vehicle.fuel_type_id" class="w-full rounded-lg border-gray-300 focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200">
                                         <option value="">Select Fuel Type</option>
                                         @foreach($fuelTypes as $fuelType)
                                             <option value="{{ $fuelType->id }}">{{ $fuelType->name }}</option>
@@ -267,7 +267,7 @@
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div class="space-y-2">
                                     <label for="transmission_id" class="block text-sm font-medium text-gray-700">Transmission*</label>
-                                    <select id="transmission_id" wire:model="vehicle.transmission_id" class="w-full rounded-xl border-gray-300 shadow-sm focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200 bg-gray-50 focus:bg-white">
+                                    <select id="transmission_id" wire:model="vehicle.transmission_id" class="w-full rounded-lg border-gray-300 focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200">
                                         <option value="">Select Transmission</option>
                                         @foreach($transmissions as $transmission)
                                             <option value="{{ $transmission->id }}">{{ $transmission->name }}</option>
@@ -278,7 +278,7 @@
                                 
                                 <div class="space-y-2">
                                     <label for="drivetrain" class="block text-sm font-medium text-gray-700">Drivetrain</label>
-                                    <select id="drivetrain" wire:model="vehicle.drivetrain" class="w-full rounded-xl border-gray-300 shadow-sm focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200 bg-gray-50 focus:bg-white">
+                                    <select id="drivetrain" wire:model="vehicle.drivetrain" class="w-full rounded-lg border-gray-300 focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200">
                                         <option value="">Select Drivetrain</option>
                                         <option value="FWD">Front-Wheel Drive (FWD)</option>
                                         <option value="RWD">Rear-Wheel Drive (RWD)</option>
@@ -292,13 +292,13 @@
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div class="space-y-2">
                                     <label for="engine_size" class="block text-sm font-medium text-gray-700">Engine Size</label>
-                                    <input type="text" id="engine_size" wire:model="vehicle.engine_size" placeholder="e.g. 2.0L" class="w-full rounded-xl border-gray-300 shadow-sm focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200 bg-gray-50 focus:bg-white">
+                                    <input type="text" id="engine_size" wire:model="vehicle.engine_size" placeholder="e.g. 2.0L" class="w-full rounded-lg border-gray-300 focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200">
                                     @error('vehicle.engine_size') <p class="mt-1 text-sm text-red-600 flex items-center"><svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>{{ $message }}</p> @enderror
                                 </div>
                                 
                                 <div class="space-y-2">
                                     <label for="engine_type" class="block text-sm font-medium text-gray-700">Engine Type</label>
-                                    <input type="text" id="engine_type" wire:model="vehicle.engine_type" placeholder="e.g. V6 Turbo" class="w-full rounded-xl border-gray-300 shadow-sm focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200 bg-gray-50 focus:bg-white">
+                                    <input type="text" id="engine_type" wire:model="vehicle.engine_type" placeholder="e.g. V6 Turbo" class="w-full rounded-lg border-gray-300 focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200">
                                     @error('vehicle.engine_type') <p class="mt-1 text-sm text-red-600 flex items-center"><svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>{{ $message }}</p> @enderror
                                 </div>
                             </div>
@@ -306,13 +306,13 @@
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div class="space-y-2">
                                     <label for="horsepower" class="block text-sm font-medium text-gray-700">Horsepower</label>
-                                    <input type="number" id="horsepower" wire:model="vehicle.horsepower" placeholder="300" class="w-full rounded-xl border-gray-300 shadow-sm focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200 bg-gray-50 focus:bg-white">
+                                    <input type="number" id="horsepower" wire:model="vehicle.horsepower" placeholder="300" class="w-full rounded-lg border-gray-300 focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200">
                                     @error('vehicle.horsepower') <p class="mt-1 text-sm text-red-600 flex items-center"><svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>{{ $message }}</p> @enderror
                                 </div>
                                 
                                 <div class="space-y-2">
                                     <label for="seating_capacity" class="block text-sm font-medium text-gray-700">Seating Capacity</label>
-                                    <input type="number" id="seating_capacity" wire:model="vehicle.seating_capacity" placeholder="5" min="1" max="50" class="w-full rounded-xl border-gray-300 shadow-sm focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200 bg-gray-50 focus:bg-white">
+                                    <input type="number" id="seating_capacity" wire:model="vehicle.seating_capacity" placeholder="5" min="1" max="50" class="w-full rounded-lg border-gray-300 focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200">
                                     @error('vehicle.seating_capacity') <p class="mt-1 text-sm text-red-600 flex items-center"><svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>{{ $message }}</p> @enderror
                                 </div>
                             </div>
@@ -323,7 +323,7 @@
                 <!-- Right Column -->
                 <div class="space-y-8">
                     <!-- Listing Details Section -->
-                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200">
+                    <div class="bg-white rounded-xl border border-gray-200 p-6">
                         <div class="flex items-center mb-6">
                             <div class="bg-green-100 rounded-lg p-2 mr-3">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -337,7 +337,7 @@
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div class="space-y-2">
                                     <label for="vehicle_condition" class="block text-sm font-medium text-gray-700">Condition*</label>
-                                    <select id="vehicle_condition" wire:model="vehicle.vehicle_condition" class="w-full rounded-xl border-gray-300 shadow-sm focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200 bg-gray-50 focus:bg-white">
+                                    <select id="vehicle_condition" wire:model="vehicle.vehicle_condition" class="w-full rounded-lg border-gray-300 focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200">
                                         <option value="">Select Condition</option>
                                         <option value="New">New</option>
                                         <option value="Used">Used</option>
@@ -355,7 +355,7 @@
                                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                             <span class="text-gray-500 sm:text-sm">TZS</span>
                                         </div>
-                                        <input type="number" id="price" wire:model="vehicle.price" placeholder="50,000,000" class="w-full pl-12 rounded-xl border-gray-300 shadow-sm focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200 bg-gray-50 focus:bg-white">
+                                        <input type="number" id="price" wire:model="vehicle.price" placeholder="50,000,000" class="w-full pl-12 rounded-lg border-gray-300 focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200">
                                     </div>
                                     @error('vehicle.price') <p class="mt-1 text-sm text-red-600 flex items-center"><svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>{{ $message }}</p> @enderror
                                 </div>
@@ -371,7 +371,7 @@
                                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                             <span class="text-gray-500 sm:text-sm">TZS</span>
                                         </div>
-                                        <input type="number" id="rent_price" wire:model="vehicle.rent_price" placeholder="50,000" class="w-full pl-12 rounded-xl border-gray-300 shadow-sm focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200 bg-gray-50 focus:bg-white">
+                                        <input type="number" id="rent_price" wire:model="vehicle.rent_price" placeholder="50,000" class="w-full pl-12 rounded-lg border-gray-300 focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200">
                                     </div>
                                     @error('vehicle.rent_price') <p class="mt-1 text-sm text-red-600 flex items-center"><svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>{{ $message }}</p> @enderror
                                 </div>
@@ -384,7 +384,7 @@
                             <!-- <div class="space-y-2">
                                 <label for="downPaymentPercent" class="block text-sm font-medium text-gray-700">Down Payment (%)*</label>
                                 <div class="relative">
-                                    <input type="number" id="downPaymentPercent" wire:model="vehicle.downPaymentPercent" placeholder="30" min="0" max="100" class="w-full rounded-xl border-gray-300 shadow-sm focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200 bg-gray-50 focus:bg-white">
+                                    <input type="number" id="downPaymentPercent" wire:model="vehicle.downPaymentPercent" placeholder="30" min="0" max="100" class="w-full rounded-lg border-gray-300 focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200">
                                     <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                                         <span class="text-gray-500 sm:text-sm">%</span>
                                     </div>
@@ -396,7 +396,7 @@
                                 <div class="space-y-2">
                                     <label for="mileage" class="block text-sm font-medium text-gray-700">Mileage (KM)*</label>
                                     <div class="relative">
-                                        <input type="number" id="mileage" wire:model="vehicle.mileage" placeholder="50,000" class="w-full rounded-xl border-gray-300 shadow-sm focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200 bg-gray-50 focus:bg-white">
+                                        <input type="number" id="mileage" wire:model="vehicle.mileage" placeholder="50,000" class="w-full rounded-lg border-gray-300 focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200">
                                         <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                                             <span class="text-gray-500 sm:text-sm">KM</span>
                                         </div>
@@ -406,7 +406,7 @@
                                 
                                 <div class="space-y-2">
                                     <label for="color" class="block text-sm font-medium text-gray-700">Color*</label>
-                                    <input type="text" id="color" wire:model="vehicle.color" placeholder="e.g., Midnight Blue" class="w-full rounded-xl border-gray-300 shadow-sm focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200 bg-gray-50 focus:bg-white">
+                                    <input type="text" id="color" wire:model="vehicle.color" placeholder="e.g., Midnight Blue" class="w-full rounded-lg border-gray-300 focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200">
                                     @error('vehicle.color') <p class="mt-1 text-sm text-red-600 flex items-center"><svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>{{ $message }}</p> @enderror
                                 </div>
                             </div>
@@ -414,13 +414,13 @@
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div class="space-y-2">
                                     <label for="vin" class="block text-sm font-medium text-gray-700">VIN*</label>
-                                    <input type="text" id="vin" wire:model="vehicle.vin" placeholder="1HGBH41JXMN109186" class="w-full rounded-xl border-gray-300 shadow-sm focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200 bg-gray-50 focus:bg-white font-mono text-sm">
+                                    <input type="text" id="vin" wire:model="vehicle.vin" placeholder="1HGBH41JXMN109186" class="w-full rounded-lg border-gray-300 focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200 font-mono text-sm">
                                     @error('vehicle.vin') <p class="mt-1 text-sm text-red-600 flex items-center"><svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>{{ $message }}</p> @enderror
                                 </div>
                                 
                                 <div class="space-y-2">
                                     <label for="owners" class="block text-sm font-medium text-gray-700">Previous Owners</label>
-                                    <input type="number" id="owners" wire:model="vehicle.owners" placeholder="1" min="0" max="10" class="w-full rounded-xl border-gray-300 shadow-sm focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200 bg-gray-50 focus:bg-white">
+                                    <input type="number" id="owners" wire:model="vehicle.owners" placeholder="1" min="0" max="10" class="w-full rounded-lg border-gray-300 focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200">
                                     @error('vehicle.owners') <p class="mt-1 text-sm text-red-600 flex items-center"><svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>{{ $message }}</p> @enderror
                                 </div>
                             </div>
@@ -434,7 +434,7 @@
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                                         </svg>
                                     </div>
-                                    <input type="text" id="location" wire:model="vehicle.location" placeholder="Dar es Salaam, Tanzania" class="w-full pl-10 rounded-xl border-gray-300 shadow-sm focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200 bg-gray-50 focus:bg-white">
+                                    <input type="text" id="location" wire:model="vehicle.location" placeholder="Dar es Salaam, Tanzania" class="w-full pl-10 rounded-lg border-gray-300 focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200">
                                 </div>
                                 @error('vehicle.location') <p class="mt-1 text-sm text-red-600 flex items-center"><svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>{{ $message }}</p> @enderror
                             </div>
@@ -442,7 +442,7 @@
                     </div>
                     
                     <!-- Description and Status Section -->
-                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200">
+                    <div class="bg-white rounded-xl border border-gray-200 p-6">
                         <div class="flex items-center mb-6">
                             <div class="bg-orange-100 rounded-lg p-2 mr-3">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -455,7 +455,7 @@
                         <div class="space-y-6">
                             <div class="space-y-2">
                                 <label for="description" class="block text-sm font-medium text-gray-700">Description*</label>
-                                <textarea id="description" wire:model="vehicle.description" rows="5" placeholder="Provide a detailed description of the vehicle including features, maintenance history, and any additional information..." class="w-full rounded-xl border-gray-300 shadow-sm focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200 bg-gray-50 focus:bg-white resize-none"></textarea>
+                                <textarea id="description" wire:model="vehicle.description" rows="5" placeholder="Provide a detailed description of the vehicle including features, maintenance history, and any additional information..." class="w-full rounded-lg border-gray-300 focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200 resize-none"></textarea>
                                 @error('vehicle.description') <p class="mt-1 text-sm text-red-600 flex items-center"><svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>{{ $message }}</p> @enderror
                             </div>
                             
@@ -506,7 +506,7 @@
             </div>
 
             <!-- Vehicle Images Section -->
-            <div class="mt-8 bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200">
+            <div class="mt-8 bg-white rounded-xl border border-gray-200 p-6">
                 <div class="flex items-center mb-6">
                     <div class="bg-indigo-100 rounded-lg p-2 mr-3">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -744,13 +744,13 @@
             
             <!-- Form Buttons -->
             <div class="flex flex-col sm:flex-row justify-end space-y-3 sm:space-y-0 sm:space-x-4 mt-10 pt-6 border-t border-gray-200">
-                <button type="button" wire:click="cancelForm" class="w-full sm:w-auto px-6 py-3 bg-white border-2 border-gray-300 rounded-xl font-medium text-gray-700 hover:bg-gray-50 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-all duration-200 flex items-center justify-center">
+                <button type="button" wire:click="cancelForm" class="w-full sm:w-auto px-6 py-3 bg-white border border-gray-300 rounded-lg font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-all duration-200 flex items-center justify-center">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                     Cancel
                 </button>
-                <button type="submit" class="w-full sm:w-auto px-8 py-3 bg-gradient-to-r from-green-600 to-green-700 border border-transparent rounded-xl font-medium text-green-800 hover:from-green-700 hover:to-green-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all duration-200 flex items-center justify-center shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+                <button type="submit" class="w-full sm:w-auto px-8 py-3 bg-green-600 border border-transparent rounded-lg font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all duration-200 flex items-center justify-center">
                     @if($editMode)
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />

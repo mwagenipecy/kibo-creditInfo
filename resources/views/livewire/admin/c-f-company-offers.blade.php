@@ -438,8 +438,8 @@
 
                         <!-- Live Summary -->
                         @php
-                            $totalDutiesTaxes = ($import_duty ?? 0) + ($vat_amount ?? 0) + ($railway_development_levy ?? 0) + ($excise_duty ?? 0) + ($service_levy ?? 0) + ($other_charges ?? 0);
-                            $totalServiceFees = ($clearing_fee ?? 0) + ($forwarding_fee ?? 0) + ($documentation_fee ?? 0) + ($port_charges ?? 0) + ($transportation_fee ?? 0) + ($storage_charges ?? 0) + ($other_service_fees ?? 0);
+                            $totalDutiesTaxes = (float)($import_duty ?? 0) + (float)($vat_amount ?? 0) + (float)($railway_development_levy ?? 0) + (float)($excise_duty ?? 0) + (float)($service_levy ?? 0) + (float)($other_charges ?? 0);
+                            $totalServiceFees = (float)($clearing_fee ?? 0) + (float)($forwarding_fee ?? 0) + (float)($documentation_fee ?? 0) + (float)($port_charges ?? 0) + (float)($transportation_fee ?? 0) + (float)($storage_charges ?? 0) + (float)($other_service_fees ?? 0);
                             $grandTotal = $totalDutiesTaxes + $totalServiceFees;
                         @endphp
                         <div class="bg-green-50 p-4 rounded-lg">
@@ -490,15 +490,15 @@
                             <div class="space-y-2 text-sm">
                                 <div class="flex justify-between">
                                     <span>Total Duties & Taxes:</span>
-                                    <span class="font-medium">TZS {{ number_format(($import_duty ?? 0) + ($vat_amount ?? 0) + ($railway_development_levy ?? 0) + ($excise_duty ?? 0) + ($service_levy ?? 0) + ($other_charges ?? 0)) }}</span>
+                                    <span class="font-medium">TZS {{ number_format((float)($import_duty ?? 0) + (float)($vat_amount ?? 0) + (float)($railway_development_levy ?? 0) + (float)($excise_duty ?? 0) + (float)($service_levy ?? 0) + (float)($other_charges ?? 0), 2) }}</span>
                                 </div>
                                 <div class="flex justify-between">
                                     <span>Total Service Fees:</span>
-                                    <span class="font-medium">TZS {{ number_format(($clearing_fee ?? 0) + ($forwarding_fee ?? 0) + ($documentation_fee ?? 0) + ($port_charges ?? 0) + ($transportation_fee ?? 0) + ($storage_charges ?? 0) + ($other_service_fees ?? 0)) }}</span>
+                                    <span class="font-medium">TZS {{ number_format((float)($clearing_fee ?? 0) + (float)($forwarding_fee ?? 0) + (float)($documentation_fee ?? 0) + (float)($port_charges ?? 0) + (float)($transportation_fee ?? 0) + (float)($storage_charges ?? 0) + (float)($other_service_fees ?? 0), 2) }}</span>
                                 </div>
                                 <div class="flex justify-between border-t pt-2 text-lg font-bold">
                                     <span>Grand Total:</span>
-                                    <span class="text-green-600">TZS {{ number_format(($import_duty ?? 0) + ($vat_amount ?? 0) + ($railway_development_levy ?? 0) + ($excise_duty ?? 0) + ($service_levy ?? 0) + ($other_charges ?? 0) + ($clearing_fee ?? 0) + ($forwarding_fee ?? 0) + ($documentation_fee ?? 0) + ($port_charges ?? 0) + ($transportation_fee ?? 0) + ($storage_charges ?? 0) + ($other_service_fees ?? 0)) }}</span>
+                                    <span class="text-green-600">TZS {{ number_format((float)($import_duty ?? 0) + (float)($vat_amount ?? 0) + (float)($railway_development_levy ?? 0) + (float)($excise_duty ?? 0) + (float)($service_levy ?? 0) + (float)($other_charges ?? 0) + (float)($clearing_fee ?? 0) + (float)($forwarding_fee ?? 0) + (float)($documentation_fee ?? 0) + (float)($port_charges ?? 0) + (float)($transportation_fee ?? 0) + (float)($storage_charges ?? 0) + (float)($other_service_fees ?? 0), 2) }}</span>
                                 </div>
                             </div>
                         </div>
@@ -654,8 +654,8 @@
 
                         <!-- Live Summary -->
                         @php
-                            $totalDutiesTaxes = ($import_duty ?? 0) + ($vat_amount ?? 0) + ($railway_development_levy ?? 0) + ($excise_duty ?? 0) + ($service_levy ?? 0) + ($other_charges ?? 0);
-                            $totalServiceFees = ($clearing_fee ?? 0) + ($forwarding_fee ?? 0) + ($documentation_fee ?? 0) + ($port_charges ?? 0) + ($transportation_fee ?? 0) + ($storage_charges ?? 0) + ($other_service_fees ?? 0);
+                            $totalDutiesTaxes = (float)($import_duty ?? 0) + (float)($vat_amount ?? 0) + (float)($railway_development_levy ?? 0) + (float)($excise_duty ?? 0) + (float)($service_levy ?? 0) + (float)($other_charges ?? 0);
+                            $totalServiceFees = (float)($clearing_fee ?? 0) + (float)($forwarding_fee ?? 0) + (float)($documentation_fee ?? 0) + (float)($port_charges ?? 0) + (float)($transportation_fee ?? 0) + (float)($storage_charges ?? 0) + (float)($other_service_fees ?? 0);
                             $grandTotal = $totalDutiesTaxes + $totalServiceFees;
                         @endphp
                         <div class="bg-green-50 p-4 rounded-lg">
@@ -706,15 +706,15 @@
                             <div class="space-y-2 text-sm">
                                 <div class="flex justify-between">
                                     <span>Total Duties & Taxes:</span>
-                                    <span class="font-medium">TZS {{ number_format(($import_duty ?? 0) + ($vat_amount ?? 0) + ($railway_development_levy ?? 0) + ($excise_duty ?? 0) + ($service_levy ?? 0) + ($other_charges ?? 0)) }}</span>
+                                    <span class="font-medium">TZS {{ number_format((float)($import_duty ?? 0) + (float)($vat_amount ?? 0) + (float)($railway_development_levy ?? 0) + (float)($excise_duty ?? 0) + (float)($service_levy ?? 0) + (float)($other_charges ?? 0), 2) }}</span>
                                 </div>
                                 <div class="flex justify-between">
                                     <span>Total Service Fees:</span>
-                                    <span class="font-medium">TZS {{ number_format(($clearing_fee ?? 0) + ($forwarding_fee ?? 0) + ($documentation_fee ?? 0) + ($port_charges ?? 0) + ($transportation_fee ?? 0) + ($storage_charges ?? 0) + ($other_service_fees ?? 0)) }}</span>
+                                    <span class="font-medium">TZS {{ number_format((float)($clearing_fee ?? 0) + (float)($forwarding_fee ?? 0) + (float)($documentation_fee ?? 0) + (float)($port_charges ?? 0) + (float)($transportation_fee ?? 0) + (float)($storage_charges ?? 0) + (float)($other_service_fees ?? 0), 2) }}</span>
                                 </div>
                                 <div class="flex justify-between border-t pt-2 text-lg font-bold">
                                     <span>Grand Total:</span>
-                                    <span class="text-green-600">TZS {{ number_format(($import_duty ?? 0) + ($vat_amount ?? 0) + ($railway_development_levy ?? 0) + ($excise_duty ?? 0) + ($service_levy ?? 0) + ($other_charges ?? 0) + ($clearing_fee ?? 0) + ($forwarding_fee ?? 0) + ($documentation_fee ?? 0) + ($port_charges ?? 0) + ($transportation_fee ?? 0) + ($storage_charges ?? 0) + ($other_service_fees ?? 0)) }}</span>
+                                    <span class="text-green-600">TZS {{ number_format((float)($import_duty ?? 0) + (float)($vat_amount ?? 0) + (float)($railway_development_levy ?? 0) + (float)($excise_duty ?? 0) + (float)($service_levy ?? 0) + (float)($other_charges ?? 0) + (float)($clearing_fee ?? 0) + (float)($forwarding_fee ?? 0) + (float)($documentation_fee ?? 0) + (float)($port_charges ?? 0) + (float)($transportation_fee ?? 0) + (float)($storage_charges ?? 0) + (float)($other_service_fees ?? 0), 2) }}</span>
                                 </div>
                             </div>
                         </div>
@@ -819,14 +819,4 @@
     </div>
     @endif
 
-    <!-- Loading Overlay -->
-    <div wire:loading class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50">
-        <div class="bg-white rounded-lg p-6 flex items-center space-x-3">
-            <svg class="animate-spin h-5 w-5 text-green-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-            <span class="text-gray-700">Processing...</span>
-        </div>
-    </div>
 </div>
