@@ -15,7 +15,7 @@ class LoanScheduleService
      * @param string $startDate Start date in 'Y-m-d' format
      * @param string $interestType 'reducing' or 'flat'
      * @param int $gracePeriod Number of months in the grace period
-     * @param string $paymentFrequency 'monthly', 'quarterly', 'semi_annual', or 'annual'
+     * @param string $paymentFrequency 'daily', 'monthly', 'quarterly', 'semi_annual', or 'annual'
      * @return array Schedule and summary data
      */
     public function generateLoanRepaymentSchedule(
@@ -40,23 +40,44 @@ class LoanScheduleService
             ];
         }
     
-        // Convert annual interest rate to periodic rate based on payment frequency
+        // Convert annual interest rate and date increments based on payment frequency
         $frequencyMultiplier = [
+            'daily' => 365,
             'monthly' => 12,
             'quarterly' => 4,
             'semi_annual' => 2,
             'annual' => 1
         ];
-        
-        $frequencyMonths = [
+
+        // How many calendar months one payment spans (used to translate term/grace)
+        $monthsPerPayment = [
+            'daily' => 1 / 30,   // approximate 30 days per month
             'monthly' => 1,
             'quarterly' => 3,
             'semi_annual' => 6,
             'annual' => 12
         ];
-        
+
+        // How far to move the calendar per installment
+        $frequencyIntervals = [
+            'daily' => ['value' => 1, 'unit' => 'day'],
+            'monthly' => ['value' => 1, 'unit' => 'month'],
+            'quarterly' => ['value' => 3, 'unit' => 'month'],
+            'semi_annual' => ['value' => 6, 'unit' => 'month'],
+            'annual' => ['value' => 12, 'unit' => 'month'],
+        ];
+
         $multiplier = $frequencyMultiplier[$paymentFrequency] ?? 12; // Default to monthly
-        $monthIncrement = $frequencyMonths[$paymentFrequency] ?? 1;
+        $monthsStep = $monthsPerPayment[$paymentFrequency] ?? 1;
+        $intervalMeta = $frequencyIntervals[$paymentFrequency] ?? ['value' => 1, 'unit' => 'month'];
+
+        // Translate provided term (months) into actual installments count
+        $installmentCount = (int) ceil($term / $monthsStep);
+        $installmentCount = max(1, $installmentCount);
+
+        // Translate grace period (months) into installments as well
+        $graceInstallments = (int) ceil($gracePeriod / $monthsStep);
+        $graceInstallments = max(0, $graceInstallments);
         
         // Calculate periodic interest rate
         $periodicInterestRate = $interestRate / ($multiplier * 100);
@@ -74,21 +95,23 @@ class LoanScheduleService
         if ($interestType === 'reducing') {
             // Formula for reducing balance: PMT = P * r * (1+r)^n / ((1+r)^n - 1)
             if ($periodicInterestRate > 0) {
-                $installmentAmount = $loanAmount * $periodicInterestRate * pow(1 + $periodicInterestRate, $term) / (pow(1 + $periodicInterestRate, $term) - 1);
+                $installmentAmount = $loanAmount * $periodicInterestRate * pow(1 + $periodicInterestRate, $installmentCount) / (pow(1 + $periodicInterestRate, $installmentCount) - 1);
             } else {
                 // If interest rate is 0, simple division
-                $installmentAmount = $loanAmount / $term;
+                $installmentAmount = $loanAmount / $installmentCount;
             }
         } else { // flat rate
             // For flat rate: total interest = principal * rate * term
-            $totalFlatInterest = $loanAmount * $periodicInterestRate * $term;
-            $installmentAmount = ($loanAmount + $totalFlatInterest) / $term;
+            $totalFlatInterest = $loanAmount * $periodicInterestRate * $installmentCount;
+            $installmentAmount = ($loanAmount + $totalFlatInterest) / $installmentCount;
         }
     
         // Generate schedule
-        for ($i = 0; $i < $term; $i++) {
+        for ($i = 0; $i < $installmentCount; $i++) {
             $currentDate = clone $startDateTime;
-            $currentDate->modify("+{$i} month");
+            $intervalValue = $intervalMeta['value'] * $i;
+            $intervalUnit = $intervalMeta['unit'];
+            $currentDate->modify("+{$intervalValue} {$intervalUnit}");
             
             // Format installment date
             $installmentDate = $currentDate->format('Y-m-d');
@@ -99,7 +122,7 @@ class LoanScheduleService
             $openingBalance = $remainingBalance;
             
             // Check if we're still in grace period
-            $inGracePeriod = $i < $gracePeriod;
+            $inGracePeriod = $i < $graceInstallments;
             
             if ($inGracePeriod) {
                 // During grace period, only interest is paid, no principal

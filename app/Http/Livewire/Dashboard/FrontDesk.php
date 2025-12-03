@@ -236,6 +236,28 @@ public $activeTab = 'application';
     $this->calculatorScheduleData = $this->scheduleData;
 }
 
+    public function resetCalculator()
+    {
+        $this->calculatorPrincipal = 0;
+        $this->calculatorInterestRate = 0;
+        $this->calculatorTenure = 12;
+        $this->calculatorInterestMethod = 'reducing';
+        $this->calculatorGracePeriod = 0;
+        $this->calculatorPaymentFrequency = 'monthly';
+        $this->calculatorStartDate = Carbon::today()->format('Y-m-d');
+        $this->calculatorScheduleData = null;
+
+        // Keep the internal schedule state in sync with the calculator view
+        $this->principal = 0;
+        $this->interestRate = 0;
+        $this->tenure = 12;
+        $this->interestMethod = 'reducing';
+        $this->startDate = $this->calculatorStartDate;
+        $this->gracePeriod = 0;
+        $this->paymentFrequency = 'monthly';
+        $this->scheduleData = null;
+    }
+
 
 
 public function setPreviewModal(){

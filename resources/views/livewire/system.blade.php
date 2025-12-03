@@ -10,9 +10,7 @@
         @case('2')
             <livewire:clients.clients />
             @break
-        @case('3')
-        <livewire:shares.shares />
-          @break
+       
           @case('4')
             <livewire:loans.loans />
             @break
@@ -27,9 +25,7 @@
           <livewire:application-summary.application-summary/>
 
             @break
-          @case('8')
-            <livewire:approvals.approvals-processor />
-            @break
+         
           @case('9')
             <livewire:settings.settings />
             @break
@@ -123,9 +119,7 @@
 
            
 
-            @case('125')
-            <livewire:reconciliation.reconciliation />
-            @break
+         
 
             @case('13')
             <livewire:vehicle-management.vehicle-list />

@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Log;
 use Livewire\Component;
 use App\Mail\OTP;
 use Carbon\Carbon;
+use App\Http\Integration\Selcom\SelcomSMSController;
 
 class VerifyOtp extends Component
 {
@@ -78,7 +79,26 @@ class VerifyOtp extends Component
                 'otp' => $otp
             ]);
 
-            $this->sendOTPEmail($user, $otp);
+            // Send email - wrap in try-catch to ensure SMS can still be sent if email fails
+            try {
+                $this->sendOTPEmail($user, $otp);
+            } catch (\Exception $e) {
+                Log::error('Failed to send OTP email (non-critical for SMS)', [
+                    'user_id' => $user->id,
+                    'error' => $e->getMessage()
+                ]);
+            }
+
+            // Send SMS - wrap in try-catch to ensure process continues even if SMS fails
+            try {
+                $this->sendOTPSMS($user, $otp);
+            } catch (\Exception $e) {
+                Log::warning('Failed to send OTP SMS (non-critical)', [
+                    'user_id' => $user->id,
+                    'error' => $e->getMessage()
+                ]);
+                // Don't throw - SMS failure should not stop the OTP process
+            }
 
         } catch (\Exception $e) {
             Log::error('Failed to generate/send OTP', [
@@ -95,6 +115,80 @@ class VerifyOtp extends Component
     {
         $link = url('/');
         Mail::to($user->email)->send(new OTP($link, $user->name, $otp));
+    }
+
+    private function sendOTPSMS(User $user, int $otp): void
+    {
+        $userPhone = $user->phone_number ?? $user->phone ?? null;
+        
+        if (!$userPhone) {
+            Log::info('User does not have a phone number for OTP SMS', [
+                'user_id' => $user->id,
+                'email' => $user->email,
+                'phone_number_field' => $user->phone_number ?? 'null',
+                'phone_field' => $user->phone ?? 'null'
+            ]);
+            return;
+        }
+
+        try {
+            $smsMessage = "Your verification code is: {$otp}. It will expire in 5 minutes.";
+            
+            // Log SMS attempt start
+            Log::info('Attempting to send OTP via SMS (VerifyOtp)', [
+                'user_id' => $user->id,
+                'phone' => $userPhone,
+                'otp' => $otp
+            ]);
+            
+            // Use @ operator to suppress warnings and wrap in try-catch for maximum safety
+            try {
+                $smsResult = @SelcomSMSController::send($userPhone, $smsMessage, $user->id, null);
+                
+                // Log SMS result in detail
+                if (isset($smsResult['success']) && $smsResult['success']) {
+                    Log::info('OTP SMS sent successfully via VerifyOtp', [
+                        'user_id' => $user->id,
+                        'phone' => $userPhone,
+                        'otp' => $otp,
+                        'request_id' => $smsResult['request_id'] ?? null,
+                        'response' => $smsResult['response'] ?? null
+                    ]);
+                } else {
+                    Log::warning('OTP SMS sending failed in VerifyOtp (non-critical)', [
+                        'user_id' => $user->id,
+                        'phone' => $userPhone,
+                        'otp' => $otp,
+                        'error' => $smsResult['error'] ?? 'Unknown error',
+                        'response' => $smsResult['response'] ?? null,
+                        'http_code' => $smsResult['http_code'] ?? null
+                    ]);
+                }
+            } catch (\Throwable $smsException) {
+                // Catch any exceptions from SMS controller (PHP 7+ compatible)
+                Log::error('OTP SMS sending encountered an exception in VerifyOtp (non-critical)', [
+                    'user_id' => $user->id,
+                    'phone' => $userPhone,
+                    'otp' => $otp,
+                    'error' => $smsException->getMessage(),
+                    'file' => $smsException->getFile(),
+                    'line' => $smsException->getLine(),
+                    'trace' => $smsException->getTraceAsString()
+                ]);
+                // Don't re-throw - this should not interrupt the OTP process
+            }
+        } catch (\Exception $e) {
+            // Final safety net - catch any unexpected errors
+            Log::error('Unexpected error in OTP SMS sending (non-critical)', [
+                'user_id' => $user->id,
+                'phone' => $userPhone,
+                'otp' => $otp,
+                'error' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine()
+            ]);
+            // Don't re-throw - SMS failure should never stop the OTP process
+        }
     }
 
     public function resendOTP(): void

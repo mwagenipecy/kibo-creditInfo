@@ -150,6 +150,56 @@ Route::middleware(['auth:sanctum', 'verified', OTPMiddleware::class, ClientMiddl
 });
 
 // =================================================================
+// TEST ROUTES (Development only - remove in production)
+// =================================================================
+
+Route::get('/test-sms/{phone?}', function($phone = '255624451311') {
+    try {
+        $message = 'Test SMS from Selcom Gateway. This is a test message to verify SMS logging functionality.';
+        
+        $result = \App\Http\Integration\Selcom\SelcomSMSController::send(
+            $phone, 
+            $message, 
+            999, 
+            null
+        );
+        
+        // Get latest log entry
+        $latestLog = \Illuminate\Support\Facades\DB::table('selcom_sms_logs')
+            ->where('phone', $phone)
+            ->orWhere('phone', 'like', '%' . substr($phone, -9))
+            ->orderBy('id', 'desc')
+            ->first();
+        
+        return response()->json([
+            'success' => $result['success'] ?? false,
+            'message' => $result['message'] ?? 'Unknown',
+            'error' => $result['error'] ?? null,
+            'request_id' => $result['request_id'] ?? null,
+            'http_code' => $result['http_code'] ?? null,
+            'database_log' => $latestLog ? [
+                'id' => $latestLog->id,
+                'phone' => $latestLog->phone,
+                'status' => $latestLog->status,
+                'error_message' => $latestLog->error_message,
+                'created_at' => $latestLog->created_at,
+            ] : null,
+            'all_latest_logs' => \Illuminate\Support\Facades\DB::table('selcom_sms_logs')
+                ->orderBy('id', 'desc')
+                ->limit(10)
+                ->get(['id', 'phone', 'status', 'created_at', 'error_message'])
+        ], $result['success'] ? 200 : 400);
+        
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'error' => $e->getMessage(),
+            'trace' => $e->getTraceAsString()
+        ], 500);
+    }
+})->name('test.sms');
+
+// =================================================================
 // FALLBACK ROUTE
 // =================================================================
 

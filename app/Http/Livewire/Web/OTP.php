@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\OTP as OTPMail;
 use App\Models\User;
 use Carbon\Carbon;
-use App\Services\SMSService;
+use App\Http\Integration\Selcom\SelcomSMSController;
 
 class OTP extends Component
 {
@@ -140,7 +140,7 @@ class OTP extends Component
         
         $user = Auth::user();
         $this->email = $user->email;
-        $this->phone = $user->phone;
+        $this->phone = $user->phone_number ?? $user->phone ?? null;
 
         // Prepare masked email like `sh****.com`
         try {
@@ -196,34 +196,129 @@ class OTP extends Component
         Session::put('otp_code', $otp);
         Session::put('otp_expiry', $expiry);
 
-        // Persist OTP to database (users table)
-        $user->otp = $otp;
-        $user->otp_time = $expiry; // reuse existing column for expiry time
-        $user->save();
+        // Persist OTP to database (users table) with error handling
+        try {
+            $user->otp = $otp;
+            $user->otp_time = $expiry; // reuse existing column for expiry time
+            
+            $saved = $user->save();
+            
+            if ($saved) {
+                \Log::info('OTP saved to database successfully', [
+                    'user_id' => $user->id,
+                    'email' => $user->email,
+                    'otp' => $otp,
+                    'expiry' => $expiry->toDateTimeString()
+                ]);
+            } else {
+                \Log::error('Failed to save OTP to database - save() returned false', [
+                    'user_id' => $user->id,
+                    'email' => $user->email,
+                    'otp' => $otp
+                ]);
+            }
+        } catch (\Exception $e) {
+            \Log::error('Exception while saving OTP to database', [
+                'user_id' => $user->id,
+                'email' => $user->email,
+                'otp' => $otp,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+        }
         
         // Update component expiry
         $this->updateOtpExpiry();
         
+        // Send OTP via email
         try {
-            // Send OTP via email
             $link = route('otp-page');
             Mail::to($user->email)->send(new OTPMail($link, $user->name, $otp));
-            \Log::info('OTP email sent successfully to: ' . $user->email . ' with OTP: ' . $otp);
+            \Log::info('OTP email sent successfully', [
+                'user_id' => $user->id,
+                'email' => $user->email,
+                'otp' => $otp
+            ]);
         } catch (\Exception $e) {
-            \Log::error('Failed to send OTP email: ' . $e->getMessage());
+            \Log::error('Failed to send OTP email', [
+                'user_id' => $user->id,
+                'email' => $user->email,
+                'otp' => $otp,
+                'error' => $e->getMessage()
+            ]);
             // Still show the OTP in test mode even if email fails
             if (app()->environment('local', 'testing')) {
                 Session::flash('test_otp', $otp);
             }
         }
 
-        // Uncomment when SMS service is ready
-        // try {
-        //     $smsService = new SMSService();
-        //     $smsService->send($user->phone, "Your verification code is: $otp. It will expire in 10 minutes.");
-        // } catch (\Exception $e) {
-        //     \Log::error('Failed to send SMS: ' . $e->getMessage());
-        // }
+        // Send OTP via SMS using Selcom (non-blocking - errors won't stop the process)
+        $userPhone = $user->phone_number ?? $user->phone ?? null;
+        if ($userPhone) {
+            try {
+                $smsMessage = "Your verification code is: {$otp}. It will expire in 10 minutes.";
+                
+                // Log SMS attempt start
+                \Log::info('Attempting to send OTP via SMS', [
+                    'user_id' => $user->id,
+                    'phone' => $userPhone,
+                    'otp' => $otp
+                ]);
+                
+                // Use @ operator to suppress any warnings/errors and wrap in try-catch for safety
+                try {
+                    $smsResult = @SelcomSMSController::send($userPhone, $smsMessage, $user->id, null);
+                    
+                    // Log SMS result in detail
+                    if (isset($smsResult['success']) && $smsResult['success']) {
+                        \Log::info('OTP SMS sent successfully', [
+                            'user_id' => $user->id,
+                            'phone' => $userPhone,
+                            'otp' => $otp,
+                            'request_id' => $smsResult['request_id'] ?? null,
+                            'response' => $smsResult['response'] ?? null
+                        ]);
+                    } else {
+                        \Log::warning('OTP SMS sending failed (non-critical)', [
+                            'user_id' => $user->id,
+                            'phone' => $userPhone,
+                            'otp' => $otp,
+                            'error' => $smsResult['error'] ?? 'Unknown error',
+                            'response' => $smsResult['response'] ?? null,
+                            'http_code' => $smsResult['http_code'] ?? null
+                        ]);
+                    }
+                } catch (\Throwable $smsException) {
+                    // Catch any exceptions from SMS controller (PHP 7+ compatible)
+                    \Log::error('OTP SMS sending encountered an exception (non-critical)', [
+                        'user_id' => $user->id,
+                        'phone' => $userPhone,
+                        'otp' => $otp,
+                        'error' => $smsException->getMessage(),
+                        'file' => $smsException->getFile(),
+                        'line' => $smsException->getLine(),
+                        'trace' => $smsException->getTraceAsString()
+                    ]);
+                }
+            } catch (\Exception $e) {
+                // Final safety net - catch any unexpected errors
+                \Log::error('Unexpected error in OTP SMS sending (non-critical)', [
+                    'user_id' => $user->id,
+                    'phone' => $userPhone,
+                    'otp' => $otp,
+                    'error' => $e->getMessage(),
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine()
+                ]);
+            }
+        } else {
+            \Log::info('User does not have a phone number for OTP SMS', [
+                'user_id' => $user->id,
+                'email' => $user->email,
+                'phone_number_field' => $user->phone_number ?? 'null',
+                'phone_field' => $user->phone ?? 'null'
+            ]);
+        }
 
         // Flash message for test environments
         if (app()->environment('local', 'testing')) {

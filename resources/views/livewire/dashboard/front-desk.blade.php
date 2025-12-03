@@ -986,23 +986,6 @@
                                         <span>Your total interest payment is <strong>{{ round($calculatorScheduleData['footer']['total_interest'] / $calculatorPrincipal * 100) }}%</strong> of the principal amount.</span>
                                     </li>
                                     <li class="flex items-start">
-                                        <svg class="h-5 w-5 text-green-500 mr-1.5 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                                        </svg>
-                                        <span>Monthly payment is <strong>
-
-                                        @php
-    $payment = $calculatorScheduleData['schedule'][0]['payment'] ?? 0;
-    $income = $monthlyIncome ?? 1;
-    $percentage = $income != 0 ? round(($payment / $income) * 100) : 0;
-@endphp
-
-                                        
-                                        {{  $percentage }}%
-
-                                    </strong> of your monthly income.</span>
-                                    </li>
-                                    <li class="flex items-start">
                                         <svg class="h-5 w-5 text-blue-500 mr-1.5 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                                             <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
                                         </svg>
@@ -1244,11 +1227,13 @@
                                                     <tfoot class="bg-gray-100">
                                                         <tr>
                                                             <td colspan="2" class="px-3 py-2 whitespace-nowrap text-sm font-medium text-gray-900">Totals</td>
-                                                            <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900">{{ number_format($calculatorScheduleData['footer']['total_payment']) }}</td>
-                                                            <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900">{{ number_format($calculatorScheduleData['footer']['total_principal']) }}</td>
+                                                            <td class="px-4 flex justify-end text-end py-2 whitespace-nowrap text-right text-sm text-gray-900">{{ number_format($calculatorScheduleData['footer']['total_payment']) }}</td>
+                                                            <td class="px-4 py-2 whitespace-nowrap  text-sm text-gray-900">{{ number_format($calculatorScheduleData['footer']['total_principal']) }}</td>
                                                             <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900">{{ number_format($calculatorScheduleData['footer']['total_interest']) }}</td>
                                                             <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900">{{ number_format($calculatorScheduleData['footer']['final_closing_balance']) }}</td>
                                                         </tr>
+
+
                                                     </tfoot>
 
 

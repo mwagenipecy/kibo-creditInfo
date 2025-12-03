@@ -396,7 +396,66 @@
             Save to Favorites
         </button>
     </div> -->
-    
+
+    <!-- Financing Options (Mobile Only, below Specifications) -->
+    @if($vehicle->isNotdealer!=1)
+    <div class="mb-10 lg:hidden">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+            <div class="bg-gradient-to-r from-green-600/10 to-green-600/5 p-6 border-b border-gray-100">
+                <h2 class="text-xl font-bold text-gray-900 flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-600 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
+                    Financing Options
+                </h2>
+                <p class="text-gray-600 mt-2">Get pre-approved with our trusted financing partners</p>
+            </div>
+            
+            <div class="p-6">
+                <!-- Financing Cards -->
+                <div class="space-y-4">
+                    @foreach($lenders as $lender)
+                    <div class="border border-gray-200 rounded-lg hover:border-green-200 transition-colors duration-300 overflow-hidden">
+                        <div class="flex items-center justify-between p-4">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0 h-12 w-12 bg-gray-100 rounded-md flex items-center justify-center p-2">
+                                    <img src="{{ asset('/cars/icon.avif') }}" alt="{{ $lender->name }}" class="max-h-full max-w-full object-contain">
+                                </div>
+                                <div class="ml-4">
+                                    <h4 class="font-medium text-gray-900">{{ $lender->name }}</h4>
+                                    <div class="flex items-center mt-1">
+                                        <span class="font-medium text-green-600 text-sm">{{ $lender->interest_rate_range }}%</span>
+                                        <span class="mx-2 text-gray-300">•</span>
+                                        <span class="text-gray-600 text-sm">Up to {{ $lender->max_term }} months</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <a href="{{ route('loan.pre-qualify',[$this->updateVehicleId,$lender->id]) }}" 
+                            class="bg-white hover:bg-green-50 text-green-600 border border-green-600 font-medium py-2 px-4 rounded-lg text-sm transition-colors duration-300">
+                                Apply
+                            </a>
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+
+                <!-- Financing CTA -->
+                <div class="mt-6 bg-green-50 p-4 rounded-lg border border-green-100">
+                    <div class="flex">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-green-600 mr-3 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                        </svg>
+                        <div>
+                            <h4 class="font-medium text-green-800 mb-1">Pre-qualify for Financing</h4>
+                            <p class="text-sm text-green-700">Check your eligibility without affecting your credit score.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
+
     <!-- Similar Vehicles -->
     <div class="mb-10">
         <h2 class="text-xl font-bold text-gray-900 mb-6 flex items-center">
@@ -555,7 +614,7 @@
 
     @if($vehicle->isNotdealer!=1)
 
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hidden lg:block">
         <div class="bg-gradient-to-r from-green-600/10 to-green-600/5 p-6 border-b border-gray-100">
             <h2 class="text-xl font-bold text-gray-900 flex items-center">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-600 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
