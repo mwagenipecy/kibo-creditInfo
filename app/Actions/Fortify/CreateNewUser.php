@@ -24,8 +24,8 @@ class CreateNewUser implements CreatesNewUsers
         Validator::make($input, [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'nida_number' => ['required', 'string', new NidaNumberRule()],
-            'phone_number'=>['required'],
+            'nida_number' => ['required', 'string', 'unique:users', new NidaNumberRule()],
+            'phone_number'=>['required', 'string', 'regex:/^\+255[0-9]{9}$/', 'unique:users'],
             'address'=>['required'],
             'password' => $this->passwordRules(),
             'terms' => Jetstream::hasTermsAndPrivacyPolicyFeature() ? ['accepted', 'required'] : '',

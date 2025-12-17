@@ -86,10 +86,19 @@ class WebsiteController extends Controller
 
     public function Otp()
     {
-        // Check if user is authenticated
+        // Check if this is a registration flow (has registration data in session)
+        $registrationData = session('registration_data');
+        
+        if ($registrationData) {
+            // Registration flow - allow access without login
+            return view('pages.web.otp');
+        }
+        
+        // Normal login flow - check if user is authenticated
         if (!Auth::check()) {
             return redirect()->route('login')->with('error', 'Please login first.');
         }
+        
         // If this session is already OTP-verified, send user forward
         if (session('otp_verified')) {
             $user = Auth::user();

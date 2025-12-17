@@ -76,11 +76,13 @@ class SelcomSMSController
 
         try {
             // Build URL with query parameters
+            // Note: http_build_query() will automatically URL encode the values
+            // So we don't need to manually encode the message
             $params = [
                 'USERNAME' => Constants::getSmsUsername(),
                 'PASSWORD' => Constants::getSmsPassword(),
                 'DESTADDR' => $phone,
-                'MESSAGE' => urlencode(trim($message))
+                'MESSAGE' => trim($message)
             ];
 
             $url = Constants::getSmsEndpoint() . '?' . http_build_query($params);

@@ -63,7 +63,7 @@
 
             <div class="bg-white py-10 px-6 shadow-xl rounded-2xl border border-gray-100">
                
-             <form method="POST" action="{{ url('/register') }}" class="space-y-6">
+             <form method="POST" action="{{ route('client.registration.store') }}" class="space-y-6">
                     @csrf
 
                     <!-- Hidden Department ID -->
@@ -118,12 +118,14 @@
                             <div>
                                 <label for="phone" class="block text-sm font-medium text-gray-700">Phone Number</label>
                                 <div class="mt-1">
-                                    <input id="phone" type="text" name="phone_number" value="{{ old('phone') }}" required autocomplete="tel"
+                                    <input id="phone" type="text" name="phone_number" value="{{ old('phone_number', '+255') }}" required autocomplete="tel"
+                                        placeholder="+255123456789" maxlength="13" pattern="\+255[0-9]{9}"
                                         class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm">
                                 </div>
-                                @error('phone')
+                                @error('phone_number')
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
+                                <p class="mt-1 text-xs text-gray-500">Format: +255 followed by 9 digits (e.g., +255123456789)</p>
                             </div>
 
                             <!-- Address -->
@@ -344,6 +346,89 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         e.target.value = formatted;
+    });
+    
+    // Phone number formatting
+    const phoneInput = document.getElementById('phone');
+    
+    phoneInput.addEventListener('input', function(e) {
+        let value = e.target.value;
+        
+        // Remove everything except digits and +
+        value = value.replace(/[^0-9+]/g, '');
+        
+        // Ensure it starts with +255
+        if (!value.startsWith('+255')) {
+            if (value.startsWith('255')) {
+                value = '+' + value;
+            } else if (value.startsWith('+')) {
+                // If it starts with + but not +255, check if it's just +
+                if (value.length === 1) {
+                    value = '+255';
+                } else if (!value.startsWith('+255')) {
+                    // If user typed something after + that's not 255, replace with +255
+                    value = '+255' + value.substring(1).replace(/[^0-9]/g, '');
+                }
+            } else {
+                // If it doesn't start with + or 255, prepend +255
+                value = '+255' + value.replace(/[^0-9]/g, '');
+            }
+        }
+        
+        // Extract only digits after +255
+        const digitsAfterPrefix = value.substring(4).replace(/[^0-9]/g, '');
+        
+        // Limit to 9 digits after +255
+        const limitedDigits = digitsAfterPrefix.substring(0, 9);
+        
+        // Reconstruct the value
+        value = '+255' + limitedDigits;
+        
+        e.target.value = value;
+    });
+    
+    // Handle paste event for phone number
+    phoneInput.addEventListener('paste', function(e) {
+        e.preventDefault();
+        let pastedData = e.clipboardData.getData('text');
+        
+        // Remove everything except digits
+        let digits = pastedData.replace(/[^0-9]/g, '');
+        
+        // If it starts with 255, remove it (we'll add +255)
+        if (digits.startsWith('255')) {
+            digits = digits.substring(3);
+        }
+        
+        // Limit to 9 digits
+        digits = digits.substring(0, 9);
+        
+        // Set value with +255 prefix
+        e.target.value = '+255' + digits;
+    });
+    
+    // Handle focus event - ensure +255 is present
+    phoneInput.addEventListener('focus', function(e) {
+        if (!e.target.value || e.target.value === '+255') {
+            // If empty or just +255, position cursor after +255
+            e.target.setSelectionRange(4, 4);
+        }
+    });
+    
+    // Handle keydown to prevent deletion of +255 prefix
+    phoneInput.addEventListener('keydown', function(e) {
+        const cursorPos = e.target.selectionStart;
+        
+        // Prevent backspace/delete if cursor is before or within +255
+        if ((e.key === 'Backspace' || e.key === 'Delete') && cursorPos <= 4) {
+            e.preventDefault();
+        }
+        
+        // Prevent arrow keys from moving cursor before +255
+        if (e.key === 'ArrowLeft' && cursorPos <= 4) {
+            e.preventDefault();
+            e.target.setSelectionRange(4, 4);
+        }
     });
 });
 </script>

@@ -44,6 +44,7 @@ Route::get('view/vehicle/{vehicleId}', [WebsiteController::class, 'viewVehicleDa
 Route::get('/about-us', [WebsiteController::class, 'aboutPage'])->name('about.us');
 Route::get('/contact', [WebsiteController::class, 'contactPage'])->name('contact.page');
 Route::get('/client-registration', [WebsiteController::class, 'clientRegistration'])->name('client.registration');
+Route::post('/client-registration', [App\Http\Controllers\ClientRegistrationController::class, 'store'])->name('client.registration.store');
 Route::get('loan-calculator', [WebsiteController::class, 'loanCalculator'])->name('loan.calculator');
 
 Route::get('rental-vehicles', [WebsiteController::class, 'weddingVehicles'])->name('wedding.vehicles');
@@ -88,15 +89,11 @@ Route::get('/employer/verification-completed', [EmployerVerificationController::
 
 
 // =================================================================
-// OTP VERIFICATION ROUTES (Auth only - NO OTP middleware)
+// OTP VERIFICATION ROUTES (Public - allows registration flow)
 // =================================================================
-
-Route::middleware(['auth:sanctum'])->group(function () {
-    // OTP verification page - CRITICAL: No OTPMiddleware here to prevent loops
-    Route::get('/otp-page', [WebsiteController::class, 'Otp'])->name('otp-page');
-    
-  
-});
+// OTP verification page - Accessible without auth for registration flow
+// Controller handles both registration (no auth) and login (with auth) flows
+Route::get('/otp-page', [WebsiteController::class, 'Otp'])->name('otp-page');
 
 // =================================================================
 // CLIENT ROUTES (Auth + OTP verified - No department restrictions)

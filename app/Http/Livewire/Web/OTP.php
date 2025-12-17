@@ -24,6 +24,8 @@ class OTP extends Component
     public $phone;
     public $otpExpiry = 0;
     public $maskedEmail;
+    public $isRegistration = false;
+    public $registrationData = null;
     
     protected $rules = [
         'otp1' => 'nullable|string|max:1',
@@ -133,14 +135,32 @@ class OTP extends Component
     // When component initializes
     public function mount()
     {
-        // Check if user is logged in
-        if (!Auth::check()) {
-            return redirect()->route('login');
-        }
+        // Check if this is a registration flow (has registration data in session)
+        $this->registrationData = Session::get('registration_data');
         
-        $user = Auth::user();
-        $this->email = $user->email;
-        $this->phone = $user->phone_number ?? $user->phone ?? null;
+        if ($this->registrationData) {
+            // Registration flow - user not logged in yet
+            $this->isRegistration = true;
+            $this->email = $this->registrationData['email'];
+            $this->phone = $this->registrationData['phone_number'] ?? null;
+        } else {
+            // Normal login flow - check if user is logged in
+            if (!Auth::check()) {
+                return redirect()->route('login');
+            }
+            
+            $user = Auth::user();
+            $this->email = $user->email;
+            $this->phone = $user->phone_number ?? $user->phone ?? null;
+
+            // If this session is already OTP verified, redirect forward
+            if (Session::get('otp_verified', false)) {
+                if ($user->department == 4) {
+                    return redirect()->route('application.list');
+                }
+                return redirect()->intended(route('CyberPoint-Pro'));
+            }
+        }
 
         // Prepare masked email like `sh****.com`
         try {
@@ -155,16 +175,8 @@ class OTP extends Component
             $this->maskedEmail = '****';
         }
 
-        // If this session is already OTP verified, redirect forward (prevents page from disappearing unexpectedly)
-        if (Session::get('otp_verified', false)) {
-            if ($user->department == 4) {
-                return redirect()->route('application.list');
-            }
-            return redirect()->intended(route('CyberPoint-Pro'));
-        }
-
         // Always generate and send OTP when component mounts
-       $this->generateAndSendOTP();
+        $this->generateAndSendOTP();
         
         // Initialize timer
         $this->updateOtpExpiry();
@@ -186,7 +198,17 @@ class OTP extends Component
     // Generate a 6-digit OTP, store it in session with expiry time, and send via email and SMS
     public function generateAndSendOTP()
     {
-        $user = Auth::user();
+        // For registration flow, use registration data
+        if ($this->isRegistration && $this->registrationData) {
+            $email = $this->registrationData['email'];
+            $phone = $this->registrationData['phone_number'] ?? null;
+            $name = $this->registrationData['name'];
+        } else {
+            $user = Auth::user();
+            $email = $user->email;
+            $phone = $user->phone_number ?? $user->phone ?? null;
+            $name = $user->name;
+        }
         
         // Generate 6-digit OTP
         $otp = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
@@ -196,35 +218,38 @@ class OTP extends Component
         Session::put('otp_code', $otp);
         Session::put('otp_expiry', $expiry);
 
-        // Persist OTP to database (users table) with error handling
-        try {
-            $user->otp = $otp;
-            $user->otp_time = $expiry; // reuse existing column for expiry time
-            
-            $saved = $user->save();
-            
-            if ($saved) {
-                \Log::info('OTP saved to database successfully', [
+        // Persist OTP to database only if user exists (not registration flow)
+        if (!$this->isRegistration && Auth::check()) {
+            $user = Auth::user();
+            try {
+                $user->otp = $otp;
+                $user->otp_time = $expiry;
+                
+                $saved = $user->save();
+                
+                if ($saved) {
+                    \Log::info('OTP saved to database successfully', [
+                        'user_id' => $user->id,
+                        'email' => $user->email,
+                        'otp' => $otp,
+                        'expiry' => $expiry->toDateTimeString()
+                    ]);
+                } else {
+                    \Log::error('Failed to save OTP to database - save() returned false', [
+                        'user_id' => $user->id,
+                        'email' => $user->email,
+                        'otp' => $otp
+                    ]);
+                }
+            } catch (\Exception $e) {
+                \Log::error('Exception while saving OTP to database', [
                     'user_id' => $user->id,
                     'email' => $user->email,
                     'otp' => $otp,
-                    'expiry' => $expiry->toDateTimeString()
-                ]);
-            } else {
-                \Log::error('Failed to save OTP to database - save() returned false', [
-                    'user_id' => $user->id,
-                    'email' => $user->email,
-                    'otp' => $otp
+                    'error' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString()
                 ]);
             }
-        } catch (\Exception $e) {
-            \Log::error('Exception while saving OTP to database', [
-                'user_id' => $user->id,
-                'email' => $user->email,
-                'otp' => $otp,
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ]);
         }
         
         // Update component expiry
@@ -233,18 +258,18 @@ class OTP extends Component
         // Send OTP via email
         try {
             $link = route('otp-page');
-            Mail::to($user->email)->send(new OTPMail($link, $user->name, $otp));
+            Mail::to($email)->send(new OTPMail($link, $name, $otp));
             \Log::info('OTP email sent successfully', [
-                'user_id' => $user->id,
-                'email' => $user->email,
-                'otp' => $otp
+                'email' => $email,
+                'otp' => $otp,
+                'is_registration' => $this->isRegistration
             ]);
         } catch (\Exception $e) {
             \Log::error('Failed to send OTP email', [
-                'user_id' => $user->id,
-                'email' => $user->email,
+                'email' => $email,
                 'otp' => $otp,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
+                'is_registration' => $this->isRegistration
             ]);
             // Still show the OTP in test mode even if email fails
             if (app()->environment('local', 'testing')) {
@@ -253,70 +278,69 @@ class OTP extends Component
         }
 
         // Send OTP via SMS using Selcom (non-blocking - errors won't stop the process)
-        $userPhone = $user->phone_number ?? $user->phone ?? null;
+        $userPhone = $phone;
         if ($userPhone) {
             try {
                 $smsMessage = "Your verification code is: {$otp}. It will expire in 10 minutes.";
                 
                 // Log SMS attempt start
                 \Log::info('Attempting to send OTP via SMS', [
-                    'user_id' => $user->id,
                     'phone' => $userPhone,
-                    'otp' => $otp
+                    'otp' => $otp,
+                    'is_registration' => $this->isRegistration
                 ]);
                 
                 // Use @ operator to suppress any warnings/errors and wrap in try-catch for safety
                 try {
-                    $smsResult = @SelcomSMSController::send($userPhone, $smsMessage, $user->id, null);
+                    $clientId = $this->isRegistration ? null : Auth::id();
+                    $smsResult = @SelcomSMSController::send($userPhone, $smsMessage, $clientId, null);
                     
                     // Log SMS result in detail
                     if (isset($smsResult['success']) && $smsResult['success']) {
                         \Log::info('OTP SMS sent successfully', [
-                            'user_id' => $user->id,
                             'phone' => $userPhone,
                             'otp' => $otp,
                             'request_id' => $smsResult['request_id'] ?? null,
-                            'response' => $smsResult['response'] ?? null
+                            'response' => $smsResult['response'] ?? null,
+                            'is_registration' => $this->isRegistration
                         ]);
                     } else {
                         \Log::warning('OTP SMS sending failed (non-critical)', [
-                            'user_id' => $user->id,
                             'phone' => $userPhone,
                             'otp' => $otp,
                             'error' => $smsResult['error'] ?? 'Unknown error',
                             'response' => $smsResult['response'] ?? null,
-                            'http_code' => $smsResult['http_code'] ?? null
+                            'http_code' => $smsResult['http_code'] ?? null,
+                            'is_registration' => $this->isRegistration
                         ]);
                     }
                 } catch (\Throwable $smsException) {
                     // Catch any exceptions from SMS controller (PHP 7+ compatible)
                     \Log::error('OTP SMS sending encountered an exception (non-critical)', [
-                        'user_id' => $user->id,
                         'phone' => $userPhone,
                         'otp' => $otp,
                         'error' => $smsException->getMessage(),
                         'file' => $smsException->getFile(),
                         'line' => $smsException->getLine(),
-                        'trace' => $smsException->getTraceAsString()
+                        'trace' => $smsException->getTraceAsString(),
+                        'is_registration' => $this->isRegistration
                     ]);
                 }
             } catch (\Exception $e) {
                 // Final safety net - catch any unexpected errors
                 \Log::error('Unexpected error in OTP SMS sending (non-critical)', [
-                    'user_id' => $user->id,
                     'phone' => $userPhone,
                     'otp' => $otp,
                     'error' => $e->getMessage(),
                     'file' => $e->getFile(),
-                    'line' => $e->getLine()
+                    'line' => $e->getLine(),
+                    'is_registration' => $this->isRegistration
                 ]);
             }
         } else {
             \Log::info('User does not have a phone number for OTP SMS', [
-                'user_id' => $user->id,
-                'email' => $user->email,
-                'phone_number_field' => $user->phone_number ?? 'null',
-                'phone_field' => $user->phone ?? 'null'
+                'email' => $email,
+                'is_registration' => $this->isRegistration
             ]);
         }
 
@@ -349,10 +373,15 @@ class OTP extends Component
         // Prefer session but fall back to database if needed
         $stored_otp = Session::get('otp_code');
         $expiry = Session::get('otp_expiry');
-        $user = Auth::user();
+        
         if (!$stored_otp || !$expiry) {
-            $stored_otp = $user->otp;
-            $expiry = $user->otp_time ? Carbon::parse($user->otp_time) : null;
+            // For non-registration flow, check database
+            if (!$this->isRegistration && Auth::check()) {
+                $user = Auth::user();
+                $stored_otp = $user->otp;
+                $expiry = $user->otp_time ? Carbon::parse($user->otp_time) : null;
+            }
+            
             if (!$stored_otp || !$expiry) {
                 $this->addError('otp', 'OTP session has expired. Please request a new code.');
                 // Don't clear inputs on session expiry - let user retry
@@ -372,7 +401,53 @@ class OTP extends Component
             return;
         }
 
-        // Mark verified
+        // Handle registration flow - create user and log them in
+        if ($this->isRegistration && $this->registrationData) {
+            try {
+                // Create the user
+                $user = User::create([
+                    'name' => $this->registrationData['name'],
+                    'email' => $this->registrationData['email'],
+                    'address' => $this->registrationData['address'],
+                    'department' => $this->registrationData['department_id'] ?? 4,
+                    'phone_number' => $this->registrationData['phone_number'],
+                    'nida_number' => $this->registrationData['nida_number'],
+                    'password' => \Hash::make($this->registrationData['password']),
+                    'email_verified_at' => Carbon::now(),
+                ]);
+
+                // Log the user in
+                Auth::login($user);
+
+                // Clear registration data from session
+                Session::forget('registration_data');
+                
+                // Mark this session as OTP verified
+                Session::put('otp_verified', true);
+                
+                // Clear OTP values from session
+                Session::forget(['otp_code', 'otp_expiry']);
+                
+                session()->flash('success', 'Account created and verified successfully!');
+
+                // Redirect to appropriate page based on user department
+                if ($user->department == 4) {
+                    return redirect()->route('application.list');
+                }
+                
+                return redirect()->route('CyberPoint-Pro');
+            } catch (\Exception $e) {
+                \Log::error('Failed to create user after OTP verification', [
+                    'error' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString(),
+                    'registration_data' => $this->registrationData
+                ]);
+                $this->addError('otp', 'Failed to create account. Please try again or contact support.');
+                return;
+            }
+        }
+
+        // Normal login flow - user already exists
         $user = Auth::user();
         // Mark this session as OTP verified (mandatory each login)
         Session::put('otp_verified', true);
@@ -396,6 +471,17 @@ class OTP extends Component
         }
         
         return redirect()->route('CyberPoint-Pro');
+    }
+    
+    // Go back to registration to edit information
+    public function goBackToRegistration()
+    {
+        if ($this->isRegistration && $this->registrationData) {
+            // Put registration data back in session with old() values for form
+            Session::flash('_old_input', $this->registrationData);
+            return redirect()->route('client.registration');
+        }
+        return redirect()->route('client.registration');
     }
     
     

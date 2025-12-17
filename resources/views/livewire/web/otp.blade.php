@@ -1,8 +1,30 @@
 <div>
-    <!-- User Email Display -->
-    <div class="text-center mb-6">
-        <span class="text-gray-600 text-sm">Code sent to: {{ substr(auth()->user()->email, 0, 2) . '****' . substr(auth()->user()->email, strpos(auth()->user()->email, '@')) }}</span>
-    </div>
+    @if($isRegistration)
+        <!-- Registration Info Display -->
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+            <div class="text-center mb-4">
+                <h3 class="text-lg font-semibold text-gray-800 mb-2">Verify Your Registration</h3>
+                <p class="text-gray-600 text-sm mb-3">We've sent a verification code to:</p>
+                <div class="space-y-1">
+                    <p class="text-gray-700 font-medium">{{ $maskedEmail ?? $email }}</p>
+                    @if($phone)
+                        <p class="text-gray-700 font-medium">{{ substr($phone, 0, 4) . '****' . substr($phone, -3) }}</p>
+                    @endif
+                </div>
+            </div>
+            <div class="text-center">
+                <button wire:click="goBackToRegistration" 
+                        class="text-sm text-blue-600 hover:text-blue-700 underline">
+                    ← Back to edit information
+                </button>
+            </div>
+        </div>
+    @else
+        <!-- User Email Display -->
+        <div class="text-center mb-6">
+            <span class="text-gray-600 text-sm">Code sent to: {{ $maskedEmail ?? (auth()->user()->email ?? '') }}</span>
+        </div>
+    @endif
 
     <!-- Timer Display -->
     <div id="countdown" class="text-center text-lg font-semibold text-green-600 mb-6">
@@ -44,20 +66,35 @@
 
     <!-- Action Buttons -->
     <div class="space-y-4">
-        <!-- Cancel Button -->
+        <!-- Cancel/Back Button -->
         <div class="text-center">
-            <div wire:loading wire:target="logout">
-                <button disabled class="px-6 py-2 text-sm font-medium text-gray-500 cursor-not-allowed bg-gray-100 rounded-lg border border-gray-200">
-                    Please wait...
-                </button>
-            </div>
-            <div wire:loading.remove wire:target="logout">
-                <button wire:click="logout" 
-                        type="button" 
-                        class="px-6 py-2 text-sm font-medium text-gray-700 bg-white rounded-lg border border-gray-300 hover:bg-gray-50 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors">
-                    Cancel
-                </button>
-            </div>
+            @if($isRegistration)
+                <div wire:loading wire:target="goBackToRegistration">
+                    <button disabled class="px-6 py-2 text-sm font-medium text-gray-500 cursor-not-allowed bg-gray-100 rounded-lg border border-gray-200">
+                        Please wait...
+                    </button>
+                </div>
+                <div wire:loading.remove wire:target="goBackToRegistration">
+                    <button wire:click="goBackToRegistration" 
+                            type="button" 
+                            class="px-6 py-2 text-sm font-medium text-gray-700 bg-white rounded-lg border border-gray-300 hover:bg-gray-50 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors">
+                        ← Back to Registration
+                    </button>
+                </div>
+            @else
+                <div wire:loading wire:target="logout">
+                    <button disabled class="px-6 py-2 text-sm font-medium text-gray-500 cursor-not-allowed bg-gray-100 rounded-lg border border-gray-200">
+                        Please wait...
+                    </button>
+                </div>
+                <div wire:loading.remove wire:target="logout">
+                    <button wire:click="logout" 
+                            type="button" 
+                            class="px-6 py-2 text-sm font-medium text-gray-700 bg-white rounded-lg border border-gray-300 hover:bg-gray-50 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors">
+                        Cancel
+                    </button>
+                </div>
+            @endif
         </div>
 
         <!-- Resend OTP Button -->
@@ -89,7 +126,7 @@
             <div wire:loading.remove wire:target="verifyOTP">
                 <button wire:click="verifyOTP" 
                         class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors">
-                    Verify Account
+                    {{ $isRegistration ? 'Verify & Create Account' : 'Verify Account' }}
                 </button>
             </div>
         </div>
