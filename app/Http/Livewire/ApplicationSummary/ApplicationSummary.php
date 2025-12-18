@@ -34,12 +34,48 @@ class ApplicationSummary extends Component
 
     public $search;
     public $selectedApplication = null;
+    public $activeTab = 'applicant';
     public $images = [];
     public $selectedImageIndex = null;
     public $messageToEmployer;
 
+    // Affordability input fields
+    public $basicSalary = 0;
+    public $housingAllowance = 0;
+    public $transportAllowance = 0;
+    public $otherAllowance = 0;
+    public $taxDeduction = 0;
+    public $nssfContribution = 0;
+    public $saccosContribution = 0;
+    public $creditUnionContribution = 0;
+    public $otherDeductions = 0;
+    public $saccosLoanRepayment = 0;
+    public $housingAdvanceDeduction = 0;
+    public $otherLoanEMIs = 0;
+    
+    // Risk Parameters
+    public $maxDSR = 50;
+    public $insuranceFreeClaim = 3.5;
+    public $insuranceWithClaim = 4.0;
+
     protected $rules = [
-        'messageToEmployer' => 'required|min:10',
+        'messageToEmployer'   => 'required|min:10',
+        'selectedApplication' => 'nullable',
+        'basicSalary' => 'nullable|numeric|min:0',
+        'housingAllowance' => 'nullable|numeric|min:0',
+        'transportAllowance' => 'nullable|numeric|min:0',
+        'otherAllowance' => 'nullable|numeric|min:0',
+        'taxDeduction' => 'nullable|numeric|min:0',
+        'nssfContribution' => 'nullable|numeric|min:0',
+        'saccosContribution' => 'nullable|numeric|min:0',
+        'creditUnionContribution' => 'nullable|numeric|min:0',
+        'otherDeductions' => 'nullable|numeric|min:0',
+        'saccosLoanRepayment' => 'nullable|numeric|min:0',
+        'housingAdvanceDeduction' => 'nullable|numeric|min:0',
+        'otherLoanEMIs' => 'nullable|numeric|min:0',
+        'maxDSR' => 'nullable|numeric|min:0|max:100',
+        'insuranceFreeClaim' => 'nullable|numeric|min:0|max:100',
+        'insuranceWithClaim' => 'nullable|numeric|min:0|max:100',
     ];
 
     public function mount($applicationId = null)
@@ -216,6 +252,7 @@ Regards,
     public function selectApplication($id)
     {        
         $this->selectedApplication = Application::findOrFail($id);
+        $this->activeTab = 'applicant';
 
         $this->applicationDocuments = Attachment::where('loan_id', $this->selectedApplication->loan_id)->get();
 
@@ -251,6 +288,20 @@ Regards,
         }
 
         $this->messageToEmployer = $this->getDefaultMessage();
+        
+        // Initialize affordability fields from application data
+        $this->basicSalary = $this->selectedApplication->monthly_income ?? 0;
+        $this->housingAllowance = 0;
+        $this->transportAllowance = 0;
+        $this->otherAllowance = 0;
+        $this->taxDeduction = 0;
+        $this->nssfContribution = 0;
+        $this->saccosContribution = 0;
+        $this->creditUnionContribution = 0;
+        $this->otherDeductions = $this->selectedApplication->other_debt_payments ?? 0;
+        $this->saccosLoanRepayment = 0;
+        $this->housingAdvanceDeduction = 0;
+        $this->otherLoanEMIs = 0;
     }
 
 
@@ -456,6 +507,185 @@ JSON;
         
 
         session()->flash('message',"successfully status changed to {$status}");
+    }
+
+    // Computed properties for affordability calculations
+    public function getTotalMonthlyPayProperty()
+    {
+        return ($this->basicSalary ?? 0) + ($this->housingAllowance ?? 0) + ($this->transportAllowance ?? 0) + ($this->otherAllowance ?? 0);
+    }
+
+    public function getTaxableIncomeProperty()
+    {
+        return round($this->totalMonthlyPay * 0.92);
+    }
+
+    public function getTotalNonLoanDeductionsProperty()
+    {
+        return ($this->taxDeduction ?? 0) + ($this->nssfContribution ?? 0) + ($this->saccosContribution ?? 0) + ($this->creditUnionContribution ?? 0) + ($this->otherDeductions ?? 0);
+    }
+
+    public function getNetPayAfterDeductionsProperty()
+    {
+        return max(0, $this->totalMonthlyPay - $this->totalNonLoanDeductions);
+    }
+
+    public function getVehicleLoanEMIProperty()
+    {
+        if (!$this->selectedApplication) {
+            return 0;
+        }
+        
+        $purchasePrice = $this->selectedApplication->purchase_price ?? 0;
+        $downPayment = $this->selectedApplication->down_payment ?? 0;
+        $loanAmount = max(0, $purchasePrice - $downPayment);
+        $tenureMonths = $this->selectedApplication->tenure ?? 48;
+        $yearlyRate = 12.5;
+        
+        if ($loanAmount <= 0 || $tenureMonths <= 0) {
+            return 0;
+        }
+        
+        $monthlyRate = $yearlyRate / 100 / 12;
+        return round($loanAmount * $monthlyRate * pow(1 + $monthlyRate, $tenureMonths) / (pow(1 + $monthlyRate, $tenureMonths) - 1));
+    }
+
+    public function getTotalEMIDeductionsProperty()
+    {
+        return ($this->saccosLoanRepayment ?? 0) + ($this->housingAdvanceDeduction ?? 0) + $this->vehicleLoanEMI + ($this->otherLoanEMIs ?? 0);
+    }
+
+    public function getCalculatedDSRProperty()
+    {
+        if ($this->netPayAfterDeductions <= 0) {
+            return 0;
+        }
+        return round(($this->totalEMIDeductions / $this->netPayAfterDeductions) * 100, 2);
+    }
+
+    public function getDSRFitsProperty()
+    {
+        $maxDSR = $this->maxDSR ?? 50;
+        return $this->calculatedDSR <= $maxDSR;
+    }
+
+    public function getMonthsToRetirementProperty()
+    {
+        if (!$this->selectedApplication || !$this->selectedApplication->date_of_birth) {
+            return null;
+        }
+        
+        $dob = \Carbon\Carbon::parse($this->selectedApplication->date_of_birth);
+        $retirementAge = 60;
+        $retirementDate = $dob->copy()->addYears($retirementAge);
+        return now()->diffInMonths($retirementDate, false);
+    }
+
+    public function getIsVehicleAgeOkProperty()
+    {
+        if (!$this->selectedApplication || !$this->selectedApplication->year_of_manufacture) {
+            return null;
+        }
+        
+        $vehicleAge = now()->year - (int) $this->selectedApplication->year_of_manufacture;
+        return $vehicleAge <= 10;
+    }
+
+    public function getTotalRepaymentsCapitalProperty()
+    {
+        if (!$this->selectedApplication) {
+            return 0;
+        }
+        
+        $purchasePrice = $this->selectedApplication->purchase_price ?? 0;
+        $downPayment = $this->selectedApplication->down_payment ?? 0;
+        return max(0, $purchasePrice - $downPayment);
+    }
+
+    public function getTotalInterestProperty()
+    {
+        if ($this->vehicleLoanEMI <= 0) {
+            return 0;
+        }
+        
+        $tenureMonths = $this->selectedApplication->tenure ?? 48;
+        return round(($this->vehicleLoanEMI * $tenureMonths) - $this->totalRepaymentsCapital);
+    }
+
+    public function getTotalToBeRepaidProperty()
+    {
+        return $this->totalRepaymentsCapital + $this->totalInterest;
+    }
+
+    public function getFirstYearLifeCoverPremiumProperty()
+    {
+        return round($this->totalRepaymentsCapital * (0.068 / 100));
+    }
+
+    public function getRequestedVehicleLoanAmountProperty()
+    {
+        return $this->totalRepaymentsCapital;
+    }
+
+    public function getFirstYearVehicleCoverPremiumProperty()
+    {
+        if (!$this->selectedApplication) {
+            return 0;
+        }
+        
+        $purchasePrice = $this->selectedApplication->purchase_price ?? 0;
+        $insuranceStatus = strtolower($this->selectedApplication->insurance_status ?? '');
+        
+        // Use Free Claim rate if status contains "free" or "no claim", otherwise use With Claim rate
+        $insuranceRate = (stripos($insuranceStatus, 'free') !== false || stripos($insuranceStatus, 'no claim') !== false)
+            ? ($this->insuranceFreeClaim ?? 3.5)
+            : ($this->insuranceWithClaim ?? 4.0);
+        
+        return round($purchasePrice * ($insuranceRate / 100));
+    }
+
+    public function getVehicleValuationFeeProperty()
+    {
+        if (!$this->selectedApplication) {
+            return 0;
+        }
+        
+        $purchasePrice = $this->selectedApplication->purchase_price ?? 0;
+        return round($purchasePrice * (0.5 / 100));
+    }
+
+    public function getTotalLoanAmountRequiredProperty()
+    {
+        return $this->totalRepaymentsCapital + $this->firstYearLifeCoverPremium + $this->firstYearVehicleCoverPremium + $this->vehicleValuationFee;
+    }
+
+    public function getTotalLoanToBeBookedProperty()
+    {
+        return $this->totalLoanAmountRequired;
+    }
+
+    public function getCreditToVehicleDealerProperty()
+    {
+        return $this->totalRepaymentsCapital;
+    }
+
+    public function getMaximumProductLimitProperty()
+    {
+        return 160000000;
+    }
+
+    public function getLoanToValueRatioProperty()
+    {
+        if (!$this->selectedApplication) {
+            return 0;
+        }
+        
+        $purchasePrice = $this->selectedApplication->purchase_price ?? 0;
+        if ($purchasePrice <= 0) {
+            return 0;
+        }
+        
+        return round(($this->totalRepaymentsCapital / $purchasePrice) * 100, 1);
     }
 
    
